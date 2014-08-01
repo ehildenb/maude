@@ -42,7 +42,8 @@ libbuiltIn_a_SOURCES = \
 	counterSymbol.cc \
 	matrixOpSymbol.cc \
 	equalityExtor.cc \
-	equalityExtorFinal.cc
+	equalityExtorFinal.cc \
+	terminationCheckerSymbol.cc
 
 EXTRA_DIST = \
 	matrixOpSignature.cc
@@ -71,4 +72,5 @@ noinst_HEADERS = \
 	counterSymbol.hh \
 	matrixOpSymbol.hh \
 	equalityExtor.hh \
-	equalityExtorFinal.hh
+	equalityExtorFinal.hh \
+	terminationCheckerSymbol.hh

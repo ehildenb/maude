@@ -58,3 +58,4 @@
   MACRO(SMT_NumberSymbol, SymbolType::SMT_NUMBER_SYMBOL)
   MACRO(FileManagerSymbol, SymbolType::FILE_MANAGER_SYMBOL)
   MACRO(StreamManagerSymbol, SymbolType::STREAM_MANAGER_SYMBOL)
+  MACRO(TerminationCheckerSymbol, SymbolType::TERMINATION_CHECKER_SYMBOL)

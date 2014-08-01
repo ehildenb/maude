@@ -158,6 +158,7 @@
 
 #include "interpreter.hh"
 #include "global.hh"  // HACK shouldn't be accessing global variables
+#include "terminationCheckerSymbol.hh"
 
 Vector<int> MixfixModule::emptyGather;
 Vector<int> MixfixModule::gatherAny(1);

@@ -694,6 +694,8 @@ MixfixModule::newFancySymbol(Token prefixName,
       return new FileManagerSymbol(name);
     case SymbolType::STREAM_MANAGER_SYMBOL:
       return new StreamManagerSymbol(name);
+    case SymbolType::TERMINATION_CHECKER_SYMBOL:
+       return new TerminationCheckerSymbol(name,nrArgs);
     }
 
   int lineNr = prefixName.lineNumber();
