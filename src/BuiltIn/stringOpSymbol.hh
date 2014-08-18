@@ -29,6 +29,15 @@
 #include "freeSymbol.hh"
 #include "cachedDag.hh"
 
+// fix for mac os x
+#if defined(DARWIN)
+#include <signal.h>
+#endif
+
+#include <vector>
+#include <map>
+using namespace std;
+
 class StringOpSymbol : public FreeSymbol
 {
 public:
