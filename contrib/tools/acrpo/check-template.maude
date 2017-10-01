@@ -1,0 +1,40 @@
+
+--- This template assumes that you have a functional module, say foo.maude, that you want to prove
+--- RPO-terminating and that you have already defined an order on the symbols of it signature in a file, say,
+--- sig-foo.maude.  What you now need to include in this file are the checks that your defined
+--- order on symbols makes each lefthand side of an equation in foo.maude bigger than its righthand side.
+---
+--- To do this do the following:
+---
+--- (0) copy this template in a new file of your choosing, say, check-foo.maude
+---       and then perform edits (1)-(2).1 or (1)-(2).2 on copied file
+---       ex. cp check-template.maude check-foo.maude
+---
+--- (1) copy and paste all equations in your module MAKING SURE THAT ALL VARIABLES ARE DECLARED
+--- ON THE FLY (no explicit variable declarations should be used outside any equations)
+---
+--- ex.  eq f(X:A,X:A) = X:A .
+---      eq g(a,X:A) = b .
+---
+--- (2).1  If all operators in foo.maude having the assoc attribute ALSO have the comm attribute,
+--- replace each equation in foo.maude, say,
+---  eq t = t' .
+--- by the reduce command
+--- red t >AC t' .
+---
+--- ex. will replace above equations, where f is assoc comm and g comm by:
+---
+---   red f(X:A,X:A) >AC X:A .
+---   red g(a,X:A) >AC b .
+---
+--- (2).2  If some operator in foo.maude has the assoc attribute but NOT the comm attribute,
+--- (even though there might also be other operators that have both the assoc AND comm attributes),
+--- replace each equation in foo.maude, say,
+---  eq t = t' .
+--- by the reduce command
+--- red t >AvC t' .
+---
+--- ex. will replace above equations, where f is assoc and g comm by:
+---
+---   red f(X:A,X:A) >AvC X:A .
+---   red g(a,X:A) >AvC b .

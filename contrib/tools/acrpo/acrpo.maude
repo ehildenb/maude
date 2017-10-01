@@ -1,0 +1,1220 @@
+***(-----------------------------------------------------------------
+
+Module      :  tuple
+Stability   :  stable
+Portability :  portable 
+
+Definition of parametric 2, 3 and 4-tuple .
+
+---------------------------------------------------------------------)
+
+fmod 2TUPLE{X :: TRIV, Y :: TRIV} is
+  sorts Tuple{X, Y} .
+  op ((_,_)) : X$Elt Y$Elt -> Tuple{X, Y} [ctor] .
+  op p1_ : Tuple{X, Y} -> X$Elt .
+  op p2_ : Tuple{X, Y} -> Y$Elt .
+  eq p1(V1:[X$Elt],V2:[Y$Elt]) = V1:[X$Elt] .
+  eq p2(V1:[X$Elt],V2:[Y$Elt]) = V2:[Y$Elt] .
+endfm
+
+fmod 3TUPLE{X :: TRIV, Y :: TRIV, Z :: TRIV} is
+  sort Tuple{X, Y, Z} .
+  op ((_,_,_)) : X$Elt Y$Elt Z$Elt -> Tuple{X, Y, Z} [ctor] .
+  op p1_ : Tuple{X, Y, Z} -> X$Elt .
+  op p2_ : Tuple{X, Y, Z} -> Y$Elt .
+  op p3_ : Tuple{X, Y, Z} -> Z$Elt .
+  eq p1((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = A:[X$Elt] .
+  eq p2((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = B:[Y$Elt] .
+  eq p3((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = C:[Z$Elt] .
+endfm
+
+fmod 4TUPLE{X :: TRIV, Y :: TRIV, W :: TRIV, Z :: TRIV} is
+  sort Tuple{X, Y, W, Z} .
+  op ((_,_,_,_)) : X$Elt Y$Elt W$Elt Z$Elt -> Tuple{X, Y, W, Z} [ctor] .
+  op p1_ : Tuple{X, Y, W, Z} -> X$Elt .
+  op p2_ : Tuple{X, Y, W, Z} -> Y$Elt .
+  op p3_ : Tuple{X, Y, W, Z} -> W$Elt .
+  op p4_ : Tuple{X, Y, W, Z} -> Z$Elt .
+  eq p1((A:[X$Elt], B:[Y$Elt], C:[W$Elt], D:[Z$Elt])) = A:[X$Elt] .
+  eq p2((A:[X$Elt], B:[Y$Elt], C:[W$Elt], D:[Z$Elt])) = B:[Y$Elt] .
+  eq p3((A:[X$Elt], B:[Y$Elt], C:[W$Elt], D:[Z$Elt])) = C:[W$Elt] .
+  eq p4((A:[X$Elt], B:[Y$Elt], C:[W$Elt], D:[Z$Elt])) = D:[Z$Elt] .
+endfm
+
+***(-----------------------------------------------------------------
+
+Module      :  module-util
+Stability   :  unstable
+Portability :  portable
+
+Some auxiliary functions on the meta-level
+
+---------------------------------------------------------------------)
+
+fmod STRING-STRING-MAP is
+  pr MAP{String,String} * (sort Map{String, String} to StringStringMap) .
+endfm
+
+view StringStringMap from TRIV to STRING-STRING-MAP is sort Elt to StringStringMap .  endv
+
+fmod STRING-AUX is
+  pr CONVERSION .
+  pr STRING-STRING-MAP .
+
+  var  Str  : String .
+  vars St St' St'' : String .
+  var N : Nat .
+  var SM : StringStringMap .
+
+  --- replace St' by St'' in St
+  op replace : String String String -> String .
+  eq replace(St, St', St'') = replace(St, St', St'', find(St,St',0)) .
+
+  --- replace St' by St'' in St (with find)
+  op replace : String String String FindResult -> String .
+  eq replace(St, St', St'', notFound) = St .
+  eq replace(St, St', St'', N) = substr(St, 0, N) + St'' + replace(substr(St, N + length(St'), length(St)), St', St'') .
+
+  --- replace St' by St'' in St
+  op replaceAll : String StringStringMap -> String .
+  eq replaceAll(St, empty) = St .
+  eq replaceAll(St, ((St' |-> St''), SM)) = replaceAll(replace(St, St', St''), SM) .
+
+  --- alpha - removes _ from a string
+  op alpha : String -> String . --- [memo] .
+  eq alpha(Str) = replaceAll(Str, (("_" |-> ""), ("`," |-> "comma") , ("`[" |-> "lbracket") , ("`]" |-> "rbracket") , ("`(" |-> "lparen") , ("`)" |-> "rparen"))) .
+
+endfm
+
+fmod TERM-CONSTRUCTION is
+  pr STRING-AUX .
+  pr META-LEVEL .
+
+  var F : Qid .
+  var N : Nat .
+  vars Tp Tp1 Tp2 : Type .
+  var TpL : TypeList .
+  var AtS : AttrSet .
+
+--- isComm - check if comm is in the AttSet
+  op isComm : AttrSet -> Bool . --- [memo] .
+  eq isComm(comm AtS) = true .
+  eq isComm(AtS) = false [owise] .
+
+--- isAssoc - check if assoc is in the AttSet
+  op isAssoc : AttrSet -> Bool . ---[memo] .
+  eq isAssoc(assoc AtS) = true .
+  eq isAssoc(AtS) = false [owise] .
+
+--- isCtor - check if ctor is in the AttSet
+  op isCtor : AttrSet -> Bool . ---  [memo] .
+  eq isCtor(ctor AtS) = true .
+  eq isCtor(AtS) = false [owise] .
+
+--- isComm - check if the operator is commutative
+  op isComm : OpDecl -> Bool . --- [memo] .
+  eq isComm(op F : TpL -> Tp [AtS] .) = isComm(AtS) .
+
+--- isAssoc - check if the operator is associative
+  op isAssoc : OpDecl -> Bool . --- [memo] .
+  eq isAssoc(op F : TpL -> Tp [AtS] .) = isAssoc(AtS) .
+
+--- constrTerm - Construct a Term from it operator definition
+  op constrTerm : OpDecl Nat -> Term . --- [memo] .
+  eq constrTerm((op F : nil -> Tp [AtS] .),N)
+   = qid(alpha(string(F)) + "." + string(Tp)) .
+  eq constrTerm((op F : Tp1 TpL -> Tp2 [AtS] .),N)
+   = F[listVars(Tp1 TpL, N)] .
+
+--- constrToACTerm - Construct an AC-Term from it operator definition
+--- applying toAC function to its arguments
+  op constrToACTerm : OpDecl Nat -> Term . --- [memo] .
+  eq constrToACTerm((op F : nil -> Tp [AtS] .),N)
+   = qid(alpha(string(F)) + "." + string(Tp)) .
+  eq constrToACTerm((op F : Tp1 TpL -> Tp2 [AtS] .),N)
+   = if (isAssoc(AtS) == true) then
+       if (isComm(AtS) == true) then
+         F[toAClistVars(Tp1 TpL, N)]
+       else
+         qid(string(F) + "^AC")[toAClistVars(Tp1 TpL, N)]
+       fi
+     else
+       if (isComm(AtS) == true) then
+         qid(string(F) + "^AC")[toAClistVars(Tp1 TpL, N)]
+       else
+         F[toAClistVars(Tp1 TpL, N)]
+       fi
+     fi .
+
+--- listVars - Construct a list of vars separated by comma
+  op listVars : TypeList Nat -> TermList . --- [memo] .
+  eq listVars(Tp nil, N)
+   = qid("V#" + string(s N,10) + ":" + string(Tp)) .
+  eq listVars(Tp TpL, N)
+   = qid("V#" + string(s N,10) + ":" + string(Tp)) , listVars(TpL, s N) [owise] .
+
+--- toAClistVars - Construct a list of vars separated by comma and
+--- apply toAC function
+  op toAClistVars : TypeList Nat -> TermList . --- [memo] .
+  eq toAClistVars(Tp nil, N)
+   = 'toAC[qid("V#" + string(s N,10) + ":" + string(Tp))] .
+  eq toAClistVars(Tp TpL, N)
+   = 'toAC[qid("V#" + string(s N,10) + ":" + string(Tp))] , toAClistVars(TpL, s N) [owise] .
+
+--- typeListLength - lenght of TypeList
+  op typeListLength : TypeList -> Nat .
+  eq typeListLength(nil) = 0 .
+  eq typeListLength(Tp TpL) = s typeListLength(TpL) .
+
+endfm
+
+fmod TYPES-AUX is
+  pr CONVERSION .
+  pr META-LEVEL .
+  pr TERM-CONSTRUCTION .
+
+--- Meta-Level Sorts
+  sorts KindOpDeclSet KindOpDeclSetSet NEKindOpDeclSetSet .
+  sorts EKindOpDeclSet EKindOpDeclSetSet NEEKindOpDeclSetSet .
+
+  subsorts KindOpDeclSet < NEKindOpDeclSetSet < KindOpDeclSetSet  .
+  subsorts EKindOpDeclSet < NEEKindOpDeclSetSet < EKindOpDeclSetSet .
+
+--- Working with Kinds and Types
+  op _::_ : Kind OpDeclSet -> KindOpDeclSet [ctor] .
+  op none : -> KindOpDeclSetSet [ctor] .
+  op __ : NEKindOpDeclSetSet NEKindOpDeclSetSet -> NEKindOpDeclSetSet [ctor assoc comm id: none] .
+  op __ : KindOpDeclSetSet KindOpDeclSetSet -> KindOpDeclSetSet [assoc comm id: none] .
+  op _[_]::_ : Type TypeList OpDeclSet -> EKindOpDeclSet [ctor] .
+  op none : -> EKindOpDeclSetSet [ctor] .
+  op __ : NEEKindOpDeclSetSet NEEKindOpDeclSetSet -> NEEKindOpDeclSetSet [ctor assoc comm id: none] .
+  op __ : EKindOpDeclSetSet EKindOpDeclSetSet -> EKindOpDeclSetSet [assoc comm id: none] .
+  op newTopSorts : EKindOpDeclSetSet -> SortSet .
+
+  vars Tp Tp1 Tp2 Tp3 : Type .
+  vars TpL TpL1 TpL2 TpL3 : TypeList .
+  var K : Kind .
+  var OPD : OpDecl .
+  vars OPDS OPDS1 OPDS2 : OpDeclSet .
+  var KOPDS  : KindOpDeclSetSet .
+  var EKOPDS : EKindOpDeclSetSet .
+  vars FRes FRes' : FindResult .
+  var Str : String .
+  var N : NzNat .
+  var M : Module .
+  vars AtS AtS1 AtS2 : AttrSet .
+  var F   : Qid .
+  var FS  : QidSet .
+  var NeTL : NeTermList .
+  var C : Constant .
+  vars T T1 T2 : Term .
+  var SS : SortSet .
+
+--- fromTypeListToString - concat a list of types into a String
+  op fromTypeListToString : TypeList -> String .
+  eq fromTypeListToString(nil) = "" .
+  eq fromTypeListToString(Tp TpL) = string(Tp) + fromTypeListToString(TpL) .
+
+--- setTopSort - create a new top sort if there is not top sort
+  op setTopSort : TypeList -> Type .
+  eq setTopSort(Tp)  = Tp .
+  eq setTopSort(TpL) = qid(fromTypeListToString(TpL)) [owise] .
+
+--- newTopSorts - list all the new top sorts
+  eq newTopSorts((none).EKindOpDeclSetSet)
+   = (none).SortSet .
+  eq newTopSorts((Tp [ Tp ] :: OPDS) EKOPDS)
+   = newTopSorts(EKOPDS) .
+  eq newTopSorts((Tp [ TpL ] :: OPDS) EKOPDS)
+   = Tp ; newTopSorts(EKOPDS) [owise] .
+
+--- newSubsorts - for each new top sort, set the dependencies
+--- with respect to the rest of sorts in the SCC
+  op newSubsorts : EKindOpDeclSetSet -> SubsortDeclSet .
+  eq newSubsorts((none).EKindOpDeclSetSet)
+   = (none).SubsortDeclSet .
+  eq newSubsorts((Tp [ nil ] :: OPDS) EKOPDS)
+   = newSubsorts(EKOPDS) .
+  eq newSubsorts((Tp1 [ Tp2 TpL ] :: OPDS) EKOPDS)
+   = if (Tp1 == Tp2) then
+       newSubsorts((Tp1 [ TpL ] :: OPDS) EKOPDS)
+     else
+       (subsort Tp2 < Tp1 .) newSubsorts((Tp1 [ TpL ] :: OPDS) EKOPDS)
+     fi .
+
+--- processKinds - set the Top Sort is exists, if not create one
+  op processKinds : KindOpDeclSetSet -> EKindOpDeclSetSet .
+  eq processKinds((none).KindOpDeclSetSet)
+   = (none).EKindOpDeclSetSet .
+  eq processKinds((K :: OPDS) KOPDS)
+   = (setTopSort(extractTypes(string(K))) [ extractTypes(string(K)) ] :: OPDS) processKinds(KOPDS) .
+
+--- extractTypes - given a Kind as a String "'`[S1`,S2`,S3`]" extracts
+--- the different maximal types as a list of Qids: 'S1 'S2 'S3
+  op extractTypes : String -> TypeList .
+  eq extractTypes(Str) = if (substr(Str,0,2) == "`[")
+                         then extractTypes(substr(Str,2, length(Str)))
+                         else if (find(Str,"`,",0) =/= notFound)
+                              then (qid(substr(Str,0,find(Str,"`,",0)))
+                                   extractTypes(substr(Str,find(Str,"`,",0) + 2, length(Str))))
+         		      else qid(substr(Str,0,find(Str,"`]",0)))
+                              fi
+                         fi .
+
+--- getOpsByKind - get all the operators group by kind
+  op getOpsByKind : Module KindOpDeclSetSet OpDeclSet -> KindOpDeclSetSet . --- [memo] .
+  eq getOpsByKind(M, KOPDS, (none).OpDeclSet)
+   = KOPDS .
+  eq getOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS)
+   = getOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS, getKind(M, Tp)) .
+
+--- getOpsByKind - get all the operators group by kind (auxiliary)
+  op getOpsByKind : Module KindOpDeclSetSet OpDeclSet Kind -> KindOpDeclSetSet . --- [memo] .
+  eq getOpsByKind(M, (K :: OPDS1) KOPDS, (op F : TpL -> Tp [AtS] .) OPDS2, K)
+   = getOpsByKind(M, (K :: (OPDS1 (op F : TpL -> Tp [AtS] .))) KOPDS, OPDS2) .
+  eq getOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS, K)
+   = getOpsByKind(M, createKindSet(K,(op F : TpL -> Tp [AtS] .)) KOPDS, OPDS) [owise] .
+
+--- getEOpsByKind - get all the operators group by kind and add AC
+--- extensions when the symbols is only A or C
+  op getEOpsByKind : Module KindOpDeclSetSet OpDeclSet -> KindOpDeclSetSet . --- [memo] .
+  eq getEOpsByKind(M, KOPDS, (none).OpDeclSet)
+   = KOPDS .
+  eq getEOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS)
+   = getEOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS, getKind(M, Tp)) .
+
+--- getEOpsByKind - get all the operators group by kind (auxiliary)
+--- and generate its extended version
+  op getEOpsByKind : Module KindOpDeclSetSet OpDeclSet Kind -> KindOpDeclSetSet . --- [memo] .
+  eq getEOpsByKind(M, (K :: OPDS1) KOPDS, (op F : TpL -> Tp [AtS] .) OPDS2, K)
+   = if (isAssoc(AtS) == true) then
+       if (isComm(AtS) == true) then
+         getEOpsByKind(M, (K :: (OPDS1 (op F : TpL -> Tp [AtS] .))) KOPDS, OPDS2)
+       else
+         getEOpsByKind(M, (K :: (OPDS1 (op F : TpL -> Tp [AtS] .) (op qid(string(F) + "^AC") : TpL -> Tp [comm AtS] .))) KOPDS, OPDS2)
+       fi
+     else
+       if (isComm(AtS) == true) then
+         getEOpsByKind(M, (K :: (OPDS1 (op F : TpL -> Tp [AtS] .) (op qid(string(F) + "^AC") : TpL -> Tp [assoc AtS] .))) KOPDS, OPDS2)
+       else
+         getEOpsByKind(M, (K :: (OPDS1 (op F : TpL -> Tp [AtS] .))) KOPDS, OPDS2)
+       fi
+     fi .
+  eq getEOpsByKind(M, KOPDS, (op F : TpL -> Tp [AtS] .) OPDS, K)
+   = if (isAssoc(AtS) == true) then
+       if (isComm(AtS) == true) then
+         getEOpsByKind(M, createKindSet(K,(op F : TpL -> Tp [AtS] .)) KOPDS, OPDS)
+       else
+         getEOpsByKind(M, createKindSet(K,(op F : TpL -> Tp [AtS] .) (op qid(string(F) + "^AC") : TpL -> Tp [comm AtS] .)) KOPDS, OPDS)
+       fi
+     else
+       if (isComm(AtS) == true) then
+         getEOpsByKind(M, createKindSet(K,(op F : TpL -> Tp [AtS] .) (op qid(string(F) + "^AC") : TpL -> Tp [assoc AtS] .)) KOPDS, OPDS)
+       else
+         getEOpsByKind(M, createKindSet(K,(op F : TpL -> Tp [AtS] .)) KOPDS, OPDS)
+       fi
+     fi [owise] .
+
+--- createKindSet - we have to create the new kindset
+  op createKindSet : Kind OpDeclSet -> KindOpDeclSetSet .
+  eq createKindSet(K, OPDS)
+   = (K :: OPDS) .
+
+--- isMaximalTyping - tell us if a typing is maximal with respect to another
+  op isMaximalTyping : Module OpDecl OpDeclSet -> Bool . --- [memo] .
+  eq isMaximalTyping(M, OPD, none) = true .
+  eq isMaximalTyping(M, (op F : TpL1 -> Tp1 [AtS1] .), (op F : TpL2 -> Tp2 [AtS2] .) OPDS)
+   = isMaximalTyping(M, Tp1 TpL1, Tp2 TpL2) or isMaximalTyping(M, (op F : TpL1 -> Tp1 [AtS1] .), OPDS) .
+  eq isMaximalTyping(M, OPD, OPDS)
+   = true [owise] .
+
+--- isMaximalTyping - tell us if a typing is maximal with respect to another
+  op isMaximalTyping : Module TypeList TypeList -> Bool . --- [memo] .
+  eq isMaximalTyping(M, nil, nil)
+   = false .
+  eq isMaximalTyping(M, Tp1 TpL1, Tp2 TpL2)
+   = if intersection(Tp2 ; lesserSorts(M, Tp2),Tp1) =/= none
+     then isMaximalTyping(M, TpL1, TpL2)
+     else true
+     fi .
+
+--- getMaximalTypings - filter non maximal typings
+  op getMaximalTypings : Module OpDeclSet -> OpDeclSet . --- [memo] .
+  eq getMaximalTypings(M, (none).OpDeclSet)
+   = none .
+  eq getMaximalTypings(M, OPD OPDS)
+   = if isMaximalTyping(M, OPD, OPDS)
+     then OPD getMaximalTypings(M, OPDS)
+     else getMaximalTypings(M, OPDS)
+     fi .
+
+--- getMaximalTypings - filter non maximal typings
+  op getMaximalTypings : Module KindOpDeclSetSet -> KindOpDeclSetSet . --- [memo] .
+  eq getMaximalTypings(M, (none).KindOpDeclSetSet)
+   = none .
+  eq getMaximalTypings(M, (K :: OPDS) KOPDS)
+   = (K :: getMaximalTypings(M, OPDS)) getMaximalTypings(M, KOPDS) [owise] .
+
+  --- getOpsByAndAndQId - return the possible maximal typings given a
+  --- Kind and a Qid
+  op getOpsByKindAndQId : KindOpDeclSetSet Kind Qid -> OpDeclSet . --- [memo] .
+  eq getOpsByKindAndQId((K :: OPDS) KOPDS, K, F) = getOpsByQid(OPDS, F) .
+  eq getOpsByKindAndQId(KOPDS, K, F) = (none).OpDeclSet [owise] .
+
+  --- getOpsByAndAndQId - return the possible typings given a Qid
+  op getOpsByQid : OpDeclSet Qid -> OpDeclSet . ---[memo] .
+  eq getOpsByQid((op F : TpL -> Tp [AtS] .) OPDS, F) = (op F : TpL -> Tp [AtS] .) getOpsByQid(OPDS, F) .
+  eq getOpsByQid(OPDS, F) = (none).OpDeclSet [owise] .
+
+  --- getOpsByType - return the possible maximal typings from a Type
+  op getOpsByType : KindOpDeclSetSet Kind SortSet -> OpDeclSet . --- [memo] .
+  eq getOpsByType((K :: OPDS) KOPDS, K, SS) = getOpsByType(OPDS, SS) .
+  eq getOpsByKindAndQId(KOPDS, K, SS) = (none).OpDeclSet [owise] .
+
+  --- getOpsByType - return the possible maximal typings from a Type
+  op getOpsByType : OpDeclSet SortSet -> OpDeclSet . --- [memo] .
+  eq getOpsByType((op F : TpL1 -> Tp [AtS] .) OPDS, SS)
+   = if intersection(SS,Tp) =/= none
+     then (op F : TpL1 -> Tp [AtS] .) getOpsByType(OPDS, SS)
+     else getOpsByType(OPDS, SS)
+     fi .
+  eq getOpsByType((none).OpDeclSet, SS) = (none).OpDeclSet .
+
+  --- get proper maximal operator if exists. CONDITION! : we force
+  --- maximal typings of AC operators as s s -> s and C operators as
+  --- s s -> s' We don't allow only A operators
+  op root : Module Term Type OpDeclSet -> OpDeclSet . --- [memo] .
+  eq root(M, T, Tp1, (none).OpDeclSet) = (none).OpDeclSet .
+  eq root(M, C, Tp, (op F : nil -> Tp [AtS] .) OPDS)
+    = if getName(C) == F
+      then (op F : nil -> Tp [AtS] .)
+      else root(M, C, Tp, OPDS)
+      fi .
+  eq root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+    = if (isAssoc(AtS) == true)
+      then
+        if (isComm(AtS) == true)
+        then ac-root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+        else a-root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+        fi
+      else
+        if (isComm(AtS) == true)
+        then c-root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+        else free-root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+        fi
+      fi .
+  eq root(M, T, Tp1, OPD OPDS) = root(M, T, Tp1, OPDS) [owise] .
+
+
+  --- get proper maximal operator if exists (AC case).
+  op ac-root : Module Term Type OpDeclSet -> OpDeclSet . --- [memo] .
+  eq ac-root(M, F[NeTL], Tp1, (op F : Tp2 Tp2 -> Tp2 [assoc comm AtS] .) OPDS)
+   = if (intersection(Tp2 ; lesserSorts(M, Tp2),Tp1) =/= none) and (lesserSorts(M, NeTL, Tp2) == true)
+     then (op F : Tp2 Tp2 -> Tp2 [assoc comm AtS] .)
+     else root(M, F[NeTL], Tp1, OPDS)
+     fi .
+  eq ac-root(M, T, Tp1, OPD OPDS) = root(M, T, Tp1, OPDS) [owise] .
+
+  --- get proper maximal operator if exists (C case).
+  op c-root : Module Term Type OpDeclSet -> OpDeclSet . --- [memo] .
+  eq c-root(M, F[NeTL], Tp1, (op F : Tp3 Tp3 -> Tp2 [comm AtS] .) OPDS)
+   = if (intersection(Tp2 ; lesserSorts(M, Tp2),Tp1) =/= none) and (lesserSorts(M, NeTL, Tp3) == true)
+     then (op F : Tp3 Tp3 -> Tp2 [comm AtS] .)
+     else root(M, F[NeTL], Tp1, OPDS)
+     fi .
+  eq c-root(M, T, Tp1, OPD OPDS) = root(M, T, Tp1, OPDS) [owise] .
+
+  --- get proper maximal operator if exists (A case). Not allowed!
+  op a-root : Module Term Type OpDeclSet -> OpDeclSet . --- [memo] .
+  eq a-root(M, T, Tp1, OPD OPDS) = root(M, T, Tp1, OPDS) .
+
+  --- get proper maximal operator if exists (free symbol case).
+  op free-root : Module Term Type OpDeclSet -> OpDeclSet . --- [memo] .
+  eq free-root(M, F[NeTL], Tp1, (op F : TpL -> Tp2 [AtS] .) OPDS)
+   = if (intersection(Tp2 ; lesserSorts(M, Tp2),Tp1) =/= none) and (lesserSorts(M, NeTL, TpL) == true)
+     then (op F : TpL -> Tp2 [AtS] .)
+     else root(M, F[NeTL], Tp1, OPDS)
+     fi .
+  eq free-root(M, T, Tp1, OPD OPDS) = root(M, T, Tp1, OPDS) [owise] .
+
+  --- getCtors - filter ctor operators
+  op getCtors : OpDeclSet ~> OpDeclSet . --- [memo] .
+  eq getCtors((none).OpDeclSet) = (none).OpDeclSet .
+  eq getCtors((op F : TpL -> Tp [AtS] .) OPDS)
+   = if isCtor(AtS)
+     then (op F : TpL -> Tp [AtS] .) getCtors(OPDS)
+     else getCtors(OPDS)
+     fi .
+
+  --- lesserSorts - check if the list of terms are in the input type
+  --- list
+  op lesserSorts : Module NeTermList TypeList -> Bool .
+  eq lesserSorts(M, T1, Tp1) = intersection(Tp1 ; lesserSorts(M, Tp1), getType(metaNormalize(M,T1))) =/= none .
+  eq lesserSorts(M, (T1 , NeTL) , Tp1) = (intersection(Tp1 ; lesserSorts(M, Tp1), getType(metaNormalize(M,T1))) =/= none) and lesserSorts(M, NeTL, Tp1) .
+  eq lesserSorts(M, T1, Tp1 TpL) = intersection(Tp1 ; lesserSorts(M, Tp1), getType(metaNormalize(M,T1))) =/= none .
+  eq lesserSorts(M, (T1 , NeTL) , Tp1 TpL) = (intersection(Tp1 ; lesserSorts(M, Tp1), getType(metaNormalize(M,T1))) =/= none) and lesserSorts(M, NeTL, TpL) .
+
+endfm
+
+***(-----------------------------------------------------------------
+
+Module      :  aacrpo
+Stability   :  unstable
+Portability :  portable
+
+AACRPO for ordered rewriting. Based on [Rub99] and Rubio's PhD Thesis.
+
+---------------------------------------------------------------------)
+
+--- ----------------------------------------------------------------
+--- NOTES FOR USING THIS MODULE:
+
+--- In this module, if there is a symbol with different typings is
+--- consider one symbol from the point of view of the ordering. The
+--- reason is that [Rub99] and Rubio's PhD Thesis does not consider
+--- sort information.
+
+--- This order can only be used to check positive answers. It means
+--- that if we want to check if a term t is greater than a term t' and
+--- t > t' = true we ensure that t > t' for all their possible
+--- instances, but if t > t' =/= true does not mean that t' > t. That
+--- is because we deal with terms with variables. The order can also
+--- return a constraint instead of true or false (for instance, X >v
+--- 0).
+--- ----------------------------------------------------------------
+
+fmod WRAP-TERM-CONSTRUCTION is
+  pr STRING-AUX .
+  pr META-LEVEL .
+  pr TERM-CONSTRUCTION .
+
+  var F Q Q1 Q2 : Qid .
+  vars N N1 N2 : Nat .
+  vars Tp Tp1 Tp2 Tp3 TpI1 TpI2 : Type .
+  var TpL TpL1 TpL2 TpL3 : TypeList .
+  var AtS AtS1 AtS2 : AttrSet .
+  var TL : TermList .
+  var T  : Term .
+
+--- constrWrapList - list arguments as a list of wrapped terms
+  op constrWrapList : TypeList Nat -> Term .
+  eq constrWrapList(nil, N)
+   = 'nil.OWrapList .
+  eq constrWrapList(Tp TpL, N)
+   = '__['`[`[_`]`][qid("V#" + string(N,10) + ":" + string(Tp))],constrWrapList(TpL, s N)] .
+
+--- constrWrapSet - list arguments as a set of wrapped terms
+  op constrWrapSet : TypeList Nat -> Term .
+  eq constrWrapSet(nil, N)
+   = 'empty.OWrapSet .
+  eq constrWrapSet(Tp TpL, N)
+   = '_`,_['`[`[_`]`][qid("V#" + string(N,10) + ":" + string(Tp))],constrWrapSet(TpL, s N)] .
+
+--- mountEmbSmall4 - OR[i | i <- [1..n]] (w1,tff(vi),w2) == w3 or
+--- embSmall4f(empty,(w1,tff(vi),w2), w3) or
+--- embSmall4f((w1,h(v1,...,vn)),w2,w3)
+ op mountEmbSmall4 : OpDecl OpDecl TypeList Nat -> Term .
+ eq mountEmbSmall4((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), (nil).TypeList,N) = qid("embSmall4-" + alpha(string(Q1)))['_`,_['WS1:OWrapSet,'`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)]],'WS2:OWrapSet,'T:OTerm] .
+ eq mountEmbSmall4((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), Tp3 TpL3, N) = '_or_['_>=v_[qid("(" + alpha(string(Q1)) + ",_)")['_`,_['_`,_['WS1:OWrapSet,'`[`[_`]`][qid("V#" + string(N,10) + ":" + string(Tp3))]],'WS2:OWrapSet]],'T:OTerm],mountEmbSmall4((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), TpL3, s N)] .
+
+--- mountEmbSmall5f - AND[i | i <- [1..n]] w3 == (w1,tff(vi),w2) or
+--- embSmall4f(empty,w3,(w1,tff(vi),w2)) or
+--- embSmall5f((w1,h(v1,...,vn)),w2,w3)
+ op mountEmbSmall5 : OpDecl OpDecl TypeList Nat -> Term .
+ eq mountEmbSmall5((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), (nil).TypeList,N) = qid("embSmall5-" + alpha(string(Q1)))['_`,_['WS1:OWrapSet,'`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)]],'WS2:OWrapSet,'T:OTerm] .
+ eq mountEmbSmall5((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), Tp3 TpL3, N) = '_and_['_>v_['T:OTerm,qid("(" + alpha(string(Q1)) + ",_)")['_`,_['_`,_['WS1:OWrapSet,'`[`[_`]`][qid("V#" + string(N,10) + ":" + string(Tp3))]],'WS2:OWrapSet]]],mountEmbSmall5((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .), TpL3, s N)] .
+
+endfm
+
+view OpDecl from TRIV to META-LEVEL is sort Elt to OpDecl .  endv
+
+fmod WRAP-COMPLETION is
+  pr WRAP-TERM-CONSTRUCTION .
+  pr TYPES-AUX .
+  pr 2TUPLE{Nat,OpDecl} * (sort Tuple{Nat,OpDecl} to NatOpDecl) .
+
+  var Tp   : Type .
+  var TpL  : TypeList .
+  var OPDS : OpDeclSet .
+  var EKOPDS : EKindOpDeclSetSet .
+  vars NOPD1 NOPD2 : NatOpDecl .
+  var Q : Qid .
+  var AtS : AttrSet .
+  var S : String .
+
+  --- wrapOps - add wrapping operators and wrapEmbSmall4 for AC
+  --- operators (only AC or E0 operators, no A only or C only)
+  op wrapOps : EKindOpDeclSetSet -> OpDeclSet .
+  eq wrapOps((none).EKindOpDeclSetSet) = (none).OpDeclSet .
+  eq wrapOps((Tp [ TpL ] :: OPDS) EKOPDS)
+   = (op '`[`[_`]`] : Tp -> 'OWrap [strat (0)] .)
+     wrapOps(OPDS) wrapOps(EKOPDS) .
+
+  --- wrapOps - add wrapping operators to hide types, add embSmall and
+  --- tf functions
+  op wrapOps : OpDeclSet -> OpDeclSet .
+  eq wrapOps((none).OpDeclSet) = (none).OpDeclSet .
+  eq wrapOps((op Q : TpL -> Tp [assoc comm AtS] .) OPDS) --- AC case
+   = (op qid("(" + alpha(string(Q)) + ",_)") : 'OWrapSet -> 'OTerm [none] .)
+     (op qid("embSmall4-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet 'OTerm -> 'OBool [none] .)
+     (op qid("embSmall5-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet 'OTerm -> 'OBool [none] .)
+     (op qid("tf-" + alpha(string(Q))) : 'OWrap -> 'OWrapSet [none] .)
+     (op qid("noSmallHead-" + alpha(string(Q))) : 'OWrapSet -> 'OWrapSet [none] .)
+     (op qid("bigHead-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet -> 'OWrapSet [none] .)
+     wrapOps(OPDS) .
+  eq wrapOps((op Q : TpL -> Tp [AtS] .) OPDS) --- E0 case
+   = (op qid("(" + alpha(string(Q)) + ",_)") : 'OWrapList -> 'OTerm [none] .)
+     wrapOps(OPDS) [owise] .
+
+  --- aac-wrapOps - add wrapping operators to hide types
+  op aac-wrapOps : EKindOpDeclSetSet -> OpDeclSet .
+  eq aac-wrapOps((none).EKindOpDeclSetSet) = (none).OpDeclSet .
+  eq aac-wrapOps((Tp [ TpL ] :: OPDS) EKOPDS)
+   = (op '`[`[_`]`] : Tp -> 'OWrap [none] .)
+     (op 'toAC : Tp -> Tp [none] .)
+     (op 'toACWrap : 'OWrap -> 'OWrap [none] .)
+     aac-wrapOps(OPDS) aac-wrapOps(EKOPDS) .
+
+  --- aac-wrapOps - add wrapping operators to hide types, add embSmall and
+  --- tf functions
+  op aac-wrapOps : OpDeclSet -> OpDeclSet .
+  eq aac-wrapOps((none).OpDeclSet) = (none).OpDeclSet .
+  eq aac-wrapOps((op Q : TpL -> Tp [assoc comm AtS] .) OPDS) --- AC case
+   = (op qid("(" + alpha(string(Q)) + ",_)") : 'OWrapSet -> 'OTerm [none] .)
+     (op qid("embSmall4-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet 'OTerm -> 'OBool [none] .)
+     (op qid("embSmall5-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet 'OTerm -> 'OBool [none] .)
+     (op qid("tf-" + alpha(string(Q))) : 'OWrap -> 'OWrapSet [none] .)
+     (op qid("noSmallHead-" + alpha(string(Q))) : 'OWrapSet -> 'OWrapSet [none] .)
+     (op qid("bigHead-" + alpha(string(Q))) : 'OWrapSet 'OWrapSet -> 'OWrapSet [none] .)
+     (op qid("tf-" + alpha(string(Q)) + "-set") : 'OWrap -> 'OWrapSet [none] .) --- AAC tf-op-set
+     aac-wrapOps(OPDS) .
+  eq aac-wrapOps((op Q : TpL -> Tp [AtS] .) OPDS)
+   = (op qid("(" + alpha(string(Q)) + ",_)") : 'OWrapList -> 'OTerm [none] .)
+     aac-wrapCommOps((op Q : TpL -> Tp [AtS] .),isComm(AtS))
+     aac-wrapOps(OPDS) [owise] .
+
+  --- aac-wrapCommOps - add wrapping operators to hide types, add embSmall and
+  --- tf functions
+  op aac-wrapCommOps : OpDeclSet Bool -> OpDeclSet .
+  eq aac-wrapCommOps((op Q : TpL -> Tp [AtS] .), true) --- C case
+   = (op qid("tf-" + alpha(string(Q)) + "-set") : 'OWrap -> 'OWrapSet [none] .) .
+  eq aac-wrapCommOps((op Q : TpL -> Tp [AtS] .), false) --- A and E0 cases
+   = (op qid("tf-" + alpha(string(Q)) + "-list") : 'OWrap -> 'OWrapList [none] .) .
+
+  --- wrapEqs - wrapToTerm and _>v_ for variables
+  op wrapEqs : -> EquationSet .
+  eq wrapEqs
+   = (eq 'wrapToTerm['W:OWrap] = '`(variable`,_`)['W:OWrap] [owise] .)
+     (eq '_>v_['`(variable`,_`)['W:OWrap],'T:OTerm] = 'false.OBool [none] .) .
+
+   --- aac-wrapEqs - wrapToTerm and _>v_ for variables
+  op aac-wrapEqs : EKindOpDeclSetSet -> EquationSet .
+  eq aac-wrapEqs(none)
+   = (eq 'wrapToTerm['W:OWrap] = '`(variable`,_`)['W:OWrap] [owise] .)
+     (eq '_>v_['`(variable`,_`)['W:OWrap],'T:OTerm] = 'false.OBool [none] .) .
+  eq aac-wrapEqs((Tp [ TpL ] :: OPDS) EKOPDS)
+   = (eq 'toACWrap['`[`[_`]`][qid("V#1:" + string(Tp))]] = '`[`[_`]`]['toAC[qid("V#1:" + string(Tp))]] [none] .)
+     (eq 'toAC[qid("V#1:" + string(Tp))] = qid("V#1:" + string(Tp)) [owise] .)
+     aac-wrapEqs(EKOPDS) .
+
+  --- fromOpDeclToNatOpDecl - we order simbols based on the metadata
+  --- attribute
+  op fromOpDeclToNatOpDecl : OpDecl -> NatOpDecl .
+  eq fromOpDeclToNatOpDecl((op Q : TpL -> Tp [AtS metadata(S)] .)) = (rat(S,10),(op Q : TpL -> Tp [AtS metadata(S)] .))  .
+  eq fromOpDeclToNatOpDecl((op Q : TpL -> Tp [AtS] .)) = (0,(op Q : TpL -> Tp [AtS] .)) [owise] .
+
+  --- toACOpDecl - from A or C symbol to AC symbol
+  op toACOpDecl : OpDecl -> OpDecl .
+  eq toACOpDecl((op Q : TpL -> Tp [AtS] .))
+   = if (isAssoc(AtS) == true) then
+       (if (isComm(AtS) == true) then
+         (op Q : TpL -> Tp [AtS] .)
+        else
+         (op Q : TpL -> Tp [comm AtS] .)
+        fi)
+     else
+       (if (isComm(AtS) == true) then
+         (op Q : TpL -> Tp [assoc AtS] .)
+        else
+         (op Q : TpL -> Tp [AtS] .)
+        fi)
+     fi .
+
+  --- addACOpDecl - from A or C symbol, add an AC symbol "^AC"
+  op addACOpDecl : OpDecl -> OpDeclSet .
+  eq addACOpDecl((op Q : TpL -> Tp [AtS] .))
+   = if (isAssoc(AtS) == true) then
+       (if (isComm(AtS) == true) then
+         (op Q : TpL -> Tp [AtS] .)
+        else
+         ((op Q : TpL -> Tp [AtS] .) (op qid(string(Q) + "^AC") : TpL -> Tp [comm AtS] .))
+        fi)
+     else
+       (if (isComm(AtS) == true) then
+         ((op Q : TpL -> Tp [AtS] .) (op qid(string(Q) + "^AC") : TpL -> Tp [assoc AtS] .))
+        else
+         (op Q : TpL -> Tp [AtS] .)
+        fi)
+     fi .
+
+  --- order for NatOpDecl
+  op _<_ : NatOpDecl NatOpDecl -> Bool .
+  eq NOPD1 < NOPD2 = (p1 NOPD1) < (p1 NOPD2) .
+endfm
+
+view NatOpDecl from STRICT-TOTAL-ORDER to WRAP-COMPLETION is
+  sort Elt to NatOpDecl .
+---  op X:Elt < Y:Elt to term X:NatOpDecl < Y:NatOpDecl .
+  op _<_ : Elt Elt -> Bool to _<_ .
+endv
+
+fmod WRAP-OP-COMPLETION is
+  pr TERM-CONSTRUCTION .
+  pr WRAP-COMPLETION .
+  pr SORTABLE-LIST{NatOpDecl} * (sort List{NatOpDecl} to NatOpDeclList) .
+
+  var OPD  : OpDecl .
+  var OPDS : OpDeclSet .
+  vars Q Q1 Q2 : Qid .
+  vars TpL TpL1 TpL2 : TypeList .
+  vars Tp Tp1 Tp2 TpI1 TpI2 : Type .
+  vars AtS AtS1 AtS2 : AttrSet .
+  vars NOPDL NOPDL1 NOPDL2 : NatOpDeclList .
+  var N : Nat .
+  var M : Module .
+
+--- fromOpDeclSetToNatOpDeclList - Set to List
+  op fromOpDeclSetToNatOpDeclList : OpDeclSet -> NatOpDeclList .
+  eq fromOpDeclSetToNatOpDeclList((none).OpDeclSet) = (nil).NatOpDeclList .
+  eq fromOpDeclSetToNatOpDeclList((OPD OPDS))
+   = fromOpDeclToNatOpDecl(OPD) fromOpDeclSetToNatOpDeclList(OPDS) .
+
+--- toACOpDeclSet - from A or C symbols to AC symbols
+  op toACOpDeclSet : OpDeclSet -> OpDeclSet .
+  eq toACOpDeclSet((none).OpDeclSet) = (none).OpDeclSet .
+  eq toACOpDeclSet((OPD OPDS))
+   = toACOpDecl(OPD) toACOpDeclSet(OPDS) .
+
+--- addACOpDeclSet - from any A or C symbols, extend with an AC symbols "^AC"
+  op addACOpDeclSet : OpDeclSet -> OpDeclSet .
+  eq addACOpDeclSet((none).OpDeclSet) = (none).OpDeclSet .
+  eq addACOpDeclSet((OPD OPDS))
+   = addACOpDecl(OPD) addACOpDeclSet(OPDS) .
+
+--- constrGreaterEqs - we construct the equations of the form
+--- f(x_1,...,x_n) >v g(y_1,...,y_n) = x_1 > g(y_1,...,y_n) or ... or
+--- x_n > g(y_1,...,y_n) if g > f
+  op constrGreaterEqs : OpDecl -> EquationSet .
+  eq constrGreaterEqs((op Q : TpL -> Tp [assoc comm AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WS:OWrapSet],'T:OTerm] = 'acrpo5-1-set['WS:OWrapSet,'T:OTerm] [owise] .) .
+  eq constrGreaterEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WL:OWrapList],'T:OTerm] = 'acrpo5-1-list['WL:OWrapList,'T:OTerm] [owise] .) [owise] .
+
+--- aac-constrGreaterEqs - we construct the equations of the form
+--- f(x_1,...,x_n) >E g(y_1,...,y_n) = f(x_1,...,x_n) >v
+--- g(y_1,...,y_n) if g > f
+  op aac-constrGreaterEqs : OpDecl -> EquationSet .
+  eq aac-constrGreaterEqs((op Q : TpL -> Tp [assoc comm AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WS:OWrapSet],'T:OTerm] = 'acrpo5-1-set['WS:OWrapSet,'T:OTerm] [owise] .)
+     (eq '_>E_['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)],'W2:OWrap] = '_>v_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),0)]],'toACWrap['W2:OWrap]] [owise] .) .
+  eq aac-constrGreaterEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WL:OWrapList],'T:OTerm] = 'acrpo5-1-list['WL:OWrapList,'T:OTerm] [owise] .)
+     (eq '_>E_['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)],'W2:OWrap] = '_>v_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),0)]],'toACWrap['W2:OWrap]] [owise] .) [owise] .
+
+--- constrSmallerEqs - we construct the equations of the form
+--- f(x_1,...,x_n) >v g(y_1,...,y_n) = x_1 > g(y_1,...,y_n) or ... or
+--- x_n > g(y_1,...,y_n) or (f(x_1,...,x_n) > y_1 and ... and
+--- f(x_1,...,x_n) > y_n) if f > g
+  op constrSmallerEqs : OpDecl NatOpDeclList -> EquationSet .
+  eq constrSmallerEqs(OPD, (nil).NatOpDeclList) = (none).EquationSet .
+  eq constrSmallerEqs((op Q1 : TpL1 -> Tp1 [AtS1] .), (N,(op Q2 : TpL2 -> Tp2 [AtS2] .)) NOPDL)
+   = if (isComm(AtS1) == true) and (isAssoc(AtS1) == true)
+     then if (isComm(AtS2) == true) and (isAssoc(AtS2) == true)
+          then --- AC AC
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]],'acrpo5-2-set[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],'WS2:OWrapSet]] [none] .)
+	  else --- AC E0
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]],'acrpo5-2-list[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],'WL2:OWrapList]] [none] .)
+	  fi
+     else if (isComm(AtS2) == true) and (isAssoc(AtS2) == true)
+	  then --- E0 AC
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-list['WL1:OWrapList,qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]],'acrpo5-2-set[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],'WS2:OWrapSet]] [none] .)
+	  else --- E0 E0
+  	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-list['WL1:OWrapList,qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]],'acrpo5-2-list[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],'WL2:OWrapList]] [none] .)
+	  fi
+     fi
+     constrSmallerEqs((op Q1 : TpL1 -> Tp1 [AtS1] .), NOPDL) .
+
+--- aac-constrSmallerEqs - we construct the equations of the form
+--- f(x_1,...,x_n) >E g(y_1,...,y_n) = f(x_1,...,x_n) >v
+--- g(y_1,...,y_n) if f > g
+  op aac-constrSmallerEqs : OpDecl NatOpDeclList -> EquationSet .
+  eq aac-constrSmallerEqs(OPD, (nil).NatOpDeclList) = (none).EquationSet .
+  eq aac-constrSmallerEqs((op Q1 : TpL1 -> Tp1 [AtS1] .), (N,(op Q2 : TpL2 -> Tp2 [AtS2] .)) NOPDL)
+   = if (isComm(AtS1) == true) and (isAssoc(AtS1) == true)
+     then if (isComm(AtS2) == true) and (isAssoc(AtS2) == true)
+          then --- AC AC
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]],'acrpo5-2-set[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],'WS2:OWrapSet]] [none] .)
+	  else --- AC E0
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]],'acrpo5-2-list[qid("(" + alpha(string(Q1)) + ",_)")['WS1:OWrapSet],'WL2:OWrapList]] [none] .)
+	  fi
+     else if (isComm(AtS2) == true) and (isAssoc(AtS2) == true)
+	  then --- E0 AC
+	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-list['WL1:OWrapList,qid("(" + alpha(string(Q2)) + ",_)")['WS2:OWrapSet]],'acrpo5-2-set[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],'WS2:OWrapSet]] [none] .)
+	  else --- E0 E0
+  	    (eq '_>v_[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-list['WL1:OWrapList,qid("(" + alpha(string(Q2)) + ",_)")['WL2:OWrapList]],'acrpo5-2-list[qid("(" + alpha(string(Q1)) + ",_)")['WL1:OWrapList],'WL2:OWrapList]] [none] .)
+	  fi
+     fi
+     (eq '_>E_['`[`[_`]`][constrTerm((op Q1 : TpL1 -> Tp1 [AtS1] .),0)],'`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),typeListLength(TpL1))]] = '_>v_['`[`[_`]`]['toAC[constrTerm((op Q1 : TpL1 -> Tp1 [AtS1] .),0)]],'`[`[_`]`]['toAC[constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),typeListLength(TpL1))]]] [none] .)
+     aac-constrSmallerEqs((op Q1 : TpL1 -> Tp1 [AtS1] .), NOPDL) .
+
+--- constrEqualEqs - f(x_1,...,x_n) >v f(y_1,...,y_n)
+  op constrEqualEqs : OpDecl -> EquationSet .
+  eq constrEqualEqs((op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]],qid("embSmall4-" + alpha(string(Q)))['empty.OWrapSet,'WS1:OWrapSet, qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]]] [none] .) .
+  eq constrEqualEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-list['WL1:OWrapList, qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]], '_and_['_>v`{lex`}_['WL1:OWrapList,'WL2:OWrapList], 'acrpo5-2-list[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],'WL2:OWrapList]]] [none] .) [owise] .
+
+--- aac-constrEqualEqs - f(x_1,...,x_n) >E f(y_1,...,y_n)
+  op aac-constrEqualEqs : OpDecl -> EquationSet .
+  eq aac-constrEqualEqs((op Q : TpL -> Tp [comm AtS] .))
+   = (if isAssoc(AtS) then
+       (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WS1:OWrapSet],qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]] = '_or_['acrpo5-1-set['WS1:OWrapSet,qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]],qid("embSmall4-" + alpha(string(Q)))['empty.OWrapSet,'WS1:OWrapSet, qid("(" + alpha(string(Q)) + ",_)")['WS2:OWrapSet]]] [none] .)
+     else
+       (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-list['WL1:OWrapList, qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]], '_and_['_>v`{lex`}_['WL1:OWrapList,'WL2:OWrapList], 'acrpo5-2-list[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],'WL2:OWrapList]]] [none] .)
+     fi)
+     (eq '_>E_['`[`[_`]`][constrTerm((op Q : TpL -> Tp [comm AtS] .),0)],'`[`[_`]`][constrTerm((op Q : TpL -> Tp [comm AtS] .),typeListLength(TpL))]] = 'if_then_else_fi['_==_['_>v_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [comm AtS] .),0)]],'`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [comm AtS] .),typeListLength(TpL))]]],'true.OBool],'true.OBool,'if_then_else_fi['_==_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [comm AtS] .),0)]],'`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [comm AtS] .),typeListLength(TpL))]]],'_>>E_[qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [comm AtS] .),0)]],qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [comm AtS] .),typeListLength(TpL))]]],'false.OBool]] [none] .) .
+  eq aac-constrEqualEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq '_>v_[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]] = '_or_['acrpo5-1-list['WL1:OWrapList, qid("(" + alpha(string(Q)) + ",_)")['WL2:OWrapList]], '_and_['_>v`{lex`}_['WL1:OWrapList,'WL2:OWrapList], 'acrpo5-2-list[qid("(" + alpha(string(Q)) + ",_)")['WL1:OWrapList],'WL2:OWrapList]]] [none] .)
+     (eq '_>E_['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)],'`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),typeListLength(TpL))]] = 'if_then_else_fi['_==_['_>v_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),0)]],'`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),typeListLength(TpL))]]],'true.OBool],'true.OBool,'if_then_else_fi['_==_['`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),0)]],'`[`[_`]`]['toAC[constrTerm((op Q : TpL -> Tp [AtS] .),typeListLength(TpL))]]],'_>E`{lex`}_[qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)]],qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),typeListLength(TpL))]]],'false.OBool]] [none] .) [owise] .
+
+--- aac-constrToACEqs - from A or C symbols to only AC symbols
+  op aac-constrToACEqs : OpDecl -> EquationSet .
+  eq aac-constrToACEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq 'toAC[constrTerm((op Q : TpL -> Tp [AtS] .),0)] = constrToACTerm((op Q : TpL -> Tp [AtS] .),0) [none] .) .
+
+--- constrWrapToTermEqs - wrapToTerm([[t]]) = (root(t),args)
+  op constrWrapToTermEqs : NatOpDeclList -> EquationSet .
+  eq constrWrapToTermEqs((nil).NatOpDeclList)
+   = (none).EquationSet .
+  eq constrWrapToTermEqs((N,(op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .)) NOPDL)
+   = (eq 'wrapToTerm['`[`[_`]`][constrTerm((op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .),0)]] = qid("(" + alpha(string(Q)) + ",_)")[qid("tf-" + alpha(string(Q)))['`[`[_`]`][constrTerm((op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .),0)]]] [none] .)
+     constrWrapToTermEqs(NOPDL) .
+  eq constrWrapToTermEqs((N,(op Q : TpL -> Tp [AtS] .)) NOPDL) --- E0 case
+   = (eq 'wrapToTerm['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)]] = qid("(" + alpha(string(Q)) + ",_)")[constrWrapList(TpL,1)] [none] .)
+     constrWrapToTermEqs(NOPDL) [owise] .
+
+--- constrWrapEqs - construct the ordering given the precedence as a
+--- list of operators
+  op constrWrapEqs : NatOpDeclList NatOpDeclList -> EquationSet .
+  eq constrWrapEqs(NOPDL, (nil).NatOpDeclList)
+   = (eq 'sharp['WS:OWrapSet,'N:ONat] = '`(_`,_`)['WS:OWrapSet,'N:ONat] [owise] .)
+     constrWrapToTermEqs(NOPDL) .
+  eq constrWrapEqs(NOPDL1, (N,(op Q : TpL -> Tp [AtS] .)) NOPDL2)
+   = constrGreaterEqs((op Q : TpL -> Tp [AtS] .))
+     constrSmallerEqs((op Q : TpL -> Tp [AtS] .),NOPDL1)
+     constrEqualEqs((op Q : TpL -> Tp [AtS] .))
+     (if isComm(AtS) and isAssoc(AtS) then
+        constrACEqs((op Q : TpL -> Tp [AtS] .),NOPDL1)
+        constrBHEqs((op Q : TpL -> Tp [AtS] .),NOPDL2)
+      else
+        (none).EquationSet
+      fi)
+     constrSharpEqs((op Q : TpL -> Tp [AtS] .))
+     constrWrapEqs(NOPDL1 (N,(op Q : TpL -> Tp [AtS] .)), NOPDL2) .
+
+--- aac-constrWrapEqs - construct the ordering given the precedence as a
+--- list of operators
+  op aac-constrWrapEqs : NatOpDeclList NatOpDeclList -> EquationSet .
+  eq aac-constrWrapEqs(NOPDL, (nil).NatOpDeclList)
+   = (eq 'sharp['WS:OWrapSet,'N:ONat] = '`(_`,_`)['WS:OWrapSet,'N:ONat] [owise] .)
+     constrWrapToTermEqs(NOPDL) .
+  eq aac-constrWrapEqs(NOPDL1, (N,(op Q : TpL -> Tp [AtS] .)) NOPDL2)
+   = aac-constrGreaterEqs((op Q : TpL -> Tp [AtS] .))
+     aac-constrSmallerEqs((op Q : TpL -> Tp [AtS] .),NOPDL1)
+     aac-constrEqualEqs((op Q : TpL -> Tp [AtS] .))
+     aac-constrToACEqs((op Q : TpL -> Tp [AtS] .))
+     (if isComm(AtS) and isAssoc(AtS) then
+        constrACEqs((op Q : TpL -> Tp [AtS] .),NOPDL1)
+        constrBHEqs((op Q : TpL -> Tp [AtS] .),NOPDL2)
+      else
+        (none).EquationSet
+      fi)
+     constrSharpEqs((op Q : TpL -> Tp [AtS] .))
+     aac-constrtfEqs((op Q : TpL -> Tp [AtS] .))
+     aac-constrWrapEqs(NOPDL1 (N,(op Q : TpL -> Tp [AtS] .)), NOPDL2) .
+
+--- constACEqs - If f is AC then we construct the tf-f, embSmall4-f,
+--- embSmall5-f and noSmalHead-f equations
+ op constrACEqs : OpDecl NatOpDeclList -> EquationSet .
+ eq constrACEqs((op Q : TpI1 TpI2 -> Tp [AtS] .), (nil).NatOpDeclList)
+  = (eq qid("tf-" + alpha(string(Q)))['`[`[_`]`][constrTerm((op Q : TpI1 TpI2 -> Tp [AtS] .),0)]] = '_`,_[qid("tf-" + alpha(string(Q)))['`[`[_`]`][qid("V#" + string(1,10) + ":" + string(TpI1))]],qid("tf-" + alpha(string(Q)))['`[`[_`]`][qid("V#" + string(2,10) + ":" + string(TpI2))]]] [none] .)
+    (eq qid("tf-" + alpha(string(Q)))['W:OWrap] = 'W:OWrap [owise] .)
+    (eq qid("embSmall4-" + alpha(string(Q)))['WS1:OWrapSet,'WS2:OWrapSet,qid("(" + alpha(string(Q)) + ",_)")['WS3:OWrapSet]] = qid("embSmall5-" + alpha(string(Q)))['empty.OWrapSet,'WS3:OWrapSet,qid("(" + alpha(string(Q)) + ",_)")['_`,_['WS1:OWrapSet,'WS2:OWrapSet]]] [owise] .)
+    (eq qid("embSmall5-" + alpha(string(Q)))['WS1:OWrapSet,'WS2:OWrapSet,qid("(" + alpha(string(Q)) + ",_)")['WS3:OWrapSet]] = '_and_['_>>=v_[qid("noSmallHead-" + alpha(string(Q)))['WS3:OWrapSet],qid("noSmallHead-" + alpha(string(Q)))['_`,_['WS1:OWrapSet,'WS2:OWrapSet]]],'_or_['_>>v_[qid("bigHead-" + alpha(string(Q)))['empty.OWrapSet,'WS3:OWrapSet],qid("bigHead-" + alpha(string(Q)))['empty.OWrapSet,'_`,_['WS1:OWrapSet,'WS2:OWrapSet]]],'_or_['_>_['sharp['WS3:OWrapSet,'0.ONat],'sharp['_`,_['WS1:OWrapSet,'WS2:OWrapSet],'0.ONat]],'_and_['_>=_['sharp['WS3:OWrapSet,'0.ONat],'sharp['_`,_['WS1:OWrapSet,'WS2:OWrapSet],'0.ONat]],'_>>v_['WS3:OWrapSet,'_`,_['WS1:OWrapSet,'WS2:OWrapSet]]]]]] [owise] .)
+    (eq qid("noSmallHead-" + alpha(string(Q)))['WS:OWrapSet] = 'WS:OWrapSet [owise] .) .
+ eq constrACEqs((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (N,(op Q2 : TpL2 -> Tp2 [AtS2] .)) NOPDL)
+  = (eq qid("embSmall4-" + alpha(string(Q1)))['WS1:OWrapSet,'_`,_['`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)],'WS2:OWrapSet],'T:OTerm] = mountEmbSmall4((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .),TpL2,1) [none] .)
+    (eq qid("embSmall5-" + alpha(string(Q1)))['WS1:OWrapSet,'_`,_['`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)],'WS2:OWrapSet],'T:OTerm] = mountEmbSmall5((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (op Q2 : TpL2 -> Tp2 [AtS2] .),TpL2,1) [none] .)
+    (eq qid("noSmallHead-" + alpha(string(Q1)))['_`,_['`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)],'WS:OWrapSet]] = qid("noSmallHead-" + alpha(string(Q1)))['WS:OWrapSet] [none] .)
+    constrACEqs((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), NOPDL) .
+
+--- constBHEqs - If f is AC then we construct the bigHead-f equations
+ op constrBHEqs : OpDecl NatOpDeclList -> EquationSet .
+ eq constrBHEqs((op Q : TpI1 TpI2 -> Tp [AtS] .), (nil).NatOpDeclList)
+  = (eq qid("bigHead-" + alpha(string(Q)))['WS1:OWrapSet,'WS2:OWrapSet] = 'WS1:OWrapSet [owise] .) .
+ eq constrBHEqs((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), (N,(op Q2 : TpL2 -> Tp2 [AtS2] .)) NOPDL)
+  = (eq qid("bigHead-" + alpha(string(Q1)))['WS1:OWrapSet,'_`,_['`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)],'WS2:OWrapSet]] = qid("bigHead-" + alpha(string(Q1)))['_`,_['WS1:OWrapSet,'`[`[_`]`][constrTerm((op Q2 : TpL2 -> Tp2 [AtS2] .),0)]],'WS2:OWrapSet] [none] .)
+    constrBHEqs((op Q1 : TpI1 TpI2 -> Tp1 [AtS1] .), NOPDL) .
+
+--- constrSharpEqs - If the term is rooted by a function symbol it counts as 1
+  op constrSharpEqs : OpDecl -> EquationSet .
+  eq constrSharpEqs((op Q : TpL -> Tp [AtS] .))
+   = (eq 'sharp['_`,_['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)],'WS:OWrapSet],'N:ONat] = 'sharp['WS:OWrapSet,'s_['N:ONat]] [none] .) .
+
+--- aac-consttfEqs - Construct the tf-f
+ op aac-constrtfEqs : OpDecl -> EquationSet .
+ eq aac-constrtfEqs((op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .))
+  = (eq qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][constrTerm((op Q : TpI1 TpI2 -> Tp [assoc comm AtS] .),0)]] = '_`,_[qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][qid("V#" + string(1,10) + ":" + string(TpI1))]],qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][qid("V#" + string(2,10) + ":" + string(TpI2))]]] [none] .)
+    (eq qid("tf-" + alpha(string(Q)) + "-set")['W:OWrap] = 'W:OWrap [owise] .) .
+ eq aac-constrtfEqs((op Q : TpL -> Tp [AtS] .)) = aac-constrtfCommEqs((op Q : TpL -> Tp [AtS] .), isComm(AtS)) [owise] .
+
+--- aac-consttfCommEqs - Construct the tf-f
+ op aac-constrtfCommEqs : OpDecl Bool -> EquationSet .
+ eq aac-constrtfCommEqs((op Q : TpL -> Tp [AtS] .), true)
+  = (eq qid("tf-" + alpha(string(Q)) + "-set")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)]] = constrWrapSet(TpL,1) [none] .)
+    (eq qid("tf-" + alpha(string(Q)) + "-set")['W:OWrap] = 'W:OWrap [owise] .) .
+ eq aac-constrtfCommEqs((op Q : TpL -> Tp [AtS] .), false) = aac-constrtfAssocEqs((op Q : TpL -> Tp [AtS] .), isAssoc(AtS)) [owise] .
+
+--- aac-consttfAssocEqs - Construct the tf-f
+ op aac-constrtfAssocEqs : OpDecl Bool -> EquationSet .
+ eq aac-constrtfAssocEqs((op Q : TpI1 TpI2 -> Tp [AtS] .), true)
+  = (eq qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][constrTerm((op Q : TpI1 TpI2 -> Tp [AtS] .),0)]] = '__[qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][qid("V#" + string(1,10) + ":" + string(TpI1))]],qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][qid("V#" + string(2,10) + ":" + string(TpI2))]]] [none] .)
+    (eq qid("tf-" + alpha(string(Q)) + "-list")['W:OWrap] = 'W:OWrap [owise] .) .
+ eq aac-constrtfAssocEqs((op Q : TpL -> Tp [AtS] .), false) = (eq qid("tf-" + alpha(string(Q)) + "-list")['`[`[_`]`][constrTerm((op Q : TpL -> Tp [AtS] .),0)]] = constrWrapList(TpL,1) [none] .) [owise] .
+
+endfm
+
+
+
+--- test: red metaReduce(compWithOrd(upModule('MY-MODULE,false)),'_>v_['wrapToTerm['`[`[_`]`]['my.term1]],'wrapToTerm['`[`[_`]`]['my.term2]]]) .
+
+fmod AC-ORDER-COMPLETION is
+  pr WRAP-OP-COMPLETION .
+
+  var EKOPDS : EKindOpDeclSetSet .
+  var NOPDL : NatOpDeclList .
+  var Q : Qid .
+  var TpL : TypeList .
+  var Tp : Type .
+  var AtS : AttrSet .
+  var S : String .
+  var M : Module .
+  var H : Header .
+  var IL : ImportList .
+  var SS : SortSet .
+  var SDS : SubsortDeclSet .
+  vars ODS AC-ODS : OpDeclSet .
+  var MAS : MembAxSet .
+  var EqS : EquationSet .
+
+  --- compWithOrd - given a functional module, it completes it with
+  --- an AC-RPO ordering using the priorities given by the user. A and
+  --- C symbols are transformed into AC symbols.
+  op compWithOrd : FModule -> FModule [memo] .
+  eq compWithOrd(fmod H is IL sorts SS . SDS ODS MAS EqS endfm)
+   = ac-compWithOrd(fmod H is IL sorts SS . SDS toACOpDeclSet(ODS) MAS EqS endfm) .
+
+  --- ac-compWithOrd - needs symbols to be AC or E0
+  op ac-compWithOrd : FModule -> FModule .
+  eq ac-compWithOrd(fmod H is IL sorts SS . SDS ODS MAS EqS endfm)
+   = fmod H is
+       IL
+       (protecting 'NAT * ( sort 'Bool to 'OBool
+                          , sort 'Zero to 'OZero
+                          , sort 'NzNat to 'ONzNat
+                          , sort 'Nat to 'ONat) .)
+       sorts (SS ; 'OTerm ; 'OWrap ; 'OWrapList ; 'OWrapSet ; 'OWrapPolynomial ; newTopSorts(processKinds(getOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))) .
+       (subsort 'OWrap < 'OWrapList .)
+       (subsort 'OWrap < 'OWrapSet .)
+       newSubsorts(processKinds(getOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))
+       SDS
+       (op 'nil : nil -> 'OWrapList [ctor] .)
+       (op '__ : 'OWrapList 'OWrapList -> 'OWrapList [ctor assoc id('nil.OWrapList)] .)
+       (op 'empty : nil -> 'OWrapSet [ctor] .)
+       (op '_`,_ : 'OWrapSet 'OWrapSet -> 'OWrapSet [ctor assoc comm id('empty.OWrapSet)] .)
+       (op '`(_`,_`) : 'OWrapSet 'ONat -> 'OWrapPolynomial [ctor] .)
+       wrapOps(processKinds(getOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))
+       (op '`(variable`,_`) : 'OWrap -> 'OTerm [none] .)
+       (op '_>v_  : 'OTerm 'OTerm -> 'OBool [none] .) --- terms
+       (op '_>=v_ : 'OTerm 'OTerm -> 'OBool [none] .)
+       (op '_>v_  : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>=v_ : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>v`{lex`}_ : 'OWrapList 'OWrapList -> 'OBool [none] .)
+       (op '_>>v_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .) --- mset of terms
+       (op '_>>=v_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .)
+       (op 'wrapToTerm : 'OWrap -> 'OTerm [none] .)
+       (op 'acrpo5-1-set : 'OWrapSet 'OTerm -> 'OBool [none] .)
+       (op 'acrpo5-1-list : 'OWrapList 'OTerm -> 'OBool [none] .)
+       (op 'acrpo5-2-set : 'OTerm 'OWrapSet -> 'OBool [none] .)
+       (op 'acrpo5-2-list : 'OTerm 'OWrapList -> 'OBool [none] .)
+       (op 'sharp : 'OWrapSet 'ONat -> 'OWrapPolynomial [none] .)
+       (op 'filter : 'OWrap 'OWrapSet -> 'OWrapSet [none] .)
+       (op '_\_ : 'OWrapSet 'OWrapSet -> 'OWrapSet [none] .)
+       (op 'size : 'OWrapSet -> 'ONat [none] .)
+       (op '_>_ : 'OWrapPolynomial 'OWrapPolynomial -> 'OBool [none] .)
+       (op '_>=_ : 'OWrapPolynomial 'OWrapPolynomial -> 'OBool [none] .)
+       ODS
+       MAS
+       (eq '_>v`{lex`}_['nil.OWrapList,'WL:OWrapList] = 'false.OBool [none] .)
+       (eq '_>v`{lex`}_['__['W:OWrap,'WL:OWrapList],'nil.OWrapList] = 'true.OBool [none] .)
+       (eq '_>v`{lex`}_['__['W1:OWrap,'WL1:OWrapList],'__['W2:OWrap,'WL2:OWrapList]] = '_or_['_>v_['wrapToTerm['W1:OWrap],'wrapToTerm['W2:OWrap]],'_and_['_==_['W1:OWrap,'W2:OWrap],'_>v`{lex`}_['WL1:OWrapList,'WL2:OWrapList]]] [none] .)
+       (eq '_>>v_['empty.OWrapSet,'WS:OWrapSet] = 'false.OBool [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS:OWrapSet],'empty.OWrapSet] = 'true.OBool [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS1:OWrapSet],'_`,_['W:OWrap,'WS2:OWrapSet]] = '_>>v_['WS1:OWrapSet,'WS2:OWrapSet] [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS1:OWrapSet],'WS2:OWrapSet] = '_>>=v_['WS1:OWrapSet,'filter['W:OWrap,'WS2:OWrapSet]] [owise] .)
+       (eq 'acrpo5-1-set['empty.OWrapSet,'T:OTerm] = 'false.OBool [none] .)
+       (eq 'acrpo5-1-set['_`,_['W:OWrap,'WS:OWrapSet],'T:OTerm] = '_or_['_>=v_['wrapToTerm['W:OWrap],'T:OTerm],'acrpo5-1-set['WS:OWrapSet,'T:OTerm]] [none] .)
+       (eq 'acrpo5-1-list['nil.OWrapList,'T:OTerm] = 'false.OBool [none] .)
+       (eq 'acrpo5-1-list['__['W:OWrap,'WL:OWrapList],'T:OTerm] = '_or_['_>=v_['wrapToTerm['W:OWrap],'T:OTerm],'acrpo5-1-list['WL:OWrapList,'T:OTerm]] [none] .)
+       (eq 'acrpo5-2-set['T:OTerm,'empty.OWrapSet] = 'true.OBool [none] .)
+       (eq 'acrpo5-2-set['T:OTerm,'_`,_['W:OWrap,'WS:OWrapSet]] = '_and_['_>v_['T:OTerm,'wrapToTerm['W:OWrap]],'acrpo5-2-set['T:OTerm,'WS:OWrapSet]] [none] .)
+       (eq 'acrpo5-2-list['T:OTerm,'nil.OWrapList] = 'true.OBool [none] .)
+       (eq 'acrpo5-2-list['T:OTerm,'__['W:OWrap,'WL:OWrapList]] = '_and_['_>v_['T:OTerm,'wrapToTerm['W:OWrap]],'acrpo5-2-list['T:OTerm,'WL:OWrapList]] [none] .)
+       (eq '_>=v_['T1:OTerm,'T2:OTerm] = '_or_['_==_['T1:OTerm,'T2:OTerm],'_>v_['T1:OTerm,'T2:OTerm]] [none] .)
+       (eq '_>=v_['W1:OWrap,'W2:OWrap] = '_or_['_==_['W1:OWrap,'W2:OWrap],'_>v_['W1:OWrap,'W2:OWrap]] [none] .)
+       (eq '_>>=v_['WS1:OWrapSet,'WS2:OWrapSet] = '_or_['_==_['WS1:OWrapSet,'WS2:OWrapSet],'_>>v_['WS1:OWrapSet,'WS2:OWrapSet]] [none] .)
+       (eq 'filter['W:OWrap,'empty.OWrapSet] = 'empty.OWrapSet [none] .)
+       (eq 'filter['W1:OWrap,'_`,_['W2:OWrap,'WS:OWrapSet]] = 'if_then_else_fi['_>v_['wrapToTerm['W1:OWrap],'wrapToTerm['W2:OWrap]],'filter['W1:OWrap,'WS:OWrapSet],'_`,_['W2:OWrap,'filter['W1:OWrap,'WS:OWrapSet]]] [none] .)
+       (eq '_\_['_`,_['W:OWrap,'WS1:OWrapSet],'_`,_['W:OWrap,'WS2:OWrapSet]] = '_\_['WS1:OWrapSet,'WS2:OWrapSet] [none] .)
+       (eq '_\_['WS1:OWrapSet,'WS2:OWrapSet] = 'WS1:OWrapSet [owise] .)
+       (eq 'size['empty.OWrapSet] = '0.ONat [none] .)
+       (eq 'size['_`,_['W:OWrap,'WS1:OWrapSet]] = 's_['size['WS1:OWrapSet]] [none] .)
+       (eq '_>_['`(_`,_`)['WS1:OWrapSet,'N1:ONat],'`(_`,_`)['WS2:OWrapSet,'N2:ONat]] = '_and_['_==_['_\_['WS2:OWrapSet,'WS1:OWrapSet],'empty.OWrapSet],'_>_['_+_['size['_\_['WS1:OWrapSet,'WS2:OWrapSet]],'N1:ONat],'N2:ONat]] [none] .)
+       (eq '_>=_['`(_`,_`)['WS1:OWrapSet,'N1:ONat],'`(_`,_`)['WS2:OWrapSet,'N2:ONat]] = '_and_['_==_['_\_['WS2:OWrapSet,'WS1:OWrapSet],'empty.OWrapSet],'_>=_['_+_['size['_\_['WS1:OWrapSet,'WS2:OWrapSet]],'N1:ONat],'N2:ONat]] [none] .)
+       (eq '_>v_['W1:OWrap,'W2:OWrap] = '_>v_['wrapToTerm['W1:OWrap],'wrapToTerm['W2:OWrap]] [none] .)
+       wrapEqs
+       constrWrapEqs((nil).NatOpDeclList,sort(fromOpDeclSetToNatOpDeclList(ODS)))
+     endfm .
+endfm
+
+fmod AAC-ORDER-COMPLETION is
+  pr WRAP-OP-COMPLETION .
+
+  var EKOPDS : EKindOpDeclSetSet .
+  var NOPDL : NatOpDeclList .
+  var Q : Qid .
+  var TpL : TypeList .
+  var Tp : Type .
+  var AtS : AttrSet .
+  var S : String .
+  var M : Module .
+  var H : Header .
+  var IL : ImportList .
+  var SS : SortSet .
+  var SDS : SubsortDeclSet .
+  vars ODS AC-ODS : OpDeclSet .
+  var MAS : MembAxSet .
+  var EqS : EquationSet .
+
+  --- aac-compWithOrd - given a functional module, it completes it
+  --- with an AAC-RPO ordering using the priorities given by the user.
+  op aac-compWithOrd : FModule -> FModule [memo] .
+  eq aac-compWithOrd(fmod H is IL sorts SS . SDS ODS MAS EqS endfm)
+   = fmod H is
+       IL
+       (protecting 'NAT * ( sort 'Bool to 'OBool
+                          , sort 'Zero to 'OZero
+                          , sort 'NzNat to 'ONzNat
+                          , sort 'Nat to 'ONat) .)
+       sorts (SS ; 'OTerm ; 'OWrap ; 'OWrapList ; 'OWrapSet ; 'OWrapPolynomial ; newTopSorts(processKinds(getOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))) .
+       (subsort 'OWrap < 'OWrapList .)
+       (subsort 'OWrap < 'OWrapSet .)
+       newSubsorts(processKinds(getOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))
+       SDS
+       (op 'nil : nil -> 'OWrapList [ctor] .)
+       (op '__ : 'OWrapList 'OWrapList -> 'OWrapList [ctor assoc id('nil.OWrapList)] .)
+       (op 'empty : nil -> 'OWrapSet [ctor] .)
+       (op '_`,_ : 'OWrapSet 'OWrapSet -> 'OWrapSet [ctor assoc comm id('empty.OWrapSet)] .)
+       (op '`(_`,_`) : 'OWrapSet 'ONat -> 'OWrapPolynomial [ctor] .)
+       aac-wrapOps(processKinds(getEOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))
+       (op '`(variable`,_`) : 'OWrap -> 'OTerm [none] .)
+       (op '_>v_  : 'OTerm 'OTerm -> 'OBool [none] .) --- terms
+       (op '_>=v_ : 'OTerm 'OTerm -> 'OBool [none] .)
+       (op '_>v_  : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>=v_ : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>v`{lex`}_ : 'OWrapList 'OWrapList -> 'OBool [none] .)
+       (op '_>>v_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .) --- mset of terms
+       (op '_>>=v_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .)
+       (op '_>E_  : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>=E_ : 'OWrap 'OWrap -> 'OBool [none] .)
+       (op '_>E`{lex`}_ : 'OWrapList 'OWrapList -> 'OBool [none] .)
+       (op '_>>E_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .) --- mset of terms
+       (op '_>>=E_ : 'OWrapSet 'OWrapSet -> 'OBool [none] .)
+       (op 'wrapToTerm : 'OWrap -> 'OTerm [none] .)
+       (op 'acrpo5-1-set : 'OWrapSet 'OTerm -> 'OBool [none] .)
+       (op 'acrpo5-1-list : 'OWrapList 'OTerm -> 'OBool [none] .)
+       (op 'acrpo5-2-set : 'OTerm 'OWrapSet -> 'OBool [none] .)
+       (op 'acrpo5-2-list : 'OTerm 'OWrapList -> 'OBool [none] .)
+       (op 'sharp : 'OWrapSet 'ONat -> 'OWrapPolynomial [none] .)
+       (op 'filter : 'OWrap 'OWrapSet -> 'OWrapSet [none] .)
+       (op '_\_ : 'OWrapSet 'OWrapSet -> 'OWrapSet [none] .)
+       (op 'size : 'OWrapSet -> 'ONat [none] .)
+       (op '_>_ : 'OWrapPolynomial 'OWrapPolynomial -> 'OBool [none] .)
+       (op '_>=_ : 'OWrapPolynomial 'OWrapPolynomial -> 'OBool [none] .)
+       addACOpDeclSet(ODS)
+       MAS
+       (eq '_>v`{lex`}_['nil.OWrapList,'WL:OWrapList] = 'false.OBool [none] .)
+       (eq '_>v`{lex`}_['__['W:OWrap,'WL:OWrapList],'nil.OWrapList] = 'true.OBool [none] .)
+       (eq '_>v`{lex`}_['__['W1:OWrap,'WL1:OWrapList],'__['W2:OWrap,'WL2:OWrapList]] = '_or_['_>v_['wrapToTerm['W1:OWrap],'wrapToTerm['W2:OWrap]],'_and_['_==_['W1:OWrap,'W2:OWrap],'_>v`{lex`}_['WL1:OWrapList,'WL2:OWrapList]]] [none] .)
+       (eq '_>>v_['empty.OWrapSet,'WS:OWrapSet] = 'false.OBool [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS:OWrapSet],'empty.OWrapSet] = 'true.OBool [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS1:OWrapSet],'_`,_['W:OWrap,'WS2:OWrapSet]] = '_>>v_['WS1:OWrapSet,'WS2:OWrapSet] [none] .)
+       (eq '_>>v_['_`,_['W:OWrap,'WS1:OWrapSet],'WS2:OWrapSet] = '_>>=v_['WS1:OWrapSet,'filter['W:OWrap,'WS2:OWrapSet]] [owise] .)
+       (eq 'acrpo5-1-set['empty.OWrapSet,'T:OTerm] = 'false.OBool [none] .)
+       (eq 'acrpo5-1-set['_`,_['W:OWrap,'WS:OWrapSet],'T:OTerm] = '_or_['_>=v_['wrapToTerm['W:OWrap],'T:OTerm],'acrpo5-1-set['WS:OWrapSet,'T:OTerm]] [none] .)
+       (eq 'acrpo5-1-list['nil.OWrapList,'T:OTerm] = 'false.OBool [none] .)
+       (eq 'acrpo5-1-list['__['W:OWrap,'WL:OWrapList],'T:OTerm] = '_or_['_>=v_['wrapToTerm['W:OWrap],'T:OTerm],'acrpo5-1-list['WL:OWrapList,'T:OTerm]] [none] .)
+       (eq 'acrpo5-2-set['T:OTerm,'empty.OWrapSet] = 'true.OBool [none] .)
+       (eq 'acrpo5-2-set['T:OTerm,'_`,_['W:OWrap,'WS:OWrapSet]] = '_and_['_>v_['T:OTerm,'wrapToTerm['W:OWrap]],'acrpo5-2-set['T:OTerm,'WS:OWrapSet]] [none] .)
+       (eq 'acrpo5-2-list['T:OTerm,'nil.OWrapList] = 'true.OBool [none] .)
+       (eq 'acrpo5-2-list['T:OTerm,'__['W:OWrap,'WL:OWrapList]] = '_and_['_>v_['T:OTerm,'wrapToTerm['W:OWrap]],'acrpo5-2-list['T:OTerm,'WL:OWrapList]] [none] .)
+       (eq '_>=v_['T1:OTerm,'T2:OTerm] = '_or_['_==_['T1:OTerm,'T2:OTerm],'_>v_['T1:OTerm,'T2:OTerm]] [none] .)
+       (eq '_>=v_['W1:OWrap,'W2:OWrap] = '_or_['_==_['W1:OWrap,'W2:OWrap],'_>v_['W1:OWrap,'W2:OWrap]] [none] .)
+       (eq '_>>=v_['WS1:OWrapSet,'WS2:OWrapSet] = '_or_['_==_['WS1:OWrapSet,'WS2:OWrapSet],'_>>v_['WS1:OWrapSet,'WS2:OWrapSet]] [none] .)
+       (eq '_>E`{lex`}_['nil.OWrapList,'WL:OWrapList] = 'false.OBool [none] .)
+       (eq '_>E`{lex`}_['__['W:OWrap,'WL:OWrapList],'nil.OWrapList] = 'true.OBool [none] .)
+       (eq '_>E`{lex`}_['__['W1:OWrap,'WL1:OWrapList],'__['W2:OWrap,'WL2:OWrapList]] = '_or_['_>E_['W1:OWrap,'W2:OWrap],'_and_['_==_['W1:OWrap,'W2:OWrap],'_>E`{lex`}_['WL1:OWrapList,'WL2:OWrapList]]] [none] .)
+       (eq '_>>E_['empty.OWrapSet,'WS:OWrapSet] = 'false.OBool [none] .)
+       (eq '_>>E_['_`,_['W:OWrap,'WS:OWrapSet],'empty.OWrapSet] = 'true.OBool [none] .)
+       (eq '_>>E_['_`,_['W:OWrap,'WS1:OWrapSet],'_`,_['W:OWrap,'WS2:OWrapSet]] = '_>>E_['WS1:OWrapSet,'WS2:OWrapSet] [none] .)
+       (eq '_>>E_['_`,_['W:OWrap,'WS1:OWrapSet],'WS2:OWrapSet] = '_>>=E_['WS1:OWrapSet,'filter['W:OWrap,'WS2:OWrapSet]] [owise] .)
+       (eq '_>=E_['W1:OWrap,'W2:OWrap] = '_or_['_==_['W1:OWrap,'W2:OWrap],'_>E_['W1:OWrap,'W2:OWrap]] [none] .)
+       (eq '_>>=E_['WS1:OWrapSet,'WS2:OWrapSet] = '_or_['_==_['WS1:OWrapSet,'WS2:OWrapSet],'_>>E_['WS1:OWrapSet,'WS2:OWrapSet]] [none] .)
+       (eq 'filter['W:OWrap,'empty.OWrapSet] = 'empty.OWrapSet [none] .)
+       (eq 'filter['W1:OWrap,'_`,_['W2:OWrap,'WS:OWrapSet]] = 'if_then_else_fi['_>E_['W1:OWrap,'W2:OWrap],'filter['W1:OWrap,'WS:OWrapSet],'_`,_['W2:OWrap,'filter['W1:OWrap,'WS:OWrapSet]]] [none] .)
+       (eq '_\_['_`,_['W:OWrap,'WS1:OWrapSet],'_`,_['W:OWrap,'WS2:OWrapSet]] = '_\_['WS1:OWrapSet,'WS2:OWrapSet] [none] .)
+       (eq '_\_['WS1:OWrapSet,'WS2:OWrapSet] = 'WS1:OWrapSet [owise] .)
+       (eq 'size['empty.OWrapSet] = '0.ONat [none] .)
+       (eq 'size['_`,_['W:OWrap,'WS1:OWrapSet]] = 's_['size['WS1:OWrapSet]] [none] .)
+       (eq '_>_['`(_`,_`)['WS1:OWrapSet,'N1:ONat],'`(_`,_`)['WS2:OWrapSet,'N2:ONat]] = '_and_['_==_['_\_['WS2:OWrapSet,'WS1:OWrapSet],'empty.OWrapSet],'_>_['_+_['size['_\_['WS1:OWrapSet,'WS2:OWrapSet]],'N1:ONat],'N2:ONat]] [none] .)
+       (eq '_>=_['`(_`,_`)['WS1:OWrapSet,'N1:ONat],'`(_`,_`)['WS2:OWrapSet,'N2:ONat]] = '_and_['_==_['_\_['WS2:OWrapSet,'WS1:OWrapSet],'empty.OWrapSet],'_>=_['_+_['size['_\_['WS1:OWrapSet,'WS2:OWrapSet]],'N1:ONat],'N2:ONat]] [none] .)
+       (eq '_>v_['W1:OWrap,'W2:OWrap] = '_>v_['wrapToTerm['W1:OWrap],'wrapToTerm['W2:OWrap]] [none] .)
+       aac-wrapEqs(processKinds(getEOpsByKind(fmod H is IL sorts SS . SDS ODS MAS EqS endfm, (none).KindOpDeclSetSet, ODS)))
+       aac-constrWrapEqs((nil).NatOpDeclList,sort(fromOpDeclSetToNatOpDeclList(addACOpDeclSet(ODS))))
+     endfm .
+endfm
+
+fmod AC-RPO is
+  pr AC-ORDER-COMPLETION .
+
+  var M : Module .
+  vars T T1 T2 T3 : Term .
+  var TType : Type .
+  var N : Nat .
+
+  --- T1 is greater than T2, false doesn't mean than T2 > T1
+  op _>AC{_}_ : Term Module Term -> Bool .
+  eq T1 >AC{M} T2 = if (getTerm(metaReduce(compWithOrd(M), '_>v_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then true else false fi .
+
+  --- T1 is greater than T2, false doesn't mean than T2 > T1
+  op _>=AC{_}_ : Term Module Term -> Bool .
+  eq T1 >=AC{M} T2 = if (getTerm(metaReduce(compWithOrd(M), '_>=v_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then true else false fi .
+
+  --- T1 is not greater or equal than T2
+  op _/>=AC{_}_ : Term Module Term -> Bool .
+  eq T1 />=AC{M} T2 = if (getTerm(metaReduce(compWithOrd(M), '_>=v_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then false else true fi .
+endfm
+
+fmod AAC-RPO is
+  pr AC-ORDER-COMPLETION .
+  pr AAC-ORDER-COMPLETION .
+
+  var M : Module .
+  vars T T1 T2 T3 : Term .
+  var TType : Type .
+  var N : Nat .
+
+  --- T1 is greater than T2, false doesn't mean than T2 > T1
+  op _>AAC{_}_ : Term Module Term -> Bool .
+  eq T1 >AAC{M} T2 = if (getTerm(metaReduce(aac-compWithOrd(M), '_>E_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then true else false fi .
+
+  --- T1 is greater than T2, false doesn't mean than T2 > T1
+  op _>=AAC{_}_ : Term Module Term -> Bool .
+  eq T1 >AAC{M} T2 = if (getTerm(metaReduce(aac-compWithOrd(M), '_>=E_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then true else false fi .
+
+  --- T1 is not greater or equal than T2
+  op _/>=AAC{_}_ : Term Module Term -> Bool .
+  eq T1 />=AAC{M} T2 = if (getTerm(metaReduce(aac-compWithOrd(M), '_>=v_['`[`[_`]`][T1],'`[`[_`]`][T2]])) == 'true.OBool) then false else true fi .
+endfm
+
+***(-----------------------------------------------------------------
+
+Module      :  acrpo-wrapper
+Stability   :  stable
+Portability :  portable 
+
+Wraps acrpo-code so that students can use it.
+
+---------------------------------------------------------------------)
+
+set include BOOL off .
+
+fmod RPO is
+  pr AC-RPO .
+  pr AAC-RPO .
+endfm
+
+fmod ACRPO-EXT is
+  --- the module TEST contains the code we wish use put an ordering on
+  --- the AAC-RPO module defines a term-ordering over symbols at the meta-level
+  --- NOTE: we rename these symbols so that user code will not clash with these symbols/definitions
+  pr TEST .
+  pr RPO * (--- sorts
+            sort Bool        to @#Bool#@,          sort Nat             to @#MyNat#@,
+            sort NzNat       to @#MyNzNat#@,       sort Zero            to @#MyZero#@, 
+            sort Int         to @#MyInt#@,         sort NzInt           to @#MyNzInt#@,
+            sort Rat         to @#MyRat#@,         sort PosRat          to @#MyPosRat#@,
+            sort NzRat       to @#MyNzRat#@,       sort Float           to @#MyFloat#@,
+            sort FiniteFloat to @#MyFiniteFloat#@, sort String          to @#MyString#@,
+            sort FindResult  to @#FindResult#@,    sort Char            to @#MyChar#@,        
+            sort Qid         to @#MyQid#@,                              
+            --- operators
+            op   true        to @#true#@,          op   false           to @#false#@,
+            op   _and_       to @#and#@,           op   _or_            to @#or#@,  
+            op   _xor_       to @#xor#@,           op   if_then_else_fi to @#if#@,  
+            op   _implies_   to @#implies#@,       op   not_            to @#not#@,  
+            op   _==_        to @#equal#@,         op   _=/=_           to @#unequal#@,
+            op   _and-then_  to @#andthen#@,       op   _or-else_       to @#or-else#@,
+            op   0           to @#zero#@,          op   s_              to @#succ#@,
+            op   _+_         to @#plus#@,          op   _*_             to @#times#@, 
+            op   _sd_        to @#sd#@,            op   _quo_           to @#quo#@, 
+            op   _rem_       to @#rem#@,           op   _^_             to @#exp#@, 
+            op   modExp      to @#modexp#@,        op   gcd             to @#gcd#@, 
+            op   lcm         to @#lcm#@,           op   min             to @#min#@, 
+            op   max         to @#max#@,           op   _&_             to @#&#@, 
+            op   _|_         to @#mod#@,           op   _>>_            to @#rightshft#@, 
+            op   _<<_        to @#leftshft#@,      op   _<_             to @#lt#@, 
+            op   _>_         to @#gt#@,            op   _<=_            to @#le#@, 
+            op   _>=_        to @#ge#@,            op   _divides_       to @#divides#@, 
+            op   -_          to @#negctor#@,       op   abs             to @#abs#@,
+            op   ~_          to @#negdef#@,        op   _/_             to @#div#@,
+            op   trunc       to @#trunc#@,         op   frac            to @#frac#@,
+            op   floor       to @#floor#@,         op   ceiling         to @#ceil#@,
+            op   sqrt        to @#sqrt#@,          op   exp             to @#floatexp#@,
+            op   log         to @#log#@,           op   sin             to @#sin#@,
+            op   cos         to @#cos#@,           op   tan             to @#tan#@,
+            op   asin        to @#asin#@,          op   acos            to @#acos#@,
+            op   atan        to @#atan#@,          op   pi              to @#pi#@,
+            op   char        to @#char#@,          op   length          to @#length#@,
+            op   substr      to @#substr#@,        op   find            to @#find#@,
+            op   rfind       to @#rfind#@,         op   float           to @#tofloat#@,
+            op   rat         to @#torat#@,         op   string          to @#tostr#@,
+            op   decFloat    to @#todecfloat#@,    op   qid             to @#toqid#@) .
+
+    --- operator definitions
+    op _>AC_  : U U -> @#Bool#@ .
+    op _>AvC_ : U U -> @#Bool#@ .
+    var U1 U2 : U .
+    eq U1 >AC  U2 = upTerm(U1) >AC {upModule('TEST,@#true#@)} upTerm(U2) .
+    eq U1 >AvC U2 = upTerm(U1) >AAC{upModule('TEST,@#true#@)} upTerm(U2) .
+endfm

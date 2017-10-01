@@ -1,0 +1,44 @@
+set include BOOL off .
+
+___ If you have a functional module, say foo.maude, that you want to prove terminating by
+--- RPO modulo axioms, this template should make it easy for you to EXTRACT from foo.maude
+--- its SIGNATURE part only, and annotate it with information defining an ordering on its symbols.
+
+---   To use this template, do the following:
+---   (0) copy this template to a new file name of your choosing;
+---       and then perform edits (1)-(3) on copied file
+---       ex. cp sig-template.maude sig-foo.maude
+
+fmod TEST is
+  --- (1) Include here all the sort and subsort declarations in foo.maude
+  ---
+  ---     ex. sorts A B C .
+  ---         subsorts A < B C .
+  
+  sorts   {sorts} . 
+  subsort {subsorts} .
+
+  --- (2) make each top sort of foo.maude a subsort of the universal sort U
+  --- declared below
+  ---
+  ---     ex . subsorts B C < U .
+  
+  sort U .
+  subsort {top-sorts} < U .
+
+  --- (3)  include here all operator declarations in foo.maude (including constants)
+  ---      for each such operator f, ADD to all f's declarations (in case it is subsort-overloaded)
+  ---      the SAME metadata declaration of the form:
+  ---             metadata "n"
+  ---      where n is a natural number of your choosing, so that if f and g are
+  ---      different symbols, the numbers n and m assigned to them are different.
+  ---      That will define an ordering on operators, with f > g iff n > m.  This will
+  ---      in turn define an RPO ordering on terms.
+  ___
+  ---     ex. op a : -> A [ctor metadata "1"] .
+  ---         op f : A A -> A [assoc comm metadata "2"] .
+  ---         op f : B B -> B [assoc comm metadata "2"] .
+  ---         op g : A A -> B [comm metadata "3"] .
+  
+  {ops} .
+endfm
