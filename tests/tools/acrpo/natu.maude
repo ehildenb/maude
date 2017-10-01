@@ -1,0 +1,39 @@
+set show timing off .
+
+fmod NATU is sort Natu .
+  op 0     : -> Natu [ctor] .
+  op s     : Natu -> Natu [ctor] .
+  op _+_   : Natu Natu -> Natu [comm] .
+  op _*_   : Natu Natu -> Natu .
+  op _^_   : Natu Natu -> Natu .
+
+  eq X:Natu + 0 = X:Natu .
+  eq X:Natu + s(Y:Natu) = s(X:Natu + Y:Natu) .
+  eq X:Natu * 0 = (0).Natu .
+  eq X:Natu * s(Y:Natu) = (X:Natu * Y:Natu) + X:Natu .
+  eq X:Natu ^ 0 = (s(0)).Natu .
+  eq X:Natu ^ s(Y:Natu) = X:Natu * (X:Natu ^ Y:Natu) .
+endfm
+
+set include BOOL off .
+
+--- NATU Signature
+fmod TEST is
+  sort Natu .
+  sort U . 
+  subsorts Natu < U .
+  op 0 : -> Natu [ctor metadata "1"] .
+  op s : Natu -> Natu [ctor metadata "2"] .
+  op _+_ : Natu Natu -> Natu [comm metadata "3"] .
+  op _*_ : Natu Natu -> Natu [metadata "4"] .
+  op _^_ : Natu Natu -> Natu [metadata "5"] .
+endfm
+
+load ../../../contrib/tools/acrpo/acrpo.maude
+
+red X:Natu + 0 >AC X:Natu .
+red X:Natu + s(Y:Natu) >AC s(X:Natu + Y:Natu) .
+red X:Natu * 0 >AC (0).Natu .
+red X:Natu * s(Y:Natu) >AC (X:Natu * Y:Natu) + X:Natu .
+red X:Natu ^ 0 >AC (s(0)).Natu .
+red X:Natu ^ s(Y:Natu) >AC X:Natu * (X:Natu ^ Y:Natu) .

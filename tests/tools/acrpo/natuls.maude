@@ -1,0 +1,75 @@
+set show timing off .
+
+fmod NATU-LS is sorts Natu NatuList  NatuSet .
+  subsorts Natu < NatuList  NatuSet .
+  op 0     : -> Natu [ctor] .
+  op mt    : -> NatuSet [ctor] .
+  op nil   : -> NatuList [ctor] .
+  op s     : Natu -> Natu [ctor] .
+  op _+_   : Natu Natu -> Natu [comm] .
+  op _*_   : Natu Natu -> Natu .
+  op _^_   : Natu Natu -> Natu .
+  op _,_   : NatuSet NatuSet -> NatuSet [ctor assoc comm] .
+  op __    : NatuList NatuList -> NatuList [ctor assoc] .
+  op length   : NatuList -> Natu .
+  op rev   : NatuList -> NatuList .
+  op list2set : NatuList -> NatuSet .
+
+  eq X:Natu + 0 = X:Natu .
+  eq X:Natu + s(Y:Natu) = s(X:Natu + Y:Natu) .
+  eq X:Natu * 0 = (0).Natu .
+  eq X:Natu * s(Y:Natu) = (X:Natu * Y:Natu) + X:Natu .
+  eq X:Natu ^ 0 = (s(0)).Natu .
+  eq S:NatuSet , S:NatuSet = S:NatuSet .
+  eq X:Natu ^ s(Y:Natu) = X:Natu * (X:Natu ^ Y:Natu) .
+  eq length((nil).NatuList) = (0).Natu .
+  eq length(X:Natu) = (s(0)).Natu .
+  eq length(X:Natu L:NatuList) = s(length(L:NatuList)) .
+  eq rev((nil).NatuList) = (nil).NatuList .
+  eq rev(X:Natu) = X:Natu .
+  eq rev(X:Natu L:NatuList) = rev(L:NatuList) X:Natu .
+  eq list2set((nil).NatuList) = (mt).NatuSet .
+  eq list2set(X:Natu) = X:Natu .
+  eq list2set(X:Natu L:NatuList) = X:Natu , list2set(L:NatuList) .
+endfm
+
+set include BOOL off .
+
+--- NATU-LS Signature
+fmod TEST is
+  sorts Natu NatuList NatuSet .
+  subsorts Natu < NatuList NatuSet .
+  sort U .
+  subsorts NatuList NatuSet < U .
+  op 0 : -> Natu [ctor metadata "1"] .
+  op mt : -> NatuSet [ctor metadata "2"] .
+  op nil : -> NatuList [ctor metadata "3"] .
+  op s : Natu -> Natu [ctor metadata "4"] .
+  op _+_ : Natu Natu -> Natu [comm metadata "5"] .
+  op _*_ : Natu Natu -> Natu [metadata "6"] .
+  op _^_ : Natu Natu -> Natu [metadata "7"] .
+  op _,_ : NatuSet NatuSet -> NatuSet [ctor assoc comm metadata "8"] .
+  op __ : NatuList NatuList -> NatuList [ctor assoc metadata "9"] .
+  op length : NatuList -> Natu [metadata "10"] .
+  op rev : NatuList -> NatuList [metadata "11"] .
+  op list2set : NatuList -> NatuSet [metadata "12"] .
+endfm
+
+load ../../../contrib/tools/acrpo/acrpo.maude
+
+red X:Natu + 0 >AvC X:Natu .
+red X:Natu + s(Y:Natu) >AvC s(X:Natu + Y:Natu) .
+red X:Natu * 0 >AvC (0).Natu .
+red X:Natu * s(Y:Natu) >AvC (X:Natu * Y:Natu) + X:Natu .
+red X:Natu ^ 0 >AvC (s(0)).Natu .
+red S:NatuSet , S:NatuSet >AvC S:NatuSet .
+red X:Natu ^ s(Y:Natu) >AvC X:Natu * (X:Natu ^ Y:Natu) .
+red length((nil).NatuList) >AvC (0).Natu .
+red length(X:Natu) >AvC (s(0)).Natu .
+red length(X:Natu L:NatuList) >AvC s(length(L:NatuList)) .
+red rev((nil).NatuList) >AvC (nil).NatuList .
+red rev(X:Natu) >AvC X:Natu .
+red rev(X:Natu L:NatuList) >AvC rev(L:NatuList) X:Natu .
+red list2set((nil).NatuList) >AvC (mt).NatuSet .
+red list2set(X:Natu) >AvC X:Natu .
+red list2set(X:Natu L:NatuList) >AvC X:Natu , list2set(L:NatuList) .

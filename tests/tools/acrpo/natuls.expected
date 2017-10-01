@@ -1,0 +1,66 @@
+==========================================
+reduce in ACRPO-EXT : (0 + X:Natu) >AvC X:Natu .
+rewrites: 28061
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu + s(Y:Natu)) >AvC s(X:Natu + Y:Natu) .
+rewrites: 347
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu * 0) >AvC 0 .
+rewrites: 59
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu * s(Y:Natu)) >AvC (X:Natu + (X:Natu * Y:Natu)) .
+rewrites: 294
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu ^ 0) >AvC s(0) .
+rewrites: 97
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (S:NatuSet,S:NatuSet) >AvC S:NatuSet .
+rewrites: 50
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu ^ s(Y:Natu)) >AvC (X:Natu * (X:Natu ^ Y:Natu)) .
+rewrites: 291
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : length(nil) >AvC 0 .
+rewrites: 43
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : length(X:Natu) >AvC s(0) .
+rewrites: 61
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : length(X:Natu L:NatuList) >AvC s(length(L:NatuList)) .
+rewrites: 250
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : rev(nil) >AvC nil .
+rewrites: 45
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : rev(X:Natu) >AvC X:Natu .
+rewrites: 33
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : rev(X:Natu L:NatuList) >AvC rev(L:NatuList) X:Natu .
+rewrites: 341
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : list2set(nil) >AvC mt .
+rewrites: 43
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : list2set(X:Natu) >AvC X:Natu .
+rewrites: 33
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : list2set(X:Natu L:NatuList) >AvC X:Natu,list2set(
+    L:NatuList) .
+rewrites: 333
+result @#Bool#@: @#true#@
+Bye.

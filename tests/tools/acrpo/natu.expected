@@ -1,0 +1,25 @@
+==========================================
+reduce in ACRPO-EXT : (0 + X:Natu) >AC X:Natu .
+rewrites: 3123
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu + s(Y:Natu)) >AC s(X:Natu + Y:Natu) .
+rewrites: 332
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu * 0) >AC 0 .
+rewrites: 54
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu * s(Y:Natu)) >AC (X:Natu + (X:Natu * Y:Natu)) .
+rewrites: 284
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu ^ 0) >AC s(0) .
+rewrites: 91
+result @#Bool#@: @#true#@
+==========================================
+reduce in ACRPO-EXT : (X:Natu ^ s(Y:Natu)) >AC (X:Natu * (X:Natu ^ Y:Natu)) .
+rewrites: 281
+result @#Bool#@: @#true#@
+Bye.
