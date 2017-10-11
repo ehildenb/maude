@@ -2,11 +2,14 @@ set show timing off .
 
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
+--- Testing Harness GRAPH-FOLDING-SEARCH-TEST1
+--- ==========================================
+
 fmod GRAPH-FOLDING-SEARCH-TEST1 is
     extending GRAPH-FOLDING-SEARCH .
 
     ops A B C D E F G : -> State .
-    ops x y z : -> Step .
+    ops x y z : -> Label .
 
     op < : -> Fold .
 
@@ -22,16 +25,51 @@ fmod GRAPH-FOLDING-SEARCH-TEST1 is
     eq step(G) = < y , D > .
 endfm
 
-reduce bfs(A, 4) .
-reduce bfs(A, 5) .
-reduce bfs(A, 6) .
-reduce bfs(A, 7) .
+--- Test Module LABELLED-GRAPH
+--- --------------------------
+
+reduce (A -[x]-> B B -[y]-> C C -[z]-> D) :: NeLGraph .
+
+reduce < x , A > , < y , B > , < x , A > == < y , B > , < x , A > .
+
+reduce B -> < x , A >             == B -[ x ]-> A .
+reduce B -> < x , A > , < y , D > == (B -[ x ]-> A B -[ y ]-> D) .
+
+--- Test Module GRAPH-FOLDING-SEARCH
+--- --------------------------------
+
+reduce fold(A, A) == id .
+
+reduce step(3 [ F:Fold ]) == .TransitionSet .
+reduce step(E) == < x , E > .
+reduce step(D) == < z , G > , < y , C > .
+
+--- Non-deterministic because _,_ is commutative.
+reduce [ 0 : A -> < x , B > , < y , D > ] == ([ 0 : A -[ y ]-> D ] , [ 0 : A -[ x ]-> B ]) .
+
+reduce (3 |-> E , [ 2 : B -[x]-> C ]) == ([ 3 : B -[x]-> C        ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : B -[x]-> D ]) == ([ 3 : B -[x]-> 3[<]     ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : E -[x]-> C ]) == ([ 3 : 3[id] -[x]-> C    ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : E -[x]-> D ]) == ([ 2 : 3[id] -[x]-> 3[<] ] , 3 |-> E) .
+
+--- Non-deterministic because __ is commutative.
+reduce (4 |-> A, 3 |-> B , [ 0 : A -[x]-> B A -[y]-> D A -[z]-> D ])
+    == (4 |-> A, 3 |-> B , [ 0 : A -[z]-> D ] , [ 0 : A -[y]-> D ] , [ 0 : A -[x]-> B ]) .
+
+reduce (.LGraph | [ 3 : 3[id] -[x]-> 4[id] ]           | .Frontier) == (3[id] -[x]-> 4[id] | .Environment      | .Frontier) .
+reduce (.LGraph | [ 3 : 3[id] -[x]-> A     ] , 3 |-> B | .Frontier) == (3[id] -[x]-> 4[id] | 4 |-> A , 3 |-> B | A) .
+
+eof
+
+reduce bfs(B) .
+reduce bfs(C) .
+reduce bfs(D) .
 
 fmod GRAPH-FOLDING-SEARCH-TEST2 is
     extending GRAPH-FOLDING-SEARCH .
 
     ops A B C D E F G : -> State .
-    ops x y z : -> Step .
+    ops x y z : -> Label .
 
     op < : -> Fold .
 
@@ -47,11 +85,11 @@ fmod GRAPH-FOLDING-SEARCH-TEST2 is
     eq step(G) = < y , E > .
 endfm
 
-reduce bfs(B, 1) .
-reduce bfs(B, 2) .
-reduce bfs(B, 3) .
-reduce bfs(B, 4) .
-reduce bfs(B, 5) .
-reduce bfs(B, 6) .
-reduce bfs(B, 7) .
-reduce bfs(C, 4) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(B) .
+reduce bfs(C) .

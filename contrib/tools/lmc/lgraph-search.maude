@@ -2,8 +2,8 @@ set include BOOL off .
 
 fmod LABELLED-GRAPH is
 
-    sorts State .
-    -------------
+    sort State .
+    ------------
     vars S S' : State .
 
     sorts Label LEdge NeLGraph LGraph .
@@ -12,8 +12,9 @@ fmod LABELLED-GRAPH is
     var L : Label . var NeLG : NeLGraph .
 
     op .LGraph : -> LGraph .
-    op __      : LGraph LGraph -> LGraph [assoc comm id: .LGraph prec 55 format(d n d)] .
-    -------------------------------------------------------------------------------------
+    op __      :   LGraph LGraph ->   LGraph [assoc comm id: .LGraph prec 55 format(d n d)] .
+    op __      : NeLGraph LGraph -> NeLGraph [ditto] .
+    --------------------------------------------------
     eq NeLG NeLG = NeLG .
 
     op _-[_]->_ : State Label State -> LEdge [prec 50] .
@@ -22,7 +23,7 @@ fmod LABELLED-GRAPH is
     sorts Transition NeTransitionSet TransitionSet .
     subsorts Transition < NeTransitionSet < TransitionSet .
     -------------------------------------------------------
-    var TS : TransitionSet . var NeTS : NeTransitionSet .
+    var TS : TransitionSet . vars NeTS NeTS' : NeTransitionSet .
 
     op .TransitionSet : -> TransitionSet .
     op _,_ :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
@@ -33,49 +34,52 @@ fmod LABELLED-GRAPH is
     op <_,_> : Label State -> Transition .
     op _->_ : State TransitionSet -> LGraph [prec 50] .
     ---------------------------------------------------
-    eq S -> < L , S' >  = S -[ L ]-> S' .
-    eq S -> NeTS , NeTS = S -> NeTS S -> NeTS .
+    eq S -> .TransitionSet = .LGraph .
+    eq S -> < L , S' >     = S -[ L ]-> S' .
+    eq S -> NeTS , NeTS'   = S -> NeTS S -> NeTS' .
 endfm
 
 fmod GRAPH-FOLDING-SEARCH is
     protecting INT .
     extending LABELLED-GRAPH .
 
-    vars N N' : Nat . vars S S' S'' : State . var FT : Frontier .
-    var L : Label . var LE : LEdge . var LG : LGraph . vars NeLG NeLG' : NeLGraph .
+    vars N N' N'' : Nat . vars S S' S'' : State . var L : Label .
+    var LE : LEdge . var LG : LGraph . vars NeLG NeLG' : NeLGraph .
 
-    sorts Fold Step .
-    -----------------
-    var F : Fold .
+    sorts Fold FState .
+    subsort FState < State .
+    ------------------------
+    vars F F' : Fold . vars FS FS' : FState .
 
-    op _[_]  : Nat Fold  -> State .
-    -------------------------------------
+    op _[_] : Nat Fold  -> FState .
+    -------------------------------
 
+    op id : -> Fold .
     op fold : State State -> [Fold] .
+    ---------------------------------
+    eq fold(S, S) = id .
+
     op step : State -> [TransitionSet] .
     ------------------------------------
-    eq step(N [ F ]) = .TransitionSet .
+    eq step(FS) = .TransitionSet .
 
     sorts NeFrontier Frontier .
     subsort State < NeFrontier < Frontier .
     ---------------------------------------
+    var FT : Frontier .
 
     op .Frontier : -> Frontier .
-    op _,_        : Frontier   Frontier -> Frontier   [assoc id: .Frontier prec 45] .
-    op _,_        : NeFrontier Frontier -> NeFrontier [ditto] .
-    -----------------------------------------------------------
+    op _,_       : Frontier   Frontier -> Frontier   [assoc id: .Frontier prec 45] .
+    op _,_       : NeFrontier Frontier -> NeFrontier [ditto] .
+    ----------------------------------------------------------
 
     sorts NeEnvironment Environment .
     subsort NeEnvironment < Environment .
     -------------------------------------
     var ENV : Environment . var NeENV : NeEnvironment .
 
-    op _|->_ : Nat State    -> NeEnvironment [prec 55] .
-    op _:_   : Nat NeLGraph -> NeEnvironment [prec 55] .
-    op _:_   : Nat   LGraph ->   Environment [ditto] .
-    ------------------------------------------------
-    eq N : .LGraph    = .Environment .
-    eq N : NeLG NeLG' = N : NeLG , N : NeLG' .
+    op _|->_ : Nat State -> NeEnvironment [prec 55] .
+    -------------------------------------------------
 
     op .Environment : -> Environment .
     op _,_ :   Environment Environment ->   Environment [assoc id: .Environment prec 60] .
@@ -83,19 +87,28 @@ fmod GRAPH-FOLDING-SEARCH is
     -------------------------------------------------------------
     eq NeENV , NeENV = NeENV .
 
-   ceq (N |-> S) , N' : (S' -[ L ]-> S'') = N' : S' -[ L ]-> N [ F ] , N |-> S if F := fold(S'', S) .
-    eq (N |-> S) , N' : LE                = max(N, N') : LE , N |-> S          [owise] .
+    op [_:_] : Nat LGraph -> Environment .
+    --------------------------------------
+    eq [ N : .LGraph ]    = .Environment .
+    eq [ N : NeLG NeLG' ] = [ N : NeLG ] , [ N : NeLG' ] .
+
+    eq N |-> S , [ N' : LE ] = [ max(N, N') : LE ] , N |-> S [owise] .
+
+    eq NeENV , [ N : FS -[L]-> FS' ] = [ N : FS -[L]-> FS' ] , NeENV .
+
+    eq N |-> S , [ N' : (S  -[ L ]-> S')  ] = N |-> S , [ N' : N[id] -[ L ]-> S'    ] .
+    eq N |-> S , [ N' : (S' -[ L ]-> S)   ] = N |-> S , [ N' : S'    -[ L ]-> N[id] ] .
+   ceq N |-> S , [ N' : (S' -[ L ]-> S'') ] = N |-> S , [ N' : S'    -[ L ]-> N[F]  ] if F := fold(S'', S) .
 
     sort BFS .
     ----------
 
     op _|_|_ : LGraph Environment Frontier -> BFS [prec 70] .
     ---------------------------------------------------------
-    eq LG | ENV                    | S , FT
-     = LG | ENV , 0 : S -> step(S) | FT .
+    eq LG | ENV | S , FT = LG | ENV , [ 0 : S -> step(S) ] | FT .
 
-    eq LG               | N : S -[ L ]-> S' , ENV | FT 
-     = LG S -[ L ]-> S' |                     ENV | FT , S' .
+    eq LG | [ N'' : FS -[L]-> FS' ] , ENV | FT = LG FS -[L]-> FS'         |               ENV | FT .
+    eq LG | [ N'' : FS -[L]-> S   ] , ENV | FT = LG FS -[L]-> (s N'')[id] | s N'' |-> S , ENV | FT , S [owise] .
 
     op bfs : State -> BFS .
     -----------------------
