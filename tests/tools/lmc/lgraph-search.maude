@@ -38,7 +38,7 @@ reduce B -> < x , A > , < y , D > == (B -[ x ]-> A B -[ y ]-> D) .
 --- Test Module GRAPH-FOLDING-SEARCH
 --- --------------------------------
 
-reduce fold(A, A) == id .
+reduce fold(A, A) == .Fold .
 
 reduce step(3 [ F:Fold ]) == .TransitionSet .
 reduce step(E) == < x , E > .
@@ -47,49 +47,80 @@ reduce step(D) == < z , G > , < y , C > .
 --- Non-deterministic because _,_ is commutative.
 reduce [ 0 : A -> < x , B > , < y , D > ] == ([ 0 : A -[ y ]-> D ] , [ 0 : A -[ x ]-> B ]) .
 
-reduce (3 |-> E , [ 2 : B -[x]-> C ]) == ([ 3 : B -[x]-> C        ] , 3 |-> E) .
-reduce (3 |-> E , [ 2 : B -[x]-> D ]) == ([ 3 : B -[x]-> 3[<]     ] , 3 |-> E) .
-reduce (3 |-> E , [ 2 : E -[x]-> C ]) == ([ 3 : 3[id] -[x]-> C    ] , 3 |-> E) .
-reduce (3 |-> E , [ 2 : E -[x]-> D ]) == ([ 2 : 3[id] -[x]-> 3[<] ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : B -[x]-> C ]) == ([ 3 : B -[x]-> C    ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : B -[x]-> D ]) == ([ 3 : B -[x]-> 3[<] ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : E -[x]-> C ]) == ([ 3 : 3 -[x]-> C    ] , 3 |-> E) .
+reduce (3 |-> E , [ 2 : E -[x]-> D ]) == ([ 2 : 3 -[x]-> 3[<] ] , 3 |-> E) .
 
 --- Non-deterministic because __ is commutative.
 reduce (4 |-> A, 3 |-> B , [ 0 : A -[x]-> B A -[y]-> D A -[z]-> D ])
     == (4 |-> A, 3 |-> B , [ 0 : A -[z]-> D ] , [ 0 : A -[y]-> D ] , [ 0 : A -[x]-> B ]) .
 
-reduce (.LGraph | [ 3 : 3[id] -[x]-> 4[id] ]           | .Frontier) == (3[id] -[x]-> 4[id] | .Environment      | .Frontier) .
-reduce (.LGraph | [ 3 : 3[id] -[x]-> A     ] , 3 |-> B | .Frontier) == (3[id] -[x]-> 4[id] | 4 |-> A , 3 |-> B | A) .
+reduce (          0 |-> E , [ 0 : B -[x]-> D ]) == ([0 : B -[x]-> 0[<]]           , 0 |-> E) .
+reduce (1 |-> B , 0 |-> E , [ 0 : B -[x]-> D ]) == ([0 : 1 -[x]-> 0[<]] , 1 |-> B , 0 |-> E) .
+reduce (1 |-> B , 0 |-> E , [ 0 : F -[x]-> F ]) == ([1 : F -[x]-> F]    , 1 |-> B , 0 |-> E) .
+
+reduce (.LGraph        |           0 |-> E , [ 0 : B -[x]-> D ] | .Frontier)
+    == ( 1 -[x]-> 0[<] | 1 |-> B , 0 |-> E                      | .Frontier) .
+
+reduce (.LGraph     |                     0 |-> E , [ 0 : B -[x]-> F ] | .Frontier)
+    == ( 1 -[x]-> 2 | 2 |-> F , 1 |-> B , 0 |-> E                      | F) .
+
+reduce (.LGraph                |                     0 |-> E , [ 0 : B -[x]-> F ] | .Frontier)
+    == ( 1 -[x]-> 2 2 -[x]-> 0 | 2 |-> F , 1 |-> B , 0 |-> E                      | .Frontier) .
+
+reduce bfs(A)
+    == ( 1 -[y]-> 2
+         1 -[z]-> 2
+         1 -[x]-> 3
+         2 -[z]-> 4
+         2 -[y]-> 5
+         3 -[y]-> 3
+         4 -[y]-> 2
+         5 -[x]-> 1
+       | 5 |-> C , 4 |-> G , 3 |-> B , 2 |-> D , 1 |-> A
+       | .Frontier
+       ) .
+
+reduce bfs(C)
+    == ( 1 -[x]-> 2
+         2 -[x]-> 1[<]
+         2 -[y]-> 3
+         2 -[z]-> 3
+         3 -[y]-> 1
+         3 -[z]-> 4
+         4 -[y]-> 3
+       | 4 |-> G , 3 |-> D , 2 |-> A , 1 |-> C
+       | .Frontier
+       ) .
 
 eof
 
-reduce bfs(B) .
-reduce bfs(C) .
-reduce bfs(D) .
-
-fmod GRAPH-FOLDING-SEARCH-TEST2 is
-    extending GRAPH-FOLDING-SEARCH .
-
-    ops A B C D E F G : -> State .
-    ops x y z : -> Label .
-
-    op < : -> Fold .
-
-    eq fold(F, E) = < .
-    eq fold(G, F) = < .
-
-    eq step(A) = < y , C > .
-    eq step(B) = < x , A > , < y , D > .
-    eq step(C) = < x , E > , < z , G > , < y , F > .
-    eq step(D) = < x , F > , < y , C > , < z , A > .
-    eq step(E) = .TransitionSet .
-    eq step(F) = .TransitionSet .
-    eq step(G) = < y , E > .
-endfm
-
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(B) .
-reduce bfs(C) .
+--- fmod GRAPH-FOLDING-SEARCH-TEST2 is
+---     extending GRAPH-FOLDING-SEARCH .
+---
+---     ops A B C D E F G : -> State .
+---     ops x y z : -> Label .
+---
+---     op < : -> Fold .
+---
+---     eq fold(F, E) = < .
+---     eq fold(G, F) = < .
+---
+---     eq step(A) = < y , C > .
+---     eq step(B) = < x , A > , < y , D > .
+---     eq step(C) = < x , E > , < z , G > , < y , F > .
+---     eq step(D) = < x , F > , < y , C > , < z , A > .
+---     eq step(E) = .TransitionSet .
+---     eq step(F) = .TransitionSet .
+---     eq step(G) = < y , E > .
+--- endfm
+---
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(B) .
+--- reduce bfs(C) .

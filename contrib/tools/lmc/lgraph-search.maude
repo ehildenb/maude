@@ -2,9 +2,9 @@ set include BOOL off .
 
 fmod LABELLED-GRAPH is
 
-    sort State .
-    ------------
-    vars S S' : State .
+    sort Node .
+    -----------
+    vars N N' : Node .
 
     sorts Label LEdge NeLGraph LGraph .
     subsorts LEdge < NeLGraph < LGraph .
@@ -17,8 +17,8 @@ fmod LABELLED-GRAPH is
     --------------------------------------------------
     eq NeLG NeLG = NeLG .
 
-    op _-[_]->_ : State Label State -> LEdge [prec 50] .
-    ----------------------------------------------------
+    op _-[_]->_ : Node Label Node -> LEdge [prec 50] .
+    --------------------------------------------------
 
     sorts Transition NeTransitionSet TransitionSet .
     subsorts Transition < NeTransitionSet < TransitionSet .
@@ -31,40 +31,41 @@ fmod LABELLED-GRAPH is
     -------------------------------------------------------------------
     eq NeTS , NeTS = NeTS .
 
-    op <_,_> : Label State -> Transition .
-    op _->_ : State TransitionSet -> LGraph [prec 50] .
+    op <_,_> : Label Node -> Transition .
+    op _->_  : Node TransitionSet -> LGraph [prec 50] .
     ---------------------------------------------------
-    eq S -> .TransitionSet = .LGraph .
-    eq S -> < L , S' >     = S -[ L ]-> S' .
-    eq S -> NeTS , NeTS'   = S -> NeTS S -> NeTS' .
+    eq N -> .TransitionSet = .LGraph .
+    eq N -> < L , N' >     = N -[ L ]-> N' .
+    eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
 endfm
 
 fmod GRAPH-FOLDING-SEARCH is
     protecting INT .
     extending LABELLED-GRAPH .
 
-    vars N N' N'' : Nat . vars S S' S'' : State . var L : Label .
+    vars N N' N'' : Nat . var ND : Node . var L : Label .
     var LE : LEdge . var LG : LGraph . vars NeLG NeLG' : NeLGraph .
 
-    sorts Fold FState .
-    subsort FState < State .
-    ------------------------
-    vars F F' : Fold . vars FS FS' : FState .
+    sorts Fold State FState .
+    subsort Nat < FState .
+    subsort State FState < Node .
+    -----------------------------
+    vars F F' : Fold . vars S S' : State . vars FS FS' : FState .
 
-    op _[_] : Nat Fold  -> FState .
-    -------------------------------
+    op _[_] : Nat Fold -> FState [right id: .Fold] .
+    ------------------------------------------------
 
-    op id : -> Fold .
+    op .Fold : -> Fold .
     op fold : State State -> [Fold] .
     ---------------------------------
-    eq fold(S, S) = id .
+    eq fold(S, S) = .Fold .
 
     op step : State -> [TransitionSet] .
     ------------------------------------
     eq step(FS) = .TransitionSet .
 
     sorts NeFrontier Frontier .
-    subsort State < NeFrontier < Frontier .
+    subsorts Node < NeFrontier < Frontier .
     ---------------------------------------
     var FT : Frontier .
 
@@ -96,9 +97,8 @@ fmod GRAPH-FOLDING-SEARCH is
 
     eq NeENV , [ N : FS -[L]-> FS' ] = [ N : FS -[L]-> FS' ] , NeENV .
 
-    eq N |-> S , [ N' : (S  -[ L ]-> S')  ] = N |-> S , [ N' : N[id] -[ L ]-> S'    ] .
-    eq N |-> S , [ N' : (S' -[ L ]-> S)   ] = N |-> S , [ N' : S'    -[ L ]-> N[id] ] .
-   ceq N |-> S , [ N' : (S' -[ L ]-> S'') ] = N |-> S , [ N' : S'    -[ L ]-> N[F]  ] if F := fold(S'', S) .
+    eq N |-> S , [ N' : (S  -[ L ]-> ND) ] = N |-> S , [ N' : N  -[ L ]-> ND   ] .
+   ceq N |-> S , [ N' : (ND -[ L ]-> S') ] = N |-> S , [ N' : ND -[ L ]-> N[F] ] if F := fold(S', S) .
 
     sort BFS .
     ----------
@@ -107,48 +107,16 @@ fmod GRAPH-FOLDING-SEARCH is
     ---------------------------------------------------------
     eq LG | ENV | S , FT = LG | ENV , [ 0 : S -> step(S) ] | FT .
 
-    eq LG | [ N'' : FS -[L]-> FS' ] , ENV | FT = LG FS -[L]-> FS'         |               ENV | FT .
-    eq LG | [ N'' : FS -[L]-> S   ] , ENV | FT = LG FS -[L]-> (s N'')[id] | s N'' |-> S , ENV | FT , S [owise] .
+    eq LG | [   N :   S -[L]-> ND ]             , ENV | FT
+     = LG | [ s N : s N -[L]-> ND ] , s N |-> S , ENV | FT .
+
+    eq LG               | [ N : FS -[L]-> FS' ] , ENV | FT
+     = LG FS -[L]-> FS' |                         ENV | FT .
+
+    eq LG               | [ N : FS -[L]-> S ] , ENV | FT
+     = LG FS -[L]-> s N | s N |-> S           , ENV | FT , S .
 
     op bfs : State -> BFS .
     -----------------------
     eq bfs(S) = .LGraph | .Environment | S .
-
---- ;    op {_|_} : LGraph Environment -> BFS .
---- ;    --------------------------------------
---- ;    eq { LG N -[ L ]-> N' | ENV N |-> S }
---- ;     = { LG S -[ L ]-> N' | ENV N |-> S } .
---- ;
---- ;    eq { LG N -[ L ]-> N' | ENV N' |-> S }
---- ;     = { LG N -[ L ]-> S  | ENV N' |-> S } .
---- ;
---- ;    eq { LG | ENV } = LG [owise] .
---- ;
---- ;    op [_|_|_|_] : LGraph NodeList Environment Nat -> BFS .
---- ;    op {_|_|_|_} : LGraph NodeList Environment Nat -> BFS .
---- ;    -------------------------------------------------------
---- ;   ceq [ LG                | N , NL | (N |-> S) (N' |-> S') ENV | M? ]
---- ;     = [ LG N -[ FL ]-> N' |     NL | (N |-> S) (N' |-> S') ENV | M? ]
---- ;    if FL := fold(S, S') .
---- ;
---- ;    eq [ LG | NL | ENV | M? ] = { LG | NL | ENV | M? } [owise] .
---- ;
---- ;    eq { LG | .NodeList | ENV | M? } = { LG | ENV } .
---- ;
---- ;    op {_|_:_|_|_|_} : LGraph Node TransitionSet NodeList Environment Nat -> BFS .
---- ;    ------------------------------------------------------------------------------
---- ;    eq { LG | N : .TransitionSet | NL | ENV | M? } = [ LG | NL | ENV | M? ] .
---- ;
---- ;    eq { LG               | N , NL | ENV N |-> S | M? }
---- ;     = { LG | N : step(S) |     NL | ENV N |-> S | M? } .
---- ;
---- ;    eq { LG                | N : TS , < SL , S > | NL | ENV N' |-> S | M? }
---- ;     = { LG N -[ SL ]-> N' | N : TS              | NL | ENV N' |-> S | M? } .
---- ;
---- ;    eq { LG               | N : TS , < SL , S > | NL     | ENV         | M     }
---- ;     = { LG N -[ SL ]-> M | N : TS              | NL , M | ENV M |-> S | M - 1 } [owise] .
---- ;
---- ;    op bfs : State NzNat -> BFS .
---- ;    -----------------------------
---- ;    eq bfs(S, M) = { .LGraph | M | M |-> S | M - 1 } .
 endfm
