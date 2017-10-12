@@ -50,7 +50,7 @@ fmod GRAPH-FOLDING-SEARCH is
     subsort Nat < FState .
     subsort State FState < Node .
     -----------------------------
-    vars F F' : Fold . vars S S' : State . vars FS FS' : FState .
+    vars F F' : Fold . var F? : [Fold] . vars S S' : State . vars FS FS' : FState .
 
     op _[_] : Nat Fold -> FState [right id: .Fold] .
     ------------------------------------------------
@@ -77,7 +77,7 @@ fmod GRAPH-FOLDING-SEARCH is
     sorts NeEnvironment Environment .
     subsort NeEnvironment < Environment .
     -------------------------------------
-    var ENV : Environment . var NeENV : NeEnvironment .
+    vars ENV ENV' : Environment . var NeENV : NeEnvironment .
 
     op _|->_ : Nat State -> NeEnvironment [prec 55] .
     -------------------------------------------------
@@ -87,6 +87,19 @@ fmod GRAPH-FOLDING-SEARCH is
     op _,_ : NeEnvironment Environment -> NeEnvironment [ditto] .
     -------------------------------------------------------------
     eq NeENV , NeENV = NeENV .
+
+    op  insertState : State Environment             -> [Environment] .
+    op #insertState : State Environment Environment -> [Environment] .
+    op {_,_}        : Node  Environment             -> [Environment] .
+    ------------------------------------------------------------------
+    eq insertState(S, ENV) = #insertState(S, .Environment, ENV) .
+
+    eq #insertState(S, ENV, .Environment)  = { S , ENV } .
+   ceq #insertState(S, ENV, (N |-> S' , ENV')) = if (F? :: Fold)
+                                                    then { N[F?] , (ENV , N |-> S' , ENV') }
+                                                    else #insertState(S, (ENV , N |-> S'), ENV')
+                                                 fi
+                                              if F? := fold(S,S') .
 
     op [_:_] : Nat LGraph -> Environment .
     --------------------------------------
