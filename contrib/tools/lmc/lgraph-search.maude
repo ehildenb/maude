@@ -103,7 +103,7 @@ fmod GRAPH-FOLDING-SEARCH is
 
     op [_:_] : Nat LGraph -> Environment .
     --------------------------------------
-    eq [ N : .LGraph ]    = .Environment .
+    eq [ N : .LGraph    ] = .Environment .
     eq [ N : NeLG NeLG' ] = [ N : NeLG ] , [ N : NeLG' ] .
 
     eq N |-> S , [ N' : LE ] = [ max(N, N') : LE ] , N |-> S [owise] .
