@@ -1,0 +1,54 @@
+load ../../../contrib/tools/itp/itp-tool.maude
+load ../../../contrib/systems/data-structures/stack.maude
+
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- If a stack is non empty, then after popping its top element we always obtain a stack.
+
+--- ITP:
+(goal pop : STACK |- A{S:Stack?}
+      (((S:Stack?): NeStack) => ((pop(S:Stack?)): Stack)) .)
+
+---------
+--- goal: pop 
+---------
+(ind on S:Stack? .)
+(auto .) 
+
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+----If we push the element at top of a non empty stack S 
+--- on the stack that results from S after popping its top element, 
+--- we always obtain the same stack S.
+
+--- ITP:
+(goal push-top-pop : STACK |- A{S:Stack?}
+      (((S:Stack?): NeStack) =>
+       ((push(top(S:Stack?),pop(S:Stack?))) = (S:Stack?))) .)
+
+---------
+--- goal: push-top-pop 
+---------
+(ind on S:Stack? .)
+(auto .) 
+
+select ITP-TOOL .
+loop init-itp .
+
+--- English:
+--- If a stack is non empty, then it always has a top element.
+
+
+--- ITP:
+(goal top : STACK |- A{S:Stack?}
+      (((S:Stack?): NeStack) => ((top(S:Stack?)): Int)) .)
+
+---------
+--- goal: top 
+---------
+(ind on S:Stack? .)
+(auto .) 

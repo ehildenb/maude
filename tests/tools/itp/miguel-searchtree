@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAUDE_LIB=$srcdir/../../../src/Main
+export MAUDE_LIB
+
+../../../src/Main/maude \
+  < miguel-searchtree.maude -no-banner -no-advise \
+  > miguel-searchtree.out 2>&1
+
+diff miguel-searchtree.expected miguel-searchtree.out > /dev/null 2>&1

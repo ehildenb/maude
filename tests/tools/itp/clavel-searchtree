@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAUDE_LIB=$srcdir/../../../src/Main
+export MAUDE_LIB
+
+../../../src/Main/maude \
+  < clavel-searchtree.maude -no-banner -no-advise \
+  > clavel-searchtree.out 2>&1
+
+diff clavel-searchtree.expected clavel-searchtree.out > /dev/null 2>&1
