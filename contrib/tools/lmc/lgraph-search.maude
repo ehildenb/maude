@@ -101,9 +101,8 @@ fmod GRAPH-FOLDING-SEARCH is
 
     op _|_|_|_ : LGraph Environment Nat Frontier -> BFS [prec 70] .
     ---------------------------------------------------------------
-   ceq LG | ENV | N | .LGraph [ D  ] NeLG
-     = LG | ENV | N | NeLG    [ D' ] .LGraph
-    if D' := continue(D) .
+    eq LG | ENV | N | .LGraph [ D           ] NeLG
+     = LG | ENV | N | NeLG    [ continue(D) ] .LGraph .
 
    ceq LG               | ENV  |   N | ND -[L]-> S' LG' [ D ] LG''
      = LG ND -[L]-> ND' | ENV' | s N |              LG' [ D ] LG'' LG'''
