@@ -15,6 +15,7 @@
 #include "higher.hh"
 #include "strategyLanguage.hh"
 #include "mixfix.hh"
+#include <memory>
 
 // interface class definitions
 #include "symbol.hh"

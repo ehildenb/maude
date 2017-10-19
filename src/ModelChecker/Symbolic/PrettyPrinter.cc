@@ -5,6 +5,8 @@
  *      Author: kquine
  */
 
+#include <memory>
+
 //      utility stuff
 #include "macros.hh"
 #include "vector.hh"
