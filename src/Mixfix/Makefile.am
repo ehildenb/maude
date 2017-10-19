@@ -29,7 +29,8 @@ libmixfix_a_CPPFLAGS = \
 	-I$(top_srcdir)/src/3rdParty \
 	-I$(top_srcdir)/src/FullCompiler \
 	-I$(top_srcdir)/src/StrategyLanguage \
-	-I$(top_srcdir)/src/SMT
+	-I$(top_srcdir)/src/SMT \
+	-I$(top_srcdir)/src/ModelChecker
 
 libmixfix_a_SOURCES = \
 	syntaxContainer.cc \

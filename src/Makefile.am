@@ -23,4 +23,5 @@ SUBDIRS = \
 	StrategyLanguage \
 	Mixfix \
 	SMT \
+	ModelChecker \
 	Main
