@@ -1,4 +1,4 @@
-Maude> ==========================================
+==========================================
 reduce in BRP-CHECK : modelCheck(< idle,false,nil,nil,false,wait >, [](req ->
     <> sok)) .
 ModelChecker: a system graph may compute state and event propositions..
@@ -31,4 +31,4 @@ ModelChecker: Use the NDFS algorithm with a Buchi automaton (9 states).
 ModelChecker: Examined 122 system states and 341 transitions.
 rewrites: 1258
 result Bool: true
-Maude> Bye.
+Bye.

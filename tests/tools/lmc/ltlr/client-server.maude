@@ -27,11 +27,11 @@ mod CLIENT-SERVER is
 
   vars C S I J : Oid .  vars N M : Nat .
 
-  rl [req]  : [C,S,N,nil] 
+  rl [req]  : [C,S,N,nil]
            => [C,S,N,nil] S <-{C,N} [metadata "just(C)"] .
-  rl [reply]: S <-{C,N} [S] 
+  rl [reply]: S <-{C,N} [S]
            => [S] C <-{S,f(S,C,N)}  [metadata "fair(S,C)"] .
-  rl [rec]  : C <-{S,M} [C,S,N,nil] 
+  rl [rec]  : C <-{S,M} [C,S,N,nil]
            => [C,S,N,M]             [metadata "fair(C)"] .
 
   rl [dupl] : I <-{J,M} => I <-{J,M} I <-{J,M} .
@@ -47,16 +47,16 @@ mod CLIENT-SERVER-ABS is
     eq I <-{J,N} I <-{J,N} = I <-{J,N} .
 
     *** extra rules below added by coherence completion
-    rl [reply]: S <-{C,N} [S]         
+    rl [reply]: S <-{C,N} [S]
              => S <-{C,N} [S] C <-{S,f(S,C,N)}  [metadata "fair(S,C)"] .
 
-    rl [rec]  : C <-{S,M} [C,S,N,nil] 
+    rl [rec]  : C <-{S,M} [C,S,N,nil]
              => C <-{S,M} [C,S,N,M]             [metadata "fair(C)"] .
 
     rl [loss] : I <-{C,N} => (I <-{C,N}) .
 endm
 
-load ltlr-checker
+load ../../../../contrib/tools/lmc/ltlr-checker.maude
 
 mod CLIENT-SERVER-CHECK is
     protecting CLIENT-SERVER-ABS .
@@ -81,11 +81,11 @@ red modelCheck(init, <> answered(b)) .
 --------------- ---------------
 --- Full Maude commands
 
-load ltlr-interface
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 (mod CLIENT-SERVER-CHECK-CONTEXT is
   including LTLR-MODEL-CHECKER .
-  protecting CLIENT-SERVER-CHECK . 
+  protecting CLIENT-SERVER-CHECK .
   protecting CONTEXT[CLIENT-SERVER] .   --- generate context signature
   subsort Context$Conf < StateContext . --- declare state context sort
 endm)

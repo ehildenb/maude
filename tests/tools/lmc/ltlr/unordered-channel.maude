@@ -11,7 +11,7 @@ mod UNORDERED-CHANNEL is
   op _@_ : List List -> List .      *** list append
 
   eq nil @ L = L .
-  eq (N ; L) @ P = N ; (L @ P) . 
+  eq (N ; L) @ P = N ; (L @ P) .
 
 --- conf
   sort Conf .
@@ -30,7 +30,7 @@ mod UNORDERED-CHANNEL is
 
 --- rules
   rl [snd]: {N ; L, M | C | P, K} => {N ; L, M | [N, M] C | P, K} .
-  rl [rec]: {L, M | [N, J] C | P, J}  
+  rl [rec]: {L, M | [N, J] C | P, J}
          => {L, M | ack(J) C | P @ (N ; nil), s(J)}  .
   rl [ack]: {N ; L, J | ack(J) C | P, M}  => {L, s(J) | C | P, M} .
 endm
@@ -41,23 +41,23 @@ mod UNORDERED-CHANNEL-ABS is
 
   eq {L, M | [N, J] [N, J] C | P, K} = {L, M | [N, J] C | P, K} .
 
-  rl [rec]: {L, M | [N, J] C | P, J} 
+  rl [rec]: {L, M | [N, J] C | P, J}
          => {L, M | [N, J] ack(J) C | P @ (N ; nil), s(J)} .
 endm
 
-load ltlr-checker
+load ../../../../contrib/tools/lmc/ltlr-checker.maude
 
 mod UNORDERED-CHANNEL-PREDS is
   protecting UNORDERED-CHANNEL-ABS .
   protecting LTLR-MODEL-CHECKER .
   including SPATIAL-ACTION-PATTERN .
 
-  vars M N K P : Nat . vars L L1 L2 : List . var  C : Conf . var  B : Bool . 
+  vars M N K P : Nat . vars L L1 L2 : List . var  C : Conf . var  B : Bool .
 
   subsort ChannelState < State .
 
   op prefix : List -> Prop .
-  eq {L1, N | C | K ; L2, P} |= prefix(M ; L) 
+  eq {L1, N | C | K ; L2, P} |= prefix(M ; L)
    = (M == K) and  ({L1, N | C | L2, P} |=  prefix(L)) .
   eq {L1, N | C | nil, K} |=  prefix(L) = true .
   eq {L1, N | C | M ; L2, K} |=  prefix(nil) = false .

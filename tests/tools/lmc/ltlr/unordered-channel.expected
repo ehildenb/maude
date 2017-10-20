@@ -1,4 +1,4 @@
-Maude> ==========================================
+==========================================
 reduce in UNORDERED-CHANNEL-PREDS : modelCheck(init, []prefix(0 ; 1 ; 2 ; nil))
     .
 ModelChecker: a system graph may compute only state propositions..
@@ -43,4 +43,4 @@ ModelChecker: Use the SCC-Buchi algorithm with a gen-Buchi automaton (1
 ModelChecker: Examined 28 system states and 40 transitions.
 rewrites: 193
 result Bool: true
-Maude> Bye.
+Bye.

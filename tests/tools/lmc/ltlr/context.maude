@@ -20,7 +20,7 @@ mod POSITION-MODEL is
 
 endm
 
-load ltlr-interface .
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 (mod POSITION-MODEL-PRED is
   including LTLR-MODEL-CHECKER .
@@ -30,7 +30,7 @@ load ltlr-interface .
   subsort Conf < State .
   subsorts Context$Conf < StateContext .
 
-  var CXT : StateContext . var CF : Conf . var XCF : Context$Conf . 
+  var CXT : StateContext . var CF : Conf . var XCF : Context$Conf .
   var R : RuleName . var SUB : StateSubstitution .
 
 --- predicates

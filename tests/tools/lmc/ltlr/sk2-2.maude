@@ -7,7 +7,7 @@ fmod NODEID is
   pr NAT .
   sort NodeID .
   subsort NzNat < NodeID .
---- Parameters  
+--- Parameters
   op N : -> NzNat .   --- the number of nodes
   op M : -> NzNat .   --- the number of requests each node makes
 ---
@@ -139,7 +139,7 @@ fmod OCOM is
     pr LABEL .
     pr TRAN .
     sort OCom .
-    op #req`[_`]:_   : NodeID Nat   -> OCom . 
+    op #req`[_`]:_   : NodeID Nat   -> OCom .
     op pc`[_`]:_         : NodeID Label -> OCom .
     op requesting`[_`]:_ : NodeID Bool  -> OCom .
     op havePriv`[_`]:_   : NodeID Bool  -> OCom .
@@ -150,7 +150,7 @@ fmod OCOM is
     op nw:_            : Network      -> OCom .
 endfm
 
-    
+
 fmod CONFIG is
     pr OCOM .
     sort Config .
@@ -167,17 +167,17 @@ fmod INIT-CONFIG is
         (pc[I]: rem)
         (requesting[I]: false)
         (havePriv[I]: (I == 1))
-        (rn[I]: ia) 
+        (rn[I]: ia)
         (ln[I]: ia)
         (queue[I]: empty)
         (idx[I]: 1) .
     eq ic = node(1) node(2) node(3) (nw: void) .
 endfm
-    
+
 mod SK is
     pr CONFIG .
     --- Maude variables
-    vars I J : NodeID . 
+    vars I J : NodeID .
     vars X Max : Nat .
     var K : NzNat .
     vars F F' C : Bool .
@@ -186,40 +186,40 @@ mod SK is
   var NW : Network .
     var L : Label .
     --- try
-    rl [tryI] : 
+    rl [tryI] :
 	(#req[I]: X)
 	(pc[I]: rem)
       => (#req[I]: (if X < M then X + 1 else X fi))
 	(pc[I]: (if X < M then l1 else rem fi)) [metadata "just(I)"] .
 --- setReq
-    rl [setReqI] : 
-	(pc[I]: l1) 
-	(requesting[I]: F) 
-    => (pc[I]: l2) 
+    rl [setReqI] :
+	(pc[I]: l1)
+	(requesting[I]: F)
+    => (pc[I]: l2)
 	(requesting[I]: true) [metadata "just(I)"] .
     --- checkPriv
     rl [checkPrivI] :
-	(pc[I]: l2) 
+	(pc[I]: l2)
 	(havePriv[I]: F)
-      => (pc[I]: (if F then cs else l3 fi)) 
+      => (pc[I]: (if F then cs else l3 fi))
        (havePriv[I]: F) [metadata "just(I)"] .
     --- incReqNo
     rl [incReqNoI] :
-	(pc[I]: l3) 
-	(rn[I]: RN) 
-    (idx[I]: K) 
-      => (pc[I]: l4) 
+	(pc[I]: l3)
+	(rn[I]: RN)
+    (idx[I]: K)
+      => (pc[I]: l4)
 	(rn[I]: RN[I] := (RN[I]) + 1)
 	(idx[I]: 1) [metadata "just(I)"] .
     --- sendReq
   rl [sendReqI] :
-	(pc[I]: l4) 
-    (idx[I]: K) 
-    (rn[I]: RN) 
+	(pc[I]: l4)
+    (idx[I]: K)
+    (rn[I]: RN)
     (nw: NW)
     => (pc[I]: if K == N then l5 else l4 fi)
-       (idx[I]: if K == N then 1 else K + 1 fi) 
-       (rn[I]: RN) 
+       (idx[I]: if K == N then 1 else K + 1 fi)
+       (rn[I]: RN)
        (nw: (if K == I then NW else msg(K,req(I,RN[I])) NW fi)) [metadata "just(I)"] .
 --- waitPriv
   rl [waitPrivI] :
@@ -309,13 +309,13 @@ mod SK is
 endm
 
 
-load ltlr-interface
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 (mod SK-PROP is
     pr SK .
     inc SATISFACTION .
     subsort Config < State .
-    
+
     op want : NodeID -> Prop .
     op crit : NodeID -> Prop .
     vars I : NodeID .
@@ -327,13 +327,13 @@ load ltlr-interface
     eq C |= PR = false [owise] .
 endm)
 
-    
+
 (mod SK-FORMULA is
     pr SK-PROP .
     pr INIT-CONFIG .
     inc LTLR-MODEL-CHECKER .
     *** inc LTL-SIMPLIFIER .
-    
+
     op mutex : -> Formula .
     op lofree : -> Formula .
     eq mutex = [] (~(crit(1) /\ crit(2)) /\
@@ -343,14 +343,14 @@ endm)
         (want(2) |-> crit(2)) /\
         (want(3) |-> crit(3)) .
 endm)
-    
+
 set verbose on .
 
 *** do model checking in Full maude
-*** for safety property mutual exclusion 
+*** for safety property mutual exclusion
 (mc ic |= mutex .)
-    
 
-*** for liveness property : lock freedom 
+
+*** for liveness property : lock freedom
 (pfmc ic |= lofree .)
 

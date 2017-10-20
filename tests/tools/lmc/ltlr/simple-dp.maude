@@ -5,14 +5,14 @@ set show timing off .
 
 fmod DINING-PHILOSOPHERS-FUNCS is
   protecting NAT .
-  sorts Status .    
+  sorts Status .
   ops think wait0 wait1 eat : -> Status [ctor] .
 
   op #N : ~> Nat .  --- a total number of philosophers
-  vars I J : Nat .  
-  
-  ops lc rc : Nat ~> Nat .    
-  eq lc(I) = I .    
+  vars I J : Nat .
+
+  ops lc rc : Nat ~> Nat .
+  eq lc(I) = I .
   ceq rc(I) = s(I) if (s(I) < #N) = true .
   ceq rc(I) = 0 if (s(I) == #N) = true .
 
@@ -24,28 +24,28 @@ mod DINING-PHILOSOPHERS is
   including DINING-PHILOSOPHERS-FUNCS .
 
   sorts Philo Chopstick Conf .
-  subsorts Philo Chopstick < Conf .   
+  subsorts Philo Chopstick < Conf .
 
   op p : Nat Status -> Philo [ctor] .
-  op c : Nat -> Chopstick [ctor] .    
-  
+  op c : Nat -> Chopstick [ctor] .
+
   op none : -> Conf [ctor] .
   op _||_ : Conf Conf -> Conf [ctor comm assoc id: none] .
 
-  eq #N = s(s(0)) . 
-  
+  eq #N = s(s(0)) .
+
   vars I J : Nat .	var C : Conf .	
-  
+
   *** defining the system behavior with localized fairness
   *** NOTE: rule attributes also declare the simplified version of
   *** spatial action patterns, e.g., wake(I) = {'wake : 'I \ I}
 
   rl [wake]: p(I,think) => p(I,wait0) [metadata "just(I)"] .
 
- crl [grabF]: p(I,wait0) || c(J) => p(I,wait1) 
+ crl [grabF]: p(I,wait0) || c(J) => p(I,wait1)
    if adj(I,J) = true [metadata "fair(I)"] .
 
- crl [grabS]: p(I,wait1) || c(J) => p(I,eat) 
+ crl [grabS]: p(I,wait1) || c(J) => p(I,eat)
    if adj(I,J) = true [metadata "fair(I)"] .
 
   rl [stop]: p(I,eat) => p(I,think) || c(lc(I)) || c(rc(I)) .
@@ -54,7 +54,7 @@ endm
 rew [3] p(0,think) || c(0) || p(s(0),think) || c(s(0)) .
 search p(0,think) || c(0) || p(s(0),think) || c(s(0)) =>! C .
 
-load ltlr-checker.maude  
+load ../../../../contrib/tools/lmc/ltlr-checker.maude
 
 mod DINING-PHILOSOPHERS-PROP is
   protecting DINING-PHILOSOPHERS .
@@ -82,55 +82,55 @@ red modelCheck(init, ([] ~ deadlock) -> <> eating(0)) .
 --- false
 red modelCheck(init,
     ((<>[] enabled({'wake : 'I \ 0}) -> []<> {'wake : 'I \ 0}) /\
-     ([]<> enabled({'grabF : 'I \ 0}) -> []<> {'grabF : 'I \ 0})) 
+     ([]<> enabled({'grabF : 'I \ 0}) -> []<> {'grabF : 'I \ 0}))
     -> (<> eating(0))) .
 
 --- true
 red modelCheck(init,
     ((<>[] enabled({'wake : 'I \ 0}) -> []<> {'wake : 'I \ 0}) /\
-     ([]<> enabled({'grabF : 'I \ 0}) -> []<> {'grabF : 'I \ 0})) 
+     ([]<> enabled({'grabF : 'I \ 0}) -> []<> {'grabF : 'I \ 0}))
     -> (([] ~ deadlock) -> <> eating(0))) .
 
 
 --- false
 red modelCheckFair(init, <> eating(0),
-                   just({'wake : 'I \ I:Nat}) ; 
-		   fair({'grabF : 'I \ I:Nat}) ; 
+                   just({'wake : 'I \ I:Nat}) ;
+		   fair({'grabF : 'I \ I:Nat}) ;
 		   fair({'grabS : 'I \ I:Nat})) .
 
 --- true
 red modelCheckFair(init, ([] ~ deadlock) -> <> eating(0),
-                   just({'wake : 'I \ I:Nat}) ; 
-		   fair({'grabF : 'I \ I:Nat}) ; 
+                   just({'wake : 'I \ I:Nat}) ;
+		   fair({'grabF : 'I \ I:Nat}) ;
 		   fair({'grabS : 'I \ I:Nat})) .
 
 
 
 --- Full Maude interface
-load ltlr-interface
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 (mod DINING-PHILOSOPHERS-FULL is
   including DINING-PHILOSOPHERS-FUNCS .
   sorts Philo Chopstick Conf .
-  subsorts Philo Chopstick < Conf .   
+  subsorts Philo Chopstick < Conf .
 
   op p : Nat Status -> Philo [ctor] .
-  op c : Nat -> Chopstick [ctor] .    
-  
+  op c : Nat -> Chopstick [ctor] .
+
   op none : -> Conf [ctor] .
   op _||_ : Conf Conf -> Conf [ctor comm assoc id: none] .
 
-  eq #N = s(s(0)) . 
-  
+  eq #N = s(s(0)) .
+
   vars I J : Nat .	var C : Conf .	
-  
+
   *** defining the system behavior with localized fairness
   rl [wake]: p(I,think) => p(I,wait0) [metadata "just(I)"] .
 
- crl [grabF]: p(I,wait0) || c(J) => p(I,wait1) 
+ crl [grabF]: p(I,wait0) || c(J) => p(I,wait1)
    if adj(I,J) = true [metadata "fair(I)"] .
 
- crl [grabS]: p(I,wait1) || c(J) => p(I,eat) 
+ crl [grabS]: p(I,wait1) || c(J) => p(I,eat)
    if adj(I,J) = true [metadata "fair(I)"] .
 
   rl [stop]: p(I,eat) => p(I,think) || c(lc(I)) || c(rc(I)) .
@@ -165,6 +165,6 @@ endm)
 (pfmc init |= ([] ~ deadlock) -> <> eating(0) .)
 
 --- true
-(mc init |= []~ deadlock -> <> eating(0) under 
+(mc init |= []~ deadlock -> <> eating(0) under
     just(wake(I:Nat)) ; fair(grabF(I:Nat)) ; fair(grabS(I:Nat)) .)
 

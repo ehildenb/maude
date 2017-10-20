@@ -18,7 +18,7 @@ fmod PHILO-SYNTAX is
   op <_`,_`,_> : Nat Nat Conf -> PState [ctor] .
 endfm
 
-mod PHILO-STATIC is 
+mod PHILO-STATIC is
   protecting PHILO-SYNTAX .
 
   vars P N C : Nat .  var I J : NzNat . var CF : Conf .
@@ -31,13 +31,13 @@ mod PHILO-STATIC is
   eq right(I, N) = s(I rem N) .
 
 --- rules
-  rl [wake]: ph(I, think, 0) => ph(I, hungry, 0) [metadata "just(I)"] . 
+  rl [wake]: ph(I, think, 0) => ph(I, hungry, 0) [metadata "just(I)"] .
 
   crl [grab]: < P, N, ph(I, hungry, C) ; stk(J) ; CF >
-           => < P, N, ph(I, hungry, C + 1) ; CF > 
+           => < P, N, ph(I, hungry, C + 1) ; CF >
    if J == left(I) or J == right(I, N) [metadata "fair(I)"] .
 
-  rl [stop]: < P, N, ph(I, hungry, 2) ; CF > 
+  rl [stop]: < P, N, ph(I, hungry, 2) ; CF >
           => < P, N, ph(I, think, 0) ; stk(left(I)) ; stk(right(I,N)) ; CF > .
 endm
 
@@ -54,16 +54,16 @@ mod PHILO-DYNAMIC is
   rl [solve]: < s s P, N, ph(I, think, 0) ; CF >
 	  =>  < collatz(s s P), N, ph(I, think, 0) ; CF > .
 
-  crl [join]: < P, N, ph(N, think, 0) ; CF > 
-           => < P, s N, ph(N, think, 0) ; CF ; ph(s N, think, 0) ; stk(s N) > 
+  crl [join]: < P, N, ph(N, think, 0) ; CF >
+           => < P, s N, ph(N, think, 0) ; CF ; ph(s N, think, 0) ; stk(s N) >
    if (N rem 3 == 0) or (P rem (4 * N) == 0) .
 
-  rl [leave]: < P, s s s N, CF ; ph(s s s N, think, 0) ; stk(s s s N) > 
+  rl [leave]: < P, s s s N, CF ; ph(s s s N, think, 0) ; stk(s s s N) >
            => < P, s s N, CF > .
 endm
 
 --- Full Maude interface
-load ltlr-interface
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 --- the following module defines the state sort for the model checking
 --- and extra state predicates.
@@ -104,21 +104,21 @@ set verbose on .
 (red modelCheck(init(6), [] ~ deadlock -> <> eating(1)) .)
 
 --- false
---- NOTE: the module expression ACTION[...] declares the syntax of 
+--- NOTE: the module expression ACTION[...] declares the syntax of
 --- simplified action patterns from the given rule attributes.
-(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6), 
+(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6),
      <> eating(1),
      just(wake(I:NzNat)) ; fair(grab(I:NzNat))
 ) .)
 
 --- false
-(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6), 
+(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6),
      [] ~ deadlock -> <> eating(1),
      just(wake(I:NzNat)) ; just(grab(I:NzNat))
 ) .)
 
 --- true
-(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6), 
+(red in ACTION[PHILO-CHECK]: modelCheckFair(init(6),
      [] ~ deadlock -> <> eating(1),
      just(wake(I:NzNat)) ; fair(grab(I:NzNat))
 ) .)

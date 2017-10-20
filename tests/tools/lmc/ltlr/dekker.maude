@@ -1,8 +1,8 @@
 --- Dekker's algorithm, borrowed from:
 --- Clavel. M. et al, All about maude-a high-performance logical framework: how to specify, program and verify systems in rewriting logic, LNCS 4350, 2007
 
-fmod MEMORY is 
-    inc INT + QID . 
+fmod MEMORY is
+    inc INT + QID .
     sorts Memory Bool? Int? .
     subsorts Bool < Bool? . subsorts Int < Int? .
     op null : -> Int? [ctor] .
@@ -16,7 +16,7 @@ fmod MEMORY is
     eq Q in [Q,N?] M = true .
 endfm
 
-fmod EXPRESSION is 
+fmod EXPRESSION is
     inc MEMORY .
     sort Expression .
     subsorts Qid Int? < Expression .
@@ -37,11 +37,11 @@ fmod EXPRESSION is
     eq eval(E *' E', M) = eval(E,M) * eval(E',M) .
 endfm
 
-fmod TESTS is 
+fmod TESTS is
     inc EXPRESSION .
     sort Test .
-    op _=_ : Expression Expression -> Test [ctor] . 
-    op _!=_ : Expression Expression -> Test [ctor] . 
+    op _=_ : Expression Expression -> Test [ctor] .
+    op _!=_ : Expression Expression -> Test [ctor] .
     op _<'_ : Expression Expression -> Test [ctor] .
     op eval : Test Memory -> Bool .
     var Q : Qid .
@@ -58,7 +58,7 @@ fmod SEQUENTIAL is inc TESTS + EXPRESSION .
     subsort LoopingUserStatement < UserStatement < Program .
     op skip : -> Program .
     op _;_ : Program Program -> Program [prec 61 assoc id: skip] .
-    op _:=_ : Qid Expression -> Program .  
+    op _:=_ : Qid Expression -> Program .
     op if_then_fi : Test Program -> Program .
     op while_do_od : Test Program -> Program .
     op repeat_forever : Program -> Program .
@@ -91,41 +91,41 @@ mod PARALLEL is inc SEQUENTIAL + TESTS .
     --- the definition of execution semantics with localized fairness
     --- declarations using renamed fairness items.
 
-    rl [user] : 
-        {[I, U ; R] | S, M} 
-      => 
+    rl [user] :
+        {[I, U ; R] | S, M}
+      =>
         {[I, R] | S, M}	    [metadata "just[exec(I)]"] .
 
-    rl [loop] : 
-        {[I, L ; R] | S, M} 
-      => 
+    rl [loop] :
+        {[I, L ; R] | S, M}
+      =>
         {[I, L ; R] | S, M} [metadata "just[exec(I)]"] .
 
-    rl [asgn] : 
-        {[I, (Q := E) ; R] | S, [Q, X?] M} 
-      => 
+    rl [asgn] :
+        {[I, (Q := E) ; R] | S, [Q, X?] M}
+      =>
         {[I, R] | S, [Q,eval(E,[Q, X?] M)] M} [metadata "just[exec(I)]"] .
 
-   crl [asgn] : 
-        {[I, (Q := E) ; R] | S, M} 
-      => 
-        {[I, R] | S, [Q,eval(E,M)] M} 
+   crl [asgn] :
+        {[I, (Q := E) ; R] | S, M}
+      =>
+        {[I, R] | S, [Q,eval(E,M)] M}
      if Q in M =/= true [metadata "just[exec(I)]"] .
 
-    rl [cond] : 
-        {[I, if T then P fi ; R] | S, M} 
+    rl [cond] :
+        {[I, if T then P fi ; R] | S, M}
       =>
-        {[I, if eval(T, M) then P else skip fi ; R] | S, M} 
+        {[I, if eval(T, M) then P else skip fi ; R] | S, M}
     [metadata "just[exec(I)]"] .
 
-    rl [whil] : 
-        {[I, while T do P od ; R] | S, M} 
+    rl [whil] :
+        {[I, while T do P od ; R] | S, M}
       =>
-        {[I, if eval(T,M) then (P ; while T do P od) else skip fi ; R] | S, M} 
+        {[I, if eval(T,M) then (P ; while T do P od) else skip fi ; R] | S, M}
      [metadata "just[exec(I)]"].
 
-    rl [rept] : 
-        {[I, repeat P forever ; R] | S, M} 
+    rl [rept] :
+        {[I, repeat P forever ; R] | S, M}
       =>
         {[I, P ; repeat P forever ; R] | S, M} [metadata "just[exec(I)]"] .
 endm
@@ -177,10 +177,10 @@ endm
 
 --- Full Maude interface
 
-load ltlr-interface
+load ../../../../contrib/tools/lmc/ltlr-interface.maude
 
 --- predicate descriptions
-(mod DEKKER-CHECK is 
+(mod DEKKER-CHECK is
     protecting DEKKER .
     including LTLR-MODEL-CHECKER .
 
@@ -190,13 +190,13 @@ load ltlr-interface
 
   *** process I is in critical section
     op in-crit : Pid -> Prop .
-    eq {[I, crit ; R] | S, M} |= in-crit(I) = true . 
-    eq {[I, R] | S, M} |= in-crit(I) = false [owise] . 
+    eq {[I, crit ; R] | S, M} |= in-crit(I) = true .
+    eq {[I, R] | S, M} |= in-crit(I) = false [owise] .
 
   *** process I is in rem section
     op in-rem : Pid -> Prop .
-    eq {[I, rem ; R] | S, M} |= in-rem(I) = true . 
-    eq {[I, R] | S, M} |= in-rem(I) = false [owise] . 
+    eq {[I, rem ; R] | S, M} |= in-rem(I) = true .
+    eq {[I, R] | S, M} |= in-rem(I) = false [owise] .
 endm)
 
 set verbose on .
@@ -212,19 +212,19 @@ set verbose on .
 
 *** false
 (mc init |= ((~ <>[] in-rem(1)) -> []<> in-crit(1)) /\
-            ((~ <>[] in-rem(2)) -> []<> in-crit(2)) 
+            ((~ <>[] in-rem(2)) -> []<> in-crit(2))
  under just(exec(1)) .)
 
 *** true
-*** NOTE: the rule attributes automatically declare the simplified 
+*** NOTE: the rule attributes automatically declare the simplified
 *** renamed action pattern exec(I).
 (mc init |= ((~ <>[] in-rem(1)) -> []<> in-crit(1)) /\
-            ((~ <>[] in-rem(2)) -> []<> in-crit(2)) 
+            ((~ <>[] in-rem(2)) -> []<> in-crit(2))
  under just(exec(1)) ; just(exec(2)) .)
 
 *** true
 (mc init |= ((~ <>[] in-rem(1)) -> []<> in-crit(1)) /\
-            ((~ <>[] in-rem(2)) -> []<> in-crit(2)) 
+            ((~ <>[] in-rem(2)) -> []<> in-crit(2))
  under just(exec(I:Pid)) .)
 
 *** true
