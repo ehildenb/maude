@@ -1,4 +1,4 @@
-load ../base/full-maude27.maude
+load ../full-maude/full-maude-2.7.maude
 load ltlr-checker.maude
 
 --- The Full Maude interface of the Maude Fair LTLR model checker
