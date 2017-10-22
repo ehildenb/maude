@@ -1,8 +1,3 @@
-Warning: "full-maude-2.6.1.g.maude", line 39 (fmod PRE-VARIANT): redeclaration
-    of sort Variant.
-
-	    Full Maude 2.6.1g December 12th 2013
-
 
 	    LTLR Fairness Model Checker December 10th 2011
 
@@ -94,7 +89,7 @@ ModelChecker: a system graph may compute state, event, and enabled
     propositions..
 ModelChecker: LTL model checking with a state-based algorithm.
 ModelChecker: Use the Streett algorithm with a gen-Buchi automaton (1 states).
-ModelChecker: Examined 32256 system states and 596151 transitions.
+ModelChecker: Examined 32256 system states and 596162 transitions.
 ltlr model check under localized fairness in SLIDING-WINDOW-ABSTRACTION-CHECK :
   initial(2,5) |= <> success
 result Bool :

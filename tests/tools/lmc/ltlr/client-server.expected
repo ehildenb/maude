@@ -16,11 +16,6 @@ result ModelCheckResult: counterexample(
 { [a] [b,a,1,nil] [c,a,0,f(a, c, 0)],{'req} } 
 { [a] a <- {b,1} [b,a,1,nil] [c,a,0,f(a, c, 0)],{'reply} } 
 { [a] a <- {b,1} b <- {a,f(a, b, 1)} [b,a,1,nil] [c,a,0,f(a, c, 0)],{'reply} })
-Warning: "full-maude-2.6.1.g.maude", line 39 (fmod PRE-VARIANT): redeclaration
-    of sort Variant.
-
-	    Full Maude 2.6.1g December 12th 2013
-
 
 	    LTLR Fairness Model Checker December 10th 2011
 
