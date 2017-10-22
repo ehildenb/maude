@@ -1,7 +1,7 @@
 --- The Maude Logical Bounded Model Checker Interface
 --- Author: Kyungmin Bae <kbae4@illinois.edu>
 
-load model-checker
+load ../base/model-checker.maude
 
 ****************************************
 ***          Basic Interface         ***
@@ -145,7 +145,7 @@ endfm
 ***  Full Maude Narrowing Connector  ***
 ****************************************
 
-load full-maude27
+load ../base/full-maude.maude
 
 fmod META-LMC-PARAMETERS is 
   pr META-MODULE .
@@ -249,6 +249,7 @@ fmod META-NARROWING-INTERFACE is
   vars T T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant . 
   var TP : Type . vars SUB SUB1 SUB2 : Substitution .  
   vars NextVar NextVar' N : Nat . var VR : Variant . var VS : VariantSet .
+  var P : Parent . var B : Bool .
   var SR : StepResult . var SRS : StepResultSet . 
 
   op metaNarrow2 : Module Term -> StepResult .
@@ -285,7 +286,7 @@ fmod META-NARROWING-INTERFACE is
   eq propInstSet(empty, PT) = empty .
 
   op filterPropVars : StepResult VariantSet ~> StepResultSet .
-  eq filterPropVars({ST,TP,SUB / RS}, {T,SUB1,N} # VS)
+  eq filterPropVars({ST,TP,SUB / RS}, {T,SUB1,N,P,B} # VS)
    = if inst?(T) then {ST << SUB1,TP, SUB .. SUB1 / RS} 
      else empty fi 
    || filterPropVars({ST,TP,SUB / RS}, VS) .
@@ -391,6 +392,7 @@ fmod META-NARROWING-COND-INTERFACE is
   var C : Constant . var CD : EqCondition . var RS : RuleSet .
   var TP : Type . vars SUB SUB1 SUB2 : Substitution .  var N : Nat .
   var SR : StepResult . var SRS : StepResultSet . var VS : VariantSet .
+  var P : Parent . var B : Bool .
 
 --- variant narrowing condition instantiations.
 
@@ -409,7 +411,7 @@ fmod META-NARROWING-COND-INTERFACE is
 
   --- only true instances (hence the conditions should be complete and FVP)
   op filterCondVars : StepResult VariantSet ~> StepResultSet .
-  eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N} # VS)
+  eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N,P,B} # VS)
    = {ST << SUB1, TP, SUB .. SUB1 / RS} 
    || filterCondVars({ST,TP,SUB / RS}, VS) .
   eq filterCondVars(SR, VS) = empty [owise] .
@@ -513,6 +515,7 @@ mod META-SYMBOLIC-COND-CONNECTOR2 is
   var N : Nat . var B : Bool . var RS : RuleSet .
   var SR : StepResult .  var SRS : StepResultSet . 
   vars CD CD' : EqCondition .  var VS : VariantSet .
+  var P : Parent .
 
 --- meta rules
  crl [init-cond] : 
@@ -554,7 +557,7 @@ mod META-SYMBOLIC-COND-CONNECTOR2 is
                                      '_or_[condList(CD',false)]]) .
 
   op implyOKsub : VariantSet ~> Bool .
- ceq implyOKsub({T,SUB,N} # VS)
+ ceq implyOKsub({T,SUB,N,P,B} # VS)
    = T' =/= 'true.Bool and-then implyOKsub(VS)
   if T' := getTerm(metaReduce((##m##),T)) .
   eq implyOKsub(emptyVariantSet) = true .
