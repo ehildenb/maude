@@ -28,7 +28,7 @@ fmod STATE-CONTEXT is
   including SATISFACTION .
 
   sort StateContext .
-  op noContext : -> StateContext [ctor] . 
+  op noContext : -> StateContext [ctor] .
   op [] : -> StateContext [ctor] .
 endfm
 
@@ -45,7 +45,7 @@ fmod PROOF-TERM is
 
   sorts ProofTerm .
   op deadlock : -> ProofTerm [ctor format(r! o)] .
-  op {_|_:_} : StateContext RuleName StateSubstitution -> ProofTerm 
+  op {_|_:_} : StateContext RuleName StateSubstitution -> ProofTerm
        [ctor format (c! o c r c y? c! o)] .
 endfm
 
@@ -69,13 +69,13 @@ fmod SPATIAL-ACTION-PATTERN-SYNTAX is
   sorts BasicActionPattern ActionPattern .
   subsorts BasicActionPattern ProofTerm < ActionPattern < Action .
 
-  op {_}   : RuleName -> BasicActionPattern 
+  op {_}   : RuleName -> BasicActionPattern
        [ctor format (c! or c! o)] .
 
-  op {_:_} : RuleName StateSubstitution -> BasicActionPattern 
+  op {_:_} : RuleName StateSubstitution -> BasicActionPattern
        [ctor format (c! or c y? c! o)] .
 
-  op {_|_} : StateContext RuleName -> ActionPattern 
+  op {_|_} : StateContext RuleName -> ActionPattern
        [ctor format (c! o c r c! o)] .
 
   op top{_}   : RuleName -> ActionPattern [ctor] .
@@ -88,7 +88,7 @@ fmod SPATIAL-ACTION-PATTERN is
   including SPATIAL-ACTION-PATTERN-SYNTAX .
 
   var CXT : [StateContext] . --- TODO: to deal with some broken context terms
-  var R : RuleName . 
+  var R : RuleName .
   var SUB SUB' : [StateSubstitution] .
 
   eq {CXT | R : SUB}        |= {R}             = true .
@@ -111,7 +111,7 @@ fmod FAIRNESS-SPEC is
   op _;_ : FairnessSet FairnessSet -> FairnessSet [ctor comm assoc id: noFairness] .
 
   sorts Fairness FairnessType .
-  ops fair just : -> FairnessType . 
+  ops fair just : -> FairnessType .
   op _:_=>_ : FairnessType Formula Formula -> Fairness [ctor] .
 
   --- shortcuts
@@ -135,7 +135,7 @@ fmod LTLR-COUNTEREXAMPLE is
 
   sorts ModelCheckResult .
   subsorts Bool < ModelCheckResult .
-  op counterexample : TransitionList TransitionList -> ModelCheckResult [ctor] . 
+  op counterexample : TransitionList TransitionList -> ModelCheckResult [ctor] .
   var S : State . var R : RuleName . var SS : StateSubstitution .
   var C : StateContext .
 
@@ -199,13 +199,13 @@ fmod LTLR-MODEL-CHECKER is
 	   op-hook emptySubstSymbol	   (none : ~> StateSubstitution)
 	   op-hook qidSymbol		   (<Qids> : ~> Qid)
 	   op-hook unlabeledSymbol	   (unlabeled : ~> RuleName)
-	   op-hook noContextSymbol	   (noContext : ~> StateContext) 
+	   op-hook noContextSymbol	   (noContext : ~> StateContext)
 
            --- realized props
            op-hook realizedPropSymbol      (reProp? : State ~> Prop)
            op-hook realizedActionSymbol    (reAction? : ProofTerm ~> Action)
 
-	   --- labeling 
+	   --- labeling
            op-hook satisfiesSymbol         (_|=_ : State Prop ~> Bool)
            op-hook actionmatchSymbol       (_|=_ : ProofTerm Action ~> Bool)
            op-hook enabledSymbol	   (enabled : Action ~> Prop)

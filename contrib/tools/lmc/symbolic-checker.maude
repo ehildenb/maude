@@ -8,36 +8,53 @@ load ../base/model-checker.maude
 ****************************************
 
 fmod RULE-NAME is
-  extending QID .
+    extending QID .
 
-  sort RuleName .
-  subsort Qid < RuleName .
-  ops unlabeled deadlock : -> RuleName .
+    sort RuleName .
+    ---------------
+    subsort Qid < RuleName .
+
+    ops unlabeled deadlock : -> RuleName .
+    --------------------------------------
 endfm
 
 fmod SYMBOLIC-CHECKER is
-  pr RULE-NAME .
-  pr SATISFACTION .
-  including LTL .
+   protecting RULE-NAME .
+   protecting SATISFACTION .
+    including LTL .
 
-  subsort Prop < Formula .
+    subsort Prop < Formula .
 
-*** generic substitution for counter example
-  sorts CEAssignment CESubstitution .
-  subsort CEAssignment < CESubstitution .
-  op _<-_ : Qid Universal -> CEAssignment [ctor poly (2) prec 63] .
-  op none : -> CESubstitution .
-  op _;_ : CESubstitution CESubstitution -> CESubstitution [ctor assoc comm id: none prec 65] .
-  eq CA:CEAssignment ; CA:CEAssignment = CA:CEAssignment .
+    --- generic substitution for counter example
+    sorts CEAssignment CESubstitution .
+    -----------------------------------
+    subsort CEAssignment < CESubstitution .
 
-*** transitions and results
-  sorts Transition TransitionList ModelCheckResult .
-  subsort Transition < TransitionList .
-  subsort Bool < ModelCheckResult .
-  op {_,_,_} : State CESubstitution RuleName -> Transition [ctor] .
-  op nil : -> TransitionList [ctor] .
-  op __ : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
-  op prefix_loop_ : TransitionList TransitionList -> ModelCheckResult [ctor format(n n++i n ni i--)] .
+    op _<-_ : Qid Universal -> CEAssignment [ctor poly (2) prec 63] .
+    -----------------------------------------------------------------
+
+    op none :                               -> CESubstitution .
+    op _;_  : CESubstitution CESubstitution -> CESubstitution [ctor assoc comm id: none prec 65] .
+    ----------------------------------------------------------------------------------------------
+    eq CA:CEAssignment ; CA:CEAssignment = CA:CEAssignment .
+
+    sorts Transition TransitionList .
+    ---------------------------------
+    subsort Transition < TransitionList .
+
+    op {_,_,_} : State CESubstitution RuleName -> Transition [ctor] .
+    -----------------------------------------------------------------
+
+    op nil :                               -> TransitionList [ctor] .
+    op __  : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
+    -----------------------------------------------------------------------------------------------
+
+    sort ModelCheckResult .
+    -----------------------
+    subsort Bool < ModelCheckResult .
+
+    op prefix_loop_ : TransitionList TransitionList -> ModelCheckResult [ctor format(n n++i n ni i--)] .
+    ----------------------------------------------------------------------------------------------------
 endfm
 
 **************************************************
@@ -46,98 +63,120 @@ endfm
 
 --- core maude search function (using META-LEVEL)
 fmod BOUNDED-FOLDING-MODEL-CHECKER is
-  pr RULE-NAME .
-  pr META-LEVEL .
-  pr SATISFACTION .
-  including LTL .
+   protecting RULE-NAME .
+   protecting META-LEVEL .
+   protecting SATISFACTION .
+    including LTL .
 
---- meta transition
-  sorts MetaEdge MetaConf .
-  op deadlock : -> MetaEdge [ctor] .
-  op _/_ : RuleSet Substitution -> MetaEdge [ctor] .
-  op <_> : State -> MetaConf [ctor] .
-  op _|=>_ : MetaEdge State -> MetaConf [ctor] .
+    --- meta transition
+    sorts MetaEdge MetaConf .
+    -------------------------
 
---- propositions
-  subsort Prop < Formula .
-  op prop : Term -> Prop [ctor] .
+    op <_>   : State          -> MetaConf [ctor] .
+    op _|=>_ : MetaEdge State -> MetaConf [ctor] .
+    ----------------------------------------------
 
---- folding relation
-  op _>=_ : State State -> Bool .
-  op _~=_ : State State -> Bool .
+    op deadlock :                      -> MetaEdge [ctor] .
+    op _/_      : RuleSet Substitution -> MetaEdge [ctor] .
+    -------------------------------------------------------
 
-  op _~_  : MetaEdge MetaEdge -> Bool .
-  eq deadlock ~ deadlock = true .
-  eq RS:RuleSet / S1:Substitution ~ RS:RuleSet / S2:Substitution = true .
+    --- propositions
+    subsort Prop < Formula .
+    ------------------------
 
---- print state during model checking (debugging purpose)
-  op prettyPrint : State ~> QidList .
-  op prettyPrint : MetaEdge ~> QidList .
+    op prop : Term -> Prop [ctor] .
+    -------------------------------
 
---- transitions
-  sort Transition TransitionList .
-  subsort Transition < TransitionList .
-  op {_,_} : State MetaEdge -> Transition [ctor] .
-  op nil : -> TransitionList [ctor] .
-  op __ : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
+    --- folding relation
+    op _>=_ : State State -> Bool .
+    op _~=_ : State State -> Bool .
+    -------------------------------
 
---- model checking results
-  sorts ModelCheckResult .
-  subsort Bool < ModelCheckResult .
-  op prefix_loop_ : TransitionList TransitionList -> ModelCheckResult [ctor format(n n++i n ni i--)] .
+    op _~_  : MetaEdge MetaEdge -> Bool .
+    -------------------------------------
+    eq deadlock ~ deadlock = true .
+    eq RS:RuleSet / S1:Substitution ~ RS:RuleSet / S2:Substitution = true .
 
---- bounded model checker report
-  sort BoundedModelCheckReport .
-  op result:_real:_bound:_complete:_ : ModelCheckResult Bool Nat Bool -> BoundedModelCheckReport [ctor] .
+    --- print state during model checking (debugging purpose)
+    op prettyPrint : State    ~> QidList .
+    op prettyPrint : MetaEdge ~> QidList .
+    --------------------------------------
 
---- model checker
---- (InitState,Formula,SubsumptionFolding,Bound)
-  op symbolicModelCheck : State Formula Bool Bound ~> BoundedModelCheckReport
-    [special (
-      id-hook SymbolicModelCheckerSymbol
+    --- transitions
+    sort Transition TransitionList .
+    --------------------------------
+    subsort Transition < TransitionList .
 
-      --- temporal operators
-      op-hook trueSymbol              (True : ~> Formula)
-      op-hook falseSymbol             (False : ~> Formula)
-      op-hook notSymbol               (~_ : Formula ~> Formula)
-      op-hook nextSymbol              (O_ : Formula ~> Formula)
-      op-hook andSymbol               (_/\_ : Formula Formula ~> Formula)
-      op-hook orSymbol                (_\/_ : Formula Formula ~> Formula)
-      op-hook untilSymbol             (_U_ : Formula Formula ~> Formula)
-      op-hook releaseSymbol           (_R_ : Formula Formula ~> Formula)
+    op {_,_} : State MetaEdge                -> Transition [ctor] .
+    ---------------------------------------------------------------
 
-      --- for Bound attribute
-      op-hook succSymbol              (s_ : Nat ~> NzNat)
-      op-hook unboundedSymbol         (unbounded : ~> Bound)
+    op nil   :                               -> TransitionList [ctor] .
+    op __    : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
+    -------------------------------------------------------------------------------------------------
 
-      --- state propositions
-      op-hook satisfiesSymbol         (_|=_ : State Formula ~> Bool)
-      term-hook trueTerm              (true)
+    --- model checking results
+    sorts ModelCheckResult .
+    ------------------------
+    subsort Bool < ModelCheckResult .
 
-      --- folding graph stuff
-      op-hook subsumeFoldingRelSymbol (_>=_ : State State ~> Bool)
-      op-hook renameFoldingRelSymbol  (_~=_ : State State ~> Bool)
-      op-hook compatibleTransSymbol   (_~_  : MetaEdge MetaEdge ~> Bool)
+    op prefix_loop_ : TransitionList TransitionList -> ModelCheckResult [ctor format(n n++i n ni i--)] .
+    ----------------------------------------------------------------------------------------------------
 
-      op-hook prettyPrintStateSymbol  (prettyPrint : State ~> QidList)
-      op-hook prettyPrintTransSymbol  (prettyPrint : MetaEdge ~> QidList)
+    --- bounded model checker report
+    sort BoundedModelCheckReport .
+    ------------------------------
 
-      --- meta graph
-      op-hook metaStateSymbol         (<_> : State ~> MetaConf)
-      op-hook metaTransitionSymbol    (_|=>_ : MetaEdge State ~> MetaConf)
+    op result:_real:_bound:_complete:_ : ModelCheckResult Bool Nat Bool -> BoundedModelCheckReport [ctor] .
+    -------------------------------------------------------------------------------------------------------
 
-      --- counterexamples
-      term-hook falseTerm             (false)
-      term-hook deadlockTerm          ((deadlock).MetaEdge)
+    --- model checker
+    --- (InitState,Formula,SubsumptionFolding,Bound)
+    op symbolicModelCheck : State Formula Bool Bound ~> BoundedModelCheckReport
+     [ special ( id-hook SymbolicModelCheckerSymbol
 
-      op-hook transitionSymbol        ({_,_} : State MetaEdge ~> Transition)
-      op-hook transitionListSymbol    (__ : TransitionList TransitionList ~> TransitionList)
-      op-hook nilTransitionListSymbol (nil : ~> TransitionList)
-      op-hook counterexampleSymbol    (prefix_loop_ : TransitionList TransitionList ~> ModelCheckResult)
+                 --- temporal operators
+                 op-hook trueSymbol              (True : ~> Formula)
+                 op-hook falseSymbol             (False : ~> Formula)
+                 op-hook notSymbol               (~_ : Formula ~> Formula)
+                 op-hook nextSymbol              (O_ : Formula ~> Formula)
+                 op-hook andSymbol               (_/\_ : Formula Formula ~> Formula)
+                 op-hook orSymbol                (_\/_ : Formula Formula ~> Formula)
+                 op-hook untilSymbol             (_U_ : Formula Formula ~> Formula)
+                 op-hook releaseSymbol           (_R_ : Formula Formula ~> Formula)
 
-      --- result report
-      op-hook resultreportSymbol      (result:_real:_bound:_complete:_ : ModelCheckResult Bool Nat Bool ~> BoundedModelCheckReport) 
-     )] .
+                 --- for Bound attribute
+                 op-hook succSymbol              (s_ : Nat ~> NzNat)
+                 op-hook unboundedSymbol         (unbounded : ~> Bound)
+
+                 --- state propositions
+                 op-hook satisfiesSymbol         (_|=_ : State Formula ~> Bool)
+                 term-hook trueTerm              (true)
+
+                 --- folding graph stuff
+                 op-hook subsumeFoldingRelSymbol (_>=_ : State State ~> Bool)
+                 op-hook renameFoldingRelSymbol  (_~=_ : State State ~> Bool)
+                 op-hook compatibleTransSymbol   (_~_  : MetaEdge MetaEdge ~> Bool)
+
+                 op-hook prettyPrintStateSymbol  (prettyPrint : State ~> QidList)
+                 op-hook prettyPrintTransSymbol  (prettyPrint : MetaEdge ~> QidList)
+
+                 --- meta graph
+                 op-hook metaStateSymbol         (<_> : State ~> MetaConf)
+                 op-hook metaTransitionSymbol    (_|=>_ : MetaEdge State ~> MetaConf)
+
+                 --- counterexamples
+                 term-hook falseTerm             (false)
+                 term-hook deadlockTerm          ((deadlock).MetaEdge)
+
+                 op-hook transitionSymbol        ({_,_} : State MetaEdge ~> Transition)
+                 op-hook transitionListSymbol    (__ : TransitionList TransitionList ~> TransitionList)
+                 op-hook nilTransitionListSymbol (nil : ~> TransitionList)
+                 op-hook counterexampleSymbol    (prefix_loop_ : TransitionList TransitionList ~> ModelCheckResult)
+
+                 --- result report
+                 op-hook resultreportSymbol      (result:_real:_bound:_complete:_ : ModelCheckResult Bool Nat Bool ~> BoundedModelCheckReport)
+               )
+     ] .
 endfm
 
 
@@ -147,230 +186,242 @@ endfm
 
 load ../base/full-maude.maude
 
-fmod META-LMC-PARAMETERS is 
-  pr META-MODULE .
-  op ##m## : ~> SModule [memo] . --- empty! the user module shoule define them.
-  op ##f## : ~> TermList [memo] .
+fmod META-LMC-PARAMETERS is
+   protecting META-MODULE .
 
-  var H : Header .  var IL : ImportList .  var SS : SortSet .  var SSDS : SubsortDeclSet .  
-  var OPDS : OpDeclSet . var MAS : MembAxSet .  var EQS : EquationSet .  var RLS : RuleSet .
-  vars T1 T2 : Term . var ATS : AttrSet . var COND : EqCondition .
+    --- empty! the user module shoule define them.
+    op ##m## : ~> SModule  [memo] .
+    op ##f## : ~> TermList [memo] .
 
-  --- to handle the mismatch between Full & Core Maude
-  --- due to some bugs, only used for getVarants and metaNarrow
+    var H : Header .  var IL : ImportList .  var SS : SortSet .  var SSDS : SubsortDeclSet .
+    var OPDS : OpDeclSet . var MAS : MembAxSet .  var EQS : EquationSet .  var RLS : RuleSet .
+    vars T1 T2 : Term . var ATS : AttrSet . var COND : EqCondition .
 
-  op trMod : SModule -> SModule [memo] . 
-  eq trMod(fmod H is IL sorts SS . SSDS OPDS MAS EQS endfm) 
-   = fmod H is IL sorts SS . SSDS OPDS MAS trEqs(EQS) endfm .
-  eq trMod(mod H is IL sorts SS . SSDS OPDS MAS EQS RLS endm)
-   = mod H is IL sorts SS . SSDS OPDS MAS trEqs(EQS) RLS endm .
+    --- to handle the mismatch between Full & Core Maude
+    --- due to some bugs, only used for getVarants and metaNarrow
 
-  op trEqs : EquationSet -> EquationSet .
-  eq trEqs(eq T1 = T2 [metadata("variant") ATS] . EQS)
-   = eq T1 = T2 [variant ATS] . trEqs(EQS) .
-  eq trEqs(ceq T1 = T2 if COND [metadata("variant") ATS] . EQS)
-   = ceq T1 = T2 if COND [variant ATS] . trEqs(EQS) .
-  eq trEqs(EQS) = EQS [owise] .
+    op trMod : SModule -> SModule [memo] .
+    eq trMod(fmod H is IL sorts SS . SSDS OPDS MAS EQS endfm)
+     = fmod H is IL sorts SS . SSDS OPDS MAS trEqs(EQS) endfm .
+    eq trMod(mod H is IL sorts SS . SSDS OPDS MAS EQS RLS endm)
+     = mod H is IL sorts SS . SSDS OPDS MAS trEqs(EQS) RLS endm .
+
+    op trEqs : EquationSet -> EquationSet .
+    eq trEqs(eq T1 = T2 [metadata("variant") ATS] . EQS)
+     = eq T1 = T2 [variant ATS] . trEqs(EQS) .
+    eq trEqs(ceq T1 = T2 if COND [metadata("variant") ATS] . EQS)
+     = ceq T1 = T2 if COND [variant ATS] . trEqs(EQS) .
+    eq trEqs(EQS) = EQS [owise] .
 endfm
 
 fmod LMC-RESULT-SET is
-  pr RESULT-CONTEXT-SET .
+   protecting RESULT-CONTEXT-SET .
 
-  sort StepResult StepResult? .
-  subsort StepResult < StepResult? .
-  op failure : -> StepResult? [ctor] .
-  op {_,_,_/_} : Term Type Substitution RuleSet -> StepResult [ctor] .
+    sort StepResult StepResult? .
+    -----------------------------
+    subsort StepResult < StepResult? .
 
-  sort StepResultSet .
-  subsort StepResult < StepResultSet .
-  op empty : -> StepResultSet [ctor] .
-  op _||_ : StepResultSet StepResultSet -> StepResultSet
-    [ctor assoc comm id: empty prec 65] .
-  eq X:StepResult || X:StepResult = X:StepResult .
+    op failure   : -> StepResult? [ctor] .
+    op {_,_,_/_} : Term Type Substitution RuleSet -> StepResult [ctor] .
+    --------------------------------------------------------------------
 
-  var M : Module . vars NextVar : Nat . vars S S' : Substitution .
-  vars T TS CtTS : Term . var TL : TermList . var TP : Type . var R : Rule .
-  var Tr : TraceNarrow . var B : Flags . vars Ct CtS : Context .  
-  var RTS : ResultContextSet . var SRS : StepResultSet .
+    sort StepResultSet .
+    --------------------
+    subsort StepResult < StepResultSet .
 
-  op to4Tuple : Module ResultContextSet -> StepResult .
-  eq to4Tuple(M, empty ) = empty .
-  eq to4Tuple(M, {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr,B} | RTS )
-   = {CtTS, leastSort(M,CtTS), S .. S' / getRuleSet(Tr)} || 
-     to4Tuple(M, RTS) .
+    op empty :                             -> StepResultSet [ctor] .
+    op _||_  : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: empty prec 65] .
+    ---------------------------------------------------------------------------------------------
+    eq X:StepResult || X:StepResult = X:StepResult .
 
-  op _|>_ : StepResult TermList -> StepResult .
-  eq (empty).StepResult |> TL = (empty).StepResult .
-  eq ({T,TP,S / R} || SRS) |> TL = {T,TP,S |> TL / R} || (SRS |> TL) .
-  eq (failure || SRS ) |> TL = failure || (SRS |> TL) .
+    var M : Module . vars NextVar : Nat . vars S S' : Substitution .
+    vars T TS CtTS : Term . var TL : TermList . var TP : Type . var R : Rule .
+    var Tr : TraceNarrow . var B : Flags . vars Ct CtS : Context .
+    var RTS : ResultContextSet . var SRS : StepResultSet .
 
-  op getRuleSet : TraceNarrow -> RuleSet .
-  eq getRuleSet({T,S,TP,R} Tr) = R getRuleSet(Tr) .
-  eq getRuleSet(nil) = none .
+    op to4Tuple : Module ResultContextSet -> StepResult .
+    -----------------------------------------------------
+    eq to4Tuple(M, empty ) = empty .
+    eq to4Tuple(M, {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr,B} | RTS )
+     = {CtTS, leastSort(M,CtTS), S .. S' / getRuleSet(Tr)} || to4Tuple(M, RTS) .
 
-  sort VariantSet .
-  subsort Variant < VariantSet .
-  op emptyVariantSet : -> VariantSet [ctor] .
-  op _#_ : VariantSet VariantSet -> VariantSet
-    [ctor assoc comm id: emptyVariantSet prec 65 format (d d n d)] .
-  eq X:Variant # X:Variant = X:Variant .
+    op _|>_ : StepResult TermList -> StepResult .
+    ---------------------------------------------
+    eq (empty).StepResult    |> TL = (empty).StepResult .
+    eq ({T,TP,S / R} || SRS) |> TL = {T,TP,S |> TL / R} || (SRS |> TL) .
+    eq (failure      || SRS) |> TL = failure || (SRS |> TL) .
+
+    op getRuleSet : TraceNarrow -> RuleSet .
+    ----------------------------------------
+    eq getRuleSet(nil)           = none .
+    eq getRuleSet({T,S,TP,R} Tr) = R getRuleSet(Tr) .
+
+    sort VariantSet .
+    -----------------
+    subsort Variant < VariantSet .
+
+    op emptyVariantSet :                       -> VariantSet [ctor] .
+    op _#_             : VariantSet VariantSet -> VariantSet [ctor assoc comm id: emptyVariantSet prec 65 format (d d n d)] .
+    -------------------------------------------------------------------------------------------------------------------------
+    eq X:Variant # X:Variant = X:Variant .
 endfm
 
 mod META-LMC-THEORY is
-  pr LMC-RESULT-SET .
-  pr META-LMC-PARAMETERS .
-  pr BOUNDED-FOLDING-MODEL-CHECKER .
+   protecting LMC-RESULT-SET .
+   protecting META-LMC-PARAMETERS .
+   protecting BOUNDED-FOLDING-MODEL-CHECKER .
 
-  vars T1 T2 ST ST' : Term . vars SUB SUB' : Substitution .  
-  var RS : RuleSet . var CD : Condition . var Q : Qid . 
-  var TP : Type .  var SRS : StepResultSet . 
+    vars T1 T2 ST ST' : Term . vars SUB SUB' : Substitution .
+    var RS : RuleSet . var CD : Condition . var Q : Qid .
+    var TP : Type .  var SRS : StepResultSet .
 
-  ops init mid : Term -> State [ctor] .
+    ops init mid : Term -> State [ctor] .
+    -------------------------------------
 
---- functions
-  ops next variant : Term -> StepResultSet .
+    --- functions
+    ops next variant : Term -> StepResultSet .
+    ------------------------------------------
 
---- meta rules
- crl [init] : < init(ST) > 
-           => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST'))) 
-  if {ST',TP,SUB' / RS} || SRS := variant(ST) . 
+    --- meta rules
+    crl [init] :
+        < init(ST) >
+     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')))
+     if {ST',TP,SUB' / RS} || SRS := variant(ST) .
 
- crl [mid]  :  < mid(ST) > 
-           => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')))
-  if {ST',TP,SUB' / RS} || SRS := next(ST) .
+    crl [mid] :
+        < mid(ST) >
+     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')))
+     if {ST',TP,SUB' / RS} || SRS := next(ST) .
 endm
 
 fmod META-NARROWING-INTERFACE is
-  pr META-LMC-PARAMETERS .
-  pr LMC-RESULT-SET .
-  pr META-NARROWING-SEARCH .
+   protecting META-LMC-PARAMETERS .
+   protecting LMC-RESULT-SET .
+   protecting META-NARROWING-SEARCH .
 
-  var M : Module . var RS : RuleSet .
-  vars T T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant . 
-  var TP : Type . vars SUB SUB1 SUB2 : Substitution .  
-  vars NextVar NextVar' N : Nat . var VR : Variant . var VS : VariantSet .
-  var P : Parent . var B : Bool .
-  var SR : StepResult . var SRS : StepResultSet . 
+    var M : Module . var RS : RuleSet .
+    vars T T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant .
+    var TP : Type . vars SUB SUB1 SUB2 : Substitution .
+    vars NextVar NextVar' N : Nat . var VR : Variant . var VS : VariantSet .
+    var P : Parent . var B : Bool .
+    var SR : StepResult . var SRS : StepResultSet .
 
-  op metaNarrow2 : Module Term -> StepResult .
-  eq metaNarrow2(M,T) 
-   = to4Tuple(M,metaENarrowShowAll(M,T,1,full noStrategy BuiltIn-unify)) 
-     |> T .
+    op metaNarrow2 : Module Term -> StepResult .
+    --------------------------------------------
+    eq metaNarrow2(M,T) = to4Tuple(M,metaENarrowShowAll(M,T,1,full noStrategy BuiltIn-unify)) |> T .
 
-  op metaGenVariant : Module Term -> VariantSet .
-  eq metaGenVariant(M, T) = metaGenVariant(M, T, highestVar(T)) .
+    op metaGenVariant : Module Term -> VariantSet .
+    -----------------------------------------------
+    eq metaGenVariant(M, T) = metaGenVariant(M, T, highestVar(T)) .
 
-  op metaGenVariant : Module Term Nat -> VariantSet .
-  eq metaGenVariant(M, T, NextVar) = metaGenVariant2(M, T, NextVar, 0) .
-   
-  op metaGenVariant2 : Module Term Nat Nat -> VariantSet .
- ceq metaGenVariant2(M, T, NextVar, N)
-   = VR # metaGenVariant2(M,T,NextVar,s N) 
-   if VR := metaGetVariant(M,T,empty,NextVar,N) .
-  eq metaGenVariant2(M, T, NextVar, N) = emptyVariantSet [owise] .
+    op metaGenVariant : Module Term Nat -> VariantSet .
+    ---------------------------------------------------
+    eq metaGenVariant(M, T, NextVar) = metaGenVariant2(M, T, NextVar, 0) .
 
---- variant narrowing prop instantiations.
---- compute the PI-instantated states of the given state.
+    op metaGenVariant2 : Module Term Nat Nat -> VariantSet .
+    --------------------------------------------------------
+    eq metaGenVariant2(M, T, NextVar, N) = emptyVariantSet [owise] .
+   ceq metaGenVariant2(M, T, NextVar, N) = VR # metaGenVariant2(M,T,NextVar,s N)
+    if VR := metaGetVariant(M,T,empty,NextVar,N) .
 
-  --- StateSet PropSet -> StateSet
-  op propSetInstSet : StepResultSet TermList ~> StepResultSet . 
-  eq propSetInstSet(SRS, (PT,TL))
-   = propSetInstSet(propInstSet(SRS, PT), TL) .
-  eq propSetInstSet(SRS, empty) = SRS .
+    --- variant narrowing prop instantiations.
+    --- compute the PI-instantated states of the given state.
 
-  --- StateSet Prop -> StateSet (trMod for genVariant)
-  op propInstSet : StepResultSet Term ~> StepResultSet .
-  eq propInstSet({ST,TP,SUB / RS} || SRS, PT)
-   = filterPropVars({ST,TP,SUB / RS}, metaGenVariant(trMod(##m##), '_|=_[ST, PT]))
-   || propInstSet(SRS, PT) .
-  eq propInstSet(empty, PT) = empty .
+    --- StateSet PropSet -> StateSet
+    op propSetInstSet : StepResultSet TermList ~> StepResultSet .
+    -------------------------------------------------------------
+    eq propSetInstSet(SRS, empty)   = SRS .
+    eq propSetInstSet(SRS, (PT,TL)) = propSetInstSet(propInstSet(SRS, PT), TL) .
 
-  op filterPropVars : StepResult VariantSet ~> StepResultSet .
-  eq filterPropVars({ST,TP,SUB / RS}, {T,SUB1,N,P,B} # VS)
-   = if inst?(T) then {ST << SUB1,TP, SUB .. SUB1 / RS} 
-     else empty fi 
-   || filterPropVars({ST,TP,SUB / RS}, VS) .
-  eq filterPropVars(SR, emptyVariantSet) = empty .
+    --- StateSet Prop -> StateSet (trMod for genVariant)
+    op propInstSet : StepResultSet Term ~> StepResultSet .
+    ------------------------------------------------------
+    eq propInstSet(empty, PT) = empty .
+    eq propInstSet({ST,TP,SUB / RS} || SRS, PT)
+     = filterPropVars({ST,TP,SUB / RS}, metaGenVariant(trMod(##m##), '_|=_[ST, PT])) || propInstSet(SRS, PT) .
 
-  --- TODO: by not filtering, we may allow more patterns that are not reduced 
-  --- to true/false. However, it easily generates spurious counter examples.. 
-  --- We may adopt this with abstract refinement techniques..
-  --- But with filtering, the |= equations should be total...
+    op filterPropVars : StepResult VariantSet ~> StepResultSet .
+    ------------------------------------------------------------
+    eq filterPropVars(SR, emptyVariantSet) = empty .
+    eq filterPropVars({ST,TP,SUB / RS}, {T,SUB1,N,P,B} # VS)
+     = if inst?(T) then {ST << SUB1,TP, SUB .. SUB1 / RS} else empty fi || filterPropVars({ST,TP,SUB / RS}, VS) .
 
-  op inst? : Term ~> Bool .
-  eq inst?('true.Bool)  = true .
-  eq inst?('false.Bool) = true .
-  eq inst?(T) = false [owise] .
+    --- TODO: by not filtering, we may allow more patterns that are not reduced
+    --- to true/false. However, it easily generates spurious counter examples..
+    --- We may adopt this with abstract refinement techniques..
+    --- But with filtering, the |= equations should be total...
+
+    op inst? : Term ~> Bool .
+    -------------------------
+    eq inst?('true.Bool)  = true .
+    eq inst?('false.Bool) = true .
+    eq inst?(T)           = false [owise] .
 endfm
 
 mod META-SYMBOLIC-CONNECTOR is
-  pr META-LMC-THEORY .
-  pr BOUNDED-FOLDING-MODEL-CHECKER .
-  pr META-NARROWING-INTERFACE .
-  pr DECL-META-PRETTY-PRINT 
-   * (op addOps to addOpsSE, op addEqs to addEqsSE, op addSorts to addSortsSE) .
+   protecting META-LMC-THEORY .
+   protecting BOUNDED-FOLDING-MODEL-CHECKER .
+   protecting META-NARROWING-INTERFACE .
+   protecting DECL-META-PRETTY-PRINT * ( op addOps to addOpsSE
+                                       , op addEqs to addEqsSE
+                                       , op addSorts to addSortsSE
+                                       ) .
 
-  var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term . 
-  var RN : RuleName . var RS : RuleSet . var TL : TermList .  
-  var V : Variable . var TP : Type . vars SUB SUB' SUB'' : Substitution .  
-  var B : Bool . var N : Nat . var D : Bound .
-  var RT : ResultTriple .  var RTS : ResultTripleSet . 
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var RN : RuleName . var RS : RuleSet . var TL : TermList .
+    var V : Variable . var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var B : Bool . var N : Nat . var D : Bound . var A : Assignment .
+    var RT : ResultTriple .  var RTS : ResultTripleSet .
 
---- meta prop and state
-  eq mid(ST) |= prop(PT) 
-   = getTerm(metaReduce((##m##), '_|=_[ST, PT])) == 'true.Bool .
+    --- meta prop and state
+    eq mid(ST) |= prop(PT) = getTerm(metaReduce((##m##), '_|=_[ST, PT])) == 'true.Bool .
 
---- state folding
-  eq init(ST) >= init(ST) = true .
-  eq mid(ST) >= mid(ST')
-   = metaMatch((##m##), ST, ST', nil, 0) :: Substitution .
-  eq S1:State >= S2:State = false [owise] .
+    --- state folding
+    eq init(ST) >= init(ST) = true .
+    eq  mid(ST) >= mid(ST') = metaMatch((##m##), ST, ST', nil, 0) :: Substitution .
+    eq S1:State >= S2:State = false [owise] .
 
---- renameing folding
-  eq init(ST) ~= init(ST) = true .
-  eq mid(ST) ~= mid(ST')
-   = mid(ST) >= mid(ST') and-then mid(ST') >= mid(ST) .
-  eq S1:State ~= S2:State = false [owise] .
+    --- renaming folding
+    eq init(ST) ~= init(ST) = true .
+    eq  mid(ST) ~= mid(ST') = mid(ST) >= mid(ST') and-then mid(ST') >= mid(ST) .
+    eq S1:State ~= S2:State = false [owise] .
 
---- compute the next states
---- TODO: keep both a state and a substitution for a counter example..
-  eq next(ST)    
-   = propSetInstSet(metaNarrow2(trMod(##m##), ST), ##f##) .
-  eq variant(ST) 
-   = propSetInstSet({ST,leastSort((##m##),ST),none / none}, ##f##) .
+    --- compute the next states
+    --- TODO: keep both a state and a substitution for a counter example..
+    eq    next(ST) = propSetInstSet(metaNarrow2(trMod(##m##), ST), ##f##) .
+    eq variant(ST) = propSetInstSet({ST,leastSort(##m##,ST),none / none}, ##f##) .
 
---- run LMC model check : State Formula -> Result
-  op lmc-check : Term Term Bool Bound ~> BoundedModelCheckReport .
- ceq lmc-check(ST, PT, B, D) 
-   = symbolicModelCheck(init(ST), O tilde((##m##),PT), B, D) 
-  if sortLeq((##m##), leastSort((##m##),ST), 'State)
-  /\ sortLeq((##m##), leastSort((##m##),PT), 'Formula) .
+    --- run LMC model check : State Formula -> Result
+    op lmc-check : Term Term Bool Bound ~> BoundedModelCheckReport .
+    ----------------------------------------------------------------
+   ceq lmc-check(ST, PT, B, D) = symbolicModelCheck(init(ST), O tilde((##m##),PT), B, D)
+    if sortLeq((##m##), leastSort((##m##),ST), 'State)
+    /\ sortLeq((##m##), leastSort((##m##),PT), 'Formula) .
 
---- meta formula
-  op tilde : Module Term -> Formula .
- ceq tilde(M, PT)             = prop(PT) if sortLeq(M,leastSort(M,PT),'Prop) .
-  eq tilde(M, 'True.Formula)  = True .
-  eq tilde(M, 'False.Formula) = False .
-  eq tilde(M, '~_[T])         = ~ tilde(M, T) .
-  eq tilde(M, '_/\_[T, T'])   = tilde(M, T) /\ tilde(M, T') .
-  eq tilde(M, '_\/_[T, T'])   = tilde(M, T) \/ tilde(M, T') .
-  eq tilde(M, 'O_[T])         = O tilde(M, T) .
-  eq tilde(M, '_U_[T, T'])    = tilde(M, T) U tilde(M, T') .
-  eq tilde(M, '_R_[T, T'])    = tilde(M, T) R tilde(M, T') .
+    --- meta formula
+    op tilde : Module Term -> Formula .
+    -----------------------------------
+   ceq tilde(M, PT)             = prop(PT) if sortLeq(M,leastSort(M,PT),'Prop) .
+    eq tilde(M, 'True.Formula)  = True .
+    eq tilde(M, 'False.Formula) = False .
+    eq tilde(M, '~_[T])         = ~ tilde(M, T) .
+    eq tilde(M, '_/\_[T, T'])   = tilde(M, T) /\ tilde(M, T') .
+    eq tilde(M, '_\/_[T, T'])   = tilde(M, T) \/ tilde(M, T') .
+    eq tilde(M, 'O_[T])         = O tilde(M, T) .
+    eq tilde(M, '_U_[T, T'])    = tilde(M, T) U tilde(M, T') .
+    eq tilde(M, '_R_[T, T'])    = tilde(M, T) R tilde(M, T') .
 
---- pretty print (for debugging)
-  eq prettyPrint(init(ST)) = eMetaPrettyPrint((##m##), ST) .
-  eq prettyPrint(mid(ST))  = eMetaPrettyPrint((##m##), ST) .
+    --- pretty print (for debugging)
+    eq prettyPrint(init(ST)) = eMetaPrettyPrint((##m##), ST) .
+    eq prettyPrint(mid(ST))  = eMetaPrettyPrint((##m##), ST) .
+    eq prettyPrint(RS / SUB) = prettyPrintSub(SUB) .
+       ---eMetaPrettyPrint((##m##), RS) '/
 
-  eq prettyPrint(RS / SUB) 
-    = ---eMetaPrettyPrint((##m##), RS) '/ 
-      prettyPrintSub(SUB) .
-
-  op prettyPrintSub : Substitution -> QidList .
-  eq prettyPrintSub(none) = 'none .
-  eq prettyPrintSub(V <- T) = V '<- eMetaPrettyPrint((##m##),T) .
-  eq prettyPrintSub(V <- T ; A:Assignment ; SUB) 
-   = V '<- eMetaPrettyPrint((##m##),T) '; prettyPrintSub(A:Assignment ; SUB) .
+    op prettyPrintSub : Substitution -> QidList .
+    ---------------------------------------------
+    eq prettyPrintSub(none)             = 'none .
+    eq prettyPrintSub(V <- T)           = V '<- eMetaPrettyPrint((##m##),T) .
+    eq prettyPrintSub(V <- T ; A ; SUB) = V '<- eMetaPrettyPrint((##m##),T) '; prettyPrintSub(A ; SUB) .
 endm
 
 *****************************************************
@@ -380,193 +431,180 @@ endm
 --- NOTE: currently, only considering "T = true"
 
 mod META-LMC-COND-THEORY is
-  pr META-LMC-THEORY .
+   protecting META-LMC-THEORY .
 
-  ops init mid : Term EqCondition -> State [ctor] .
-endm 
+   ops init mid : Term EqCondition -> State [ctor] .
+    ------------------------------------------------
+endm
 
 fmod META-NARROWING-COND-INTERFACE is
-  pr META-NARROWING-INTERFACE .
+   protecting META-NARROWING-INTERFACE .
 
-  vars T T1 T2 ST PT : Term .  var TL : TermList .
-  var C : Constant . var CD : EqCondition . var RS : RuleSet .
-  var TP : Type . vars SUB SUB1 SUB2 : Substitution .  var N : Nat .
-  var SR : StepResult . var SRS : StepResultSet . var VS : VariantSet .
-  var P : Parent . var B : Bool .
+   vars T T1 T2 ST PT : Term .  var TL : TermList .
+    var C : Constant . var CD : EqCondition . var RS : RuleSet .
+    var TP : Type . vars SUB SUB1 SUB2 : Substitution .  var N : Nat .
+    var SR : StepResult . var SRS : StepResultSet . var VS : VariantSet .
+    var P : Parent . var B : Bool .
 
---- variant narrowing condition instantiations.
+    --- variant narrowing condition instantiations.
 
-  --- StateSet EqCondition -> StateSet
-  op condSetInstSet : StepResultSet EqCondition ~> StepResultSet . 
-  eq condSetInstSet(SRS, T = 'true.Bool /\ CD)
-   = condSetInstSet(condInstSet(SRS, T), CD) .
-  eq condSetInstSet(SRS, nil) = SRS .
+    --- StateSet EqCondition -> StateSet
+    op condSetInstSet : StepResultSet EqCondition ~> StepResultSet .
+    ----------------------------------------------------------------
+    eq condSetInstSet(SRS, nil)                  = SRS .
+    eq condSetInstSet(SRS, T = 'true.Bool /\ CD) = condSetInstSet(condInstSet(SRS, T), CD) .
 
-  --- StateSet Prop -> StateSet
-  op condInstSet : StepResultSet Term ~> StepResultSet .
- ceq condInstSet({ST,TP,SUB / RS} || SRS, T)
-   = filterCondVars({ST,TP,SUB / RS}, VS) || condInstSet(SRS, T) 
-  if VS := metaGenVariant(trMod(##m##), T << SUB) .
-  eq condInstSet(empty, T) = empty .
+    --- StateSet Prop -> StateSet
+    op condInstSet : StepResultSet Term ~> StepResultSet .
+    ------------------------------------------------------
+    eq condInstSet(empty, T)                   = empty .
+   ceq condInstSet({ST,TP,SUB / RS} || SRS, T) = filterCondVars({ST,TP,SUB / RS}, VS) || condInstSet(SRS, T)
+    if VS := metaGenVariant(trMod(##m##), T << SUB) .
 
-  --- only true instances (hence the conditions should be complete and FVP)
-  op filterCondVars : StepResult VariantSet ~> StepResultSet .
-  eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N,P,B} # VS)
-   = {ST << SUB1, TP, SUB .. SUB1 / RS} 
-   || filterCondVars({ST,TP,SUB / RS}, VS) .
-  eq filterCondVars(SR, VS) = empty [owise] .
+    --- only true instances (hence the conditions should be complete and FVP)
+    op filterCondVars : StepResult VariantSet ~> StepResultSet .
+    ------------------------------------------------------------
+    eq filterCondVars(SR, VS) = empty [owise] .
+    eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N,P,B} # VS)
+     = {ST << SUB1, TP, SUB .. SUB1 / RS} || filterCondVars({ST,TP,SUB / RS}, VS) .
 
-  --- applying substitution to condition
-  op _<<_ : EqCondition Substitution ~> EqCondition .
-  eq (T1 = T2 /\ CD) << SUB
-   = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
-  eq (T1 := T2 /\ CD) << SUB
-   = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
-  eq (T : S:Sort /\ CD) << SUB
-   = ((T << SUB) : S:Sort) /\ (CD << SUB) .
-  eq nil << SUB = (nil).EqCondition .
+    --- applying substitution to condition
+    op _<<_ : EqCondition Substitution ~> EqCondition .
+    ---------------------------------------------------
+    eq nil << SUB = (nil).EqCondition .
+    eq (T1  = T2   /\ CD) << SUB = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
+    eq (T1 := T2   /\ CD) << SUB = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
+    eq (T : S:Sort /\ CD) << SUB = ((T << SUB) : S:Sort)       /\ (CD << SUB) .
 endfm
 
 mod META-SYMBOLIC-COND-CONNECTOR-BASE is
-  pr META-LMC-COND-THEORY .
-  pr META-SYMBOLIC-CONNECTOR .
-  pr META-NARROWING-COND-INTERFACE .
+   protecting META-LMC-COND-THEORY .
+   protecting META-SYMBOLIC-CONNECTOR .
+   protecting META-NARROWING-COND-INTERFACE .
 
-  var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term . 
-  var TL : TermList .  var V : Variable .
-  var TP : Type . vars SUB SUB' SUB'' : Substitution .  
-  var B : Bool . var N : Nat . var D : Bound .
-  var RT : ResultTriple .  var RTS : ResultTripleSet . 
-  vars CD CD' : EqCondition .
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var B : Bool . var N : Nat . var D : Bound .
+    var RT : ResultTriple .  var RTS : ResultTripleSet .
+   vars CD CD' : EqCondition .
 
---- meta prop and state
-  eq mid(ST,CD) |= prop(PT) 
-   = getTerm(metaReduce((##m##), '_|=_[ST, PT])) == 'true.Bool .
+    --- meta prop and state
+    eq mid(ST,CD) |= prop(PT) = getTerm(metaReduce((##m##), '_|=_[ST, PT])) == 'true.Bool .
 
---- with condition
-  op lmc-check : Term Term EqCondition Bool Bound ~> BoundedModelCheckReport .
- ceq lmc-check(ST, PT, CD, B, D)
-   = if CD == nil
-     then symbolicModelCheck(init(ST), O tilde((##m##),PT), B, D)
-     else symbolicModelCheck(init(ST,CD), O tilde((##m##),PT), B, D)
-     fi
-  if sortLeq((##m##), leastSort((##m##),ST), 'State)
-  /\ sortLeq((##m##), leastSort((##m##),PT), 'Formula) .
+    --- with condition
+    op lmc-check : Term Term EqCondition Bool Bound ~> BoundedModelCheckReport .
+    ----------------------------------------------------------------------------
+   ceq lmc-check(ST, PT, CD, B, D)
+     = if CD == nil
+       then symbolicModelCheck(init(ST), O tilde((##m##),PT), B, D)
+       else symbolicModelCheck(init(ST,CD), O tilde((##m##),PT), B, D)
+       fi
+    if sortLeq((##m##), leastSort((##m##),ST), 'State)
+    /\ sortLeq((##m##), leastSort((##m##),PT), 'Formula) .
 
---- normalize conditions (modulo equation)
---- NOTE: metaNormalize vs. metaReduce??  metaNormalize generates slightly
---- more states for (state,condition) pairs if there exists equaltional
---- abstraction, but it will be more correct since we do not worry about
---- whether some variables is removed by such equations...
-  op condNorm : EqCondition ~> EqCondition .
-  eq condNorm(T = 'true.Bool /\ CD)
-   = getTerm(metaNormalize((##m##),T)) = 'true.Bool /\ condNorm(CD) .
-  eq condNorm(nil) = nil .
+    --- normalize conditions (modulo equation)
+    --- NOTE: metaNormalize vs. metaReduce??  metaNormalize generates slightly
+    --- more states for (state,condition) pairs if there exists equaltional
+    --- abstraction, but it will be more correct since we do not worry about
+    --- whether some variables is removed by such equations...
+    op condNorm : EqCondition ~> EqCondition .
+    ------------------------------------------
+    eq condNorm(nil)                  = nil .
+    eq condNorm(T = 'true.Bool /\ CD) = getTerm(metaNormalize((##m##),T)) = 'true.Bool /\ condNorm(CD) .
 
---- pretty print (for debugging)
-  eq prettyPrint(init(ST,CD)) 
-   = prettyPrint(init(ST)) '\n '\t eMetaPrettyPrint((##m##), CD) .
-  eq prettyPrint(mid(ST,CD)) 
-   = prettyPrint(mid(ST)) '\n '\t eMetaPrettyPrint((##m##), CD) .
+    --- pretty print (for debugging)
+    eq prettyPrint(init(ST,CD)) = prettyPrint(init(ST)) '\n '\t eMetaPrettyPrint((##m##), CD) .
+    eq prettyPrint(mid(ST,CD))  = prettyPrint(mid(ST)) '\n '\t eMetaPrettyPrint((##m##), CD) .
 endm
 
 --- Conditions are solved for generating states by variant narrowing
 mod META-SYMBOLIC-COND-CONNECTOR is
-  pr META-SYMBOLIC-COND-CONNECTOR-BASE .
+   protecting META-SYMBOLIC-COND-CONNECTOR-BASE .
 
-  var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term . 
-  var TL : TermList .  var V : Variable .
-  var TP : Type . vars SUB SUB' SUB'' : Substitution .  var N : Nat .
-  var SR : StepResult .  var SRS : StepResultSet . 
-  vars CD CD' : EqCondition . var RS : RuleSet .
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .  var N : Nat .
+    var SR : StepResult .  var SRS : StepResultSet .
+   vars CD CD' : EqCondition . var RS : RuleSet .
 
---- meta rules
- crl [init-cond] : 
+   --- meta rules
+   crl [init-cond] :
        < init(ST,CD) >
     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')),condNorm(CD << SUB'))
-  if {ST',TP,SUB' / RS} || SRS := variant(ST,CD) .
+    if {ST',TP,SUB' / RS} || SRS := variant(ST,CD) .
 
- crl [mid-cond] : 
+   crl [mid-cond] :
        < mid(ST,CD) >
     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')),condNorm(CD << SUB'))
-  if {ST',TP,SUB' / RS} || SRS := next(ST,CD) .
+    if {ST',TP,SUB' / RS} || SRS := next(ST,CD) .
 
-  ops next variant : Term EqCondition -> StepResultSet .
-  eq next(ST,CD)    
-   = propSetInstSet(condSetInstSet(metaNarrow2(trMod(##m##), ST),CD), ##f##) .
-  eq variant(ST,CD) 
-   = propSetInstSet(condSetInstSet({ST,leastSort((##m##),ST),none / none},CD), 
-                    ##f##) .
+   ops next variant : Term EqCondition -> StepResultSet .
+    -----------------------------------------------------
+    eq next(ST,CD)    = propSetInstSet(condSetInstSet(metaNarrow2(trMod(##m##), ST),CD), ##f##) .
+    eq variant(ST,CD) = propSetInstSet(condSetInstSet({ST,leastSort((##m##),ST),none / none},CD), ##f##) .
 
---- condition should be already considered by variant narrowing
-  eq mid(ST,CD) >= mid(ST',CD')
-   = mid(ST) >= mid(ST') .
-  eq mid(ST,CD) ~= mid(ST',CD')
-   = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
+    --- condition should be already considered by variant narrowing
+    eq mid(ST,CD) >= mid(ST',CD') = mid(ST)    >= mid(ST') .
+    eq mid(ST,CD) ~= mid(ST',CD') = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
 endm
 
 --- Folding conditions C >= C' by checking C' => \rho(C) using variant narrowing
 mod META-SYMBOLIC-COND-CONNECTOR2 is
-  pr META-SYMBOLIC-COND-CONNECTOR-BASE .
+   protecting META-SYMBOLIC-COND-CONNECTOR-BASE .
 
-  vars T T' T1 T2 ST ST' PT CT : Term . 
-  var TL : TermList .  var V : Variable .
-  var TP : Type . vars SUB SUB' SUB'' : Substitution .  
-  var N : Nat . var B : Bool . var RS : RuleSet .
-  var SR : StepResult .  var SRS : StepResultSet . 
-  vars CD CD' : EqCondition .  var VS : VariantSet .
-  var P : Parent .
+   vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var N : Nat . var B : Bool . var RS : RuleSet .
+    var SR : StepResult .  var SRS : StepResultSet .
+    vars CD CD' : EqCondition .  var VS : VariantSet .
+    var P : Parent .
 
---- meta rules
- crl [init-cond] : 
+    --- meta rules
+   crl [init-cond] :
        < init(ST,CD) >
     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')),condNorm(CD << SUB'))
-  if {ST',TP,SUB' / RS} || SRS := variant(ST) /\ condOK(CD << SUB') .
+    if {ST',TP,SUB' / RS} || SRS := variant(ST) /\ condOK(CD << SUB') .
 
- crl [mid-cond]  : 
+   crl [mid-cond]  :
        < mid(ST,CD) >
     => RS / SUB' |=> mid(getTerm(metaReduce((##m##),ST')),condNorm(CD << SUB'))
-  if {ST',TP,SUB' / RS} || SRS := next(ST) /\ condOK(CD << SUB') .
+    if {ST',TP,SUB' / RS} || SRS := next(ST) /\ condOK(CD << SUB') .
 
---- Another method to check a condition.
-  op condOK : EqCondition ~> Bool .
-  eq condOK(T1 = 'true.Bool /\ CD)
-   = if getTerm(metaReduce((##m##), T1)) == 'false.Bool then false else true fi 
-     and-then condOK(CD) .
-  eq condOK(nil) = true .
+    --- Another method to check a condition.
+    op condOK : EqCondition ~> Bool .
+    ---------------------------------
+    eq condOK(nil)                   = true .
+    eq condOK(T1 = 'true.Bool /\ CD) = if getTerm(metaReduce(##m##, T1)) == 'false.Bool then false else true fi and-then condOK(CD) .
 
---- folding with conditions
-  eq mid(ST,CD) >= mid(ST',CD')
-   = condFold(ST, CD, ST', CD', 0) .
+    --- folding with conditions
+    eq mid(ST,CD) >= mid(ST',CD') = condFold(ST, CD, ST', CD', 0) .
+    eq mid(ST,CD) ~= mid(ST',CD') = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
 
-  eq mid(ST,CD) ~= mid(ST',CD')
-   = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
+    op condFold : Term EqCondition Term EqCondition Nat -> Bool .
+    -------------------------------------------------------------
+    eq condFold(ST, CD, ST', CD', 0)    = false [owise] .
+    eq condFold(ST, CD, ST', CD', s(N)) = true  [owise] .
+   ceq condFold(ST, CD, ST', CD', N)    = implyOK(CD', CD << SUB) and-then condFold(ST, CD, ST', CD', s(N))
+    if SUB := metaMatch((##m##), ST, ST', nil, N) .
 
-  op condFold : Term EqCondition Term EqCondition Nat -> Bool .
- ceq condFold(ST, CD, ST', CD', N)
-   = implyOK(CD', CD << SUB) and-then condFold(ST, CD, ST', CD', s(N))
-  if SUB := metaMatch((##m##), ST, ST', nil, N) .
-  eq condFold(ST, CD, ST', CD', 0) = false [owise] .
-  eq condFold(ST, CD, ST', CD', s(N)) = true [owise] .
+    --- check if the implecation (C1 /\ not C2) has no "true" solution
+    op implyOK : EqCondition EqCondition ~> Bool .
+    ----------------------------------------------
+   ceq implyOK(CD, CD') = implyOKsub(VS)
+    if VS := metaGenVariant(trMod(##m##),'_and_[condList(CD,true), '_or_[condList(CD',false)]]) .
 
---- check if the implecation (C1 /\ not C2) has no "true" solution
-  op implyOK : EqCondition EqCondition ~> Bool .
- ceq implyOK(CD, CD')
-   = implyOKsub(VS)
-  if VS := metaGenVariant(trMod(##m##),'_and_[condList(CD,true),
-                                     '_or_[condList(CD',false)]]) .
+    op implyOKsub : VariantSet ~> Bool .
+    ------------------------------------
+    eq implyOKsub(emptyVariantSet)    = true .
+   ceq implyOKsub({T,SUB,N,P,B} # VS) = T' =/= 'true.Bool and-then implyOKsub(VS)
+    if T' := getTerm(metaReduce((##m##),T)) .
 
-  op implyOKsub : VariantSet ~> Bool .
- ceq implyOKsub({T,SUB,N,P,B} # VS)
-   = T' =/= 'true.Bool and-then implyOKsub(VS)
-  if T' := getTerm(metaReduce((##m##),T)) .
-  eq implyOKsub(emptyVariantSet) = true .
-
-  op condList : EqCondition Bool ~> TermList .
-  eq condList(T = 'true.Bool /\ CD, B) 
-   = if B then T else 'not_[T] fi, condList(CD, B) .
-  eq condList(nil, B) 
-   = if B then 'true.Bool else 'false.Bool fi .
+    op condList : EqCondition Bool ~> TermList .
+    --------------------------------------------
+    eq condList(nil, B)                  = if B then 'true.Bool else 'false.Bool fi .
+    eq condList(T = 'true.Bool /\ CD, B) = if B then T else 'not_[T] fi, condList(CD, B) .
 endm
 
 
@@ -620,9 +658,9 @@ mod META-LMC-COUNTEREXAMPLE-TRANSFORMER is
   pr BOUNDED-FOLDING-MODEL-CHECKER .
 
   vars Q F : Qid . var M : Module .  var V : Variable . var C : Constant .
-  var CD : Condition . vars T T' ST PT : Term . var TL : TermList . 
-  var TR : Transition . var TRL TRL' : TransitionList . 
-  var RS : RuleSet . var RN : RuleName .  var AtS : AttrSet . 
+  var CD : Condition . vars T T' ST PT : Term . var TL : TermList .
+  var TR : Transition . var TRL TRL' : TransitionList .
+  var RS : RuleSet . var RN : RuleName .  var AtS : AttrSet .
   var SUB : Substitution . var ME : MetaEdge .
   var D : Bound . vars B BC BR : Bool . var MR : ModelCheckResult .
 
@@ -630,7 +668,7 @@ mod META-LMC-COUNTEREXAMPLE-TRANSFORMER is
   op transRes : ModelCheckResult -> Term .
   eq transRes(B) = upTerm(B:Bool) .
   eq transRes(prefix TRL loop TRL')
-   = 'prefix_loop_[wrapTL('__,'nil.TransitionList,transTRs(TRL)), 
+   = 'prefix_loop_[wrapTL('__,'nil.TransitionList,transTRs(TRL)),
                            wrapTL('__,'nil.TransitionList,transTRs(TRL'))] .
 
   op transTRs : TransitionList -> TermList .
@@ -639,10 +677,10 @@ mod META-LMC-COUNTEREXAMPLE-TRANSFORMER is
 
 --- transition (including conditions)
   op transTR : Transition -> TermList .
-  eq transTR({mid(ST), RS / SUB})  
-   = '`{_`,_`,_`}[ST, wrapTL('_;_,'none.CESubstitution,transSUB(SUB)), 
+  eq transTR({mid(ST), RS / SUB})
+   = '`{_`,_`,_`}[ST, wrapTL('_;_,'none.CESubstitution,transSUB(SUB)),
                   upRuleName(getRuleName(RS))] .
-  eq transTR({mid(ST), deadlock})  
+  eq transTR({mid(ST), deadlock})
    = '`{_`,_`,_`}[ST, 'none.CESubstitution, upRuleName(deadlock)] .
   eq transTR({init(ST), ME}) = empty  .
 
@@ -652,7 +690,7 @@ mod META-LMC-COUNTEREXAMPLE-TRANSFORMER is
 --- substitution
   op transSUB : Substitution -> TermList .
   eq transSUB(none) = empty .
-  eq transSUB(V <- T ; SUB) 
+  eq transSUB(V <- T ; SUB)
    = '_<-_[qid("'" + string(getName(V)) + ".Qid"), T], transSUB(SUB) .
 
   op wrapTL : Qid Constant TermList -> Term .
@@ -674,7 +712,7 @@ mod LMC-COMMAND-PROCESSING is
   pr COMMAND-PROCESSING .
   pr META-PROP-SET .
 
-  vars T T1 T2 T3 T4 T5 T6 : Term .  
+  vars T T1 T2 T3 T4 T5 T6 : Term .
   var TL TL1 : TermList .
   vars DB DB1 : Database .
   vars M U M1 M2 : Module .
@@ -701,7 +739,7 @@ mod LMC-COMMAND-PROCESSING is
   --- no argument
   eq procLMCComd(QI, ME, DB)
    = if compiledModule(ME, DB)
-     then procLMC(QI, empty, nil, unbounded, 
+     then procLMC(QI, empty, nil, unbounded,
                   getFlatModule(ME,DB), getVars(ME,DB), DB)
      else procLMC(QI, empty, nil, unbounded,
                   getFlatModule(modExp(evalModExp(ME,DB)),
@@ -714,28 +752,28 @@ mod LMC-COMMAND-PROCESSING is
  --- there exist arguments
  ceq procLMCComd(F[TL], ME, DB)
    = if compiledModule(ME, DB)
-     then procLMCComd(F, TL, getFlatModule(ME,DB), B, unbounded, 
+     then procLMCComd(F, TL, getFlatModule(ME,DB), B, unbounded,
                       getVars(ME,DB), DB, empty)
-     else procLMCComd(F, TL, 
+     else procLMCComd(F, TL,
                       getFlatModule(modExp(evalModExp(ME,DB)),
-                                    database(evalModExp(ME,DB))), 
+                                    database(evalModExp(ME,DB))),
                       B, unbounded,
                       getVars(modExp(evalModExp(ME,DB)),
                               database(evalModExp(ME,DB))),
                       database(evalModExp(ME,DB)), empty)
-     fi 
+     fi
   if B  := included('META-MODULE, getImports(getTopModule(ME,DB)), DB) .
 
 -------------------------------------
 --- parse arguments
 ---
-  op procLMCComd : Qid TermList Module Bool Bound OpDeclSet Database TermList 
+  op procLMCComd : Qid TermList Module Bool Bound OpDeclSet Database TermList
                 -> Tuple{Database,QidList} .
 
   eq procLMCComd(F, TL, unitError(QIL), B, D, VDS, DB, TL1) = << DB ; QIL >> .
 
   --- the first argument
- ceq procLMCComd(F, (T,TL), M, B, D, VDS, DB, empty)  
+ ceq procLMCComd(F, (T,TL), M, B, D, VDS, DB, empty)
    = if getModule(TMVB) :: Module and-then getTerm(TMVB) :: Term
      then procLMCComd(F, TL, getModule(TMVB), B, getBound(TMVB),
                       getVars(TMVB), getDatabase(TMVB), getTerm(TMVB))
@@ -744,14 +782,14 @@ mod LMC-COMMAND-PROCESSING is
    if TMVB := solveBubblesRew(T, M, B, unbounded, VDS, DB) . --- "[1] in MOD :"
 
  --- intermediate arguments
- ceq procLMCComd(F, (T1,T2,TL), M, B, D, VDS, DB, TL1) 
+ ceq procLMCComd(F, (T1,T2,TL), M, B, D, VDS, DB, TL1)
    = if T?:[Term] :: Term
      then procLMCComd(F, (T2,TL), M, B, D, VDS, DB, (TL1,T?:[Term]))
      else << DB ; getMsg(T?:[Term]) >> fi
   if T?:[Term] := solveBubbles(T1,M,B,VDS,DB) .
 
  --- the last argument (no condition)
- ceq procLMCComd(F, 'bubble[QI], M, B, D, VDS, DB, TL1) 
+ ceq procLMCComd(F, 'bubble[QI], M, B, D, VDS, DB, TL1)
    = if T?:[Term] :: Term
      then procLMC(F, (TL1,T?:[Term]), nil, D, M, VDS,DB)
      else << DB ; getMsg(T?:[Term]) >> fi
@@ -761,7 +799,7 @@ mod LMC-COMMAND-PROCESSING is
  ceq procLMCComd(F, 'bubble['__[TL]], M, B, D, VDS, DB, TL1)
    = if T?:[Term] :: Term
      then procLMC(F, (TL1,T?:[Term]), nil, D, M, VDS,DB)
-     else 
+     else
        if lmcCmdCond(F) :: Type
        then parseLMCCondArg1(F,'bubble['__[TL]],lmcCmdCond(F),D,M,VDS,DB,TL1)
        else << DB ; getMsg(T?:[Term]) >> fi
@@ -769,26 +807,26 @@ mod LMC-COMMAND-PROCESSING is
   if T?:[Term] := solveBubbles('bubble['__[TL]], M, B, VDS, DB) .
 
   --- parse lmc command args: procLMCComd(BUBBLES,MOD,HasMetaLv?,HasCond?,...)
-  op parseLMCCondArg1 : Qid Term Type Bound Module OpDeclSet Database TermList 
+  op parseLMCCondArg1 : Qid Term Type Bound Module OpDeclSet Database TermList
                     -> Tuple{Database,QidList} .
-  op parseLMCCondArg2 : Qid Term Bound Module OpDeclSet Database TermList 
+  op parseLMCCondArg2 : Qid Term Bound Module OpDeclSet Database TermList
                     -> Tuple{Database,QidList} .
 
  --- the last argument (with condition)
  ceq parseLMCCondArg1(F, 'bubble['__[TL]], TY, D, M, VDS, DB, TL1)
    = if RP? :: ResultPair
      then parseLMCCondArg2(F, getTerm(RP?), D, M, VDS, DB, TL1)
-     else << DB ; ('\r 'Error: '\o 'no 'parse 'for 
+     else << DB ; ('\r 'Error: '\o 'no 'parse 'for
                     downQidList('__[TL,''..Qid]) '\n) >> fi
   if M1 := addOps(
        op '_s.t._. : TY '@Condition@ -> 'PatternCondition [prec(122)] .
        op '_such`that_. : TY '@Condition@ -> 'PatternCondition [prec(122)] .,
-       addSorts('PatternCondition, addInfoConds(M))) 
+       addSorts('PatternCondition, addInfoConds(M)))
   /\ RP? := metaParse(M1, downQidList('__[TL,''..Qid]), 'PatternCondition) .
 
   --- parse conditions
   eq parseLMCCondArg2(F, QI[T1,T2], D, M, VDS, DB, TL1)
-    = if QI == '_s.t._. or QI == '_such`that_. 
+    = if QI == '_s.t._. or QI == '_such`that_.
       then procLMC(F, (TL1,T1), parseCond(T2,VDS), D, M, VDS, DB)
       else procLMC(F, (TL1,constsToVars(QI[T1,T2],VDS)), nil, D, M, VDS, DB)
       fi .
@@ -823,7 +861,7 @@ mod LMC-COMMAND-PROCESSING is
      then << DB ; printLMCInfo(M,B,T1,T2,CD) printLMCOutput(M,getTerm(RP?)) >>
      else << DB ; getMsg(getTerm(RP?)) >>
      fi
-   if U := addEqs( 
+   if U := addEqs(
 	    (eq '##m##.Module = up(M) [none] .
 	     eq '##f##.TermList = upTerm(props(M,T2)) [none] .),
 	    upModule('META-SYMBOLIC-COND-CONNECTOR2, false)) /\
@@ -835,7 +873,7 @@ mod LMC-COMMAND-PROCESSING is
   eq printLMCInfo(M, B, T1, T2, CD)
    = '\b 'logical (if B then 'folding else nil fi) 'model 'check 'in
      '\o eMetaPrettyPrint(getName(M)) '\b ': '\o '\n '\s '\s
-     eMetaPrettyPrint(M,T1) '\b '\s '|= '\s '\o eMetaPrettyPrint(M,T2) 
+     eMetaPrettyPrint(M,T1) '\b '\s '|= '\s '\o eMetaPrettyPrint(M,T2)
      (if CD == nil then nil
       else '\n '\b 'under 'the 'condition ': '\o '\n '\s '\s
       eMetaPrettyPrint(M,CD) fi) '\n .
@@ -843,13 +881,13 @@ mod LMC-COMMAND-PROCESSING is
   op printLMCOutput : Module Term -> QidList .
   eq printLMCOutput(M, 'result:_real:_bound:_complete:_[T1,T2,T3,T4])
    = '\b 'result: '\o '\n '\s '\s
-     (if T1 == 'true.Bool then 
+     (if T1 == 'true.Bool then
         if T4 == 'true.Bool then
           'true '\s '`( 'complete 'with 'depth eMetaPrettyPrint(M,T3) '`)
-        else 
+        else
           'no 'counterexample 'found 'within 'bound eMetaPrettyPrint(M,T3)
         fi
-      else 
+      else
         if T2 == 'true.Bool then nil else 'possibly 'spurious fi
         'counterexample 'found 'at 'depth eMetaPrettyPrint(M,T3) '\n '\s '\s
         printLMCCE(M, T1)
@@ -872,19 +910,19 @@ mod LMC-DATABASE-HANDLING is
   inc DATABASE-HANDLING .
   pr LMC-COMMAND-PROCESSING .
 
-  var Atts : AttributeSet . var X@DatabaseClass : DatabaseClass . 
+  var Atts : AttributeSet . var X@DatabaseClass : DatabaseClass .
   var F : Qid . var O : Oid .  var ME : ModuleExpression . var DB : Database .
   var TL : TermList . var T T' : Term . var QIL : QidList .
 
  crl [LMC] :
-    < O : X@DatabaseClass | 
+    < O : X@DatabaseClass |
        db : DB, input : (F[TL]), output : QIL, default : ME, Atts >
-   => 
-    < O : X@DatabaseClass | 
+   =>
+    < O : X@DatabaseClass |
        db : getDatabase(procLMCComd(F[TL], ME, DB)),
-       input : nilTermList, 
-       output : getQidList(procLMCComd(F[TL], ME, DB)), 
-       default : ME, Atts > 
+       input : nilTermList,
+       output : getQidList(procLMCComd(F[TL], ME, DB)),
+       default : ME, Atts >
    if (F == 'lmc_|=_.) or-else (F == 'lfmc_|=_.) .
 endm
 
