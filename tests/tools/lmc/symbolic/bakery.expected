@@ -1,6 +1,3 @@
-Maude> 
-	    Full Maude 2.7 June 18th 2014
-
 
 	    Logical Model Checker January 10th 2012
 
@@ -134,4 +131,4 @@ logical folding model check in BAKERY-SATISFACTION2-ABS :
 result:
   true (complete with depth 5)
 
-Maude> Bye.
+Bye.

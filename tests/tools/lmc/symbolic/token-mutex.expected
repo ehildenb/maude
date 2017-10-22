@@ -1,6 +1,3 @@
-Maude> 
-	    Full Maude 2.7 June 18th 2014
-
 
 	    Logical Model Checker January 10th 2012
 
@@ -28,4 +25,4 @@ prefix
 loop
   nil  
 
-Maude> Bye.
+Bye.
