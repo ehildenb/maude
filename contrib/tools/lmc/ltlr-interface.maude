@@ -1,4 +1,4 @@
-load ../full-maude/full-maude-2.6.1.g.maude
+load ../base/full-maude.maude
 load ltlr-checker.maude
 
 --- The Full Maude interface of the Maude Fair LTLR model checker
@@ -465,7 +465,7 @@ fmod TLR-ACTION-EXPR is
   pr TLR-PATTERN-DECL-GENERATE .
   pr UNIT .  --- for the addDecl function
 
-  op ACTION`[_`] : ModuleExpression -> ModuleExpression .
+  op ACTION[_] : ModuleExpression -> ModuleExpression .
 
   var ME ME' : ModuleExpression .  vars U U' M DM : Module .
   var Q X : Qid .  var QIL : QidList .  vars T T2 : Term .
@@ -538,7 +538,7 @@ fmod TLR-CONTEXT-EXPR is
   pr MODULE-HANDLING .
   pr TLR-CONTEXT-DECL-GENERATE .
 
-  op CONTEXT`[_`] : ModuleExpression -> ModuleExpression .
+  op CONTEXT[_] : ModuleExpression -> ModuleExpression .
 
   var ME ME' : ModuleExpression .  vars U U' M DM : Module .
   var Q X : Qid .  var QIL : QidList .  vars T T2 : Term .
@@ -630,43 +630,10 @@ endfm
 
 --- REDEFINED: frequently used as meta functions in many cases.
 fmod MOD-EXPRS is
-  including OPERATOR-ATTRIBUTES .
-  including EXTENDED-SORTS .
+  including FM-MOD-EXPRS .
 
-  sorts @Map@ @MapList@ .
-  subsort @Map@ < @MapList@ .
-  subsorts @Token@ < @ModExp@ .
-
-  *** module expression
-  op _*`(_`) : @ModExp@ @MapList@ -> @ModExp@ .
-  op _`{_`} : @ModExp@ @ViewExp@ -> @ModExp@ .
-  op TUPLE`[_`] : @Token@ -> @ModExp@ .
-  op POWER`[_`] : @Token@ -> @ModExp@ .
-  op _+_ : @ModExp@ @ModExp@ -> @ModExp@ [assoc prec 42] .
-
-  op ACTION`[_`]   : @ModExp@ -> @ModExp@ . --- NEW: basic proof terms
-  op CONTEXT`[_`] : @ModExp@ -> @ModExp@ . --- NEW: context module
-
-  *** renaming maps
-  op op_to_ : @Token@ @Token@ -> @Map@ .
-  op op_:_->_to_ : @Token@ @TypeList@ @Type@ @Token@ -> @Map@ .
-  op op_: ->_to_ : @Token@ @Type@ @Token@ -> @Map@ .
-  op op_:_~>_to_ : @Token@ @TypeList@ @Type@ @Token@ -> @Map@ .
-  op op_: ~>_to_ : @Token@ @Type@ @Token@ -> @Map@ .
-  op op_to_`[_`] : @Token@ @Token@ @AttrList@ -> @Map@ .
-  op op_:_->_to_`[_`] : @Token@ @TypeList@ @Type@ @Token@ @AttrList@ -> @Map@ .
-  op op_:`->_to_`[_`] : @Token@ @Type@ @Token@ @AttrList@ -> @Map@ .
-  op op_:_~>_to_`[_`] : @Token@ @TypeList@ @Type@ @Token@ @AttrList@ -> @Map@ .
-  op op_:`~>_to_`[_`] : @Token@ @Type@ @Token@ @AttrList@ -> @Map@ .
-  op sort_to_ : @Sort@ @Sort@ -> @Map@ .
-  op label_to_ : @Token@ @Token@ -> @Map@ .
-  op class_to_ : @Sort@ @Sort@ -> @Map@ .
-  op attr_._to_ : @Sort@ @Token@ @Token@ -> @Map@ .
-  op msg_to_ : @Token@ @Token@ -> @Map@ .
-  op msg_:_->_to_ : @Token@ @TypeList@ @Type@ @Token@ -> @Map@ .
-  op msg_:`->_to_ : @Token@ @Type@ @Token@ -> @Map@ .
-
-  op _`,_ : @MapList@ @MapList@ -> @MapList@ [assoc prec 42] .
+  op ACTION[_]  : @ModExp@ -> @ModExp@ . --- NEW: basic proof terms
+  op CONTEXT[_] : @ModExp@ -> @ModExp@ . --- NEW: context module
 endfm
 
 
