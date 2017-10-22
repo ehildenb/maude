@@ -52,7 +52,7 @@ search < 0, true | think ; think ; think ; think >
 eof
 ---)
 
-load symbolic-checker .
+load ../../../../contrib/tools/lmc/symbolic-checker.maude
 
 (mod RW-PROPS is
   pr RW .

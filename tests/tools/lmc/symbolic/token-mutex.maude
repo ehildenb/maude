@@ -48,7 +48,7 @@ mod TOKEN-MUTEX is
             => <     s M,   {0} [M, wait] CF > . 
 endm
 
-load symbolic-checker
+load ../../../../contrib/tools/lmc/symbolic-checker.maude
 
 (mod TOKEN-MUTEX-SATISFACTION is
   pr TOKEN-MUTEX .

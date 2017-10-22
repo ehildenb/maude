@@ -3,7 +3,7 @@
 MAUDE_LIB=$srcdir/../../../src/Main
 export MAUDE_LIB
 
-../../../src/Main/maude \
+../../../../src/Main/maude \
   < $srcdir/rw.maude -no-banner -no-advise \
   > rw.out 2>&1
 

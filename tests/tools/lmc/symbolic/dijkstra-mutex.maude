@@ -223,7 +223,7 @@ endm
 search < {0,l1,-} {0,l1,-} {0,l1,!} > =>* < CPS > .
 ---)
 
-load symbolic-checker
+load ../../../../contrib/tools/lmc/symbolic-checker.maude
 
 (mod DIJKSTRA-MUTEX-SATISFACTION is
   pr SYMBOLIC-CHECKER .

@@ -1,4 +1,4 @@
-load symbolic-checker
+load ../../../../contrib/tools/lmc/symbolic-checker.maude
 
 --- from the Maude manual 
 --- http://maude.cs.uiuc.edu/maude2-manual/maude-manual.pdf
