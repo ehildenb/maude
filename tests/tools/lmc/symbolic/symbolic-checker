@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAUDE_LIB=$srcdir/../../../src/Main
+export MAUDE_LIB
+
+../../../../src/Main/maude \
+  < $srcdir/symbolic-checker.maude -no-banner -no-advise \
+  > symbolic-checker.out 2>&1
+
+diff $srcdir/symbolic-checker.expected symbolic-checker.out > /dev/null 2>&1

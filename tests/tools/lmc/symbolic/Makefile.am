@@ -1,4 +1,5 @@
 TESTS = \
+	symbolic-checker \
 	bakery \
 	dijkstra-mutex \
 	rw-shared \
@@ -7,6 +8,7 @@ TESTS = \
 	vending
 
 MAUDE_FILES = \
+	symbolic-checker.maude \
 	bakery.maude \
 	dijkstra-mutex.maude \
 	rw-shared.maude \
@@ -15,6 +17,7 @@ MAUDE_FILES = \
 	vending.maude
 
 RESULT_FILES = \
+	symbolic-checker.expected \
 	bakery.expected \
 	dijkstra-mutex.expected \
 	rw-shared.expected \
