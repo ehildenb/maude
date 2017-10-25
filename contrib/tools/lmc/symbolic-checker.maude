@@ -393,8 +393,7 @@ mod META-SYMBOLIC-CONNECTOR is
     --- pretty print (for debugging)
     eq prettyPrint(init(ST)) = eMetaPrettyPrint(##m##, ST) .
     eq prettyPrint(mid(ST))  = eMetaPrettyPrint(##m##, ST) .
-    eq prettyPrint(RS / SUB) = prettyPrintSub(SUB) .
-       ---eMetaPrettyPrint(##m##, RS) '/
+    eq prettyPrint(RS / SUB) = eMetaPrettyPrint(##m##, RS) '/ prettyPrintSub(SUB) .
 
     op prettyPrintSub : Substitution -> QidList .
     ---------------------------------------------
