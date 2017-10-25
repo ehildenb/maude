@@ -229,15 +229,15 @@ fmod LMC-RESULT-SET is
     --------------------
     subsort StepResult < StepResultSet .
 
-    op empty :                             -> StepResultSet [ctor] .
-    op _||_  : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: empty prec 65] .
-    ---------------------------------------------------------------------------------------------
-    eq X:StepResult || X:StepResult = X:StepResult .
-
     var M : Module . vars NextVar : Nat . vars S S' : Substitution .
     vars T TS CtTS : Term . var TL : TermList . var TP : Type . var R : Rule .
     var Tr : TraceNarrow . var B : Flags . vars Ct CtS : Context .
-    var RTS : ResultContextSet . var SRS : StepResultSet .
+    var SR : StepResult . var RTS : ResultContextSet . var SRS : StepResultSet .
+
+    op empty :                             -> StepResultSet [ctor] .
+    op _||_  : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: empty prec 65] .
+    ---------------------------------------------------------------------------------------------
+    eq SR || SR = SR .
 
     op to4Tuple : Module ResultContextSet -> StepResult .
     -----------------------------------------------------
