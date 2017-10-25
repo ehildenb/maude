@@ -555,7 +555,7 @@ mod META-SYMBOLIC-COND-CONNECTOR2 is
     op condOK : EqCondition ~> Bool .
     ---------------------------------
     eq condOK(nil)                   = true .
-    eq condOK(T1 = 'true.Bool /\ CD) = if getTerm(metaReduce(##m##, T1)) == 'false.Bool then false else true fi and-then condOK(CD) .
+    eq condOK(T1 = 'true.Bool /\ CD) = (not getTerm(metaReduce(##m##, T1)) == 'false.Bool) and-then condOK(CD) .
 
     --- folding with conditions
     eq mid(ST,CD) >= mid(ST',CD') = condFold(ST, CD, ST', CD', 0) .
