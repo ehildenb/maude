@@ -1,7 +1,7 @@
 
 	    Logical Model Checker January 10th 2012
 
-Introduced module NARROWING-VENDING-MACHINE
+The NARROWING-VENDING-MACHINE has been set as current module.
 
 search [,4] in NARROWING-VENDING-MACHINE : < M:Money > ~>* < a c > .
 
