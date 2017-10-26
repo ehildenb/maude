@@ -95,7 +95,6 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
     op _~_  : MetaEdge MetaEdge -> Bool .
     -------------------------------------
     eq deadlock ~ deadlock = true .
-    eq RS:RuleSet / S1:Substitution ~ RS:RuleSet / S2:Substitution = true .
 
     --- print state during model checking (debugging purpose)
     op prettyPrint : State    ~> QidList .
