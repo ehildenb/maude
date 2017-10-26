@@ -9,16 +9,16 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
   op ex? : -> Prop .
 
-  vars N M M' : Number .  
+  vars N M M' : Number .
   var CF : Conf .  var WF : ConfWait . var WTF : ConfTWait .
 
-  eq < N, WTF > |= ex? = true [variant] .
-  eq < N, WTF [M,crit] > |= ex? = true [variant] .
-  eq < N, CF [M,crit] [M',crit] > |= ex? = false [variant] .
+  eq < N, WTF                    > |= ex? = true  [variant] .
+  eq < N, WTF [M,crit]           > |= ex? = true  [variant] .
+  eq < N, CF  [M,crit] [M',crit] > |= ex? = false [variant] .
 endm)
 
 --- true: one token
 (lfmc < N, {M} WF > |= [] ex? .)
 
---- false: more than one token: 
+--- false: more than one token:
 (lfmc < N, WTF > |= [] ex? .)

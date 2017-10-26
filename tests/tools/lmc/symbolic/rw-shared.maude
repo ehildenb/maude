@@ -8,20 +8,19 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
   subsort Conf < State .
 
   var N : Natural . var B : Truth . var PS : ProcSet .
-  var IS : ProcIdleSet .  var RS : ProcReadSet .  var WS : ProcWriteSet . 
+  var IS : ProcIdleSet .  var RS : ProcReadSet .  var WS : ProcWriteSet .
 
   op ex? : -> Prop .
 
-  eq < N, B | RS > |= ex? = true [variant] .
-  eq < N, B | WS > |= ex? = true [variant] .
+  eq < N, B | RS                > |= ex? = true  [variant] .
+  eq < N, B | WS                > |= ex? = true  [variant] .
   eq < N, B | read ; write ; PS > |= ex? = false [variant] .
 
---- equational abstractions 
-  eq < s(s(N)),false | read ; read ; IS >  
-   = <    s(N),false | read ; IS > [variant] .
+--- equational abstractions
+  eq < s(s(N)),false | read ; read ; IS >
+   = <    s(N),false | read ;        IS > [variant] .
 endm)
 
 set verbose on .
 
 (lfmc < 0, true | IS > |= [] ex? .)
-

@@ -1,6 +1,8 @@
 load ../../../../contrib/systems/bakery.maude
 load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
+--- Atomic propositions for whether any processes are waiting/critical
+--- ------------------------------------------------------------------
 
 --- prop definitions for bakery
 (mod BAKERY-SATISFACTION1 is
@@ -9,14 +11,14 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
   subsort Conf < State .
 
-  ops ever-wait? ever-crit? : -> Prop . 
+  ops ever-wait? ever-crit? : -> Prop .
 
-  vars N M : Name . vars PS : ProcSet . 
-  
-  eq s N ; M ; PS |= ever-wait? = true [variant] . 
-  eq 0 ; M ; PS    |= ever-wait? = false [variant] . 
-  eq N ; s M ; PS |= ever-crit? = true [variant] .
-  eq N ; 0 ; PS    |= ever-crit? = false [variant] . 
+  vars N M : Name . vars PS : ProcSet .
+
+  eq s N ; M   ; PS |= ever-wait? = true  [variant] .
+  eq 0   ; M   ; PS |= ever-wait? = false [variant] .
+  eq N   ; s M ; PS |= ever-crit? = true  [variant] .
+  eq N   ; 0   ; PS |= ever-crit? = false [variant] .
 endm)
 
 set verbose on .
@@ -30,6 +32,8 @@ set verbose on .
 *** spurious counterexample
 (lfmc N ; M ; WS:ProcWaitSet |= [] (ever-wait? -> <> ever-crit?) .)
 
+--- Atomic propositions for mutual exclusion
+--- ----------------------------------------
 
 (mod BAKERY-SATISFACTION2 is
   pr BAKERY .
@@ -37,14 +41,14 @@ set verbose on .
 
   subsort Conf < State .
 
-  ops ex? ini : -> Prop . 
+  ops ex? ini : -> Prop .
 
-  var WS : ProcWaitSet . var IS : ProcIdleSet . var PS : ProcSet . 
+  var WS : ProcWaitSet . var IS : ProcIdleSet . var PS : ProcSet .
   vars N M M1 M2 : Name .
 
 --- NOTE: ProcIdleSet < ProcWaitSet
-  eq N ; M ; WS |= ex? = true [variant] .
-  eq N ; M ; [crit(M1)] WS |= ex? = true [variant] .
+  eq N ; M ; WS                       |= ex? = true  [variant] .
+  eq N ; M ; [crit(M1)] WS            |= ex? = true  [variant] .
   eq N ; M ; [crit(M1)] [crit(M2)] PS |= ex? = false [variant] .
 endm)
 
@@ -60,6 +64,9 @@ endm)
 *** false (infinite graph, but a counterexample exists)
 (lfmc N ; N ; WS |= [] ex?  .)
 
+--- Equational abstraction: extra waiting processes mean nothing
+--- ------------------------------------------------------------
+
 (mod BAKERY-SATISFACTION2-ABS is
   pr BAKERY-SATISFACTION2 .
 
@@ -73,4 +80,3 @@ endm)
 
 *** true
 (lfmc N ; N ; IS |= [] ex?  .)
-

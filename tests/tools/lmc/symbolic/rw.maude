@@ -14,7 +14,7 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
   eq < N, 0       > |= one-writer-atmost? = true [variant] .
   eq < N, s(0)    > |= one-writer-atmost? = true [variant] .
   eq < N, s(s(M)) > |= one-writer-atmost? = false [variant] .
-  
+
   eq < 0,    M    > |= exclusion? = true [variant] .
   eq < N,    0    > |= exclusion? = true [variant] .
   eq < s(N), s(M) > |= exclusion? = false [variant] .
@@ -37,4 +37,3 @@ endm)
 
 --- result: true
 (lfmc < N:Nat, 0 > |= [] exclusion? .)
-

@@ -7,10 +7,10 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
   subsort Conf < State .
 
-  ops ex? : -> Prop . 
+  ops ex? : -> Prop .
 
-  vars F F' : Flag . var S : Status . 
-  var CPS : CProcSet .     var PS : ProcSet . 
+  vars F F' : Flag . var S : Status .
+  var CPS : CProcSet .     var PS : ProcSet .
   var CNS : CNCrtProcSet . var NS : NCrtProcSet .
   var CIS : CInitProcSet .
 
@@ -21,10 +21,6 @@ load ../../../../contrib/tools/lmc/symbolic-interface.maude
   eq < {F,crit,!} {F',crit,-} PS >  |= ex? = false [variant] .
   eq < {F,crit,-} {F',crit,!} PS >  |= ex? = false [variant] .
 endm)
-
----(
-(lfmc [20] < CIS > |= [] ex? .)
----)
 
 (mod DIJKSTRA-MUTEX-SATISFACTION-WIDENING is
   pr DIJKSTRA-MUTEX-SATISFACTION .
@@ -40,4 +36,3 @@ set verbose on .
 
 ---   true (complete with depth 16)
 (lfmc < CIS > |= [] ex?  .)
-
