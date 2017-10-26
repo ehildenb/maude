@@ -3,3 +3,21 @@ set show timing off .
 load ../../../../contrib/systems/cycle.maude
 load ../../../../contrib/systems/token.maude
 load ../../../../contrib/tools/lmc/symbolic-checker.maude
+
+--- Testing META-NARROWING-INTERFACE
+--- ================================
+
+select META-NARROWING-INTERFACE .
+
+--- Function `metaNarrow2`
+--- ----------------------
+
+--- ### System `CYCLE`
+
+reduce metaNarrow2(upModule('CYCLE, true), 'f['a.PreState])
+    == (    { 'f['b.PreState],'State, none / rl 'f['a.PreState] => 'f['b.PreState] [narrowing label('a2b)] . }
+         || { 'g['c.PreState],'State, none / rl 'f['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] . }
+       ) .
+
+reduce metaNarrow2(upModule('CYCLE, true), 'f['b.PreState])
+    == { 'f['c.PreState],'State, none / rl 'f['b.PreState] => 'f['c.PreState] [narrowing label('b2c)] . } .
