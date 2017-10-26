@@ -1,22 +1,5 @@
-
+load ../../../../contrib/systems/rw.maude
 load ../../../../contrib/tools/lmc/symbolic-interface.maude
-
---- The readers-writers problem in Maude
---- From: All About Maude - A High-Performance Logical Framework.
-(mod READERS-WRITERS is 
-  sort Nat . 
-  op 0 : -> Nat [ctor] . 
-  op s : Nat -> Nat [ctor] .  
-  sort Config . 
-  op <_`,_> : Nat Nat -> Config [ctor] .
-
-  vars R W : Nat .
-
-  rl [enter-w] : < 0, 0 > => < 0, s(0) > . 
-  rl [leave-w] : < R, s(W) > => < R, W > . 
-  rl [enter-r] : < R, 0 > => < s(R), 0 > . 
-  rl [leave-r] : < s(R), W > => < R, W > .
-endm)
 
 (mod READERS-WRITERS-PROPS is
   pr READERS-WRITERS .

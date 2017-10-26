@@ -1,8 +1,6 @@
 
 	    Logical Model Checker January 10th 2012
 
-Introduced module READERS-WRITERS
-
 Introduced module READERS-WRITERS-PROPS
 
 logical model check in READERS-WRITERS-PROPS :
