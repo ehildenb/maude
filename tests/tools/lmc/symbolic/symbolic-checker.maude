@@ -21,3 +21,23 @@ reduce metaNarrow2(upModule('CYCLE, true), 'f['a.PreState])
 
 reduce metaNarrow2(upModule('CYCLE, true), 'f['b.PreState])
     == { 'f['c.PreState],'State, none / rl 'f['b.PreState] => 'f['c.PreState] [narrowing label('b2c)] . } .
+
+--- ### System `BOUNDED-CYCLE`
+
+reduce metaNarrow2(upModule('BOUNDED-CYCLE, true), '`{_`,_`}['1.Nat*, '1.Nat*])
+    == { '`{_`,_`}['0.Nat*,'1.NzNat*],'State, none / rl '`{_`,_`}['_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*],'#3:Nat*] => '`{_`,_`}['#1:Nat*,'#3:Nat*] [narrowing label('rm)] . } .
+
+reduce metaNarrow2(upModule('BOUNDED-CYCLE, true), '`{_`,_`}['N:Nat*, '_:+_['1.Nat*, '1.Nat*, '1.Nat*]])
+    == (    { '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]],                             'State, 'N:Nat* <- '_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*] / rl '`{_`,_`}['_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*],'#3:Nat*]          => '`{_`,_`}['#1:Nat*,'#3:Nat*] [narrowing label('rm)] . }
+         || { '`{_`,_`}['1.NzNat*,'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]],                            'State, 'N:Nat* <- '0.Nat*                            / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'1.NzNat*],'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]],           'State, 'N:Nat* <- '0.Nat*                            / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'1.NzNat*],'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]],           'State, 'N:Nat* <- '1.NzNat*                          / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*],'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]], 'State, 'N:Nat* <- '0.Nat*                            / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*],'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]], 'State, 'N:Nat* <- '1.NzNat*                          / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*],'_:+_['1.NzNat*,'1.NzNat*,'1.NzNat*]], 'State, 'N:Nat* <- '_:+_['1.NzNat*,'1.NzNat*]         / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_['#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_['#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+       ) .
+
+reduce metaNarrow2(upModule('BOUNDED-CYCLE, true), '`{_`,_`}['N:Nat*, 'M:Nat*])
+    == (    { '`{_`,_`}['#1:Nat*,'M:Nat*],'State,                                                             'N:Nat* <- '_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*]         / rl '`{_`,_`}['_:+_['1.NzNat*, '#1:Nat*,'#2:Nat*],'#3:Nat*]         => '`{_`,_`}['#1:Nat*,'#3:Nat*]                                                                                     [narrowing label('rm)]  . }
+         || { '`{_`,_`}['_:+_['1.NzNat*,'N:Nat*,'#3:Nat*],'_:+_['1.NzNat*,'N:Nat*,'#2:Nat*,'#3:Nat*]],'State, 'M:Nat* <- '_:+_['1.NzNat*,'N:Nat*,'#2:Nat*,'#3:Nat*] / rl '`{_`,_`}['#1:Nat*,'_:+_['1.NzNat*,'#1:Nat*,'#2:Nat*,'#3:Nat*]] => '`{_`,_`}['_:+_[ '#1:Nat*,'_:+_['1.NzNat*,'#3:Nat*]],'_:+_['#3:Nat*,'_:+_['1.NzNat*,'_:+_[ '#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] . }
+       ) .
