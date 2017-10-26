@@ -42,7 +42,7 @@ mod BAKERY is
 endm
 
 
-load ../../../../contrib/tools/lmc/symbolic-checker.maude
+load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
 --- prop definitions for bakery
 (mod BAKERY-SATISFACTION1 is

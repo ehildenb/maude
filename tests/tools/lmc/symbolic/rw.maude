@@ -1,5 +1,5 @@
 
-load ../../../../contrib/tools/lmc/symbolic-checker.maude
+load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
 --- The readers-writers problem in Maude
 --- From: All About Maude - A High-Performance Logical Framework.
