@@ -247,7 +247,7 @@ fmod META-NARROWING-INTERFACE is
 
     op metaGenVariant2 : Module Term Nat Nat -> VariantSet .
     --------------------------------------------------------
-    eq metaGenVariant2(M, T, NextVar, N) = emptyVariantSet [owise] .
+    eq metaGenVariant2(M, T, NextVar, N) = .VariantSet [owise] .
    ceq metaGenVariant2(M, T, NextVar, N) = VR # metaGenVariant2(M,T,NextVar,s N)
     if VR := metaGetVariant(M,T,empty,NextVar,N) .
 
@@ -263,15 +263,15 @@ fmod META-NARROWING-INTERFACE is
     --- StateSet Prop -> StateSet
     op propInstSet : StepResultSet Term ~> StepResultSet .
     ------------------------------------------------------
-    eq propInstSet(empty, PT) = empty .
+    eq propInstSet(.StepResultSet, PT) = .StepResultSet .
     eq propInstSet({ST,TP,SUB / RS} || SRS, PT)
      = filterPropVars({ST,TP,SUB / RS}, metaGenVariant(##m##, '_|=_[ST, PT])) || propInstSet(SRS, PT) .
 
     op filterPropVars : StepResult VariantSet ~> StepResultSet .
     ------------------------------------------------------------
-    eq filterPropVars(SR, emptyVariantSet) = empty .
+    eq filterPropVars(SR, .VariantSet) = .StepResultSet .
     eq filterPropVars({ST,TP,SUB / RS}, {T,SUB1,N,P,B} # VS)
-     = if inst?(T) then {ST << SUB1,TP, SUB .. SUB1 / RS} else empty fi || filterPropVars({ST,TP,SUB / RS}, VS) .
+     = if inst?(T) then {ST << SUB1,TP, SUB .. SUB1 / RS} else .StepResultSet fi || filterPropVars({ST,TP,SUB / RS}, VS) .
 
     --- TODO: by not filtering, we may allow more patterns that are not reduced
     --- to true/false. However, it easily generates spurious counter examples..

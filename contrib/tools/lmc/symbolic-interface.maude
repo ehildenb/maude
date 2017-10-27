@@ -102,14 +102,14 @@ fmod META-NARROWING-COND-INTERFACE is
     --- StateSet Prop -> StateSet
     op condInstSet : StepResultSet Term ~> StepResultSet .
     ------------------------------------------------------
-    eq condInstSet(empty, T)                   = empty .
+    eq condInstSet(.StepResultSet, T)          = .StepResultSet .
    ceq condInstSet({ST,TP,SUB / RS} || SRS, T) = filterCondVars({ST,TP,SUB / RS}, VS) || condInstSet(SRS, T)
     if VS := metaGenVariant(##m##, T << SUB) .
 
     --- only true instances (hence the conditions should be complete and FVP)
     op filterCondVars : StepResult VariantSet ~> StepResultSet .
     ------------------------------------------------------------
-    eq filterCondVars(SR, VS) = empty [owise] .
+    eq filterCondVars(SR, VS) = .StepResultSet [owise] .
     eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N,P,B} # VS)
      = {ST << SUB1, TP, SUB .. SUB1 / RS} || filterCondVars({ST,TP,SUB / RS}, VS) .
 
@@ -242,7 +242,7 @@ mod META-SYMBOLIC-COND-CONNECTOR2 is
 
     op implyOKsub : VariantSet ~> Bool .
     ------------------------------------
-    eq implyOKsub(emptyVariantSet)    = true .
+    eq implyOKsub(.VariantSet)        = true .
    ceq implyOKsub({T,SUB,N,P,B} # VS) = T' =/= 'true.Bool and-then implyOKsub(VS)
     if T' := getTerm(metaReduce(##m##,T)) .
 
