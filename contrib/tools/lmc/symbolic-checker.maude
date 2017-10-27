@@ -2,6 +2,7 @@
 --- Author: Kyungmin Bae <kbae4@illinois.edu>
 
 load ../base/model-checker.maude
+load ../meta/narrowing.maude
 
 ****************************************
 ***          Basic Interface         ***
@@ -182,8 +183,6 @@ endfm
 ****************************************
 ***  Full Maude Narrowing Connector  ***
 ****************************************
-
-load ../meta/narrowing.maude
 
 fmod META-LMC-PARAMETERS is
    protecting META-MODULE .
