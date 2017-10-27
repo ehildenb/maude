@@ -222,33 +222,13 @@ endm
 
 fmod META-NARROWING-INTERFACE is
    protecting META-LMC-PARAMETERS .
-   protecting NARROWING-STEP-SET .
-   protecting META-NARROWING-SEARCH .
+   protecting NARROWING .
 
-    var M : Module . var RS : RuleSet .
-    vars T T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant .
-    var TP : Type . vars SUB SUB1 SUB2 : Substitution .
-    vars NextVar NextVar' N : Nat . var VR : Variant . var VS : VariantSet .
-    var P : Parent . var B : Bool .
+    var N : Nat . var B : Bool . var P : Parent .
+    vars T ST PT : Term .  var TL : TermList .
+    var TP : Type . vars SUB SUB1 : Substitution .
+    var RS : RuleSet . var VS : VariantSet .
     var SR : StepResult . var SRS : StepResultSet .
-
-    op metaNarrow2 : Module Term -> StepResult .
-    --------------------------------------------
-    eq metaNarrow2(M,T) = to4Tuple(M,metaENarrowShowAll(M,T,1,full noStrategy BuiltIn-unify)) |> T .
-
-    op metaGenVariant : Module Term -> VariantSet .
-    -----------------------------------------------
-    eq metaGenVariant(M, T) = metaGenVariant(M, T, highestVar(T)) .
-
-    op metaGenVariant : Module Term Nat -> VariantSet .
-    ---------------------------------------------------
-    eq metaGenVariant(M, T, NextVar) = metaGenVariant2(M, T, NextVar, 0) .
-
-    op metaGenVariant2 : Module Term Nat Nat -> VariantSet .
-    --------------------------------------------------------
-    eq metaGenVariant2(M, T, NextVar, N) = .VariantSet [owise] .
-   ceq metaGenVariant2(M, T, NextVar, N) = VR # metaGenVariant2(M,T,NextVar,s N)
-    if VR := metaGetVariant(M,T,empty,NextVar,N) .
 
     --- variant narrowing prop instantiations.
     --- compute the PI-instantated states of the given state.
