@@ -227,28 +227,15 @@ fmod META-NARROWING-INTERFACE is
    protecting META-NARROWING-SEARCH .
 
     var M : Module . var RS : RuleSet .
-    vars T T' T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant .
+    vars T T1 T2 ST PT : Term .  var TL : TermList .  var C : Constant .
     var TP : Type . vars SUB SUB1 SUB2 : Substitution .
     vars NextVar NextVar' N : Nat . var VR : Variant . var VS : VariantSet .
     var P : Parent . var B : Bool .
     var SR : StepResult . var SRS : StepResultSet .
-    var TYPE : Type . var RL : Qid .
-    var H : Header . var IL : ImportList . var SS : SortSet . var SSDS : SubsortDeclSet .
-    var ODS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet .
-    var AS : AttrSet . var CTX : Context . var Q : Qid .
 
     op metaNarrow2 : Module Term -> StepResult .
     --------------------------------------------
     eq metaNarrow2(M,T) = to4Tuple(M,metaENarrowShowAll(M,T,1,full noStrategy BuiltIn-unify)) |> T .
-
-    op allNarrowSteps : Module Term     -> [StepResultSet] .
-    op allNarrowSteps : Module Term Nat -> [StepResultSet] .
-    --------------------------------------------------------
-    eq allNarrowSteps(M, T) = allNarrowSteps(M, T, 0) .
-
-    eq allNarrowSteps(M, T, N) = empty [owise] .
-   ceq allNarrowSteps(M, T, N) = { T' , TYPE , SUB1 / getRls(RL, M) } || allNarrowSteps(M, T, N + 1)
-    if { T' , TYPE , CTX , RL , SUB1 , SUB2 , Q } := metaNarrowingApply(M, T, empty, '#, N) .
 
     op metaGenVariant : Module Term -> VariantSet .
     -----------------------------------------------
