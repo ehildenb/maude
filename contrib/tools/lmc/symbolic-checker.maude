@@ -183,7 +183,7 @@ endfm
 ***  Full Maude Narrowing Connector  ***
 ****************************************
 
-load ../base/full-maude.maude
+load ../meta/unification.maude
 
 fmod META-LMC-PARAMETERS is
    protecting META-MODULE .
