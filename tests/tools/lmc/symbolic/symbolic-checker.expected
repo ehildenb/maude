@@ -71,4 +71,49 @@ reduce in META-NARROWING-INTERFACE : metaNarrow2(upModule('BOUNDED-CYCLE,
     '#1:Nat*,'#2:Nat*]]]] [narrowing label('add)] .}) .
 rewrites: 2461
 result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'f['a.PreState], 0) == allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
+    'a.PreState]) .
+rewrites: 104
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'f['a.PreState], 0) == ({'f['b.PreState],'State,none / rl 'f['a.PreState]
+    => 'f['b.PreState] [narrowing label('a2b)] .} || {'g['c.PreState],'State,
+    none / rl 'f['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] .
+rl 'g['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] .}) .
+rewrites: 53
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'f['a.PreState], 1) == {'g['c.PreState],'State,none / rl 'f['a.PreState] =>
+    'g['c.PreState] [narrowing label('a2c)] .
+rl 'g['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] .} .
+rewrites: 29
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'f['a.PreState], 2) == (empty).StepResultSet .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'f['c.PreState], 0) == {'f['a.PreState],'State,none / rl 'f['c.PreState] =>
+    'f['a.PreState] [narrowing label('c2a)] .
+rl 'g['c.PreState] => 'g['a.PreState] [narrowing label('c2a)] .} .
+rewrites: 29
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'g['b.PreState], 0) == (empty).StepResultSet .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
+    'g['a.PreState], 0) == {'g['c.PreState],'State,none / rl 'f['a.PreState] =>
+    'g['c.PreState] [narrowing label('a2c)] .
+rl 'g['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] .} .
+rewrites: 29
+result Bool: true
 Bye.
