@@ -116,4 +116,34 @@ reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('EXT-CYCLE, true),
 rl 'g['a.PreState] => 'g['c.PreState] [narrowing label('a2c)] .} .
 rewrites: 29
 result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('2TOKEN, true),
+    '`{_`}['__['$.Token,'`[_`,wait`]['a.Name]]]) == {'`{_`}['`[_`,crit`][
+    'a.Name]],'State,none / rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] .} .
+rewrites: 23
+result Bool: true
+==========================================
+reduce in META-NARROWING-INTERFACE : allNarrowSteps(upModule('2TOKEN, true),
+    '`{_`}['__['T:Token,'P:Proc]]) == ((({'`{_`}['`[_`,crit`]['a.Name]],'State,
+  'P:Proc <- '`[_`,wait`]['a.Name] ; 
+  'T:Token <- '$.Token / rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]]
+    => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)]
+    .} || {'`{_`}['`[_`,crit`]['b.Name]],'State,
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '*.Token / rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]]
+    => '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)]
+    .}) || {'`{_`}['__['*.Token,'@1:Token,'`[_`,wait`]['a.Name]]],'State,
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '@1:Token / rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] .}) || {'`{_`}['__['$.Token,'@1:Token,'`[_`,wait`]['b.Name]]],
+    'State,
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token / rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label(
+    'b-exit)] .}) .
+rewrites: 77
+result Bool: true
 Bye.
