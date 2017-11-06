@@ -5,6 +5,8 @@ build_dir="$top_dir/.build"
 include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 
+git submodule update --init
+
 automake --add-missing
 aclocal
 autoconf
