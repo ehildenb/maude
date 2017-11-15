@@ -406,3 +406,92 @@ mod META-SYMBOLIC-COND-CONNECTOR-BASE is
     eq condNorm(nil)                  = nil .
     eq condNorm(T = 'true.Bool /\ CD) = getTerm(metaNormalize(##m##,T)) = 'true.Bool /\ condNorm(CD) .
 endm
+
+--- Conditions are solved for generating states by variant narrowing
+mod META-SYMBOLIC-COND-CONNECTOR is
+   protecting META-SYMBOLIC-COND-CONNECTOR-BASE .
+
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .  var N : Nat .
+    var SR : StepResult .  var SRS : StepResultSet .
+   vars CD CD' : EqCondition . var RS : RuleSet .
+
+   --- meta rules
+   crl [init-cond] :
+       < init(ST,CD) >
+    => RS / SUB' |=> mid(getTerm(metaReduce(##m##,ST')),condNorm(CD << SUB'))
+    if {ST',TP,SUB' / RS} || SRS := variant(ST,CD) .
+
+   crl [mid-cond] :
+       < mid(ST,CD) >
+    => RS / SUB' |=> mid(getTerm(metaReduce(##m##,ST')),condNorm(CD << SUB'))
+    if {ST',TP,SUB' / RS} || SRS := next(ST,CD) .
+
+   ops next variant : Term EqCondition -> StepResultSet .
+    -----------------------------------------------------
+    eq next(ST,CD)    = propSetInstSet(condSetInstSet(metaNarrow2(##m##, ST),CD), ##f##) .
+    eq variant(ST,CD) = propSetInstSet(condSetInstSet({ST,leastSort(##m##,ST),none / none},CD), ##f##) .
+
+    --- condition should be already considered by variant narrowing
+    eq mid(ST,CD) >= mid(ST',CD') = mid(ST)    >= mid(ST') .
+    eq mid(ST,CD) ~= mid(ST',CD') = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
+endm
+
+--- Folding conditions C >= C' by checking C' => \rho(C) using variant narrowing
+mod META-SYMBOLIC-COND-CONNECTOR2 is
+   protecting META-SYMBOLIC-COND-CONNECTOR-BASE .
+
+   vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var N : Nat . var B : Bool . var RS : RuleSet .
+    var SR : StepResult .  var SRS : StepResultSet .
+    vars CD CD' : EqCondition .  var VS : VariantSet .
+    var P : Parent .
+
+    --- meta rules
+   crl [init-cond] :
+       < init(ST,CD) >
+    => RS / SUB' |=> mid(getTerm(metaReduce(##m##,ST')),condNorm(CD << SUB'))
+    if {ST',TP,SUB' / RS} || SRS := variant(ST) /\ condOK(CD << SUB') .
+
+   crl [mid-cond]  :
+       < mid(ST,CD) >
+    => RS / SUB' |=> mid(getTerm(metaReduce(##m##,ST')),condNorm(CD << SUB'))
+    if {ST',TP,SUB' / RS} || SRS := next(ST) /\ condOK(CD << SUB') .
+
+    --- Another method to check a condition.
+    op condOK : EqCondition ~> Bool .
+    ---------------------------------
+    eq condOK(nil)                   = true .
+    eq condOK(T1 = 'true.Bool /\ CD) = (not getTerm(metaReduce(##m##, T1)) == 'false.Bool) and-then condOK(CD) .
+
+    --- folding with conditions
+    eq mid(ST,CD) >= mid(ST',CD') = condFold(ST, CD, ST', CD', 0) .
+    eq mid(ST,CD) ~= mid(ST',CD') = mid(ST,CD) >= mid(ST',CD') and-then mid(ST',CD') >= mid(ST,CD) .
+
+    op condFold : Term EqCondition Term EqCondition Nat -> Bool .
+    -------------------------------------------------------------
+    eq condFold(ST, CD, ST', CD', 0)    = false [owise] .
+    eq condFold(ST, CD, ST', CD', s(N)) = true  [owise] .
+   ceq condFold(ST, CD, ST', CD', N)    = implyOK(CD', CD << SUB) and-then condFold(ST, CD, ST', CD', s(N))
+    if SUB := metaMatch(##m##, ST, ST', nil, N) .
+
+    --- check if the implecation (C1 /\ not C2) has no "true" solution
+    op implyOK : EqCondition EqCondition ~> Bool .
+    ----------------------------------------------
+   ceq implyOK(CD, CD') = implyOKsub(VS)
+    if VS := metaGenVariant(##m##,'_and_[condList(CD,true), '_or_[condList(CD',false)]]) .
+
+    op implyOKsub : VariantSet ~> Bool .
+    ------------------------------------
+    eq implyOKsub(.VariantSet)        = true .
+   ceq implyOKsub({T,SUB,N,P,B} # VS) = T' =/= 'true.Bool and-then implyOKsub(VS)
+    if T' := getTerm(metaReduce(##m##,T)) .
+
+    op condList : EqCondition Bool ~> TermList .
+    --------------------------------------------
+    eq condList(nil, B)                  = if B then 'true.Bool else 'false.Bool fi .
+    eq condList(T = 'true.Bool /\ CD, B) = if B then T else 'not_[T] fi, condList(CD, B) .
+endm
