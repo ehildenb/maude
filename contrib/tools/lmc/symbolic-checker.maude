@@ -107,12 +107,12 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
     --------------------------------
     subsort Transition < TransitionList .
 
-    op {_,_} : State MetaEdge                -> Transition [ctor] .
-    ---------------------------------------------------------------
+    op {_,_} : State MetaEdge -> Transition [ctor] .
+    ------------------------------------------------
 
-    op nil   :                               -> TransitionList [ctor] .
-    op __    : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
-    -------------------------------------------------------------------------------------------------
+    op nil :                               -> TransitionList [ctor] .
+    op __  : TransitionList TransitionList -> TransitionList [ctor assoc id: nil format (d ni d)] .
+    -----------------------------------------------------------------------------------------------
 
     --- model checking results
     sorts ModelCheckResult .
