@@ -263,3 +263,52 @@ fmod META-NARROWING-INTERFACE is
     eq inst?('false.Bool) = true .
     eq inst?(T)           = false [owise] .
 endfm
+
+mod META-SYMBOLIC-CONNECTOR is
+   protecting META-LMC-THEORY .
+   protecting BOUNDED-FOLDING-MODEL-CHECKER .
+   protecting META-NARROWING-INTERFACE .
+
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var RN : RuleName . var RS : RuleSet . var TL : TermList .
+    var V : Variable . var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var B : Bool . var N : Nat . var D : Bound . var A : Assignment .
+
+    --- meta prop and state
+    eq mid(ST) |= prop(PT) = getTerm(metaReduce(##m##, '_|=_[ST, PT])) == 'true.Bool .
+
+    --- state folding
+    eq init(ST) >= init(ST) = true .
+    eq  mid(ST) >= mid(ST') = metaMatch(##m##, ST, ST', nil, 0) :: Substitution .
+    eq S1:State >= S2:State = false [owise] .
+
+    --- renaming folding
+    eq init(ST) ~= init(ST) = true .
+    eq  mid(ST) ~= mid(ST') = mid(ST) >= mid(ST') and-then mid(ST') >= mid(ST) .
+    eq S1:State ~= S2:State = false [owise] .
+
+    --- compute the next states
+    --- TODO: keep both a state and a substitution for a counter example..
+    eq    next(ST) = propSetInstSet(metaNarrow2(##m##, ST), ##f##) .
+    eq variant(ST) = propSetInstSet({ST,leastSort(##m##,ST),none / none}, ##f##) .
+
+    --- run LMC model check : State Formula -> Result
+    op lmc-check : Term Term Bool Bound ~> BoundedModelCheckReport .
+    ----------------------------------------------------------------
+   ceq lmc-check(ST, PT, B, D) = symbolicModelCheck(init(ST), O tilde(##m##,PT), B, D)
+    if sortLeq(##m##, leastSort(##m##,ST), 'State)
+    /\ sortLeq(##m##, leastSort(##m##,PT), 'Formula) .
+
+    --- meta formula
+    op tilde : Module Term -> Formula .
+    -----------------------------------
+   ceq tilde(M, PT)             = prop(PT) if sortLeq(M,leastSort(M,PT),'Prop) .
+    eq tilde(M, 'True.Formula)  = True .
+    eq tilde(M, 'False.Formula) = False .
+    eq tilde(M, '~_[T])         = ~ tilde(M, T) .
+    eq tilde(M, '_/\_[T, T'])   = tilde(M, T) /\ tilde(M, T') .
+    eq tilde(M, '_\/_[T, T'])   = tilde(M, T) \/ tilde(M, T') .
+    eq tilde(M, 'O_[T])         = O tilde(M, T) .
+    eq tilde(M, '_U_[T, T'])    = tilde(M, T) U tilde(M, T') .
+    eq tilde(M, '_R_[T, T'])    = tilde(M, T) R tilde(M, T') .
+endm
