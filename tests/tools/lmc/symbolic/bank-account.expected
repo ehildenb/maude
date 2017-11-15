@@ -6,7 +6,9 @@ Warning: "bank-account.maude", line 155 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs .
-
-	    Logical Model Checker January 10th 2012
-
+==========================================
+reduce in BANK-ACCOUNT-SATISFACTION : < bal: N pend: M overdraft: ff > #
+    MSGS:MsgConf |= tt? .
+rewrites: 1
+result Bool: true
 Bye.

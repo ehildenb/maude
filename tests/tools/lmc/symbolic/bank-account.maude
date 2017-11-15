@@ -1,4 +1,20 @@
 set show timing off .
 
 load ../../../../contrib/systems/bank-account.maude
-load ../../../../contrib/tools/lmc/symbolic-interface.maude
+load ../../../../contrib/tools/lmc/symbolic-checker.maude
+
+--- Atomic Propositions for `BANK-ACCOUNT-CTOR`
+--- -------------------------------------------
+
+mod BANK-ACCOUNT-SATISFACTION is
+   protecting BANK-ACCOUNT-CTOR .
+   protecting SYMBOLIC-CHECKER * ( sort Nat to PNat ) .
+
+    vars N M : Nat . var S : State .
+
+    op tt? : -> Prop .
+
+    eq S |= tt? = true [variant] .
+endm
+
+reduce < bal: N:Nat pend: M:Nat overdraft: ff > # MSGS:MsgConf |= tt? .
