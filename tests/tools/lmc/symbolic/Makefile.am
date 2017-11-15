@@ -5,7 +5,8 @@ TESTS = \
 	rw-shared \
 	rw \
 	token-mutex \
-	vending
+	vending \
+	bank-account
 
 MAUDE_FILES = \
 	symbolic-checker.maude \
@@ -14,7 +15,8 @@ MAUDE_FILES = \
 	rw-shared.maude \
 	rw.maude \
 	token-mutex.maude \
-	vending.maude
+	vending.maude \
+	bank-account.maude
 
 RESULT_FILES = \
 	symbolic-checker.expected \
@@ -23,6 +25,7 @@ RESULT_FILES = \
 	rw-shared.expected \
 	rw.expected \
 	token-mutex.expected \
-	vending.expected
+	vending.expected \
+	bank-account.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
