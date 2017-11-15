@@ -316,3 +316,93 @@ mod META-SYMBOLIC-CONNECTOR is
     eq tilde(M, '_U_[T, T'])    = tilde(M, T) U tilde(M, T') .
     eq tilde(M, '_R_[T, T'])    = tilde(M, T) R tilde(M, T') .
 endm
+
+*****************************************************
+***  Full Maude Narrowing Connector  (Condition)  ***
+*****************************************************
+
+--- NOTE: currently, only considering "T = true"
+
+mod META-LMC-COND-THEORY is
+   protecting META-LMC-THEORY .
+
+   ops init mid : Term EqCondition -> State [ctor] .
+    ------------------------------------------------
+endm
+
+fmod META-NARROWING-COND-INTERFACE is
+   protecting META-NARROWING-INTERFACE .
+
+   vars T T1 T2 ST PT : Term .  var TL : TermList .
+    var C : Constant . var CD : EqCondition . var RS : RuleSet .
+    var TP : Type . vars SUB SUB1 SUB2 : Substitution .  var N : Nat .
+    var SR : StepResult . var SRS : StepResultSet . var VS : VariantSet .
+    var P : Parent . var B : Bool .
+
+    --- variant narrowing condition instantiations.
+
+    --- StateSet EqCondition -> StateSet
+    op condSetInstSet : StepResultSet EqCondition ~> StepResultSet .
+    ----------------------------------------------------------------
+    eq condSetInstSet(SRS, nil)                  = SRS .
+    eq condSetInstSet(SRS, T = 'true.Bool /\ CD) = condSetInstSet(condInstSet(SRS, T), CD) .
+
+    --- StateSet Prop -> StateSet
+    op condInstSet : StepResultSet Term ~> StepResultSet .
+    ------------------------------------------------------
+    eq condInstSet(.StepResultSet, T)          = .StepResultSet .
+   ceq condInstSet({ST,TP,SUB / RS} || SRS, T) = filterCondVars({ST,TP,SUB / RS}, VS) || condInstSet(SRS, T)
+    if VS := metaGenVariant(##m##, T << SUB) .
+
+    --- only true instances (hence the conditions should be complete and FVP)
+    op filterCondVars : StepResult VariantSet ~> StepResultSet .
+    ------------------------------------------------------------
+    eq filterCondVars(SR, VS) = .StepResultSet [owise] .
+    eq filterCondVars({ST,TP,SUB / RS}, {'true.Bool,SUB1,N,P,B} # VS)
+     = {ST << SUB1, TP, SUB .. SUB1 / RS} || filterCondVars({ST,TP,SUB / RS}, VS) .
+
+    --- applying substitution to condition
+    op _<<_ : EqCondition Substitution ~> EqCondition .
+    ---------------------------------------------------
+    eq nil << SUB = (nil).EqCondition .
+    eq (T1  = T2   /\ CD) << SUB = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
+    eq (T1 := T2   /\ CD) << SUB = ((T1 << SUB) = (T2 << SUB)) /\ (CD << SUB) .
+    eq (T : S:Sort /\ CD) << SUB = ((T << SUB) : S:Sort)       /\ (CD << SUB) .
+endfm
+
+mod META-SYMBOLIC-COND-CONNECTOR-BASE is
+   protecting META-LMC-COND-THEORY .
+   protecting META-NARROWING-COND-INTERFACE .
+   protecting META-SYMBOLIC-CONNECTOR .
+
+    var M : Module .  vars T T' T1 T2 ST ST' PT CT : Term .
+    var TL : TermList .  var V : Variable .
+    var TP : Type . vars SUB SUB' SUB'' : Substitution .
+    var B : Bool . var N : Nat . var D : Bound .
+    var RT : ResultTriple .  var RTS : ResultTripleSet .
+   vars CD CD' : EqCondition .
+
+    --- meta prop and state
+    eq mid(ST,CD) |= prop(PT) = getTerm(metaReduce(##m##, '_|=_[ST, PT])) == 'true.Bool .
+
+    --- with condition
+    op lmc-check : Term Term EqCondition Bool Bound ~> BoundedModelCheckReport .
+    ----------------------------------------------------------------------------
+   ceq lmc-check(ST, PT, CD, B, D)
+     = if CD == nil
+       then symbolicModelCheck(init(ST), O tilde(##m##,PT), B, D)
+       else symbolicModelCheck(init(ST,CD), O tilde(##m##,PT), B, D)
+       fi
+    if sortLeq(##m##, leastSort(##m##,ST), 'State)
+    /\ sortLeq(##m##, leastSort(##m##,PT), 'Formula) .
+
+    --- normalize conditions (modulo equation)
+    --- NOTE: metaNormalize vs. metaReduce??  metaNormalize generates slightly
+    --- more states for (state,condition) pairs if there exists equaltional
+    --- abstraction, but it will be more correct since we do not worry about
+    --- whether some variables is removed by such equations...
+    op condNorm : EqCondition ~> EqCondition .
+    ------------------------------------------
+    eq condNorm(nil)                  = nil .
+    eq condNorm(T = 'true.Bool /\ CD) = getTerm(metaNormalize(##m##,T)) = 'true.Bool /\ condNorm(CD) .
+endm
