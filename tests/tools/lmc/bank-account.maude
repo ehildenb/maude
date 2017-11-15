@@ -1,0 +1,5 @@
+set show timing off .
+
+load ../../../contrib/systems/bank-account.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+load ../../../contrib/tools/meta/narrowing.maude
