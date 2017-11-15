@@ -69,6 +69,8 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
    protecting SATISFACTION .
     including LTL .
 
+    vars S S' : State .
+
     --- meta transition
     sorts MetaEdge MetaConf .
     -------------------------
@@ -82,8 +84,9 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
     -------------------------------------------------------
 
     --- propositions
-    subsort Prop < Formula .
-    ------------------------
+    subsorts State < Prop < Formula .
+    ---------------------------------
+    eq S |= S' = S >= S' .
 
     op prop : Term  -> Prop [ctor] .
     --------------------------------
@@ -92,6 +95,7 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
     op _>=_ : State State -> Bool .
     op _~=_ : State State -> Bool .
     -------------------------------
+    eq S >= S = true .
 
     op _~_  : MetaEdge MetaEdge -> Bool .
     -------------------------------------
