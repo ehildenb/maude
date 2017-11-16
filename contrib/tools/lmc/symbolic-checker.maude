@@ -95,7 +95,9 @@ fmod BOUNDED-FOLDING-MODEL-CHECKER is
     op _>=_ : State State -> Bool .
     op _~=_ : State State -> Bool .
     -------------------------------
-    eq S >= S = true .
+    eq S >= S  = true .
+    eq S ~= S  = true .
+    eq S ~= S' = S >= S' and-then S' >= S [owise] .
 
     op _~_  : MetaEdge MetaEdge -> Bool .
     -------------------------------------
