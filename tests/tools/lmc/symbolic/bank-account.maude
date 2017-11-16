@@ -8,7 +8,7 @@ load ../../../../contrib/tools/lmc/symbolic-checker.maude
 
 mod BANK-ACCOUNT-SATISFACTION is
    protecting BANK-ACCOUNT-CTOR .
-   protecting SYMBOLIC-CHECKER * ( sort Nat to PNat ) .
+   protecting META-SYMBOLIC-CONNECTOR * ( sort Nat to PNat ) .
 
     vars N M : Nat . var S : State .
 
