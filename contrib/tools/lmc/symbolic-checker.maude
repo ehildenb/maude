@@ -24,7 +24,7 @@ fmod SYMBOLIC-CHECKER is
    protecting SATISFACTION .
     including LTL .
 
-    subsort Prop < Formula .
+    subsort State < Prop < Formula .
 
     --- generic substitution for counter example
     sorts CEAssignment CESubstitution .
