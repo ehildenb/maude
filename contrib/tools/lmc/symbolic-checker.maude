@@ -284,14 +284,7 @@ mod META-SYMBOLIC-CONNECTOR is
     eq mid(ST) |= prop(PT) = getTerm(metaReduce(##m##, '_|=_[ST, PT])) == 'true.Bool .
 
     --- state folding
-    eq init(ST) >= init(ST) = true .
-    eq  mid(ST) >= mid(ST') = metaMatch(##m##, ST, ST', nil, 0) :: Substitution .
-    eq S1:State >= S2:State = false [owise] .
-
-    --- renaming folding
-    eq init(ST) ~= init(ST) = true .
-    eq  mid(ST) ~= mid(ST') = mid(ST) >= mid(ST') and-then mid(ST') >= mid(ST) .
-    eq S1:State ~= S2:State = false [owise] .
+    eq mid(ST) >= mid(ST') = metaMatch(##m##, ST, ST', nil, 0) :: Substitution .
 
     --- compute the next states
     --- TODO: keep both a state and a substitution for a counter example..
