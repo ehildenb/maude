@@ -1,3 +1,5 @@
+set show timing off .
+
 load ../../../../contrib/systems/bakery.maude
 load ../../../../contrib/tools/lmc/symbolic-interface.maude
 
