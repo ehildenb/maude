@@ -1,3 +1,6 @@
+# Temp directory for notes, todo, lists, etc.
+/tmp/
+
 # metadata files
 *~
 *.sw*
