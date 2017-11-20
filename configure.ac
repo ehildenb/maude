@@ -413,6 +413,7 @@ AC_CONFIG_FILES([Makefile
 		 tests/ResolvedBugs/Makefile
 		 tests/tools/Makefile
 		 tests/tools/base/Makefile
+		 tests/tools/itp/Makefile
 		 tests/tools/meta/Makefile
 		 tests/tools/lmc/Makefile
 		 tests/systems/Makefile
