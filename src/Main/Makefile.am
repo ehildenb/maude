@@ -1,4 +1,4 @@
-bin_PROGRAMS = maude
+bin_PROGRAMS = maude maudeunittest
 
 if BUILD_COMPILER
   FULL_COMPILER_LIB = ../FullCompiler/libfullCompiler.a
@@ -31,6 +31,7 @@ maude_CPPFLAGS = \
 	-I$(top_srcdir)/src/FullCompiler \
 	-I$(top_srcdir)/src/StrategyLanguage \
 	-I$(top_srcdir)/src/Mixfix
+maudeunittest_CPPFLAGS = $(maude_CPPFLAGS)
 
 maude_LDADD = \
 	../Mixfix/libmixfix.a \
@@ -62,9 +63,11 @@ maude_LDADD = \
 	$(BUDDY_LIB) \
 	$(TECLA_LIBS) \
 	$(LIBSIGSEGV_LIB)
+maudeunittest_LDADD = $(maude_LDADD)
 
 maude_SOURCES = \
 	main.cc
+maudeunittest_SOURCES = test.cc
 
 data_DATA = \
 	prelude.maude \
@@ -87,3 +90,5 @@ EXTRA_DIST = \
 	metaInterpreter.maude \
 	smt.maude \
 	file.maude
+
+TESTS = maudeunittest
