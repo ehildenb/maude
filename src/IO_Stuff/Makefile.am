@@ -1,6 +1,7 @@
 noinst_LIBRARIES = libIO_Stuff.a
 
 libIO_Stuff_a_CPPFLAGS = \
+	-I$(top_srcdir)/src/Core \
 	-I$(top_srcdir)/src/Utility
 
 libIO_Stuff_a_SOURCES = \

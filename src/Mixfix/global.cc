@@ -66,39 +66,10 @@ Interpreter& interpreter = *(new Interpreter);
 //Interpreter interpreter;
 IO_Manager ioManager;
 
-string executableDirectory;
-
 bool alwaysAdviseFlag = false;
 
 bool
 findFile(const string& userFileName, string& directory, string& fileName, int lineNr)
 {
-  static char const* const ext[] = {".maude", ".fm", ".obj", 0};
-
-  string::size_type p = userFileName.rfind('/');
-  if (p == string::npos)
-    {
-      fileName = userFileName;
-      directory = ".";
-      if (directoryManager.checkAccess(directory, fileName, R_OK, ext))
-	return true;
-      if (directoryManager.searchPath(MAUDE_LIB, directory, fileName, R_OK, ext))
-	return true;
-      if (!(executableDirectory.empty()) &&
-	  directoryManager.checkAccess(executableDirectory, fileName, R_OK, ext))
-	{
-	  directory = executableDirectory;
-	  return true;
-	}
-    }
-  else if (p + 1 < userFileName.length())
-    {
-      directoryManager.realPath(userFileName.substr(0, p), directory);
-      fileName = userFileName.substr(p + 1);
-      if (directoryManager.checkAccess(directory, fileName, R_OK, ext))
-	return true;
-    }
-  IssueWarning(LineNumber(lineNr) <<
-	       ": unable to locate file: " << QUOTE(userFileName));
-  return false;
+  return directoryManager.findFile(userFileName, directory, fileName, lineNr);
 }

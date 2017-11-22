@@ -34,6 +34,9 @@
 #include "vector.hh"
 
 #include "directoryManager.hh"
+#include "lineNumber.hh"
+
+string executableDirectory;
 
 bool
 DirectoryManager::checkAccess(const string& directory,
@@ -73,7 +76,7 @@ DirectoryManager::checkAccess(const string& directory,
 }
 
 bool
-DirectoryManager::searchPath(const char* pathVar,
+AbstractDirectoryManager::searchPath(const char* pathVar,
 			     string& directory,
 			     string& fileName,
 			     int mode,
@@ -101,7 +104,7 @@ DirectoryManager::searchPath(const char* pathVar,
 }
 
 void
-DirectoryManager::realPath(const string& path, string& resolvedPath)
+AbstractDirectoryManager::realPath(const string& path, string& resolvedPath)
 {
   string::size_type length = path.length();
   if (length == 0)
@@ -267,4 +270,37 @@ const char*
 DirectoryManager::getCwd()
 {
   return directoryNames.name(directoryStack[directoryStack.length() - 1]);
+}
+
+bool
+AbstractDirectoryManager::findFile(const string& userFileName, string& directory, string& fileName, int lineNr)
+{
+  static char const* const ext[] = {".maude", ".fm", ".obj", 0};
+
+  string::size_type p = userFileName.rfind('/');
+  if (p == string::npos)
+    {
+      fileName = userFileName;
+      directory = ".";
+      if (checkAccess(directory, fileName, R_OK, ext))
+	return true;
+      if (searchPath("MAUDE_LIB", directory, fileName, R_OK, ext))
+	return true;
+      if (!(executableDirectory.empty()) &&
+	  checkAccess(executableDirectory, fileName, R_OK, ext))
+	{
+	  directory = executableDirectory;
+	  return true;
+	}
+    }
+  else if (p + 1 < userFileName.length())
+    {
+      realPath(userFileName.substr(0, p), directory);
+      fileName = userFileName.substr(p + 1);
+      if (checkAccess(directory, fileName, R_OK, ext))
+	return true;
+    }
+  IssueWarning(LineNumber(lineNr) <<
+	       ": unable to locate file: " << QUOTE(userFileName));
+  return false;
 }

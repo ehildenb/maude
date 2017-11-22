@@ -27,7 +27,26 @@
 #define _directoryManager_hh_
 #include "stringTable.hh"
 
+class AbstractDirectoryManager
+{
+public:
+  virtual bool checkAccess(const string& directory,
+		   string& fileName,
+		   int mode,
+		   char const* const ext[] = 0) = 0;
+  virtual const char* getCwd() = 0;
+
+  bool searchPath(const char* pathVar,
+		  string& directory,
+		  string& fileName,
+		  int mode,
+		  char const* const ext[] = 0);
+  void realPath(const string& path, string& resolvedPath);
+  bool findFile(const string& userFileName, string& directory, string& fileName, int lineNr);
+};
+
 class DirectoryManager
+    : public AbstractDirectoryManager
 {
 public:
   void initialize();
@@ -40,16 +59,13 @@ public:
 		   string& fileName,
 		   int mode,
 		   char const* const ext[] = 0);
-  bool searchPath(const char* pathVar,
-		  string& directory,
-		  string& fileName,
-		  int mode,
-		  char const* const ext[] = 0);
-  void realPath(const string& path, string& resolvedPath);
 
 private:
   StringTable directoryNames;
   Vector<int> directoryStack;
 };
+
+// TODO: Replace usages with executableDirectory() member
+extern string executableDirectory;
 
 #endif

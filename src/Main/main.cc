@@ -275,10 +275,11 @@ findExecutableDirectory(string& directory, string& executable)
     }
 }
 
+// TODO: Fold this into directoryManager
 bool
 findPrelude(string& directory, string& fileName)
 {
-  if (directoryManager.searchPath(MAUDE_LIB, directory, fileName, R_OK))
+  if (directoryManager.searchPath("MAUDE_LIB", directory, fileName, R_OK))
     return true;
   if (!(executableDirectory.empty()) &&
       directoryManager.checkAccess(executableDirectory, fileName, R_OK))

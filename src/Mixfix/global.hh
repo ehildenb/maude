@@ -30,13 +30,9 @@ extern Interpreter& interpreter;
 
 #include "IO_Manager.hh"  // HACK
 extern IO_Manager ioManager;
-
-extern string executableDirectory;
-
 extern bool alwaysAdviseFlag;
 
 #define PRELUDE_NAME	"prelude.maude"
-#define MAUDE_LIB	"MAUDE_LIB"
 
 bool
 findPrelude(string& directory, string& fileName);
