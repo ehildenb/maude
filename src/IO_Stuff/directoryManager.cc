@@ -94,8 +94,15 @@ AbstractDirectoryManager::searchPath(const char* pathVar,
 	  if (string::size_type partLen = c - start)
 	    {
 	      realPath(path.substr(start, partLen), directory);
-	      if (checkAccess(directory, fileName, mode, ext))
-		return true;
+	      if (checkAccess(directory, fileName, mode, ext)) {
+    	    size_t last_slash = fileName.rfind("/");
+    	    // Fix seperation into dirname, basename
+            if (last_slash == string::npos) return true;
+            if (*directory.rbegin() != '/') directory += "/";
+            directory += fileName.substr(0, last_slash);
+            fileName.erase(0, last_slash + 1);
+            return true;
+	      }
 	    }
 	  start = c + 1;
 	}
@@ -299,6 +306,11 @@ AbstractDirectoryManager::findFile(const string& userFileName, string& directory
       fileName = userFileName.substr(p + 1);
       if (checkAccess(directory, fileName, R_OK, ext))
 	return true;
+
+      fileName = userFileName;
+      if (   userFileName.find("..") == string::npos
+          && searchPath("MAUDE_LIB", directory, fileName, R_OK, ext))
+        return true;
     }
   IssueWarning(LineNumber(lineNr) <<
 	       ": unable to locate file: " << QUOTE(userFileName));

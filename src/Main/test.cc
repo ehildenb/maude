@@ -130,6 +130,11 @@ int main() {
     dm.addFile("/path/to/cwd/bar.maude");
     result &= checkFindFile(dm, "bar", ".", "bar.maude"); // path/to/cwd is OK too
 
+    dm.addFile("/share/maude/widget/bar.maude");
+    dm.addFile("/share/maude/gadget/bar.maude");
+    dm.addFile("/share/maude/bar.maude");
+    result &= checkFindFile(dm, "gadget/bar", "/share/maude/gadget", "bar.maude"); // path/to/cwd is OK too
+
     return result ? 0 : 1;
 }
 
