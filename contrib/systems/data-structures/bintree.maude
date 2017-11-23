@@ -1,4 +1,4 @@
-in ../ordlists/ordlist.maude
+in ordlist.maude
 
 fmod BINARY-SEARCH-TREE is
   pr INT .
