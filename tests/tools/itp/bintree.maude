@@ -1,5 +1,5 @@
-load ../../../contrib/tools/itp/itp-tool.maude
-load ../../../contrib/systems/data-structures/bintree.maude
+load contrib/tools/itp/itp-tool.maude
+load contrib/systems/data-structures/bintree.maude
 
 select ITP-TOOL .
 loop init-itp .
