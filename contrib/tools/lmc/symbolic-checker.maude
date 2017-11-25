@@ -3,6 +3,7 @@
 
 load ../base/model-checker.maude
 load ../meta/narrowing.maude
+load lmc.maude
 
 ****************************************
 ***          Basic Interface         ***
@@ -189,14 +190,6 @@ endfm
 ****************************************
 ***  Full Maude Narrowing Connector  ***
 ****************************************
-
-fmod META-LMC-PARAMETERS is
-   protecting META-MODULE .
-
-    --- empty! the user module shoule define them.
-    op ##m## : ~> SModule  [memo] .
-    op ##f## : ~> TermList [memo] .
-endfm
 
 mod META-LMC-THEORY is
    protecting NARROWING-STEP-SET .
