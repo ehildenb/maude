@@ -40,8 +40,8 @@ fmod LABELLED-GRAPH is
 endfm
 
 fmod GRAPH-FOLDING-SEARCH is
-    protecting INT .
-    protecting BOUND .
+   protecting INT .
+   protecting BOUND .
     extending LABELLED-GRAPH .
 
     vars N N' N'' : Nat . vars D D' : Depth . var B : Bound .
