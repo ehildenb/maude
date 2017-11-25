@@ -115,3 +115,83 @@ fmod GRAPH-FOLDING-SEARCH is
     eq bfs(S)    = bfs(S, unbounded) .
     eq bfs(S, B) = .LGraph | 1 |-> S | 1 | 1 -> step(S) [ 0 , B ] .LGraph .
 endfm
+
+fmod FVP-NARROWING-GRAPH is
+   protecting NARROWING2 .
+    extending GRAPH-FOLDING-SEARCH .
+
+    var TYPE : Type . vars T T' : Term . var M : Module . var SUB : Substitution .
+    vars SR SR' : StepResult . var SRS : StepResultSet . var RS : RuleSet .
+
+    op ##m## : -> [Module] .
+    ------------------------
+
+    op label : RuleSet Substitution -> Label .
+    ------------------------------------------
+
+    op transition : StepResultSet -> [TransitionSet] .
+    --------------------------------------------------
+    eq transition({T , TYPE , SUB / RS }) = < label(RS, SUB) , state(T) > .
+    eq transition(.StepResultSet)         = .TransitionSet .
+    eq transition(SR || SR' || SRS)       = transition(SR) , transition(SR') , transition(SRS) .
+
+    op state : Term         -> State .
+    op fold  : Substitution -> Fold .
+    ---------------------------------
+    eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
+   ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T, T', nil, 0) .
+endfm
+
+eof
+
+fmod FVP-NARROWING-MODULO-T-GRAPH is
+    protecting SUBSTITUTIONSET .
+    protecting NARROWING-GRAPH .
+    protecting INTEGER .
+
+    sorts Constraint CState .
+    subsort State < CState .
+    ------------------------
+    vars NeTS NeTS' : NeTransitionSet . var T : Term . var N : Nat .
+    vars C C' : Constraint . var M : Module . vars S S' : State .
+    var SUBST : Substitution . var SUBSTS : SubstitutionSet .
+
+    op downConstraintError : -> [Constraint] .
+    op _<<_ : Constraint Substitution -> Constraint .
+    -------------------------------------------------
+   ceq C << SUBST = C'
+    if T  := upTerm(C) << SUBST
+    /\ C' := downTerm(T, downConstraintError) .
+
+    op unsatis? : Constraint            -> [Bool] .
+    op entails? : Constraint Constraint -> [Bool] .
+    -----------------------------------------------
+
+    op _|_ : State Constraint -> CState .
+    op <_,_> : Step CState -> Transition .
+    --------------------------------------
+
+    op step : Module CState -> [TransitionSet] .
+    --------------------------------------------
+    eq step(M, S | C) = updateTransitions(C, step(M, S)) .
+
+    op updateTransitions : Constraint TransitionSet -> [TransitionSet] .
+    --------------------------------------------------------------------
+    eq updateTransitions(C, .TransitionSet) = .TransitionSet .
+    eq updateTransitions(C, (NeTS , NeTS')) = updateTransitions(C, NeTS) , updateTransitions(C, NeTS') .
+
+   ceq updateTransitions(C, < SUBST , S >) = .TransitionSet             if C' := C << SUBST /\ unsatis?(C') .
+    eq updateTransitions(C, < SUBST , S >) = < SUBST , S | C << SUBST > [owise] .
+
+    op allMatches : Module State State Nat -> [SubstitutionSet] .
+    -------------------------------------------------------------
+    eq allMatches(M, S, S', N) = none [owise] .
+   ceq allMatches(M, S, S', N) = SUBST | allMatches(M, S, S', N + 1)
+    if SUBST := metaMatch(M, upTerm(S'), upTerm(S), nil, N) .
+
+    op fold : Module CState CState -> [Fold] .
+    ------------------------------------------
+   ceq fold(M, S | C, S' | C') = SUBST
+    if SUBST | SUBSTS := allMatches(M, S, S', 0)
+    /\ entails?(C', C << SUBST) .
+endfm
