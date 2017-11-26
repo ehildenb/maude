@@ -115,7 +115,7 @@ fmod GRAPH-FOLDING-SEARCH is
     op bfs : State Bound -> BFS .
     -----------------------------
     eq bfs(S)    = bfs(S, unbounded) .
-    eq bfs(S, B) = .LGraph | 1 |-> S | 1 | 1 -> step(S) [ 0 , B ] .LGraph .
+    eq bfs(S, B) = .LGraph | 0 |-> S | 0 | 0 -> step(S) [ continue(0, B) ] .LGraph .
 endfm
 
 fmod FVP-NARROWING-GRAPH is
