@@ -14,4 +14,33 @@ Set of initial states:  < sleep, X0, sleep, X0 > .
 Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
 )
 
---- Module BAKERY-NARROWING-SEARCH
+--- Module BAKERY-NARROWING-GRAPH
+--- =============================
+
+mod BAKERY-NARROWING-GRAPH is
+   protecting BAKERY .
+    extending FVP-NARROWING-GRAPH .
+
+    eq ##m## = upModule('BAKERY, true) .
+
+    op upIdle : -> [Term] .
+    -----------------------
+    eq upIdle = upTerm([idle]) .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = upTerm(0 ; 0 ; [idle] [idle]) .
+    eq init(1) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
+    eq init(2) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
+    eq init(3) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,'X:Name]]], upIdle, upIdle, 'PWS:ProcWaitSet]] .
+endm
+
+--- Low-level functions
+--- -------------------
+
+--- ### ensure that init(0..4) are well formed
+
+reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(##m##, init(1)) .
+reduce wellFormed(##m##, init(2)) .
+reduce wellFormed(##m##, init(3)) .

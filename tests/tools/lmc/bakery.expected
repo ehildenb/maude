@@ -1,1 +1,17 @@
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(0)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(1)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(2)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(3)) .
+rewrites: 5
+result Bool: true
 Bye.
