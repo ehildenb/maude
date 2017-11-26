@@ -80,7 +80,7 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------------------------
 
     op .Environment : -> Environment .
-    op __ : NeEnvironment Environment -> NeEnvironment [assoc id: .Environment prec 60] .
+    op __ : NeEnvironment Environment -> NeEnvironment [assoc id: .Environment prec 60 format(d n d)] .
     op __ :   Environment Environment ->   Environment [ditto] .
     ------------------------------------------------------------
 
@@ -99,14 +99,13 @@ fmod GRAPH-FOLDING-SEARCH is
     sort Frontier BFS .
     -------------------
 
-    op _[_]_ : LGraph Depth LGraph -> Frontier [prec 65] .
-    ------------------------------------------------------
-
-    op _|_|_|_ : LGraph Environment Nat Frontier -> BFS [prec 70] .
-    ---------------------------------------------------------------
+    op _[_]_ : LGraph Depth LGraph -> Frontier [prec 65 format(d n d d n d)] .
+    --------------------------------------------------------------------------
     eq .LGraph [          D  ] NeLG
      = NeLG    [ continue(D) ] .LGraph .
 
+    op _|_|_|_ : LGraph Environment Nat Frontier -> BFS [prec 70 format(n n d n d n d d)] .
+    ---------------------------------------------------------------------------------------
    ceq LG               | ENV  |   N | ND -[L]-> S' LG' [ D ] LG''
      = LG ND -[L]-> ND' | ENV' | s N |              LG' [ D ] LG'' LG'''
     if { ND' , ENV' } := insert(s N |-> S', ENV)
