@@ -139,7 +139,7 @@ fmod FVP-NARROWING-GRAPH is
     op fold  : Substitution -> Fold .
     ---------------------------------
     eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
-   ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T, T', nil, 0) .
+   ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
 endfm
 
 eof
