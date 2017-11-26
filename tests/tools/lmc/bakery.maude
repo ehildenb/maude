@@ -98,3 +98,15 @@ Set of initial states:  < sleep, X0, sleep, X0 > .
 Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
              or: state(init(1)) \/ state(init(2)) .
 )
+
+reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(##m##, init(1)) .
+reduce wellFormed(##m##, init(2)) .
+
+reduce step(state(init(0))) .
+reduce step(state(init(1))) .
+reduce step(state(init(2))) .
+
+--- both initial states yield finite state-graphs
+reduce bfs(state(init(1))) .
+reduce bfs(state(init(2))) .

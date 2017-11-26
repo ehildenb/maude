@@ -871,4 +871,556 @@ result [BFS]:
     '@1:Name]]]]])
 [continue(10,10)]
 .LGraph
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(0)) .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(1)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(2)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(0))) .
+rewrites: 37
+result Transition: < label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,
+    'Y:Nat>] => '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,
+    'Y:Nat>] [narrowing label('p1_sleep)] ., none),state('<_`,_`,_`,_>[
+    'wait.NcMode,'_+_['1.Zero>,'1.Zero>,'1.Zero>],'wait.NcMode,'_+_['1.Zero>,
+    '1.Zero>]]) >
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(1))) .
+rewrites: 226
+result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
+    label('p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['@1:NcMode,'0.Zero>,'crit.Mode,
+    '@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
+    label('p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'X2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['@1:NcMode,'_+_['@2:Nat>,
+    '@3:NzNat>],'crit.Mode,'@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['wait.NcMode,
+    'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,
+    '0.Zero>] [narrowing label('p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PNC:NcMode <- 'wait.NcMode ; 
+  'QC:Mode <- '@1:Mode ; 
+  'X1:Nat> <- '_+_['@2:Nat>,'@3:Nat>] ; 
+  'X2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['crit.Mode,'_+_['@2:Nat>,'@3:Nat>],
+    '@1:Mode,'@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,
+    'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [
+    narrowing label('p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PNC:NcMode <- 'wait.NcMode ; 
+  'QC:Mode <- '@2:Mode ; 
+  'X1:Nat> <- '@1:Nat> ; 
+  'X2:Nat> <- '0.Zero>),state('<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:Mode,
+    '0.Zero>]) >,< label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>]
+    => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'crit.Mode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['@1:NcMode,'@2:Nat>,'sleep.NcMode,
+    '0.Zero>]) >,< label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,
+    'X:Nat>]] [narrowing label('p2_sleep)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'sleep.NcMode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['@1:NcMode,'@2:Nat>,'wait.NcMode,
+    '_+_['1.Zero>,'@2:Nat>]]) >,< label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,
+    'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],
+    'Q:Mode,'Y:Nat>] [narrowing label('p1_sleep)] ., 
+  'PNC:NcMode <- 'sleep.NcMode ; 
+  'QC:Mode <- '@2:Mode ; 
+  'X1:Nat> <- '@1:Nat> ; 
+  'X2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,
+    '@3:Nat>],'@2:Mode,'@3:Nat>]) >
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(2))) .
+rewrites: 226
+result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
+    label('p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'wait.NcMode ; 
+  'Y1:Nat> <- '0.Zero> ; 
+  'Y2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,
+    '@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
+    label('p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'wait.NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'Y2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat>,'@3:NzNat>],
+    'crit.Mode,'@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,
+    'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [
+    narrowing label('p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- '@1:NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:Nat>] ; 
+  'Y2:Nat> <- '@2:Nat>),state('<_`,_`,_`,_>['crit.Mode,'_+_['@2:Nat>,'@3:Nat>],
+    '@1:NcMode,'@2:Nat>]) >,< label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,
+    'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [
+    narrowing label('p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '0.Zero>),state('<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:NcMode,
+    '0.Zero>]) >,< label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
+    'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,
+    'X:Nat>]] [narrowing label('p2_sleep)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '@2:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['@1:Mode,'@2:Nat>,'wait.NcMode,
+    '_+_['1.Zero>,'@2:Nat>]]) >,< label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,
+    'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [
+    narrowing label('p1_crit)] ., 
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'@2:NcMode,
+    '@3:Nat>]) >,< label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,
+    'Y:Nat>] => '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,
+    'Y:Nat>] [narrowing label('p1_sleep)] ., 
+  'PC:Mode <- 'sleep.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,
+    '@3:Nat>],'@2:NcMode,'@3:Nat>]) >
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(1))) .
+rewrites: 936
+result BFS: 
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '@2:Nat>)]-> 0[fold(
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'crit.Mode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '@2:Nat>)]
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'X2:Nat> <- '@2:Nat>)]-> 0[fold(
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'crit.Mode ; 
+  'X1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'X2:Nat> <- '@2:Nat>)]
+0 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PNC:NcMode <- 'wait.NcMode ; 
+  'QC:Mode <- '@1:Mode ; 
+  'X1:Nat> <- '_+_['@2:Nat>,'@3:Nat>] ; 
+  'X2:Nat> <- '@2:Nat>)]-> 3
+0 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PNC:NcMode <- 'wait.NcMode ; 
+  'QC:Mode <- '@2:Mode ; 
+  'X1:Nat> <- '@1:Nat> ; 
+  'X2:Nat> <- '0.Zero>)]-> 3[fold(
+  '@1:Mode <- '@2:Mode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:Nat> <- '@1:Nat>)]
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'crit.Mode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'sleep.NcMode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '0.Zero>)]
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,'X:Nat>]] [
+    narrowing label('p2_sleep)] ., 
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'sleep.NcMode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PNC:NcMode <- '@1:NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '@2:Nat> ; 
+  'X2:Nat> <- '_+_['1.Zero>,'@2:Nat>])]
+0 -[label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,'Y:Nat>] [
+    narrowing label('p1_sleep)] ., 
+  'PNC:NcMode <- 'sleep.NcMode ; 
+  'QC:Mode <- '@2:Mode ; 
+  'X1:Nat> <- '@1:Nat> ; 
+  'X2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PNC:NcMode <- 'wait.NcMode ; 
+  'QC:Mode <- '@2:Mode ; 
+  'X1:Nat> <- '_+_['1.Zero>,'@3:Nat>] ; 
+  'X2:Nat> <- '@3:Nat>)]
+3 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  '@1:Mode <- 'wait.NcMode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:Nat> <- '0.Zero>)]-> 3[fold(
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:Nat> <- '0.Zero>)]
+3 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  '@1:Mode <- 'wait.NcMode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:Nat> <- '@2:NzNat>)]-> 3[fold(
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:Nat> <- '@2:NzNat>)]
+3 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:Nat> <- '@2:Nat>)]-> 3[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:Nat> <- '_+_['@1:Nat>,'@2:Nat>])]
+3 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,'X:Nat>]] [
+    narrowing label('p2_sleep)] ., 
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:Nat> <- '@2:Nat>)]-> 11
+3 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  '@1:Mode <- '@1:Mode ; 
+  '@2:Nat> <- '@2:Nat> ; 
+  '@3:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PNC:NcMode <- 'sleep.NcMode ; 
+  'QC:Mode <- '@1:Mode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '@2:Nat>)]
+11 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  '@1:Nat> <- '0.Zero> ; 
+  '@2:Nat> <- '0.Zero>)]-> 13
+11 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  '@1:Nat> <- '@1:Nat> ; 
+  '@2:Nat> <- '@2:Nat>)]-> 0[fold(
+  'PNC:NcMode <- 'sleep.NcMode ; 
+  'QC:Mode <- 'wait.NcMode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '_+_['1.Zero>,'@1:Nat>,'@2:Nat>])]
+13 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., none)]-> 3[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:Nat> <- '0.Zero>)]
+13 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., none)]-> 0[fold(
+  'PNC:NcMode <- 'sleep.NcMode ; 
+  'QC:Mode <- 'crit.Mode ; 
+  'X1:Nat> <- '0.Zero> ; 
+  'X2:Nat> <- '1.Zero>)]
+| 0 |-> state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>])
+3 |-> state('<_`,_`,_`,_>['crit.Mode,'_+_['@2:Nat>,'@3:Nat>],'@1:Mode,
+    '@2:Nat>])
+11 |-> state('<_`,_`,_`,_>['crit.Mode,'_+_['@1:Nat>,'@2:Nat>],'wait.NcMode,
+    '_+_['1.Zero>,'@1:Nat>,'@2:Nat>]])
+13 |-> state('<_`,_`,_`,_>['crit.Mode,'0.Zero>,'crit.Mode,'1.Zero>])
+| 16
+| .LGraph
+[4,unbounded]
+.LGraph
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(2))) .
+rewrites: 1400
+result BFS: 
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'wait.NcMode ; 
+  'Y1:Nat> <- '0.Zero> ; 
+  'Y2:Nat> <- '@2:Nat>)]-> 1
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing label(
+    'p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'crit.Mode,'V1:Nat>] [
+    narrowing label('p2_wait)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'wait.NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'Y2:Nat> <- '@2:Nat>)]-> 2
+0 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- '@1:NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:Nat>] ; 
+  'Y2:Nat> <- '@2:Nat>)]-> 0[fold(
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- '@1:NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:Nat>] ; 
+  'Y2:Nat> <- '@2:Nat>)]
+0 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '0.Zero>)]-> 0[fold(
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '0.Zero>)]
+0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,'X:Nat>]] [
+    narrowing label('p2_sleep)] ., 
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '@2:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'wait.NcMode ; 
+  'Y1:Nat> <- '@2:Nat> ; 
+  'Y2:Nat> <- '_+_['1.Zero>,'@2:Nat>])]
+0 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PC:Mode <- 'sleep.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '0.Zero> ; 
+  'Y2:Nat> <- '@3:Nat>)]
+0 -[label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,'Y:Nat>] [
+    narrowing label('p1_sleep)] ., 
+  'PC:Mode <- 'sleep.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '@1:Nat> ; 
+  'Y2:Nat> <- '@3:Nat>)]-> 0[fold(
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- '@2:NcMode ; 
+  'Y1:Nat> <- '_+_['1.Zero>,'@3:Nat>] ; 
+  'Y2:Nat> <- '@3:Nat>)]
+1 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  '@1:Mode <- 'wait.NcMode ; 
+  '@2:Nat> <- '0.Zero>)]-> 1[fold(
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '0.Zero>)]
+1 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  '@1:Mode <- '@1:Mode ; 
+  '@2:Nat> <- '@2:Nat>)]-> 0[fold(
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '0.Zero> ; 
+  'Y2:Nat> <- '0.Zero>)]
+1 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '@1:Nat>)]-> 1[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat>)]
+1 -[label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,'Y:Nat>] [
+    narrowing label('p1_sleep)] ., 
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat>)]-> 11
+2 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  '@1:Mode <- 'wait.NcMode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:NzNat> <- '@1:NzNat>)]-> 2[fold(
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '0.Zero> ; 
+  '@3:NzNat> <- '@1:NzNat>)]
+2 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  '@1:Mode <- 'wait.NcMode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:NzNat> <- '@2:NzNat>)]-> 2[fold(
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:NzNat> <- '@2:NzNat>)]
+2 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  '@1:Mode <- '@1:Mode ; 
+  '@2:Nat> <- '@2:Nat> ; 
+  '@3:NzNat> <- '@3:NzNat>)]-> 0[fold(
+  'PC:Mode <- '@1:Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '_+_['@2:Nat>,'@3:NzNat>] ; 
+  'Y2:Nat> <- '0.Zero>)]
+2 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  '@1:Mode <- 'crit.Mode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:NzNat> <- '@2:NzNat>)]-> 1[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat>)]
+2 -[label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,'Y:Nat>] [
+    narrowing label('p1_sleep)] ., 
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat> ; 
+  '@3:NzNat> <- '@2:NzNat>)]-> 11
+11 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  '@1:Nat> <- '0.Zero>)]-> 17
+11 -[label(rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] =>
+    '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [narrowing label(
+    'p1_wait)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] =>
+    '<_`,_`,_`,_>['crit.Mode,'_+_['V1:Nat>,'V2:Nat>],'Q:Mode,'V1:Nat>] [
+    narrowing label('p1_wait)] ., 
+  '@1:Nat> <- '@1:Nat>)]-> 18
+11 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  '@1:Nat> <- '@1:Nat>)]-> 0[fold(
+  'PC:Mode <- 'wait.NcMode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '_+_['1.Zero>,'@1:Nat>] ; 
+  'Y2:Nat> <- '0.Zero>)]
+17 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., none)]-> 0[fold(
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '1.Zero> ; 
+  'Y2:Nat> <- '0.Zero>)]
+17 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., none)]-> 1[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '0.Zero>)]
+18 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [narrowing label(
+    'p2_crit)] ., 
+  '@1:Nat> <- '@1:Nat>)]-> 0[fold(
+  'PC:Mode <- 'crit.Mode ; 
+  'QNC:NcMode <- 'sleep.NcMode ; 
+  'Y1:Nat> <- '_+_['1.Zero>,'@1:Nat>] ; 
+  'Y2:Nat> <- '0.Zero>)]
+18 -[label(rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [narrowing label(
+    'p1_crit)] ., 
+  '@1:Nat> <- '@1:Nat>)]-> 1[fold(
+  '@1:Mode <- 'sleep.NcMode ; 
+  '@2:Nat> <- '@1:Nat>)]
+| 0 |-> state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>])
+1 |-> state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,'@2:Nat>])
+2 |-> state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat>,'@3:NzNat>],'crit.Mode,
+    '@2:Nat>])
+11 |-> state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'@1:Nat>],'crit.Mode,
+    '@1:Nat>])
+17 |-> state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'crit.Mode,'0.Zero>])
+18 |-> state('<_`,_`,_`,_>['crit.Mode,'_+_['1.Zero>,'@1:Nat>],'crit.Mode,
+    '@1:Nat>])
+| 23
+| .LGraph
+[4,unbounded]
+.LGraph
 Bye.
