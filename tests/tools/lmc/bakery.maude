@@ -33,6 +33,7 @@ mod BAKERY-NARROWING-GRAPH is
     eq init(1) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
     eq init(2) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
     eq init(3) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,'X:Name]]], upIdle, upIdle, 'PWS:ProcWaitSet]] .
+    eq init(4) = '_;_;_['X:Name,'Y:Name,'__[upIdle,upIdle]] .
 endm
 
 --- Low-level functions
@@ -44,6 +45,7 @@ reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
 reduce wellFormed(##m##, init(2)) .
 reduce wellFormed(##m##, init(3)) .
+reduce wellFormed(##m##, init(4)) .
 
 --- ### Function `step`
 
@@ -51,6 +53,16 @@ reduce step(state(init(0))) .
 reduce step(state(init(1))) .
 reduce step(state(init(2))) .
 reduce step(state(init(3))) .
+
+--- ### Function `fold`
+
+reduce fold ( state('_;_;_['__['s.Name,'@1:Name],'__['s.Name,'@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+            , state('_;_;_['X:Name,              'Y:Name,              '__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+            ) .
+reduce fold(state(init(1)), state(init(2))) .
+reduce fold(state(init(1)), state(init(4))) .
+
+reduce not (fold(state(init(4)), state(init(3))) :: Fold) .
 
 --- ### Function `bfs`
 

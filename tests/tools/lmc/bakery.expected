@@ -15,6 +15,10 @@ reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(3)) .
 rewrites: 5
 result Bool: true
 ==========================================
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(4)) .
+rewrites: 5
+result Bool: true
+==========================================
 reduce in BAKERY-NARROWING-GRAPH : step(state(init(0))) .
 rewrites: 23
 result Transition: < label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
@@ -72,6 +76,33 @@ result NeTransitionSet: < label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,
   'Y:Name <- '@1:Name),state('_;_;_['__['s.Name,'@3:Name],'@1:Name,'__[
     '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit[
     '@1:Name]],'`[_`]['crit['__['s.Name,'@3:Name]]]]]) >
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : fold(state('_;_;_['__['s.Name,'@1:Name],'__[
+    's.Name,'@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]),
+    state('_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
+    'idle.ModeIdle]]])) .
+rewrites: 3
+result Fold: fold(
+  'X:Name <- '__['s.Name,'@1:Name] ; 
+  'Y:Name <- '__['s.Name,'@1:Name])
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : fold(state(init(1)), state(init(2))) .
+rewrites: 9
+result Fold: fold(
+  'PWS:ProcWaitSet <- '`[_`]['idle.ModeIdle] ; 
+  'X:Name <- 'X:Name ; 
+  'Y:Name <- 'X:Name)
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : fold(state(init(1)), state(init(4))) .
+rewrites: 9
+result Fold: fold(
+  'X:Name <- 'X:Name ; 
+  'Y:Name <- 'X:Name)
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : not fold(state(init(4)), state(init(3))) ::
+    Fold .
+rewrites: 11
+result Bool: true
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(0)), 0) .
 rewrites: 26
@@ -240,7 +271,7 @@ result [BFS]:
 .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(2)), 2) .
-rewrites: 712
+rewrites: 562
 result [BFS]: 
 0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
     '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
@@ -259,7 +290,10 @@ result [BFS]:
     'N:Name]]]] [narrowing label('wake)] ., 
   '@1:Name <- '@2:Name ; 
   '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 3
+  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 1[fold(
+  '@1:Name <- '__['s.Name,'@2:Name] ; 
+  '@2:Name <- '@1:Name ; 
+  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]])]
 1 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
     '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
     label('crit)] ., 
@@ -286,7 +320,10 @@ result [BFS]:
     'idle.ModeIdle]]] [narrowing label('exit)] ., 
   '@1:Name <- '@1:Name ; 
   '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@3:ProcWaitSet)]-> 7
+  '@3:ProcWaitSet <- '@3:ProcWaitSet)]-> 0[fold(
+  'PWS:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle]] ; 
+  'X:Name <- '@1:Name ; 
+  'Y:Name <- '__['s.Name,'@2:Name])]
 2 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
     '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
     label('crit)] ., 
@@ -299,53 +336,15 @@ result [BFS]:
     'wait['@1:Name]]]])
 2 |-> state('_;_;_['@1:Name,'@2:Name,'__['@3:ProcWaitSet,'`[_`][
     'idle.ModeIdle],'`[_`]['crit['@2:Name]]]])
-3 |-> state('_;_;_['__['s.Name,'s.Name,'@2:Name],'@1:Name,'__['@3:ProcWaitSet,
-    '`[_`]['wait['@2:Name]],'`[_`]['wait['__['s.Name,'@2:Name]]]]])
 4 |-> state('_;_;_['__['s.Name,'@1:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
     'crit['@1:Name]]]])
 5 |-> state('_;_;_['__['s.Name,'@2:Name],'@1:Name,'__['@3:ProcWaitSet,'`[_`][
     'crit['@1:Name]],'`[_`]['wait['@2:Name]]]])
-7 |-> state('_;_;_['@1:Name,'__['s.Name,'@2:Name],'__['@3:ProcWaitSet,'`[_`][
-    'idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
 8 |-> state('_;_;_['@1:Name,'@2:Name,'__['@3:ProcWaitSet,'`[_`][
     'idle.ModeIdle],'`[_`]['crit['@2:Name]],'`[_`]['crit['@2:Name]]]])
 | 8
-| 3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]]
+| 4 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]]
     => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
-    'N:Name]]]] [narrowing label('wake)] ., 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@3:Name ; 
-  '@3:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> state(
-    '_;_;_['__['s.Name,'s.Name,'s.Name,'@3:Name],'@1:Name,'__['@2:ProcWaitSet,
-    '`[_`]['wait['@3:Name]],'`[_`]['wait['__['s.Name,'@3:Name]]],'`[_`]['wait[
-    '__['s.Name,'s.Name,'@3:Name]]]]])
-3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
-    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
-    label('crit)] ., 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@3:Name ; 
-  '@3:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['@1:Name]]])]-> state(
-    '_;_;_['__['s.Name,'s.Name,'@3:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
-    'crit['@1:Name]],'`[_`]['wait['@3:Name]],'`[_`]['wait['__['s.Name,
-    '@3:Name]]]]])
-3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
-    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
-    label('crit)] ., 
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@1:ProcWaitSet)]-> state('_;_;_['__['s.Name,'s.Name,
-    '@2:Name],'@2:Name,'__['@1:ProcWaitSet,'`[_`]['crit['@2:Name]],'`[_`][
-    'wait['__['s.Name,'@2:Name]]]]])
-3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
-    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
-    label('crit)] ., 
-  '@1:Name <- '__['s.Name,'@2:Name] ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@1:ProcWaitSet)]-> state('_;_;_['__['s.Name,'s.Name,
-    '@2:Name],'__['s.Name,'@2:Name],'__['@1:ProcWaitSet,'`[_`]['crit['__[
-    's.Name,'@2:Name]]],'`[_`]['wait['@2:Name]]]])
-4 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
-    '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
     'N:Name]]]] [narrowing label('wake)] ., 
   '@1:Name <- '@1:Name ; 
   '@2:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> state(
@@ -397,23 +396,6 @@ result [BFS]:
   '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@1:Name]]])]-> state(
     '_;_;_['__['s.Name,'@2:Name],'@1:Name,'__['@3:ProcWaitSet,'`[_`]['crit[
     '@1:Name]],'`[_`]['crit['@1:Name]],'`[_`]['wait['@2:Name]]]])
-7 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
-    '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
-    'N:Name]]]] [narrowing label('wake)] ., 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@3:ProcWaitSet)]-> state('_;_;_['__['s.Name,'@1:Name],
-    '__['s.Name,'@2:Name],'__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
-    'wait['@1:Name]]]])
-7 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
-    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
-    label('crit)] ., 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['__['s.Name,
-    '@2:Name]]]])]-> state('_;_;_['@1:Name,'__['s.Name,'@2:Name],'__[
-    '@3:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit[
-    '__['s.Name,'@2:Name]]]]])
 8 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
     '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
     'N:Name]]]] [narrowing label('wake)] ., 
@@ -442,7 +424,7 @@ result [BFS]:
 .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(3)), 2) .
-rewrites: 1114
+rewrites: 1023
 result [BFS]: 
 0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
     '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
@@ -491,8 +473,8 @@ result [BFS]:
     'N:Name]]]] [narrowing label('wake)] ., 
   '@1:ProcWaitSet <- '@2:ProcWaitSet ; 
   '@2:Name <- '@1:Name)]-> 5[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet)]
+  '@1:ProcWaitSet <- '@2:ProcWaitSet ; 
+  '@2:Name <- '@1:Name)]
 2 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
     '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
     label('crit)] ., 
@@ -510,7 +492,10 @@ result [BFS]:
     'idle.ModeIdle]]] [narrowing label('exit)] ., 
   '@1:Name <- '@1:Name ; 
   '@2:ProcWaitSet <- '@2:ProcWaitSet ; 
-  '@3:Name <- '@3:Name)]-> 11
+  '@3:Name <- '@3:Name)]-> 0[fold(
+  'PWS:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle]] ; 
+  'X:Name <- '@3:Name ; 
+  'Y:Name <- '__['s.Name,'@1:Name])]
 3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
     '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
     label('crit)] ., 
@@ -544,9 +529,6 @@ result [BFS]:
 9 |-> state('_;_;_['__['s.Name,'@1:Name],'__['s.Name,'s.Name,'@1:Name],'__[
     '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`][
     'idle.ModeIdle],'`[_`]['crit['__['s.Name,'s.Name,'@1:Name]]]]])
-11 |-> state('_;_;_['__['s.Name,'@3:Name],'__['s.Name,'@1:Name],'__[
-    '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['crit['__['s.Name,'@3:Name]]]]])
 12 |-> state('_;_;_['__['s.Name,'@3:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
     'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit['@1:Name]],'`[_`][
     'crit['@1:Name]],'`[_`]['crit['__['s.Name,'@3:Name]]]]])
@@ -698,33 +680,6 @@ result [BFS]:
     '@2:Name],'__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
     'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.Name,'s.Name,
     '@2:Name]]],'`[_`]['crit['__['s.Name,'s.Name,'@2:Name]]]]])
-11 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]]
-    => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
-    'N:Name]]]] [narrowing label('wake)] ., 
-  '@1:Name <- '@3:Name ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet ; 
-  '@3:Name <- '@2:Name)]-> state('_;_;_['__['s.Name,'s.Name,'@2:Name],'__[
-    's.Name,'@3:Name],'__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['crit['__['s.Name,'@2:Name]]],'`[_`]['wait['__[
-    's.Name,'@2:Name]]]]])
-11 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]]
-    => '_;_;_['N:Name,'__['s.Name,'M:Name],'__['PS:ProcSet,'`[_`][
-    'idle.ModeIdle]]] [narrowing label('exit)] ., 
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet ; 
-  '@3:Name <- '@2:Name)]-> state('_;_;_['__['s.Name,'@2:Name],'__['s.Name,
-    's.Name,'@2:Name],'__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
-11 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]]
-    => '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [
-    narrowing label('crit)] ., 
-  '@1:Name <- '@3:Name ; 
-  '@2:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['wait['__['s.Name,'@3:Name]]]]
-    ; 
-  '@3:Name <- '@2:Name)]-> state('_;_;_['__['s.Name,'@2:Name],'__['s.Name,
-    '@3:Name],'__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.Name,
-    '@2:Name]]],'`[_`]['crit['__['s.Name,'@3:Name]]]]])
 12 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]]
     => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
     'N:Name]]]] [narrowing label('wake)] ., 
