@@ -709,4 +709,52 @@ result [BFS]:
     '__['s.Name,'@3:Name]]]]])
 [continue(2,2)]
 .LGraph
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1))) .
+rewrites: 315
+result BFS: 
+0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
+    '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
+    'N:Name]]]] [narrowing label('wake)] ., 
+  'X:Name <- '@1:Name)]-> 1
+1 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
+    '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
+    'N:Name]]]] [narrowing label('wake)] ., 
+  '@1:Name <- '@1:Name)]-> 2
+1 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
+    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
+    label('crit)] ., 
+  '@1:Name <- '@1:Name)]-> 3
+2 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['wait['M:Name]]]] =>
+    '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] [narrowing
+    label('crit)] ., 
+  '@1:Name <- '@1:Name)]-> 4
+3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
+    '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,'`[_`]['wait[
+    'N:Name]]]] [narrowing label('wake)] ., 
+  '@1:Name <- '@1:Name)]-> 4
+3 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] =>
+    '_;_;_['N:Name,'__['s.Name,'M:Name],'__['PS:ProcSet,'`[_`][
+    'idle.ModeIdle]]] [narrowing label('exit)] ., 
+  '@1:Name <- '@1:Name)]-> 0[fold(
+  'X:Name <- '__['s.Name,'@1:Name])]
+4 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['crit['M:Name]]]] =>
+    '_;_;_['N:Name,'__['s.Name,'M:Name],'__['PS:ProcSet,'`[_`][
+    'idle.ModeIdle]]] [narrowing label('exit)] ., 
+  '@1:Name <- '@1:Name)]-> 1[fold(
+  '@1:Name <- '__['s.Name,'@1:Name])]
+| 0 |-> state('_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
+    'idle.ModeIdle]]])
+1 |-> state('_;_;_['__['s.Name,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
+    '`[_`]['wait['@1:Name]]]])
+2 |-> state('_;_;_['__['s.Name,'s.Name,'@1:Name],'@1:Name,'__['`[_`]['wait[
+    '@1:Name]],'`[_`]['wait['__['s.Name,'@1:Name]]]]])
+3 |-> state('_;_;_['__['s.Name,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
+    '`[_`]['crit['@1:Name]]]])
+4 |-> state('_;_;_['__['s.Name,'s.Name,'@1:Name],'@1:Name,'__['`[_`]['crit[
+    '@1:Name]],'`[_`]['wait['__['s.Name,'@1:Name]]]]])
+| 7
+| .LGraph
+[4,unbounded]
+.LGraph
 Bye.
