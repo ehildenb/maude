@@ -44,3 +44,22 @@ reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
 reduce wellFormed(##m##, init(2)) .
 reduce wellFormed(##m##, init(3)) .
+
+--- ### Function `step`
+
+reduce step(state(init(0))) .
+reduce step(state(init(1))) .
+reduce step(state(init(2))) .
+reduce step(state(init(3))) .
+
+--- ### Function `bfs`
+
+reduce bfs(state(init(0)), 0) .
+reduce bfs(state(init(1)), 0) .
+reduce bfs(state(init(2)), 0) .
+reduce bfs(state(init(3)), 0) .
+
+reduce bfs(state(init(0)), 2) .
+reduce bfs(state(init(1)), 2) .
+reduce bfs(state(init(2)), 2) .
+reduce bfs(state(init(3)), 2) .
