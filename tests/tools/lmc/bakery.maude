@@ -78,3 +78,5 @@ reduce bfs(state(init(3)), 2) .
 
 --- achieves finite state graph
 reduce bfs(state(init(1))) .
+
+reduce bfs(state(init(4)), 10) .
