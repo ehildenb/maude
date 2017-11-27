@@ -1,9 +1,13 @@
 set show timing off .
 
+load ../../../contrib/systems/token.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
---- Testing Harness GRAPH-FOLDING-SEARCH-TEST1
---- ==========================================
+--- Testing Harnesses
+--- =================
+
+--- Abstract Graph
+--- --------------
 
 fmod GRAPH-FOLDING-SEARCH-TEST1 is
     extending GRAPH-FOLDING-SEARCH .
@@ -137,4 +141,108 @@ reduce bfs(C)
        | 1 |-> C 2 |-> A 4 |-> D 7 |-> G
        | 8
        | .LGraph [ 3 , unbounded ] .LGraph
+       ) .
+
+eof
+
+--- Narrowing Graph of `2TOKEN` System
+--- ----------------------------------
+
+mod NARROW-SEARCH-2TOKEN is
+    protecting 2TOKEN * ( sort State to 2TState ) .
+    including FVP-NARROWING-GRAPH .
+
+    subsort 2TState < State .
+    -------------------------
+    vars 2T 2T' : 2TState .
+
+    eq step(2T)      = step(upModule('2TOKEN, true), 2T) .
+    eq fold(2T, 2T') = fold(upModule('2TOKEN, true), 2T, 2T') .
+endm
+
+--- Test `step`
+--- -----------
+
+reduce step({ $ [a, wait] [b, wait] })
+    == < none , { [a, crit] [b, wait] } > .
+
+reduce step({ T:Token [a, wait] [b, wait] })
+    == < 'T:Token <- '*.Token , { [b, crit] [a, wait] } >
+     , < 'T:Token <- '$.Token , { [a, crit] [b, wait] } > .
+
+reduce step({ T:Token T':Token [a, wait] [b, wait] })
+    == < 'T':Token <- '$.Token  ; 'T:Token <- '@1:Token , { @1:Token [b,wait] [a,crit] } >
+     , < 'T':Token <- '*.Token  ; 'T:Token <- '@1:Token , { @1:Token [a,wait] [b,crit] } >
+     , < 'T':Token <- '@1:Token ; 'T:Token <- '$.Token  , { @1:Token [b,wait] [a,crit] } >
+     , < 'T':Token <- '@1:Token ; 'T:Token <- '*.Token  , { @1:Token [a,wait] [b,crit] } > .
+
+reduce step({ $ [a, wait] P:Proc })
+    == < 'P:Proc <- '@1:Proc              , {     @1:Proc  [a,crit] } >
+     , < 'P:Proc <- '`[_`,crit`]['a.Name] , { * $ [a,wait] [a,wait] } >
+     , < 'P:Proc <- '`[_`,crit`]['b.Name] , { $ $ [a,wait] [b,wait] } > .
+
+reduce step({ * [a, wait] P:Proc })
+    == < 'P:Proc <- '`[_`,crit`]['a.Name] , { * * [a,wait] [a,wait] } >
+     , < 'P:Proc <- '`[_`,crit`]['b.Name] , { * $ [a,wait] [b,wait] } >
+     , < 'P:Proc <- '`[_`,wait`]['b.Name] , {     [a,wait] [b,crit] } > .
+
+reduce step({ T:Token [a, wait] P:Proc })
+    == < 'P:Proc <- '@1:Proc              ; 'T:Token <- '$.Token  , {            @1:Proc  [a,crit] } >
+     , < 'P:Proc <- '`[_`,crit`]['a.Name] ; 'T:Token <- '@1:Token , { * @1:Token [a,wait] [a,wait] } >
+     , < 'P:Proc <- '`[_`,crit`]['b.Name] ; 'T:Token <- '@1:Token , { $ @1:Token [a,wait] [b,wait] } >
+     , < 'P:Proc <- '`[_`,wait`]['b.Name] ; 'T:Token <- '*.Token  , {            [a,wait] [b,crit] } > .
+
+--- Test `fold`
+--- -----------
+
+reduce fold({ $ [a, wait] [b, wait] }, { $       [a, wait] [b, wait] }) == none .
+reduce fold({ * [a, wait] [b, wait] }, { T:Token [a, wait] [b, wait] }) == ( 'T:Token <- '*.Token ) .
+reduce fold({ * [a, wait] [b, wait] }, { *       [a, wait] P:Proc    }) == ( 'P:Proc <- '`[_`,wait`]['b.Name] ).
+reduce fold({ * [a, wait] [b, wait] }, { T:Token [a, wait] P:Proc    }) == ( 'T:Token <- '*.Token ; 'P:Proc <- '`[_`,wait`]['b.Name] ).
+
+--- Test `bfs`
+--- ----------
+
+reduce bfs({$ [a, wait] [b, wait]})
+    == ( 1 -[none]-> 2
+         2 -[none]-> 3
+         3 -[none]-> 4
+         4 -[none]-> 1
+       | 1 |-> {$ [a,wait] [b,wait]}
+         2 |-> {[b,wait] [a,crit]}
+         3 |-> {* [a,wait] [b,wait]}
+         4 |-> {[a,wait] [b,crit]}
+       | 5
+       | .LGraph [3,unbounded] .LGraph
+       ) .
+
+reduce bfs({T:Token [a, wait] [b, wait]})
+    == ( 1 -['T:Token <- '$.Token]-> 2
+         1 -['T:Token <- '*.Token]-> 3
+         2 -[none]->                 1['T:Token <- '*.Token]
+         3 -[none]->                 1['T:Token <- '$.Token]
+       | 1 |-> {T:Token [a,wait] [b,wait]}
+         2 |-> {[b,wait] [a,crit]}
+         3 |-> {[a,wait] [b,crit]}
+       | 5
+       | .LGraph [1,unbounded] .LGraph
+       ) .
+
+reduce bfs({T:Token T':Token [a, wait] [b, wait]})
+    == ( 1 -[ 'T':Token <- '$.Token  ; 'T:Token <- '@1:Token ]-> 2
+         1 -[ 'T':Token <- '*.Token  ; 'T:Token <- '@1:Token ]-> 3
+         1 -[ 'T':Token <- '@1:Token ; 'T:Token <- '$.Token  ]-> 2[ '@1:Token <- '@1:Token ]
+         1 -[ 'T':Token <- '@1:Token ; 'T:Token <- '*.Token  ]-> 3[ '@1:Token <- '@1:Token ]
+         2 -[ '@1:Token <- '*.Token  ]-> 6
+         2 -[ '@1:Token <- '@1:Token ]-> 1[ 'T':Token <- '@1:Token ; 'T:Token <- '*.Token ]
+         3 -[ '@1:Token <- '$.Token  ]-> 6
+         3 -[ '@1:Token <- '@1:Token ]-> 1[ 'T':Token <- '@1:Token ; 'T:Token <- '$.Token]
+         6 -[ none ]-> 2[ '@1:Token <- '$.Token]
+         6 -[ none ]-> 3[ '@1:Token <- '*.Token]
+       | 1 |-> {T:Token T':Token [a,wait] [b,wait]}
+         2 |-> {@1:Token [b,wait] [a,crit]}
+         3 |-> {@1:Token [a,wait] [b,crit]}
+         6 |-> {[a,crit] [b,crit]}
+       | 11
+       | .LGraph [2,unbounded] .LGraph
        ) .
