@@ -183,7 +183,7 @@ endfm
 ***  Full Maude Narrowing Connector  ***
 ****************************************
 
-load ../meta/unification.maude
+load ../meta/narrowing.maude
 
 fmod META-LMC-PARAMETERS is
    protecting META-MODULE .
@@ -193,60 +193,8 @@ fmod META-LMC-PARAMETERS is
     op ##f## : ~> TermList [memo] .
 endfm
 
-fmod LMC-RESULT-SET is
-   protecting RESULT-CONTEXT-SET .
-
-    sort StepResult StepResult? .
-    -----------------------------
-    subsort StepResult < StepResult? .
-
-    op failure   : -> StepResult? [ctor] .
-    op {_,_,_/_} : Term Type Substitution RuleSet -> StepResult [ctor] .
-    --------------------------------------------------------------------
-
-    sort StepResultSet .
-    --------------------
-    subsort StepResult < StepResultSet .
-
-    var M : Module . vars NextVar : Nat . vars S S' : Substitution .
-    vars T TS CtTS : Term . var TL : TermList . var TP : Type . var R : Rule .
-    var Tr : TraceNarrow . var B : Flags . vars Ct CtS : Context .
-    var SR : StepResult . var RTS : ResultContextSet . var SRS : StepResultSet .
-
-    op empty :                             -> StepResultSet [ctor] .
-    op _||_  : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: empty prec 65] .
-    ---------------------------------------------------------------------------------------------
-    eq SR || SR = SR .
-
-    op to4Tuple : Module ResultContextSet -> StepResult .
-    -----------------------------------------------------
-    eq to4Tuple(M, empty ) = empty .
-    eq to4Tuple(M, {T,TP,S,S',Ct,CtS,TS,CtTS,NextVar,Tr,B} | RTS )
-     = {CtTS, leastSort(M,CtTS), S .. S' / getRuleSet(Tr)} || to4Tuple(M, RTS) .
-
-    op _|>_ : StepResult TermList -> StepResult .
-    ---------------------------------------------
-    eq (empty).StepResult    |> TL = (empty).StepResult .
-    eq ({T,TP,S / R} || SRS) |> TL = {T,TP,S |> TL / R} || (SRS |> TL) .
-    eq (failure      || SRS) |> TL = failure || (SRS |> TL) .
-
-    op getRuleSet : TraceNarrow -> RuleSet .
-    ----------------------------------------
-    eq getRuleSet(nil)           = none .
-    eq getRuleSet({T,S,TP,R} Tr) = R getRuleSet(Tr) .
-
-    sort VariantSet .
-    -----------------
-    subsort Variant < VariantSet .
-
-    op emptyVariantSet :                       -> VariantSet [ctor] .
-    op _#_             : VariantSet VariantSet -> VariantSet [ctor assoc comm id: emptyVariantSet prec 65 format (d d n d)] .
-    -------------------------------------------------------------------------------------------------------------------------
-    eq X:Variant # X:Variant = X:Variant .
-endfm
-
 mod META-LMC-THEORY is
-   protecting LMC-RESULT-SET .
+   protecting NARROWING-STEP-SET .
    protecting META-LMC-PARAMETERS .
    protecting BOUNDED-FOLDING-MODEL-CHECKER .
 
@@ -275,7 +223,7 @@ endm
 
 fmod META-NARROWING-INTERFACE is
    protecting META-LMC-PARAMETERS .
-   protecting LMC-RESULT-SET .
+   protecting NARROWING-STEP-SET .
    protecting META-NARROWING-SEARCH .
 
     var M : Module . var RS : RuleSet .
