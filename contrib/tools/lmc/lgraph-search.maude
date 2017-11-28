@@ -96,16 +96,21 @@ fmod GRAPH-FOLDING-SEARCH is
                                                  fi
                                               if F? := fold(S,S') .
 
-    sort Frontier BFS .
-    -------------------
+    op _|_|_ : LGraph Environment Nat -> LGraph [prec 70 format(n n d n d d)] .
+    ---------------------------------------------------------------------------
 
-    op _[_]_ : LGraph Depth LGraph -> Frontier [prec 65 format(d n d d n d)] .
-    --------------------------------------------------------------------------
-    eq .LGraph [          D  ] NeLG
-     = NeLG    [ continue(D) ] .LGraph .
+    sorts Frontier BFS .
+    --------------------
+    subsort LGraph < BFS .
 
-    op _|_|_|_ : LGraph Environment Nat Frontier -> BFS [prec 70 format(n n d n d n d d)] .
-    ---------------------------------------------------------------------------------------
+    op .Frontier : -> Frontier .
+    op _[_]_     : LGraph Depth LGraph -> Frontier [prec 65 format(d n d d n d)] .
+    ------------------------------------------------------------------------------
+    eq .LGraph [ D ] .LGraph = .Frontier .
+    eq .LGraph [ D ] NeLG    = NeLG [ continue(D) ] .LGraph .
+
+    op _|_ : LGraph Frontier -> BFS [right id: .Frontier prec 75 format(d n d d)] .
+    -------------------------------------------------------------------------------
    ceq LG               | ENV  |   N | ND -[L]-> S' LG' [ D ] LG''
      = LG ND -[L]-> ND' | ENV' | s N |              LG' [ D ] LG'' LG'''
     if { ND' , ENV' } := insert(s N |-> S', ENV)
