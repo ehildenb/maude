@@ -1,0 +1,105 @@
+set include BOOL off .
+
+fmod LABELLED-GRAPH is
+    sorts Node NeNodeList NodeList .
+    subsort Node < NeNodeList < NodeList .
+    --------------------------------------
+    var N : Node . vars NeNL NeNL' : NeNodeList . var NL : NodeList .
+
+    op .NodeList : -> NodeList .
+    op _,_       : NodeList   NodeList -> NodeList   [assoc id: .NodeList prec 45] .
+    op _,_       : NeNodeList NodeList -> NeNodeList [ditto] .
+    ----------------------------------------------------------
+    eq N , NL , N = N , NL .
+
+    sorts Label LEdge NeLGraph LGraph .
+    subsort LEdge < NeLGraph < LGraph .
+    -----------------------------------
+    var NeLG : NeLGraph .
+
+    op .LGraph : -> LGraph .
+    op __     : LGraph LGraph -> LGraph [assoc comm id: .LGraph prec 55 format(d n d)] .
+    ------------------------------------------------------------------------------------
+    eq NeLG NeLG = NeLG .
+
+    op _-[_]->_ : Node Label Node -> LEdge [prec 50] .
+    --------------------------------------------------
+endfm
+
+fmod GRAPH-FOLDING-SEARCH is
+    protecting INT .
+    extending LABELLED-GRAPH .
+
+    sorts Fold Step State .
+    subsorts Nat State < Node .
+    subsorts Fold Step < Label .
+    ----------------------------
+    var F : Fold .
+
+    op fold : State State -> [Fold] .
+    op step : State -> [TransitionSet] .
+    ------------------------------------
+
+    sort Environment .
+    ------------------
+    op _|->_ : Node State -> Environment .
+    op .Environment : -> Environment .
+    op __ : Environment Environment -> Environment [assoc comm id: .Environment] .
+
+    sorts Transition NeTransitionSet TransitionSet .
+    subsort Transition < NeTransitionSet < TransitionSet .
+    ------------------------------------------------------
+    var LG : LGraph . vars N N' : Node . var NL : NodeList .
+    var FL : Fold . var SL : Step . var TS : TransitionSet . var NeTS : NeTransitionSet .
+    vars S S' : State . var ENV : Environment . var M : NzNat . var M? : Nat .
+    var L : Label .
+
+    op <_,_> : Step State -> Transition .
+    op .TransitionSet : -> TransitionSet .
+    op _,_ :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet format(d n d d)] .
+    op _,_ : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
+    -------------------------------------------------------------------
+    eq NeTS , NeTS = NeTS .
+
+    sort BFS .
+    subsort LGraph < BFS .
+    ----------------------
+
+    op {_|_} : LGraph Environment -> BFS .
+    --------------------------------------
+    eq { LG N -[ L ]-> N' | ENV N |-> S }
+     = { LG S -[ L ]-> N' | ENV N |-> S } .
+
+    eq { LG N -[ L ]-> N' | ENV N' |-> S }
+     = { LG N -[ L ]-> S  | ENV N' |-> S } .
+
+    eq { LG | ENV } = LG [owise] .
+
+    op [_|_|_|_] : LGraph NodeList Environment Nat -> BFS .
+    op {_|_|_|_} : LGraph NodeList Environment Nat -> BFS .
+    -------------------------------------------------------
+   ceq [ LG                | N , NL | (N |-> S) (N' |-> S') ENV | M? ]
+     = [ LG N -[ FL ]-> N' |     NL | (N |-> S) (N' |-> S') ENV | M? ]
+    if FL := fold(S, S') .
+
+    eq [ LG | NL | ENV | M? ] = { LG | NL | ENV | M? } [owise] .
+
+    eq { LG | .NodeList | ENV | M? } = { LG | ENV } .
+
+    op {_|_:_|_|_|_} : LGraph Node TransitionSet NodeList Environment Nat -> BFS .
+    ------------------------------------------------------------------------------
+    eq { LG | N : .TransitionSet | NL | ENV | M? } = [ LG | NL | ENV | M? ] .
+
+    eq { LG               | N , NL | ENV N |-> S | M? }
+     = { LG | N : step(S) |     NL | ENV N |-> S | M? } .
+
+    eq { LG                | N : TS , < SL , S > | NL | ENV N' |-> S | M? }
+     = { LG N -[ SL ]-> N' | N : TS              | NL | ENV N' |-> S | M? } .
+
+    eq { LG               | N : TS , < SL , S > | NL     | ENV         | M     }
+     = { LG N -[ SL ]-> M | N : TS              | NL , M | ENV M |-> S | M - 1 } [owise] .
+
+    op bfs : State NzNat -> BFS .
+    -----------------------------
+    eq bfs(S, M) = { .LGraph | M | M |-> S | M - 1 } .
+endfm
