@@ -34,10 +34,10 @@ endfm
 
 reduce (A -[x]-> B B -[y]-> C C -[z]-> D) :: NeLGraph .
 
-reduce < x , A > , < y , B > , < x , A > == < y , B > , < x , A > .
+reduce < x , A > , < y , B > , < x , A > .
 
-reduce B -> < x , A >             == B -[ x ]-> A .
-reduce B -> < x , A > , < y , D > == (B -[ x ]-> A B -[ y ]-> D) .
+reduce B -> < x , A > .
+reduce B -> < x , A > , < y , D > .
 
 --- Test Module GRAPH-FOLDING-SEARCH
 --- --------------------------------
@@ -51,115 +51,27 @@ reduce not (4 < 3 [ < ]) .
 reduce 3 [ < ] < 4 [ < ] .
 reduce not (4 [ < ] < 3 [ < ]) .
 
-reduce fold(A, A) == .Fold .
+reduce fold(A, A) .
 
-reduce step(E) == < x , E > .
-reduce step(D) == < z , G > , < y , C > .
+reduce step(E) .
+reduce step(D) .
 
-reduce insert( 3 |-> A , .Environment ) == { 3    , 3 |-> A } .
-reduce insert( 3 |-> A , 2 |-> A      ) == { 2    , 2 |-> A } .
-reduce insert( 3 |-> D , 2 |-> E      ) == { 2[<] , 2 |-> E } .
+reduce insert( 3 |-> A , .Environment ) .
+reduce insert( 3 |-> A , 2 |-> A      ) .
+reduce insert( 3 |-> D , 2 |-> E      ) .
 
-reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) == { 1 , 4 |-> A 1 |-> D } .
-reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) == { 5 , 4 |-> A 1 |-> D 5 |-> E } .
+reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
+reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
-reduce ( .LGraph               | 1 |-> A         | 1 | 1 -[x]-> B [ 0 , unbounded ] .LGraph )
-    == ( 1 -[x]-> 2 2 -[y]-> 2 | 1 |-> A 2 |-> B | 3 | .LGraph    [ 1 , unbounded ] .LGraph ) .
+reduce ( .LGraph | 1 |-> A | 1 | 1 -[x]-> B [ 0 , unbounded ] .LGraph ) .
 
-reduce bfs(A, 1)
-    == ( 0 -[x]-> 1
-         0 -[y]-> 2
-         0 -[z]-> 2
-       | 0 |-> A 1 |-> B 2 |-> D
-       | 3
-       | 1 -[y]-> B 2 -[y]-> C 2 -[z]-> G [continue(1,1)] .LGraph
-       ) .
-
-reduce bfs(A, 2)
-    == ( 0 -[x]-> 1
-         0 -[y]-> 2
-         0 -[z]-> 2
-         1 -[y]-> 1
-         2 -[y]-> 5
-         2 -[z]-> 6
-       | 0 |-> A
-         1 |-> B
-         2 |-> D
-         5 |-> C
-         6 |-> G
-       | 6
-       | 5 -[x]-> A
-         6 -[y]-> D
-         [continue(2,2)]
-         .LGraph
-       ) .
-
-reduce bfs(A)
-    == ( 0 -[x]-> 1
-         0 -[y]-> 2
-         0 -[z]-> 2
-         1 -[y]-> 1
-         2 -[y]-> 5
-         2 -[z]-> 6
-         5 -[x]-> 0
-         6 -[y]-> 2
-       | 0 |-> A
-         1 |-> B
-         2 |-> D
-         5 |-> C
-         6 |-> G
-       | 8
-       | .LGraph
-         [3,unbounded]
-         .LGraph
-       ) .
-
+reduce bfs(A, 1) .
+reduce bfs(A, 2) .
+reduce bfs(A) .
 reduce bfs(A, unbounded) == bfs(A) .
-
-reduce bfs(C, 1)
-    == ( 0 -[x]-> 1
-       | 0 |-> C
-         1 |-> A
-       | 1
-       | 1 -[x]-> B
-         1 -[y]-> D
-         1 -[z]-> D
-         [continue(1,1)]
-         .LGraph
-       ) .
-
-reduce bfs(C, 2)
-    == ( 0 -[x]-> 1
-         1 -[x]-> 0[<]
-         1 -[y]-> 3
-         1 -[z]-> 3
-       | 0 |-> C
-         1 |-> A
-         3 |-> D
-       | 4
-       | 3 -[y]-> C
-         3 -[z]-> G
-         [continue(2,2)]
-         .LGraph
-       ) .
-
-reduce bfs(C)
-    == ( 0 -[x]-> 1
-         1 -[x]-> 0[<]
-         1 -[y]-> 3
-         1 -[z]-> 3
-         3 -[y]-> 0
-         3 -[z]-> 6
-         6 -[y]-> 3
-       | 0 |-> C
-         1 |-> A
-         3 |-> D
-         6 |-> G
-       | 7
-       | .LGraph
-         [4,unbounded]
-         .LGraph
-       ) .
+reduce bfs(C, 1) .
+reduce bfs(C, 2) .
+reduce bfs(C) .
 
 eof
 
