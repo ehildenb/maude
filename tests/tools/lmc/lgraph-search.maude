@@ -1,0 +1,57 @@
+set show timing off .
+
+load ../../../contrib/tools/lmc/lgraph-search.maude
+
+fmod GRAPH-FOLDING-SEARCH-TEST1 is
+    extending GRAPH-FOLDING-SEARCH .
+
+    ops A B C D E F G : -> State .
+    ops x y z : -> Step .
+
+    op < : -> Fold .
+
+    eq fold(D, E) = < .
+    eq fold(B, C) = < .
+
+    eq step(A) = < x , B > , < y , D > , < z , D > .
+    eq step(B) = < y , B > .
+    eq step(C) = < x , A > .
+    eq step(D) = < y , C > , < z , G > .
+    eq step(E) = < x , E > .
+    eq step(F) = < x , E > .
+    eq step(G) = < y , D > .
+endfm
+
+reduce bfs(A, 4) .
+reduce bfs(A, 5) .
+reduce bfs(A, 6) .
+reduce bfs(A, 7) .
+
+fmod GRAPH-FOLDING-SEARCH-TEST2 is
+    extending GRAPH-FOLDING-SEARCH .
+
+    ops A B C D E F G : -> State .
+    ops x y z : -> Step .
+
+    op < : -> Fold .
+
+    eq fold(F, E) = < .
+    eq fold(G, F) = < .
+
+    eq step(A) = < y , C > .
+    eq step(B) = < x , A > , < y , D > .
+    eq step(C) = < x , E > , < z , G > , < y , F > .
+    eq step(D) = < x , F > , < y , C > , < z , A > .
+    eq step(E) = .TransitionSet .
+    eq step(F) = .TransitionSet .
+    eq step(G) = < y , E > .
+endfm
+
+reduce bfs(B, 1) .
+reduce bfs(B, 2) .
+reduce bfs(B, 3) .
+reduce bfs(B, 4) .
+reduce bfs(B, 5) .
+reduce bfs(B, 6) .
+reduce bfs(B, 7) .
+reduce bfs(C, 4) .
