@@ -71,6 +71,23 @@ reduce bfs(state(init(1))) .
 
 reduce bfs(state(init(4)), 10) .
 
+--- Module BAKERY-FVP-CTOR-NARROWING-GRAPH
+--- ======================================
+
+mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
+   protecting BAKERY-FVP-CTOR .
+    extending FVP-NARROWING-GRAPH .
+
+    eq ##m## = upModule('BAKERY-FVP-CTOR, true) .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = '<_`,_`,_`,_>['sleep.NcMode,'_+_['1.NzNat>,'1.NzNat>,'1.NzNat>],'wait.NcMode,'_+_['1.NzNat>,'1.NzNat>]] .
+    eq init(1) = '<_`,_`,_`,_>['PNC:NcMode , 'X1:Nat> , 'QC:Mode    , 'X2:Nat>] .
+    eq init(2) = '<_`,_`,_`,_>['PC:Mode    , 'Y1:Nat> , 'QNC:NcMode , 'Y2:Nat>] .
+endm
+
+
 ***(Desired initial states and invariant:
    vars X0 X Y X' Y' : Nat .
 
