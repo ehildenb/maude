@@ -41,10 +41,11 @@ endfm
 
 fmod GRAPH-FOLDING-SEARCH is
     protecting INT .
+    protecting BOUND .
     extending LABELLED-GRAPH .
 
-    vars N N' N'' : Nat . var L : Label .
-    vars LG LG' LG'' : LGraph . vars NeLG NeLG' : NeLGraph .
+    vars N N' N'' : Nat . vars D D' : Depth . var B : Bound .
+    var L : Label . vars LG LG' LG'' LG''' : LGraph . vars NeLG NeLG' : NeLGraph .
 
     sorts Fold State NodeId .
     subsort Nat < NodeId .
@@ -67,20 +68,10 @@ fmod GRAPH-FOLDING-SEARCH is
     op step : State -> [TransitionSet] .
     ------------------------------------
 
-    sorts NeFrontier Frontier .
-    subsorts Node < NeFrontier < Frontier .
-    ---------------------------------------
-    var FT : Frontier .
-
-    op .Frontier : -> Frontier .
-    op _,_       : Frontier   Frontier -> Frontier   [assoc id: .Frontier prec 45] .
-    op _,_       : NeFrontier Frontier -> NeFrontier [ditto] .
-    ----------------------------------------------------------
-
     sorts NodeAlias NeEnvironment Environment .
     subsort NodeAlias < NeEnvironment < Environment .
     -------------------------------------------------
-    var NA : NodeAlias . vars ENV ENV' : Environment . var NeENV : NeEnvironment .
+    var NA : NodeAlias . vars ENV ENV' : Environment . vars NeENV NeENV' : NeEnvironment .
 
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
     --------------------------------------------
@@ -94,27 +85,34 @@ fmod GRAPH-FOLDING-SEARCH is
     op #insert : NodeAlias Environment Environment -> [Environment] .
     op {_,_}   : NodeId    Environment             -> [Environment] .
     -----------------------------------------------------------------
-    eq insert(NA, ENV') = #insert(NA, .Environment, ENV') .
+    eq insert(NA, ENV) = #insert(NA, .Environment, ENV) .
 
-    eq #insert(ND |-> S, ENV, .Environment) = { ND , ENV ND |-> S } .
+    eq #insert(N |-> S , ENV , .Environment)   = { N , ENV N |-> S } .
+   ceq #insert(N |-> S , ENV , N' |-> S' ENV') = if (F? :: Fold) then { N'[F?] , ENV N' |-> S' ENV' }
+                                                                 else #insert(N |-> S, ENV N' |-> S', ENV')
+                                                 fi
+                                              if F? := fold(S,S') .
 
-   ceq #insert(N |-> S,  ENV, N' |-> S' ENV')
-     = if (F? :: Fold) then { N'[F?] , ENV N' |-> S' ENV' }
-                       else #insert(N |-> S, ENV N' |-> S', ENV')
-       fi
-    if F? := fold(S,S') .
+    sort Frontier BFS .
+    -------------------
 
-    sort BFS .
-    ----------
+    op _[_]_ : LGraph Depth LGraph -> Frontier [prec 65] .
+    ------------------------------------------------------
 
-    op _|_|_|_ : LGraph Environment Nat LGraph -> BFS [prec 70] .
-    -------------------------------------------------------------
-   ceq LG               | ENV  |   N | ND -[L]-> S' LG'
-     = LG ND -[L]-> ND' | ENV' | s N | LG' LG''
+    op _|_|_|_ : LGraph Environment Nat Frontier -> BFS [prec 70] .
+    ---------------------------------------------------------------
+   ceq LG | ENV | N | .LGraph [ D  ] NeLG
+     = LG | ENV | N | NeLG    [ D' ] .LGraph
+    if D' := continue(D) .
+
+   ceq LG               | ENV  |   N | ND -[L]-> S' LG' [ D ] LG''
+     = LG ND -[L]-> ND' | ENV' | s N |              LG' [ D ] LG'' LG'''
     if { ND' , ENV' } := insert(s N |-> S', ENV)
-    /\ LG'' := if (ND' < s N) then .LGraph else ND' -> step(S') fi .
+    /\          LG''' := if (ND' < s N) then .LGraph else ND' -> step(S') fi .
 
-    op bfs : State -> BFS .
-    -----------------------
-    eq bfs(S) = .LGraph | 1 |-> S | 1 | 1 -> step(S) .
+    op bfs : State       -> BFS .
+    op bfs : State Bound -> BFS .
+    -----------------------------
+    eq bfs(S)    = bfs(S, unbounded) .
+    eq bfs(S, B) = .LGraph | 1 |-> S | 1 | 1 -> step(S) [ 0 , B ] .LGraph .
 endfm

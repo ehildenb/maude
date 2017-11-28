@@ -57,10 +57,36 @@ reduce insert( 3 |-> A , 2 |-> A      ) == { 2    , 2 |-> A } .
 reduce insert( 3 |-> D , 2 |-> E      ) == { 2[<] , 2 |-> E } .
 
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) == { 1 , 4 |-> A 1 |-> D } .
-reduce insert( 2 |-> E , 4 |-> A 1 |-> D ) == { 2 , 4 |-> A 1 |-> D 2 |-> E } .
+reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) == { 5 , 4 |-> A 1 |-> D 5 |-> E } .
 
-reduce ( .LGraph               | 1 |-> A         | 1 | 1 -[x]-> B )
-    == ( 1 -[x]-> 2 2 -[y]-> 2 | 1 |-> A 2 |-> B | 3 | .LGraph    ) .
+reduce ( .LGraph               | 1 |-> A         | 1 | 1 -[x]-> B [ 0 , unbounded ] .LGraph )
+    == ( 1 -[x]-> 2 2 -[y]-> 2 | 1 |-> A 2 |-> B | 3 | .LGraph    [ 1 , unbounded ] .LGraph ) .
+
+reduce bfs(A, 1)
+    == ( 1 -[x]-> 2
+         1 -[y]-> 3
+         1 -[z]-> 3
+         2 -[y]-> 2
+         3 -[y]-> 6
+         3 -[z]-> 7
+       | 1 |-> A 2 |-> B 3 |-> D 6 |-> C 7 |-> G
+       | 7
+       | .LGraph [ 1 , 1 ] 6 -[x]-> A 7 -[y]-> D
+       ) .
+
+reduce bfs(A, 2)
+    == ( 1 -[x]-> 2
+         1 -[y]-> 3
+         1 -[z]-> 3
+         2 -[y]-> 2
+         3 -[y]-> 6
+         3 -[z]-> 7
+         6 -[x]-> 1
+         7 -[y]-> 3
+       | 1 |-> A 2 |-> B 3 |-> D 6 |-> C 7 |-> G
+       | 9
+       | .LGraph [ 2 , 2 ] .LGraph
+       ) .
 
 reduce bfs(A)
     == ( 1 -[x]-> 2
@@ -73,7 +99,31 @@ reduce bfs(A)
          7 -[y]-> 3
        | 1 |-> A 2 |-> B 3 |-> D 6 |-> C 7 |-> G
        | 9
-       | .LGraph
+       | .LGraph [ 2 , unbounded ] .LGraph
+       ) .
+
+reduce bfs(A, unbounded) == bfs(A) .
+
+reduce bfs(C, 1)
+    == ( 1 -[x]-> 2
+         2 -[x]-> 1[<]
+         2 -[y]-> 4
+         2 -[z]-> 4
+       | 1 |-> C 2 |-> A 4 |-> D
+       | 5
+       | .LGraph [ 1 , 1 ] 4 -[y]-> C 4 -[z]-> G
+       ) .
+
+reduce bfs(C, 2)
+    == ( 1 -[x]-> 2
+         2 -[x]-> 1[<]
+         2 -[y]-> 4
+         2 -[z]-> 4
+         4 -[y]-> 1
+         4 -[z]-> 7
+       | 1 |-> C 2 |-> A 4 |-> D 7 |-> G
+       | 7
+       | .LGraph [ 2 , 2 ] 7 -[y]-> D
        ) .
 
 reduce bfs(C)
@@ -86,36 +136,5 @@ reduce bfs(C)
          7 -[y]-> 4
        | 1 |-> C 2 |-> A 4 |-> D 7 |-> G
        | 8
-       | .LGraph
+       | .LGraph [ 3 , unbounded ] .LGraph
        ) .
-
-eof
-
---- fmod GRAPH-FOLDING-SEARCH-TEST2 is
----     extending GRAPH-FOLDING-SEARCH .
----
----     ops A B C D E F G : -> State .
----     ops x y z : -> Label .
----
----     op < : -> Fold .
----
----     eq fold(F, E) = < .
----     eq fold(G, F) = < .
----
----     eq step(A) = < y , C > .
----     eq step(B) = < x , A > , < y , D > .
----     eq step(C) = < x , E > , < z , G > , < y , F > .
----     eq step(D) = < x , F > , < y , C > , < z , A > .
----     eq step(E) = .TransitionSet .
----     eq step(F) = .TransitionSet .
----     eq step(G) = < y , E > .
---- endfm
----
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(B) .
---- reduce bfs(C) .
