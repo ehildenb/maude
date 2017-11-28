@@ -106,7 +106,7 @@ reduce in GRAPH-FOLDING-SEARCH-TEST1 : (
 | .LGraph
 [1,unbounded]
 .LGraph) .
-rewrites: 25
+rewrites: 27
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A, 1) == (
@@ -163,11 +163,11 @@ reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A) == (
 | .LGraph
 [3,unbounded]
 .LGraph) .
-rewrites: 124
+rewrites: 126
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A, unbounded) == bfs(A) .
-rewrites: 246
+rewrites: 248
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(C, 1) == (
@@ -215,6 +215,6 @@ reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(C) == (
 | .LGraph
 [4,unbounded]
 .LGraph) .
-rewrites: 118
+rewrites: 120
 result Bool: true
 Bye.
