@@ -119,6 +119,13 @@ fmod GRAPH-FOLDING-SEARCH is
                                                  fi
                                               if F? := fold(S,S') .
 
+    op states : Environment -> [StateSet] .
+    ---------------------------------------
+    eq states(.Environment) = .StateSet .
+    eq states(N |-> NID)    = .StateSet .
+    eq states(N |-> S)      = S .
+    eq states(NeENV NeENV') = states(NeENV) ;; states(NeENV') .
+
     op _|_|_ : LGraph Environment Nat -> LGraph [prec 70 format(n n d n d d)] .
     ---------------------------------------------------------------------------
 
