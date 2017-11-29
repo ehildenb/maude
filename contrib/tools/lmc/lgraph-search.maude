@@ -163,6 +163,21 @@ fmod GRAPH-FOLDING-SEARCH is
     eq bfs(SS, B) = insert-states(SS, .LGraph | .Environment | 0, B) .
 endfm
 
+fmod GRAPH-ANALYSIS is
+   protecting GRAPH-FOLDING-SEARCH .
+   protecting EXT-BOOL .
+
+    var B : Bound . vars SS SS' : StateSet .
+    var LG : LGraph . var ENV : Environment . var N : Nat .
+
+    op check     _stable in_ :       StateSet StateSet -> [Bool] .
+    op check [_] _stable in_ : Bound StateSet StateSet -> [Bool] .
+    ----------------------------------------------------------------
+    eq check       SS stable in SS' = check [ 1 ] SS stable in SS' .
+   ceq check [ B ] SS stable in SS' = subsumes(SS', SS) and-then subsumes(states(ENV), SS')
+                                   if LG | ENV | N := bfs(SS', B) .
+endfm
+
 fmod FVP-NARROWING-GRAPH is
    protecting NARROWING2 .
     extending GRAPH-FOLDING-SEARCH .
