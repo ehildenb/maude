@@ -54,6 +54,22 @@ reduce in GRAPH-FOLDING-SEARCH-TEST1 : fold(A, A) .
 rewrites: 1
 result Fold: .Fold
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST1 : subsumes(A ;; B ;; C, B) .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST1 : subsumes(A ;; B, B) .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST1 : subsumes(B ;; E, B ;; D) .
+rewrites: 6
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST1 : subsumes(E, B ;; D) .
+rewrites: 3
+result [Bool]: true and subsumes(E, B)
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : step(E) .
 rewrites: 1
 result Transition: < x,E >
@@ -95,7 +111,7 @@ reduce in GRAPH-FOLDING-SEARCH-TEST1 :
 [0,unbounded]
 .LGraph .
 rewrites: 25
-result LGraph: 
+result BFS: 
 1 -[x]-> 2
 2 -[y]-> 2
 | 1 |-> A
@@ -103,105 +119,112 @@ result LGraph:
 | 3
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A, 1) .
-rewrites: 50
+rewrites: 102
 result [BFS]: 
-0 -[x]-> 1
-0 -[y]-> 2
-0 -[z]-> 2
-| 0 |-> A
-1 |-> B
-2 |-> D
-| 3
-| 1 -[y]-> B
-2 -[y]-> C
-2 -[z]-> G
+1 -[x]-> 2
+1 -[y]-> 3
+1 -[z]-> 3
+2 -[y]-> 2
+3 -[y]-> 6
+3 -[z]-> 7
+| 1 |-> A
+2 |-> B
+3 |-> D
+6 |-> C
+7 |-> G
+| 7
+| 6 -[x]-> A
+7 -[y]-> D
 [continue(1,1)]
 .LGraph
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A, 2) .
-rewrites: 99
-result [BFS]: 
-0 -[x]-> 1
-0 -[y]-> 2
-0 -[z]-> 2
-1 -[y]-> 1
-2 -[y]-> 5
-2 -[z]-> 6
-| 0 |-> A
-1 |-> B
-2 |-> D
-5 |-> C
-6 |-> G
-| 6
-| 5 -[x]-> A
-6 -[y]-> D
-[continue(2,2)]
-.LGraph
+rewrites: 126
+result BFS: 
+1 -[x]-> 2
+1 -[y]-> 3
+1 -[z]-> 3
+2 -[y]-> 2
+3 -[y]-> 6
+3 -[z]-> 7
+6 -[x]-> 1
+7 -[y]-> 3
+| 1 |-> A
+2 |-> B
+3 |-> D
+6 |-> C
+7 |-> G
+| 9
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A) .
-rewrites: 124
-result LGraph: 
-0 -[x]-> 1
-0 -[y]-> 2
-0 -[z]-> 2
-1 -[y]-> 1
-2 -[y]-> 5
-2 -[z]-> 6
-5 -[x]-> 0
-6 -[y]-> 2
-| 0 |-> A
-1 |-> B
-2 |-> D
-5 |-> C
-6 |-> G
-| 8
+rewrites: 127
+result BFS: 
+1 -[x]-> 2
+1 -[y]-> 3
+1 -[z]-> 3
+2 -[y]-> 2
+3 -[y]-> 6
+3 -[z]-> 7
+6 -[x]-> 1
+7 -[y]-> 3
+| 1 |-> A
+2 |-> B
+3 |-> D
+6 |-> C
+7 |-> G
+| 9
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(A, unbounded) == bfs(A) .
-rewrites: 248
+rewrites: 254
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(C, 1) .
-rewrites: 21
+rewrites: 77
 result [BFS]: 
-0 -[x]-> 1
-| 0 |-> C
-1 |-> A
-| 1
-| 1 -[x]-> B
-1 -[y]-> D
-1 -[z]-> D
+1 -[x]-> 2
+2 -[x]-> 1[<]
+2 -[y]-> 4
+2 -[z]-> 4
+| 1 |-> C
+2 |-> A
+4 |-> D
+| 5
+| 4 -[y]-> C
+4 -[z]-> G
 [continue(1,1)]
 .LGraph
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(C, 2) .
-rewrites: 74
+rewrites: 104
 result [BFS]: 
-0 -[x]-> 1
-1 -[x]-> 0[<]
-1 -[y]-> 3
-1 -[z]-> 3
-| 0 |-> C
-1 |-> A
-3 |-> D
-| 4
-| 3 -[y]-> C
-3 -[z]-> G
+1 -[x]-> 2
+2 -[x]-> 1[<]
+2 -[y]-> 4
+2 -[z]-> 4
+4 -[y]-> 1
+4 -[z]-> 7
+| 1 |-> C
+2 |-> A
+4 |-> D
+7 |-> G
+| 7
+| 7 -[y]-> D
 [continue(2,2)]
 .LGraph
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST1 : bfs(C) .
-rewrites: 118
-result LGraph: 
-0 -[x]-> 1
-1 -[x]-> 0[<]
-1 -[y]-> 3
-1 -[z]-> 3
-3 -[y]-> 0
-3 -[z]-> 6
-6 -[y]-> 3
-| 0 |-> C
-1 |-> A
-3 |-> D
-6 |-> G
-| 7
+rewrites: 121
+result BFS: 
+1 -[x]-> 2
+2 -[x]-> 1[<]
+2 -[y]-> 4
+2 -[z]-> 4
+4 -[y]-> 1
+4 -[z]-> 7
+7 -[y]-> 4
+| 1 |-> C
+2 |-> A
+4 |-> D
+7 |-> G
+| 8
 Bye.

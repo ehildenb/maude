@@ -53,6 +53,11 @@ reduce not (4 [ < ] < 3 [ < ]) .
 
 reduce fold(A, A) .
 
+reduce subsumes(A ;; B ;; C, B) .
+reduce subsumes(A ;; B, B) .
+reduce subsumes(E ;; B, D ;; B) .
+reduce subsumes(E, D ;; B) .
+
 reduce step(E) .
 reduce step(D) .
 
