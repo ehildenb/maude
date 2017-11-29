@@ -47,14 +47,34 @@ fmod GRAPH-FOLDING-SEARCH is
    protecting BOUND .
     extending LABELLED-GRAPH .
 
-    vars N N' N'' : Nat . vars D D' : Depth . var B : Bound .
+    vars N N' N'' : Nat . var NID : NodeId . vars D D' : Depth . var B : Bound .
     var L : Label . vars LG LG' LG'' LG''' : LGraph . vars NeLG NeLG' : NeLGraph .
 
-    sorts Fold State NodeId .
+    sorts State NeStateSet StateSet .
+    ---------------------------------
+    subsort State < NeStateSet < StateSet .
+
+    vars NeSS NeSS' : NeStateSet . var SS : StateSet .
+
+    op .StateSet : -> StateSet .
+    op _;;_      : StateSet   StateSet ->   StateSet [assoc comm id: .StateSet] .
+    op _;;_      : StateSet NeStateSet -> NeStateSet [ditto] .
+    ----------------------------------------------------------
+    eq S ;; S = S .
+
+    sort Fold .
+    -----------
+    vars F F' : Fold . var F? : [Fold] .
+
+    op .Fold : -> Fold .
+    op fold  : State State -> [Fold] .
+    ----------------------------------
+    eq fold(S, S) = .Fold .
+
+    sort NodeId .
     subsort Nat < NodeId .
     subsort State NodeId < Node .
     -----------------------------
-    vars F F' : Fold . var F? : [Fold] .
     vars S S' : State . vars ND ND' : NodeId .
 
     op _[_] : Nat Fold      -> NodeId [right id: .Fold prec 20] .
@@ -62,11 +82,6 @@ fmod GRAPH-FOLDING-SEARCH is
     -------------------------------------------
    ceq N[F] < N'[F'] = F =/= .Fold and (F' =/= .Fold implies N < N')
     if F =/= .Fold or F' =/= .Fold .
-
-    op .Fold : -> Fold .
-    op fold  : State State -> [Fold] .
-    ----------------------------------
-    eq fold(S, S) = .Fold .
 
     op step : State -> [TransitionSet] .
     ------------------------------------
