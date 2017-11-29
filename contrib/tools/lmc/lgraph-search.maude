@@ -43,7 +43,7 @@ fmod LABELLED-GRAPH is
 endfm
 
 fmod GRAPH-FOLDING-SEARCH is
-   protecting INT .
+   protecting NAT .
    protecting BOUND .
     extending LABELLED-GRAPH .
 
@@ -126,12 +126,14 @@ fmod GRAPH-FOLDING-SEARCH is
     eq states(N |-> S)      = S .
     eq states(NeENV NeENV') = states(NeENV) ;; states(NeENV') .
 
-    op _|_|_ : LGraph Environment Nat -> LGraph [prec 70 format(n n d n d d)] .
-    ---------------------------------------------------------------------------
+    op _|_|_ : LGraph Environment Nat -> BFS [prec 70 format(n n d n d d)] .
+    ------------------------------------------------------------------------
 
     sorts Frontier BFS .
     --------------------
     subsort LGraph < BFS .
+
+    var BFS : BFS .
 
     op .Frontier : -> Frontier .
     op _[_]_     : LGraph Depth LGraph -> Frontier [prec 65 format(d n d d n d)] .
@@ -141,16 +143,24 @@ fmod GRAPH-FOLDING-SEARCH is
 
     op _|_ : LGraph Frontier -> BFS [right id: .Frontier prec 75 format(d n d d)] .
     -------------------------------------------------------------------------------
-   ceq LG               | ENV  |   N | ND -[L]-> S' LG' [ D ] LG''
-     = LG ND -[L]-> ND' | ENV' | s N |              LG' [ D ] LG'' LG'''
-    if { ND' , ENV' } := insert(s N |-> S', ENV)
-    /\          LG''' := if (ND' < s N) then .LGraph else ND' -> step(S') fi .
+   ceq LG               | ENV  |   N | ND -[L]-> S LG' [ D ] LG''
+     = LG ND -[L]-> ND' | ENV' | s N |             LG' [ D ] LG'' LG'''
+    if { ND' , ENV' } := insert(s N |-> S, ENV)
+    /\          LG''' := if (ND' < s N) then .LGraph else ND' -> step(S) fi .
 
-    op bfs : State       -> BFS .
-    op bfs : State Bound -> BFS .
-    -----------------------------
-    eq bfs(S)    = bfs(S, unbounded) .
-    eq bfs(S, B) = .LGraph | 0 |-> S | 0 | 0 -> step(S) [ continue(0, B) ] .LGraph .
+    op insert-states : StateSet BFS Bound -> [BFS] .
+    ------------------------------------------------
+    eq insert-states(.StateSet, BFS, B)     = BFS .
+    eq insert-states(NeSS ;; NeSS', BFS, B) = insert-states(NeSS', insert-states(NeSS, BFS, B), B) .
+   ceq insert-states(S, LG | ENV | N, B) = LG | ENV' | s N | LG' [ 0 , B ] .LGraph
+    if { ND , ENV' } := insert(s N |-> S, ENV)
+    /\           LG' := if (ND < s N) then .LGraph else ND -> step(S) fi .
+
+    op bfs : StateSet       -> BFS .
+    op bfs : StateSet Bound -> BFS .
+    --------------------------------
+    eq bfs(SS)    = bfs(SS, unbounded) .
+    eq bfs(SS, B) = insert-states(SS, .LGraph | .Environment | 0, B) .
 endfm
 
 fmod FVP-NARROWING-GRAPH is
