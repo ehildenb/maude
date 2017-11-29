@@ -71,6 +71,14 @@ fmod GRAPH-FOLDING-SEARCH is
     ----------------------------------
     eq fold(S, S) = .Fold .
 
+    op subsumes : StateSet StateSet -> [Bool] .
+    -------------------------------------------
+    eq subsumes(.StateSet, NeSS)   = false .
+    eq subsumes(SS, .StateSet)     = true .
+    eq subsumes(SS, NeSS ;; NeSS') = subsumes(SS, NeSS) and subsumes(SS, NeSS') .
+   ceq subsumes(S ;; SS, S')       = true
+                                  if F := fold(S', S) .
+
     sort NodeId .
     subsort Nat < NodeId .
     subsort State NodeId < Node .
