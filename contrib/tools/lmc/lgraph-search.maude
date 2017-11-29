@@ -7,9 +7,17 @@ set include BOOL off .
 
 fmod LABELLED-GRAPH is
 
-    sort Node .
-    -----------
-    vars N N' : Node .
+    sorts Node NeNodeList NodeList .
+    --------------------------------
+    subsort Node < NeNodeList < NodeList .
+
+    vars N N' : Node . var NeNL : NeNodeList .
+
+    op .NodeList : -> NodeList .
+    op _;_      : NodeList   NodeList ->   NodeList [assoc id: .NodeList] .
+    op _;_      : NodeList NeNodeList -> NeNodeList [ditto] .
+    ---------------------------------------------------------
+    eq NeNL ; NeNL = NeNL .
 
     sorts Label LEdge NeLGraph LGraph .
     subsorts LEdge < NeLGraph < LGraph .
