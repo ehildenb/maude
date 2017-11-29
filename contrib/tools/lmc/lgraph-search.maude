@@ -1,4 +1,6 @@
 load ../meta/narrowing.maude
+load ../meta/cterms.maude
+load ../meta/mtransform.maude
 load lmc.maude
 
 set include BOOL off .
@@ -202,12 +204,48 @@ fmod FVP-NARROWING-GRAPH is
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
 endfm
 
-eof
-
 fmod FVP-NARROWING-MODULO-T-GRAPH is
-    protecting SUBSTITUTIONSET .
-    protecting NARROWING-GRAPH .
-    protecting INTEGER .
+   protecting CTERM-SET .
+   protecting SUBSTITUTIONSET .
+   protecting FVP-NARROWING-GRAPH .
+   protecting UNCONDITIONALIZE .
+
+    vars T T' : Term . vars F F' : FOForm . var C : Condition . var AS : AttrSet . var Q : Qid .
+    var TYPE : Type . var SUB : Substitution . var RS : RuleSet . vars SR SR' : StepResult . var SRS : StepResultSet .
+
+    op side-condition : Condition -> FOForm .
+
+    op ##m-stripped## : ~> SModule [memo] .
+    ---------------------------------------
+    eq ##m-stripped## = fromTemplate(qid(string(getName(##m##)) + "-NO-CONDITIONS"), stripConditions(asTemplate(##m##))) .
+
+    op getLabel : RuleSet -> Qid .
+    ------------------------------
+    eq getLabel( rl T => T'      [label(Q) AS] .) = Q .
+    eq getLabel(crl T => T' if C [label(Q) AS] .) = Q .
+
+    op getCondition : RuleSet -> FOForm .
+    -------------------------------------
+    eq getCondition( rl T => T'      [AS] .) = tt .
+    eq getCondition(crl T => T' if C [AS] .) = side-condition(C) .
+
+    op lookupCondition : RuleSet -> FOForm .
+    ----------------------------------------
+    eq lookupCondition(RS) = getCondition(getRls(getLabel(RS), ##m##)) .
+
+    op transition : StepResultSet FOForm -> [TransitionSet] .
+    ---------------------------------------------------------
+    eq transition({T , TYPE , SUB / RS }, F) = < label(RS, SUB) , state(T | F /\ getCondition(RS)) > .
+    eq transition(.StepResultSet,         F) = .TransitionSet .
+    eq transition(SR || SR' || SRS,       F) = transition(SR, F) , transition(SR', F) , transition(SRS, F) .
+
+    op state : CTerm -> State .
+    ---------------------------
+    eq step(state(T | F)) = transition(metaNarrow2(##m-stripped##, T), F) .
+   --- ceq fold(state(T | C), state(T' | C')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
+endfm
+
+eof
 
     sorts Constraint CState .
     subsort State < CState .
