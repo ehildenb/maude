@@ -9,16 +9,20 @@ load ../../../contrib/tools/lmc/lgraph-search.maude
 --- Abstract Graph
 --- --------------
 
-fmod GRAPH-FOLDING-SEARCH-TEST1 is
-    extending GRAPH-FOLDING-SEARCH .
+fmod GRAPH-FOLDING-SEARCH-TEST is
+    extending GRAPH-ANALYSIS .
 
-    ops A B C D E F G : -> State .
+    ops A B C D E F G : -> Node .
     ops x y z : -> Label .
 
     op < : -> Fold .
 
     eq fold(D, E) = < .
     eq fold(B, C) = < .
+
+    --- Add the following equation to reduce _<=_ to constructors
+    vars NeNS NeNS' : NeNodeSet .
+    eq NeNS <= NeNS' = false [owise] .
 
     eq step(A) = < x , B > , < y , D > , < z , D > .
     eq step(B) = < y , B > .
@@ -43,141 +47,86 @@ reduce B -> < x , A > , < y , D > .
 --- --------------------------------
 
 reduce 3 [ .Fold ] < 4 [ .Fold ] .
-reduce not (4 [ .Fold ] < 3 [ .Fold ]) .
+reduce 4 [ .Fold ] < 3 [ .Fold ] .
 reduce 3 [ < ] < 4 .
 reduce 4 [ < ] < 3 .
-reduce not (3 < 4 [ < ]) .
-reduce not (4 < 3 [ < ]) .
+reduce 3 < 4 [ < ] .
+reduce 4 < 3 [ < ] .
 reduce 3 [ < ] < 4 [ < ] .
-reduce not (4 [ < ] < 3 [ < ]) .
+reduce 4 [ < ] < 3 [ < ] .
 
 reduce fold(A, A) .
+reduce fold(D, E) .
+reduce fold(E, D) .
 
-reduce subsumes(A ;; B ;; C, B) .
-reduce subsumes(A ;; B, B) .
-reduce subsumes(E ;; B, D ;; B) .
-reduce subsumes(E, D ;; B) .
+reduce B       <= (A ; B ; C) .
+reduce B       <= (A ; B) .
+reduce D       <= E .
+reduce (D ; B) <= (E ; B) .
+reduce (D ; B) <= E .
 
 reduce step(E) .
 reduce step(D) .
 
-reduce insert( 3 |-> A , .Environment ) .
-reduce insert( 3 |-> A , 2 |-> A      ) .
-reduce insert( 3 |-> D , 2 |-> E      ) .
+reduce all-step(E ; D ; F ; G) .
+reduce all-step(E ; D ; D) .
+reduce all-step(E) .
+reduce all-step(.NodeSet) .
 
+reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ .NodeSet ] .
+reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ] .
+reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 7 ] .
+reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ; 3 ; 0 ] .
+reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ; 3 ; 7 ] .
+
+reduce insert( 3 |-> A , .NodeMap ) .
+reduce insert( 3 |-> A , 2 |-> A  ) .
+reduce insert( 3 |-> D , 2 |-> E  ) .
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
 reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
-reduce ( .LGraph | 1 |-> A | 1 | 1 -[x]-> B [ 0 , unbounded ] .LGraph ) .
+reduce insert( A , .Environment ) .
+reduce insert( A , < 0 |-> A         , 1 > ) .
+reduce insert( D , < 0 |-> E         , 1 > ) .
+reduce insert( D , < 1 |-> A 0 |-> D , 2 > ) .
+reduce insert( E , < 1 |-> A 0 |-> D , 2 > ) .
+reduce insert( A ; B ; C , .Environment ) .
+reduce insert( A ; D ; C , < 0 |-> A 1 |-> E , 2 > ) .
 
+reduce insert(A ; B ; C ; D ; E ; F ; G, .FLGraph) .
+reduce insert(A ; B ; C,                 .FLGraph) .
+
+reduce ( .LGraph | < 1 |-> A , 2 > | 1 ) .
+reduce extend(.LGraph | < 1 |-> A , 2 > | 1) .
+reduce extend(extend(.LGraph | < 1 |-> A , 2 > | 1)) .
+reduce extend(.LGraph | < 0 |-> A 1 |-> B 2 |-> C , 3 > | 0 ; 1 ; 2) .
+reduce extend(insert(A ; B ; C, .FLGraph)) .
+
+--- Test Module GRAPH-ANALYSIS
+--- --------------------------
+
+reduce bfs(A, 0) .
 reduce bfs(A, 1) .
 reduce bfs(A, 2) .
 reduce bfs(A) .
 reduce bfs(A, unbounded) == bfs(A) .
+
 reduce bfs(C, 1) .
 reduce bfs(C, 2) .
 reduce bfs(C) .
 
-eof
+reduce bfs(A ; B ; C, 0) .
+reduce bfs(A ; B ; C, 1) .
+reduce bfs(A ; B ; C, unbounded) .
+reduce bfs(B ; F, unbounded) .
+reduce bfs(D ; A, unbounded) .
 
---- Narrowing Graph of `2TOKEN` System
---- ----------------------------------
+reduce bfs(A ; B ; C ; D ; E ; F ; G, 1) .
+reduce bfs(A ; B ; C ; D ; E ; F ; G, unbounded) .
 
-mod NARROW-SEARCH-2TOKEN is
-    protecting 2TOKEN * ( sort State to 2TState ) .
-    including FVP-NARROWING-GRAPH .
-
-    subsort 2TState < State .
-    -------------------------
-    vars 2T 2T' : 2TState .
-
-    eq step(2T)      = step(upModule('2TOKEN, true), 2T) .
-    eq fold(2T, 2T') = fold(upModule('2TOKEN, true), 2T, 2T') .
-endm
-
---- Test `step`
---- -----------
-
-reduce step({ $ [a, wait] [b, wait] })
-    == < none , { [a, crit] [b, wait] } > .
-
-reduce step({ T:Token [a, wait] [b, wait] })
-    == < 'T:Token <- '*.Token , { [b, crit] [a, wait] } >
-     , < 'T:Token <- '$.Token , { [a, crit] [b, wait] } > .
-
-reduce step({ T:Token T':Token [a, wait] [b, wait] })
-    == < 'T':Token <- '$.Token  ; 'T:Token <- '@1:Token , { @1:Token [b,wait] [a,crit] } >
-     , < 'T':Token <- '*.Token  ; 'T:Token <- '@1:Token , { @1:Token [a,wait] [b,crit] } >
-     , < 'T':Token <- '@1:Token ; 'T:Token <- '$.Token  , { @1:Token [b,wait] [a,crit] } >
-     , < 'T':Token <- '@1:Token ; 'T:Token <- '*.Token  , { @1:Token [a,wait] [b,crit] } > .
-
-reduce step({ $ [a, wait] P:Proc })
-    == < 'P:Proc <- '@1:Proc              , {     @1:Proc  [a,crit] } >
-     , < 'P:Proc <- '`[_`,crit`]['a.Name] , { * $ [a,wait] [a,wait] } >
-     , < 'P:Proc <- '`[_`,crit`]['b.Name] , { $ $ [a,wait] [b,wait] } > .
-
-reduce step({ * [a, wait] P:Proc })
-    == < 'P:Proc <- '`[_`,crit`]['a.Name] , { * * [a,wait] [a,wait] } >
-     , < 'P:Proc <- '`[_`,crit`]['b.Name] , { * $ [a,wait] [b,wait] } >
-     , < 'P:Proc <- '`[_`,wait`]['b.Name] , {     [a,wait] [b,crit] } > .
-
-reduce step({ T:Token [a, wait] P:Proc })
-    == < 'P:Proc <- '@1:Proc              ; 'T:Token <- '$.Token  , {            @1:Proc  [a,crit] } >
-     , < 'P:Proc <- '`[_`,crit`]['a.Name] ; 'T:Token <- '@1:Token , { * @1:Token [a,wait] [a,wait] } >
-     , < 'P:Proc <- '`[_`,crit`]['b.Name] ; 'T:Token <- '@1:Token , { $ @1:Token [a,wait] [b,wait] } >
-     , < 'P:Proc <- '`[_`,wait`]['b.Name] ; 'T:Token <- '*.Token  , {            [a,wait] [b,crit] } > .
-
---- Test `fold`
---- -----------
-
-reduce fold({ $ [a, wait] [b, wait] }, { $       [a, wait] [b, wait] }) == none .
-reduce fold({ * [a, wait] [b, wait] }, { T:Token [a, wait] [b, wait] }) == ( 'T:Token <- '*.Token ) .
-reduce fold({ * [a, wait] [b, wait] }, { *       [a, wait] P:Proc    }) == ( 'P:Proc <- '`[_`,wait`]['b.Name] ).
-reduce fold({ * [a, wait] [b, wait] }, { T:Token [a, wait] P:Proc    }) == ( 'T:Token <- '*.Token ; 'P:Proc <- '`[_`,wait`]['b.Name] ).
-
---- Test `bfs`
---- ----------
-
-reduce bfs({$ [a, wait] [b, wait]})
-    == ( 1 -[none]-> 2
-         2 -[none]-> 3
-         3 -[none]-> 4
-         4 -[none]-> 1
-       | 1 |-> {$ [a,wait] [b,wait]}
-         2 |-> {[b,wait] [a,crit]}
-         3 |-> {* [a,wait] [b,wait]}
-         4 |-> {[a,wait] [b,crit]}
-       | 5
-       | .LGraph [3,unbounded] .LGraph
-       ) .
-
-reduce bfs({T:Token [a, wait] [b, wait]})
-    == ( 1 -['T:Token <- '$.Token]-> 2
-         1 -['T:Token <- '*.Token]-> 3
-         2 -[none]->                 1['T:Token <- '*.Token]
-         3 -[none]->                 1['T:Token <- '$.Token]
-       | 1 |-> {T:Token [a,wait] [b,wait]}
-         2 |-> {[b,wait] [a,crit]}
-         3 |-> {[a,wait] [b,crit]}
-       | 5
-       | .LGraph [1,unbounded] .LGraph
-       ) .
-
-reduce bfs({T:Token T':Token [a, wait] [b, wait]})
-    == ( 1 -[ 'T':Token <- '$.Token  ; 'T:Token <- '@1:Token ]-> 2
-         1 -[ 'T':Token <- '*.Token  ; 'T:Token <- '@1:Token ]-> 3
-         1 -[ 'T':Token <- '@1:Token ; 'T:Token <- '$.Token  ]-> 2[ '@1:Token <- '@1:Token ]
-         1 -[ 'T':Token <- '@1:Token ; 'T:Token <- '*.Token  ]-> 3[ '@1:Token <- '@1:Token ]
-         2 -[ '@1:Token <- '*.Token  ]-> 6
-         2 -[ '@1:Token <- '@1:Token ]-> 1[ 'T':Token <- '@1:Token ; 'T:Token <- '*.Token ]
-         3 -[ '@1:Token <- '$.Token  ]-> 6
-         3 -[ '@1:Token <- '@1:Token ]-> 1[ 'T':Token <- '@1:Token ; 'T:Token <- '$.Token]
-         6 -[ none ]-> 2[ '@1:Token <- '$.Token]
-         6 -[ none ]-> 3[ '@1:Token <- '*.Token]
-       | 1 |-> {T:Token T':Token [a,wait] [b,wait]}
-         2 |-> {@1:Token [b,wait] [a,crit]}
-         3 |-> {@1:Token [a,wait] [b,crit]}
-         6 |-> {[a,crit] [b,crit]}
-       | 11
-       | .LGraph [2,unbounded] .LGraph
-       ) .
+reduce check .NodeSet  stable in .NodeSet .
+reduce check A         stable in .NodeSet .
+reduce check A         stable in A .
+reduce check A ; B     stable in A .
+reduce check A ; B ; C stable in A ; B ; C .
+reduce check A ; B ; C stable in A ; B ; C ; D ; E ; F ; G .
