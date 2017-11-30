@@ -111,7 +111,7 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------------------------
 
     op .NodeMap : -> NodeMap .
-    op __ : NeNodeMap NodeMap -> NeNodeMap [assoc comm id: .NodeMap prec 60 format(d n d)] .
+    op __ : NeNodeMap NodeMap -> NeNodeMap [assoc id: .NodeMap prec 60 format(d n d)] .
     op __ :   NodeMap NodeMap ->   NodeMap [ditto] .
     ------------------------------------------------
     eq NeNM NeNM = NeNM .
@@ -125,7 +125,7 @@ fmod GRAPH-FOLDING-SEARCH is
 
     op _[_] : NodeMap NodeSet -> [NodeSet] .
     ----------------------------------------
-    eq (NID |-> ND NM) [ NID ] = ND .
+    eq (NID |-> ND NM) [ NID' ] = if NID == NID' then ND else NM [ NID' ] fi .
 
     eq NM [ .NodeSet     ] = .NodeSet .
     eq NM [ NeNS ; NeNS' ] = (NM [ NeNS ]) ; (NM [ NeNS' ]) .
