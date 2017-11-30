@@ -7,17 +7,17 @@ set include BOOL off .
 
 fmod LABELLED-GRAPH is
 
-    sorts Node NeNodeList NodeList .
-    --------------------------------
-    subsort Node < NeNodeList < NodeList .
+    sorts Node NeNodeSet NodeSet .
+    ------------------------------
+    subsort Node < NeNodeSet < NodeSet .
 
-    vars N N' : Node . var NeNL : NeNodeList .
+    vars N N' : Node . var NeNS : NeNodeSet .
 
-    op .NodeList : -> NodeList .
-    op _;_      : NodeList   NodeList ->   NodeList [assoc id: .NodeList] .
-    op _;_      : NodeList NeNodeList -> NeNodeList [ditto] .
-    ---------------------------------------------------------
-    eq NeNL ; NeNL = NeNL .
+    op .NodeSet : -> NodeSet .
+    op _;_      : NodeSet   NodeSet ->   NodeSet [assoc comm id: .NodeSet] .
+    op _;_      : NodeSet NeNodeSet -> NeNodeSet [ditto] .
+    ------------------------------------------------------
+    eq NeNS ; NeNS = NeNS .
 
     sorts Label LEdge NeLGraph LGraph .
     subsorts LEdge < NeLGraph < LGraph .
@@ -34,8 +34,9 @@ fmod LABELLED-GRAPH is
     --------------------------------------------------
 
     sorts Transition NeTransitionSet TransitionSet .
+    ------------------------------------------------
     subsorts Transition < NeTransitionSet < TransitionSet .
-    -------------------------------------------------------
+
     var TS : TransitionSet . vars NeTS NeTS' : NeTransitionSet .
 
     op .TransitionSet : -> TransitionSet .
@@ -54,142 +55,182 @@ endfm
 
 fmod GRAPH-FOLDING-SEARCH is
    protecting NAT .
+   protecting EXT-BOOL .
    protecting BOUND .
     extending LABELLED-GRAPH .
 
-    vars N N' N'' : Nat . var NID : NodeId . vars D D' : Depth . var B : Bound .
+    vars D D' : Depth . var B : Bound .
+    vars NS NS' NS'' : NodeSet . vars NeNS NeNS' NeNS'' : NeNodeSet .
+    vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
     var L : Label . vars LG LG' LG'' LG''' : LGraph . vars NeLG NeLG' : NeLGraph .
-
-    sorts State NeStateSet StateSet .
-    ---------------------------------
-    subsort State < NeStateSet < StateSet .
-
-    vars NeSS NeSS' : NeStateSet . var SS : StateSet .
-
-    op .StateSet : -> StateSet .
-    op _;;_      : StateSet   StateSet ->   StateSet [assoc comm id: .StateSet] .
-    op _;;_      : StateSet NeStateSet -> NeStateSet [ditto] .
-    ----------------------------------------------------------
-    eq S ;; S = S .
 
     sort Fold .
     -----------
     vars F F' : Fold . var F? : [Fold] .
 
     op .Fold : -> Fold .
-    op fold  : State State -> [Fold] .
-    ----------------------------------
-    eq fold(S, S) = .Fold .
+    op fold  : Node Node -> [Fold] .
+    --------------------------------
+    eq fold(ND, ND) = .Fold .
 
-    op subsumes : StateSet StateSet -> [Bool] .
-    -------------------------------------------
-    eq subsumes(.StateSet, NeSS)   = false .
-    eq subsumes(SS, .StateSet)     = true .
-    eq subsumes(SS, NeSS ;; NeSS') = subsumes(SS, NeSS) and subsumes(SS, NeSS') .
-   ceq subsumes(S ;; SS, S')       = true
-                                  if F := fold(S', S) .
+    op step : Node -> [TransitionSet] .
+    -----------------------------------
+
+    op all-step : NodeSet -> [LGraph] .
+    -----------------------------------
+    eq all-step(ND)           = ND -> step(ND) .
+    eq all-step(.NodeSet)     = .LGraph .
+    eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
 
     sort NodeId .
-    subsort Nat < NodeId .
-    subsort State NodeId < Node .
-    -----------------------------
-    vars S S' : State . vars ND ND' : NodeId .
+    -------------
+    subsorts Nat < NodeId < Node .
 
-    op _[_] : Nat Fold      -> NodeId [right id: .Fold prec 20] .
-    op _<_  : NodeId NodeId -> Bool   [ditto] .
-    -------------------------------------------
-   ceq N[F] < N'[F'] = F =/= .Fold and (F' =/= .Fold implies N < N')
-    if F =/= .Fold or F' =/= .Fold .
+    op _<_  : NodeSet NodeSet -> [Bool] [ditto] .
+    op _<=_ : NodeSet NodeSet -> [Bool] [ditto] .
+    ---------------------------------------------
+    eq NS             <  NS'        = NS =/= NS' and-then NS <= NS' .
+    eq NS             <= NS         = true .
+    eq .NodeSet       <= NeNS       = true .
+    eq NeNS           <= .NodeSet   = false .
+    eq (NeNS ; NeNS') <= NeNS''     = NeNS <= NeNS'' and-then NeNS' <= NeNS'' .
+   ceq ND             <= (ND' ; NS) = true if fold(ND, ND') :: Fold .
 
-    op step : State -> [TransitionSet] .
-    ------------------------------------
+    op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
+    --------------------------------------------------------
+   ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .
 
-    sorts NodeAlias NeEnvironment Environment .
-    subsort NodeAlias < NeEnvironment < Environment .
-    -------------------------------------------------
-    var NA : NodeAlias . vars ENV ENV' : Environment . vars NeENV NeENV' : NeEnvironment .
+    sorts NodeAlias NeNodeMap NodeMap Environment .
+    -----------------------------------------------
+    subsort NodeAlias < NeNodeMap < NodeMap .
+
+    var NA : NodeAlias . vars NM NM' : NodeMap . vars NeNM NeNM' : NeNodeMap .
+    vars ENV ENV' ENV'' : Environment .
 
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
     --------------------------------------------
 
-    op .Environment : -> Environment .
-    op __ : NeEnvironment Environment -> NeEnvironment [assoc id: .Environment prec 60 format(d n d)] .
-    op __ :   Environment Environment ->   Environment [ditto] .
-    ------------------------------------------------------------
-
-    op  insert : NodeAlias Environment             -> [Environment] .
-    op #insert : NodeAlias Environment Environment -> [Environment] .
-    op {_,_}   : NodeId    Environment             -> [Environment] .
-    -----------------------------------------------------------------
-    eq insert(NA, ENV) = #insert(NA, .Environment, ENV) .
-
-    eq #insert(N |-> S , ENV , .Environment)   = { N , ENV N |-> S } .
-   ceq #insert(N |-> S , ENV , N' |-> S' ENV') = if (F? :: Fold) then { N'[F?] , ENV N' |-> S' ENV' }
-                                                                 else #insert(N |-> S, ENV N' |-> S', ENV')
-                                                 fi
-                                              if F? := fold(S,S') .
-
-    op states : Environment -> [StateSet] .
-    ---------------------------------------
-    eq states(.Environment) = .StateSet .
-    eq states(N |-> NID)    = .StateSet .
-    eq states(N |-> S)      = S .
-    eq states(NeENV NeENV') = states(NeENV) ;; states(NeENV') .
-
-    op _[_] : Environment NodeId -> [Node] .
-    ----------------------------------------
-    eq (NID |-> ND ENV) [ NID ] = ND .
-
-    op _|_|_ : LGraph Environment Nat -> BFS [prec 70 format(n n d n d d)] .
-    ------------------------------------------------------------------------
-
-    sorts Frontier BFS .
-    --------------------
-    subsort LGraph < BFS .
-
-    var BFS : BFS .
-
-    op .Frontier : -> Frontier .
-    op _[_]_     : LGraph Depth LGraph -> Frontier [prec 65 format(d n d d n d)] .
-    ------------------------------------------------------------------------------
-    eq .LGraph [ D ] .LGraph = .Frontier .
-    eq .LGraph [ D ] NeLG    = NeLG [ continue(D) ] .LGraph .
-
-    op _|_ : LGraph Frontier -> BFS [right id: .Frontier prec 75 format(d n d d)] .
-    -------------------------------------------------------------------------------
-   ceq LG               | ENV  |   N | ND -[L]-> S LG' [ D ] LG''
-     = LG ND -[L]-> ND' | ENV' | s N |             LG' [ D ] LG'' LG'''
-    if { ND' , ENV' } := insert(s N |-> S, ENV)
-    /\          LG''' := if (ND' < s N) then .LGraph else ND' -> step(S) fi .
-
-    op insert-states : StateSet BFS Bound -> [BFS] .
+    op .NodeMap : -> NodeMap .
+    op __ : NeNodeMap NodeMap -> NeNodeMap [assoc comm id: .NodeMap prec 60 format(d n d)] .
+    op __ :   NodeMap NodeMap ->   NodeMap [ditto] .
     ------------------------------------------------
-    eq insert-states(.StateSet, BFS, B)     = BFS .
-    eq insert-states(NeSS ;; NeSS', BFS, B) = insert-states(NeSS', insert-states(NeSS, BFS, B), B) .
-   ceq insert-states(S, LG | ENV | N, B) = LG | ENV' | s N | LG' [ 0 , B ] .LGraph
-    if { ND , ENV' } := insert(s N |-> S, ENV)
-    /\           LG' := if (ND < s N) then .LGraph else ND -> step(S) fi .
+    eq NeNM NeNM = NeNM .
 
-    op bfs : StateSet       -> BFS .
-    op bfs : StateSet Bound -> BFS .
-    --------------------------------
-    eq bfs(SS)    = bfs(SS, unbounded) .
-    eq bfs(SS, B) = insert-states(SS, .LGraph | .Environment | 0, B) .
+    op nodes : NodeMap -> [NodeSet] .
+    ---------------------------------
+    eq nodes(.NodeMap)   = .NodeSet .
+    eq nodes(N |-> NID)  = .NodeSet .
+    eq nodes(N |-> ND)   = ND .
+    eq nodes(NeNM NeNM') = nodes(NeNM) ; nodes(NeNM') .
+
+    op _[_] : NodeMap NodeSet -> [NodeSet] .
+    ----------------------------------------
+    eq (NID |-> ND NM) [ NID ] = ND .
+
+    eq NM [ .NodeSet     ] = .NodeSet .
+    eq NM [ NeNS ; NeNS' ] = (NM [ NeNS ]) ; (NM [ NeNS' ]) .
+
+    op  insert : NodeAlias NodeMap         -> [NodeMap] .
+    op #insert : NodeAlias NodeMap NodeMap -> [NodeMap] .
+    op {_,_,_} : NodeId    NodeMap NodeSet -> [NodeMap] .
+    -----------------------------------------------------
+    eq insert(NA, NM) = #insert(NA, .NodeMap, NM) .
+
+    eq #insert(N |-> ND , NM , .NodeMap)       = { N , NM N |-> ND , N } .
+   ceq #insert(N |-> ND , NM , N' |-> ND' NM') = if (F? :: Fold) then { N'[F?] , NM N' |-> ND' NM' , .NodeSet }
+                                                                 else #insert(N |-> ND, NM N' |-> ND', NM')
+                                                 fi
+                                              if F? := fold(ND, ND') .
+
+    op .Environment : -> Environment .
+    op <_,_> : NodeMap Nat -> Environment .
+    ---------------------------------------
+    eq .Environment = < .NodeMap , 0 > .
+
+    op nodes : Environment -> [NodeSet] .
+    -------------------------------------
+    eq nodes(< NM , N >) = nodes(NM) .
+
+    op _[_] : Environment NodeSet -> [NodeSet] .
+    --------------------------------------------
+    eq < NM , N > [ NS ] = NM [ NS ] .
+
+    --- What are we using the NodeId (first argument) for?
+    op {_,_,_} : NodeId  Environment NodeSet -> [Environment] .
+    op insert  : NodeSet Environment         -> [Environment] .
+    -----------------------------------------------------------
+    eq insert(.NodeSet, ENV)     = ENV .
+   ceq insert(NeNS ; NeNS', ENV) = { NID'' , ENV'' , NS' ; NS'' }
+                                if { NID'  , ENV'  , NS'  } := insert(NeNS, ENV)
+                                /\ { NID'' , ENV'' , NS'' } := insert(NeNS', ENV') .
+   ceq insert(ND, < NM , N >)    = { NID , < NM' , N' > , NS }
+                                if { NID , NM' , NS } := insert(N |-> ND, NM)
+                                /\ N' := if NID < N then N else s N fi .
+
+    sort FLGraph .
+    --------------
+
+    var FLG : FLGraph .
+
+    op _|_ : LGraph Environment -> FLGraph [format(d n d d)] .
+    ----------------------------------------
+    eq LG | { NID , ENV , NS } = LG | ENV | NS .
+
+    op insert : NodeSet FLGraph -> FLGraph .
+    op insert : LGraph  FLGraph -> FLGraph .
+    ----------------------------------------
+   ceq insert(NS, LG | ENV) = LG | ENV' | NS'
+                           if { NID , ENV' , NS' } := insert(NS, ENV) .
+
+    eq insert(.LGraph,         FLG)        = FLG .
+    eq insert(NeLG,            FLG | NeNS) = insert(NeLG, FLG) | NeNS .
+    eq insert(NeLG NeLG',      FLG)        = insert(NeLG, insert(NeLG', FLG)) .
+   ceq insert(ND -[ L ]-> ND', LG | ENV)   = (NID -[ L ]-> NID' LG) | ENV'' | NS ; NS'
+                                          if { NID  , ENV'  , NS  } := insert(ND,  ENV)
+                                          /\ { NID' , ENV'' , NS' } := insert(ND', ENV) .
+
+    op .FLGraph : -> FLGraph .
+    --------------------------
+    eq .FLGraph = .LGraph | < .NodeMap , 0 > .
+
+    op _|_ : FLGraph NodeSet -> [FLGraph] [right id: .NodeSet format(d n d d)] .
+    ----------------------------------------------------------------------------
+    eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
+
+    --- Should we include NS or not in the result?
+    op nodes : FLGraph -> [NodeSet] .
+    ---------------------------------
+    eq nodes(LG | ENV | NS) = nodes(ENV) ; NS .
+
+    op extend : FLGraph -> [FLGraph] .
+    ----------------------------------
+    eq extend(LG | ENV)        = LG | ENV .
+    eq extend(LG | ENV | NeNS) = insert(all-step(ENV [ NeNS ]), LG | ENV) .
 endfm
 
 fmod GRAPH-ANALYSIS is
    protecting GRAPH-FOLDING-SEARCH .
    protecting EXT-BOOL .
 
-    var B : Bound . vars SS SS' : StateSet .
-    var LG : LGraph . var ENV : Environment . var N : Nat .
+    var N : Nat . var B : Bound .
+    vars NS NS' : NodeSet . var NeNS : NeNodeSet .
+    var FLG : FLGraph .
 
-    op check     _stable in_ :       StateSet StateSet -> [Bool] .
-    op check [_] _stable in_ : Bound StateSet StateSet -> [Bool] .
-    ----------------------------------------------------------------
-    eq check       SS stable in SS' = check [ 1 ] SS stable in SS' .
-   ceq check [ B ] SS stable in SS' = subsumes(SS', SS) and-then subsumes(states(ENV), SS')
-                                   if LG | ENV | N := bfs(SS', B) .
+    op  bfs : NodeSet       -> [FLGraph] .
+    op  bfs : NodeSet Bound -> [FLGraph] .
+    op #bfs : Bound FLGraph -> [FLGraph] .
+    --------------------------------------
+    eq bfs(NS)    = bfs(NS, unbounded) .
+    eq bfs(NS, B) = #bfs(B, insert(NS, .FLGraph)) .
+
+    eq #bfs(B,         FLG)        = FLG .
+    eq #bfs(0,         FLG |   NS) = FLG | NS .
+    eq #bfs(s N,       FLG | NeNS) = #bfs(N,         extend(FLG | NeNS)) .
+    eq #bfs(unbounded, FLG | NeNS) = #bfs(unbounded, extend(FLG | NeNS)) .
+
+    op check_stable in_ : NodeSet NodeSet -> [Bool] .
+    -------------------------------------------------
+    eq check NS stable in NS' = NS <= NS' and-then nodes(bfs(NS', 1)) <= NS' .
 endfm
 
 fmod FVP-NARROWING-GRAPH is
@@ -209,7 +250,7 @@ fmod FVP-NARROWING-GRAPH is
     eq transition(.StepResultSet)         = .TransitionSet .
     eq transition(SR || SR' || SRS)       = transition(SR) , transition(SR') , transition(SRS) .
 
-    op state : Term         -> State .
+    op state : Term         -> Node .
     op fold  : Substitution -> Fold .
     ---------------------------------
     eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
@@ -251,8 +292,8 @@ fmod FVP-NARROWING-MODULO-T-GRAPH is
     eq transition(.StepResultSet,         F) = .TransitionSet .
     eq transition(SR || SR' || SRS,       F) = transition(SR, F) , transition(SR', F) , transition(SRS, F) .
 
-    op state : CTerm -> State .
-    ---------------------------
+    op state : CTerm -> Node .
+    --------------------------
     eq step(state(T | F)) = transition(metaNarrow2(##m-stripped##, T), F) .
    --- ceq fold(state(T | C), state(T' | C')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
 endfm
