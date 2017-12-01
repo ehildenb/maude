@@ -100,11 +100,11 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------------------------------------
    ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .
 
-    sorts NodeAlias NeNodeMap NodeMap Environment .
-    -----------------------------------------------
-    subsort NodeAlias < NeNodeMap < NodeMap .
+    sorts NodeAlias NeNodeMap NodeMap NodeMap? Environment .
+    --------------------------------------------------------
+    subsorts NodeAlias < NeNodeMap < NodeMap .
 
-    var NA : NodeAlias . vars NM NM' : NodeMap . vars NeNM NeNM' : NeNodeMap .
+    var NA : NodeAlias . vars NM NM' NM'' : NodeMap . vars NeNM NeNM' : NeNodeMap .
     vars ENV ENV' ENV'' : Environment .
 
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
@@ -130,14 +130,16 @@ fmod GRAPH-FOLDING-SEARCH is
     eq NM [ .NodeSet     ] = .NodeSet .
     eq NM [ NeNS ; NeNS' ] = (NM [ NeNS ]) ; (NM [ NeNS' ]) .
 
-    op  insert : NodeAlias NodeMap         -> [NodeMap] .
-    op #insert : NodeAlias NodeMap NodeMap -> [NodeMap] .
-    op {_,_,_} : NodeId    NodeMap NodeSet -> [NodeMap] .
-    -----------------------------------------------------
+    op {_,_,_} : NodeMap NodeId NodeSet -> NodeMap? .
+    -------------------------------------------------
+
+    op  insert : NodeAlias NodeMap         -> NodeMap? .
+    op #insert : NodeAlias NodeMap NodeMap -> NodeMap? .
+    ----------------------------------------------------
     eq insert(NA, NM) = #insert(NA, .NodeMap, NM) .
 
-    eq #insert(N |-> ND , NM , .NodeMap)       = { N , NM N |-> ND , N } .
-   ceq #insert(N |-> ND , NM , N' |-> ND' NM') = if (F? :: Fold) then { N'[F?] , NM N' |-> ND' NM' , .NodeSet }
+    eq #insert(N |-> ND , NM , .NodeMap)       = { NM N |-> ND , N , N } .
+   ceq #insert(N |-> ND , NM , N' |-> ND' NM') = if (F? :: Fold) then { NM N' |-> ND' NM' , N'[F?] , .NodeSet }
                                                                  else #insert(N |-> ND, NM N' |-> ND', NM')
                                                  fi
                                               if F? := fold(ND, ND') .
