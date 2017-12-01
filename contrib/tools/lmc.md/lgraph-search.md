@@ -1,3 +1,4 @@
+```maude
 load ../meta/narrowing.maude
 load ../meta/cterms.maude
 load ../meta/mtransform.maude
@@ -85,6 +86,9 @@ fmod GRAPH-FOLDING-SEARCH is
     sort NodeId .
     -------------
     subsorts Nat < NodeId < Node .
+
+    --- TODO: add operator _~=_ for NodeSet equality
+    --- TODO: extract this and common functionality from bae-symbolic branch
 
     op _<_  : NodeSet NodeSet -> [Bool] [ditto] .
     op _<=_ : NodeSet NodeSet -> [Bool] [ditto] .
@@ -211,6 +215,7 @@ fmod GRAPH-ANALYSIS is
     eq #bfs(s N,       FLG | NeNS) = #bfs(N,         extend(FLG | NeNS)) .
     eq #bfs(unbounded, FLG | NeNS) = #bfs(unbounded, extend(FLG | NeNS)) .
 
+    --- TODO: uniform command language (to perform multiple computations).
     op invariant : NodeSet -> [Bool] .
     ----------------------------------
     eq invariant(NS) = nodes(bfs(NS, 1)) <= NS .
@@ -333,3 +338,4 @@ eof
     if SUBST | SUBSTS := allMatches(M, S, S', 0)
     /\ entails?(C', C << SUBST) .
 endfm
+```
