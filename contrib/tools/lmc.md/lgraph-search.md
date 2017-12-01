@@ -1,3 +1,11 @@
+Labelled Graph Search and Analysis
+==================================
+
+Here is a labelled graph search algorithm and its instantiation to narrowing.
+
+Abstract Graph Search Algorithms
+--------------------------------
+
 ```maude
 load ../meta/narrowing.maude
 load ../meta/cterms.maude
@@ -5,7 +13,13 @@ load ../meta/mtransform.maude
 load lmc.maude
 
 set include BOOL off .
+```
 
+### Data Structures
+
+Sort `LGraph` is an edge-labelled graph between `Node`s.
+
+```maude
 fmod LABELLED-GRAPH is
 
     sorts Node NeNodeSet NodeSet .
@@ -53,7 +67,11 @@ fmod LABELLED-GRAPH is
     eq N -> < L , N' >     = N -[ L ]-> N' .
     eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
 endfm
+```
 
+### Folding Search Command
+
+```maude
 fmod GRAPH-FOLDING-SEARCH is
    protecting NAT .
    protecting EXT-BOOL .
@@ -194,7 +212,11 @@ fmod GRAPH-FOLDING-SEARCH is
     eq extend(FLG)                = FLG .
     eq extend(LG | NM | N | NeNS) = insert(all-step(NM [ NeNS ]), LG | NM | N) .
 endfm
+```
 
+### Graph Analysis
+
+```maude
 fmod GRAPH-ANALYSIS is
    protecting GRAPH-FOLDING-SEARCH .
    protecting EXT-BOOL .
@@ -224,7 +246,14 @@ fmod GRAPH-ANALYSIS is
     -------------------------------------------------
     eq check NS stable in NS' = NS <= NS' and-then invariant(NS') .
 endfm
+```
 
+Instantiation to Narrowing
+--------------------------
+
+### Unconditional Narrowing
+
+```maude
 fmod FVP-NARROWING-GRAPH is
    protecting NARROWING2 .
     extending GRAPH-FOLDING-SEARCH .
@@ -248,7 +277,11 @@ fmod FVP-NARROWING-GRAPH is
     eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
 endfm
+```
 
+### Conditional Narrowing
+
+```maude
 fmod FVP-NARROWING-MODULO-T-GRAPH is
    protecting CTERM-SET .
    protecting SUBSTITUTIONSET .
