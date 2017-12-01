@@ -100,12 +100,11 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------------------------------------
    ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .
 
-    sorts NodeAlias NeNodeMap NodeMap NodeMap? Environment .
-    --------------------------------------------------------
+    sorts NodeAlias NeNodeMap NodeMap NodeMap? .
+    --------------------------------------------
     subsorts NodeAlias < NeNodeMap < NodeMap .
 
     var NA : NodeAlias . vars NM NM' NM'' : NodeMap . vars NeNM NeNM' : NeNodeMap .
-    vars ENV ENV' ENV'' : Environment .
 
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
     --------------------------------------------
@@ -144,70 +143,50 @@ fmod GRAPH-FOLDING-SEARCH is
                                                  fi
                                               if F? := fold(ND, ND') .
 
-    op .Environment : -> Environment .
-    op <_,_> : NodeMap Nat -> Environment .
-    ---------------------------------------
-    eq .Environment = < .NodeMap , 0 > .
+    sorts FLGraph FLGraph? .
+    ------------------------
+    subsort FLGraph < FLGraph? .
 
-    op nodes : Environment -> [NodeSet] .
-    -------------------------------------
-    eq nodes(< NM , N >) = nodes(NM) .
+    var FLG : FLGraph . var FLG? : FLGraph? .
 
-    op _[_] : Environment NodeSet -> [NodeSet] .
-    --------------------------------------------
-    eq < NM , N > [ NS ] = NM [ NS ] .
+    op _|_|_ : LGraph NodeMap Nat -> FLGraph [format(d n d n d d)] .
+    ----------------------------------------------------------------
 
-    --- What are we using the NodeId (first argument) for?
-    op {_,_,_} : NodeId  Environment NodeSet -> [Environment] .
-    op insert  : NodeSet Environment         -> [Environment] .
-    -----------------------------------------------------------
-    eq insert(.NodeSet, ENV)     = ENV .
-   ceq insert(NeNS ; NeNS', ENV) = { NID'' , ENV'' , NS' ; NS'' }
-                                if { NID'  , ENV'  , NS'  } := insert(NeNS, ENV)
-                                /\ { NID'' , ENV'' , NS'' } := insert(NeNS', ENV') .
-   ceq insert(ND, < NM , N >)    = { NID , < NM' , N' > , NS }
-                                if { NID , NM' , NS } := insert(N |-> ND, NM)
-                                /\ N' := if NID < N then N else s N fi .
+    op _|_ : FLGraph NodeSet -> FLGraph? [right id: .NodeSet format(d n d d)] .
+    ---------------------------------------------------------------------------
+    eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
 
-    sort FLGraph .
-    --------------
+    op insert : NodeSet FLGraph? -> FLGraph? .
+    op insert : LGraph  FLGraph? -> FLGraph? .
+    ------------------------------------------
+    eq insert(.NodeSet,     FLG?)        = FLG? .
+    eq insert(NeNS ; NeNS', FLG?)        = insert(NeNS, insert(NeNS', FLG?)) .
+    eq insert(NeNS,         FLG | NeNS') = insert(NeNS, FLG) | NeNS' .
 
-    var FLG : FLGraph .
+    eq insert(.LGraph,    FLG?)        = FLG? .
+    eq insert(NeLG NeLG', FLG?)        = insert(NeLG, insert(NeLG', FLG?)) .
+    eq insert(NeLG,       FLG | NeNS') = insert(NeLG, FLG) | NeNS' .
 
-    op _|_ : LGraph Environment -> FLGraph [format(d n d d)] .
-    ----------------------------------------
-    eq LG | { NID , ENV , NS } = LG | ENV | NS .
+   ceq insert(ND, LG | NM | N) = LG | NM' | s N | NS
+                              if { NM' , NID , NS } := insert(N |-> ND, NM) .
 
-    op insert : NodeSet FLGraph -> FLGraph .
-    op insert : LGraph  FLGraph -> FLGraph .
-    ----------------------------------------
-   ceq insert(NS, LG | ENV) = LG | ENV' | NS'
-                           if { NID , ENV' , NS' } := insert(NS, ENV) .
-
-    eq insert(.LGraph,         FLG)        = FLG .
-    eq insert(NeLG,            FLG | NeNS) = insert(NeLG, FLG) | NeNS .
-    eq insert(NeLG NeLG',      FLG)        = insert(NeLG, insert(NeLG', FLG)) .
-   ceq insert(ND -[ L ]-> ND', LG | ENV)   = (NID -[ L ]-> NID' LG) | ENV'' | NS ; NS'
-                                          if { NID  , ENV'  , NS  } := insert(ND,  ENV)
-                                          /\ { NID' , ENV'' , NS' } := insert(ND', ENV) .
+   ceq insert(ND -[ L ]-> ND', LG | NM | N) = (NID' -[ L ]-> NID'' LG) | NM'' | s s N | NS' ; NS''
+                                           if { NM'  , NID'  , NS'  } := insert(N   |-> ND,  NM)
+                                           /\ { NM'' , NID'' , NS'' } := insert(s N |-> ND', NM') .
 
     op .FLGraph : -> FLGraph .
     --------------------------
-    eq .FLGraph = .LGraph | < .NodeMap , 0 > .
-
-    op _|_ : FLGraph NodeSet -> [FLGraph] [right id: .NodeSet format(d n d d)] .
-    ----------------------------------------------------------------------------
-    eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
+    eq .FLGraph = .LGraph | .NodeMap | 0 .
 
     --- Should we include NS or not in the result?
-    op nodes : FLGraph -> [NodeSet] .
-    ---------------------------------
-    eq nodes(LG | ENV | NS) = nodes(ENV) ; NS .
-
-    op extend : FLGraph -> [FLGraph] .
+    op nodes : FLGraph? -> [NodeSet] .
     ----------------------------------
-    eq extend(LG | ENV)        = LG | ENV .
-    eq extend(LG | ENV | NeNS) = insert(all-step(ENV [ NeNS ]), LG | ENV) .
+    eq nodes(LG | NM | N | NS) = nodes(NM) ; NS .
+
+    op extend : FLGraph? -> [FLGraph?] .
+    ------------------------------------
+    eq extend(FLG)                = FLG .
+    eq extend(LG | NM | N | NeNS) = insert(all-step(NM [ NeNS ]), LG | NM | N) .
 endfm
 
 fmod GRAPH-ANALYSIS is
