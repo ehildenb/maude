@@ -178,10 +178,9 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------
     eq .FLGraph = .LGraph | .NodeMap | 0 .
 
-    --- Should we include NS or not in the result?
     op nodes : FLGraph? -> [NodeSet] .
     ----------------------------------
-    eq nodes(LG | NM | N | NS) = nodes(NM) ; NS .
+    eq nodes(LG | NM | N | NS) = nodes(NM) .
 
     op extend : FLGraph? -> [FLGraph?] .
     ------------------------------------
