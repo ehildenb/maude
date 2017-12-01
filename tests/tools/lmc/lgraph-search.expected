@@ -419,6 +419,41 @@ result FLGraph?: (0 -[x]-> 1
 | 13
 | 6
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(.LGraph
+| 0 |-> A
+| 1
+| 0) .
+rewrites: 2
+result Node: A
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LGraph
+| 0 |-> A
+| 1
+| 0)) .
+rewrites: 64
+result NeNodeSet: A ; B ; D
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(extend(.LGraph
+| 0 |-> A
+| 1
+| 0))) .
+rewrites: 164
+result NeNodeSet: A ; B ; C ; D ; G
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LGraph
+| 0 |-> A
+1 |-> B
+2 |-> C
+| 3
+| 0 ; 1 ; 2)) .
+rewrites: 136
+result NeNodeSet: A ; B ; C ; D
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(insert(A ; B ; C,
+    .FLGraph))) .
+rewrites: 161
+result NeNodeSet: A ; B ; C ; D
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 0) .
 rewrites: 6
 result FLGraph?: .LGraph
@@ -628,7 +663,7 @@ rewrites: 29
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C) .
-rewrites: 177
+rewrites: 175
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C ; D ; E ; F ; G) .
@@ -644,7 +679,7 @@ rewrites: 3
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A stable in A .
-rewrites: 85
+rewrites: 81
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B stable in A .
@@ -652,7 +687,7 @@ rewrites: 6
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C .
-rewrites: 180
+rewrites: 178
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C ; D ;

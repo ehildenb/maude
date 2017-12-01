@@ -111,6 +111,12 @@ reduce extend(extend( .LGraph | 0 |-> A                 | 1 | 0         )) .
 reduce extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 ) .
 reduce extend(insert(A ; B ; C, .FLGraph)) .
 
+reduce nodes(             ( .LGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(        .LGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(extend( .LGraph | 0 |-> A                 | 1 | 0         ))) .
+reduce nodes(extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
+reduce nodes(extend(insert(A ; B ; C, .FLGraph))) .
+
 --- Test Module GRAPH-ANALYSIS
 --- --------------------------
 
