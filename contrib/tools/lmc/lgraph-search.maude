@@ -209,9 +209,13 @@ fmod GRAPH-ANALYSIS is
     eq #bfs(s N,       FLG | NeNS) = #bfs(N,         extend(FLG | NeNS)) .
     eq #bfs(unbounded, FLG | NeNS) = #bfs(unbounded, extend(FLG | NeNS)) .
 
+    op invariant : NodeSet -> [Bool] .
+    ----------------------------------
+    eq invariant(NS) = nodes(bfs(NS, 1)) <= NS .
+
     op check_stable in_ : NodeSet NodeSet -> [Bool] .
     -------------------------------------------------
-    eq check NS stable in NS' = NS <= NS' and-then nodes(bfs(NS', 1)) <= NS' .
+    eq check NS stable in NS' = NS <= NS' and-then invariant(NS') .
 endfm
 
 fmod FVP-NARROWING-GRAPH is
