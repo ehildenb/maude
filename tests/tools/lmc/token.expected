@@ -1,0 +1,628 @@
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(0)) .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(1)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(2)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(3)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(4)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(5)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(6)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(7)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(0))) .
+rewrites: 25
+result Transition: < label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., none),state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`][
+    'b.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(1))) .
+rewrites: 46
+result NeTransitionSet: < label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., 
+  'T:Token <- '$.Token),state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`][
+    'b.Name]]]) >,< label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`][
+    'b.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label(
+    'b-enter)] ., 
+  'T:Token <- '*.Token),state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`][
+    'a.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(2))) .
+rewrites: 25
+result Transition: < label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label(
+    'b-exit)] ., none),state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],
+    '`[_`,wait`]['b.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(3))) .
+rewrites: 25
+result Transition: < label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., none),state('`{_`}['__['*.Token,'`[_`,wait`]['a.Name],
+    '`[_`,wait`]['b.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(4))) .
+rewrites: 85
+result NeTransitionSet: < label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., 
+  'T':Token <- '$.Token ; 
+  'T:Token <- '@1:Token),state('`{_`}['__['@1:Token,'`[_`,crit`]['a.Name],
+    '`[_`,wait`]['b.Name]]]) >,< label(rl '`{_`}['__['$.Token,'C:Conf,
+    '`[_`,wait`]['a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [
+    narrowing label('a-enter)] ., 
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '$.Token),state('`{_`}['__['@1:Token,'`[_`,crit`]['a.Name],
+    '`[_`,wait`]['b.Name]]]) >,< label(rl '`{_`}['__['*.Token,'C:Conf,
+    '`[_`,wait`]['b.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] [
+    narrowing label('b-enter)] ., 
+  'T':Token <- '*.Token ; 
+  'T:Token <- '@1:Token),state('`{_`}['__['@1:Token,'`[_`,crit`]['b.Name],
+    '`[_`,wait`]['a.Name]]]) >,< label(rl '`{_`}['__['*.Token,'C:Conf,
+    '`[_`,wait`]['b.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] [
+    narrowing label('b-enter)] ., 
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '*.Token),state('`{_`}['__['@1:Token,'`[_`,crit`]['b.Name],
+    '`[_`,wait`]['a.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(5))) .
+rewrites: 64
+result NeTransitionSet: < label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]]
+    => '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing
+    label('a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name]),state('`{_`}['__['$.Token,'*.Token,
+    '`[_`,wait`]['a.Name],'`[_`,wait`]['a.Name]]]) >,< label(rl '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__['`[_`,wait`]['b.Name],'__[
+    '$.Token,'C:Conf]]] [narrowing label('b-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['b.Name]),state('`{_`}['__['$.Token,'$.Token,
+    '`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]]) >,< label(rl '`{_`}['__[
+    '$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__['C:Conf,
+    '`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  'P:Proc <- '@1:Proc),state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(6))) .
+rewrites: 64
+result NeTransitionSet: < label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]]
+    => '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing
+    label('a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name]),state('`{_`}['__['*.Token,'*.Token,
+    '`[_`,wait`]['a.Name],'`[_`,wait`]['a.Name]]]) >,< label(rl '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__['`[_`,wait`]['b.Name],'__[
+    '$.Token,'C:Conf]]] [narrowing label('b-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['b.Name]),state('`{_`}['__['$.Token,'*.Token,
+    '`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]]) >,< label(rl '`{_`}['__[
+    '*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__['C:Conf,
+    '`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'P:Proc <- '`[_`,wait`]['b.Name]),state('`{_`}['__['`[_`,crit`]['b.Name],
+    '`[_`,wait`]['a.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : step(state(init(7))) .
+rewrites: 85
+result NeTransitionSet: < label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]]
+    => '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing
+    label('a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '@1:Token),state('`{_`}['__['*.Token,'@1:Token,'`[_`,wait`][
+    'a.Name],'`[_`,wait`]['a.Name]]]) >,< label(rl '`{_`}['__['C:Conf,
+    '`[_`,crit`]['b.Name]]] => '`{_`}['__['`[_`,wait`]['b.Name],'__['$.Token,
+    'C:Conf]]] [narrowing label('b-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token),state('`{_`}['__['$.Token,'@1:Token,'`[_`,wait`][
+    'a.Name],'`[_`,wait`]['b.Name]]]) >,< label(rl '`{_`}['__['$.Token,'C:Conf,
+    '`[_`,wait`]['a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [
+    narrowing label('a-enter)] ., 
+  'P:Proc <- '@1:Proc ; 
+  'T:Token <- '$.Token),state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]]) >,<
+    label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '*.Token),state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`][
+    'a.Name]]]) >
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : fold(state(init(0)), state(init(0))) .
+rewrites: 2
+result Fold: .Fold
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : fold(state(init(0)), state(init(1))) .
+rewrites: 5
+result Fold: fold(
+  'T:Token <- '$.Token)
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : fold(state(init(0)), state(init(6))) .
+rewrites: 4
+result [Fold]: fold(state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],
+    '`[_`,wait`]['b.Name]]]), state('`{_`}['__['*.Token,'P:Proc,'`[_`,wait`][
+    'a.Name]]]))
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : fold(state(init(1)), state(init(6))) .
+rewrites: 4
+result [Fold]: fold(state('`{_`}['__['T:Token,'`[_`,wait`]['a.Name],
+    '`[_`,wait`]['b.Name]]]), state('`{_`}['__['*.Token,'P:Proc,'`[_`,wait`][
+    'a.Name]]]))
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : fold(state(init(0)), state(init(5))) .
+rewrites: 5
+result Fold: fold(
+  'P:Proc <- '`[_`,wait`]['b.Name])
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(0))) .
+rewrites: 245
+result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., none)]-> 2
+2 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 4
+4 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]-> 6
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 0)
+| 0 |-> state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+2 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+4 |-> state('`{_`}['__['*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+6 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+| 9
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(1))) .
+rewrites: 209
+result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., 
+  'T:Token <- '$.Token)]-> 2
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'T:Token <- '*.Token)]-> 4
+2 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 0[fold(
+  'T:Token <- '*.Token)]
+4 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 0[fold(
+  'T:Token <- '$.Token)])
+| 0 |-> state('`{_`}['__['T:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+2 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+4 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+| 9
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(2))) .
+rewrites: 247
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label(
+    'b-exit)] ., none)]-> 2
+2 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 4
+4 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 6
+6 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]-> 0[
+    fold(none)])
+| 0 |-> state('`{_`}['__['`[_`,wait`]['a.Name],'`[_`,crit`]['b.Name]]])
+2 |-> state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+4 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+6 |-> state('`{_`}['__['*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+| 9
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(3))) .
+rewrites: 247
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., none)]-> 2
+2 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]-> 4
+4 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 6
+6 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 0[
+    fold(none)])
+| 0 |-> state('`{_`}['__['`[_`,wait`]['b.Name],'`[_`,crit`]['a.Name]]])
+2 |-> state('`{_`}['__['*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+4 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+6 |-> state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+| 9
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(4))) .
+rewrites: 542
+result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
+    'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
+    'a-enter)] ., 
+  'T':Token <- '$.Token ; 
+  'T:Token <- '@1:Token)]-> 2
+0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '$.Token)]-> 2
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'T':Token <- '*.Token ; 
+  'T:Token <- '@1:Token)]-> 6
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '*.Token)]-> 6
+2 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Token <- '@1:Token)]-> 0[fold(
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '*.Token)]
+2 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '*.Token)]-> 12
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  '@1:Token <- '@1:Token)]-> 0[fold(
+  'T':Token <- '@1:Token ; 
+  'T:Token <- '$.Token)]
+6 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '$.Token)]-> 12
+12 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 6[fold(
+  '@1:Token <- '*.Token)]
+12 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 2[fold(
+  '@1:Token <- '$.Token)])
+| 0 |-> state('`{_`}['__['T:Token,'T':Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+2 |-> state('`{_`}['__['@1:Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+6 |-> state('`{_`}['__['@1:Token,'`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+12 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,crit`]['b.Name]]])
+| 21
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(5))) .
+rewrites: 1599
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name])]-> 2
+0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  'P:Proc <- '`[_`,crit`]['b.Name])]-> 4
+0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  'P:Proc <- '@1:Proc)]-> 6
+2 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 8[
+    fold(
+  '@1:Proc <- '`[_`,crit`]['a.Name])]
+4 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 10
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Proc <- '@1:Proc)]-> 8
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  '@1:Proc <- '`[_`,crit`]['b.Name])]-> 10
+8 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Proc <- '`[_`,crit`]['a.Name])]-> 18
+8 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  '@1:Proc <- '`[_`,crit`]['b.Name])]-> 16
+8 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Proc <- '`[_`,wait`]['b.Name])]-> 22
+10 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 16
+16 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]->
+    26
+16 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]->
+    0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name])]
+22 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 0[fold(
+  'P:Proc <- '`[_`,wait`]['b.Name])]
+26 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 30
+26 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]->
+    6[fold(
+  '@1:Proc <- '`[_`,crit`]['b.Name])]
+30 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]->
+    8[fold(
+  '@1:Proc <- '`[_`,crit`]['b.Name])])
+| 0 |-> state('`{_`}['__['$.Token,'P:Proc,'`[_`,wait`]['a.Name]]])
+2 |-> state('`{_`}['__['$.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'a.Name]]])
+4 |-> state('`{_`}['__['$.Token,'$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+6 |-> state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]])
+8 |-> state('`{_`}['__['*.Token,'@1:Proc,'`[_`,wait`]['a.Name]]])
+10 |-> state('`{_`}['__['$.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+16 |-> state('`{_`}['__['$.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+18 |-> state('`{_`}['__['*.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'a.Name]]])
+22 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+26 |-> state('`{_`}['__['*.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+30 |-> state('`{_`}['__['*.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+| 35
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(6))) .
+rewrites: 1750
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name])]-> 2
+0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  'P:Proc <- '`[_`,crit`]['b.Name])]-> 4
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'P:Proc <- '`[_`,wait`]['b.Name])]-> 6
+4 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 10
+4 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]-> 12
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 8
+8 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]-> 18
+10 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 20
+10 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]->
+    16
+12 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 14
+12 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]->
+    16
+14 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., none)]->
+    26
+16 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name])]
+16 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 26
+18 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 0[fold(
+  'P:Proc <- '`[_`,wait`]['b.Name])]
+20 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., none)]->
+    0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name])]
+26 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 4)
+| 0 |-> state('`{_`}['__['*.Token,'P:Proc,'`[_`,wait`]['a.Name]]])
+2 |-> state('`{_`}['__['*.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'a.Name]]])
+4 |-> state('`{_`}['__['$.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+6 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+8 |-> state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]])
+10 |-> state('`{_`}['__['*.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+12 |-> state('`{_`}['__['$.Token,'`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+14 |-> state('`{_`}['__['$.Token,'$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+16 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,crit`]['b.Name]]])
+18 |-> state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+20 |-> state('`{_`}['__['*.Token,'*.Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+26 |-> state('`{_`}['__['$.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+| 35
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
+rewrites: 1106
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '@1:Token)]-> 2
+0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token)]-> 4
+0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  'P:Proc <- '@1:Proc ; 
+  'T:Token <- '$.Token)]-> 6
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '*.Token)]-> 8
+2 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '$.Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '*.Token)]
+4 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '@1:Token)]-> 16
+4 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '*.Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '$.Token)]
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Proc <- '@1:Proc)]-> 0[fold(
+  'P:Proc <- '@1:Proc ; 
+  'T:Token <- '*.Token)]
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  '@1:Proc <- '`[_`,crit`]['b.Name])]-> 12
+8 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 0[fold(
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '$.Token)]
+12 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 4[fold(
+  '@1:Token <- '*.Token)]
+16 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Token <- '@1:Token)]-> 24
+16 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '*.Token)]-> 6[fold(
+  '@1:Proc <- '`[_`,crit`]['b.Name])]
+24 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '$.Token)]-> 16[fold(
+  '@1:Token <- '*.Token)]
+24 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '@1:Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token)])
+| 0 |-> state('`{_`}['__['T:Token,'P:Proc,'`[_`,wait`]['a.Name]]])
+2 |-> state('`{_`}['__['*.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'a.Name]]])
+4 |-> state('`{_`}['__['$.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+6 |-> state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]])
+8 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+12 |-> state('`{_`}['__['$.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+16 |-> state('`{_`}['__['@1:Token,'`[_`,crit`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+24 |-> state('`{_`}['__['*.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+| 31
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
+rewrites: 1106
+result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
+    '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
+    'a-exit)] ., 
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '@1:Token)]-> 2
+0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token)]-> 4
+0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  'P:Proc <- '@1:Proc ; 
+  'T:Token <- '$.Token)]-> 6
+0 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '*.Token)]-> 8
+2 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '$.Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['a.Name] ; 
+  'T:Token <- '*.Token)]
+4 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '@1:Token)]-> 16
+4 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}['__[
+    'C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '*.Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '$.Token)]
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Proc <- '@1:Proc)]-> 0[fold(
+  'P:Proc <- '@1:Proc ; 
+  'T:Token <- '*.Token)]
+6 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    
+  '@1:Proc <- '`[_`,crit`]['b.Name])]-> 12
+8 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label('b-exit)] .,
+    none)]-> 0[fold(
+  'P:Proc <- '`[_`,wait`]['b.Name] ; 
+  'T:Token <- '$.Token)]
+12 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    none)]-> 4[fold(
+  '@1:Token <- '*.Token)]
+16 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] => '`{_`}['__[
+    '`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label('a-exit)] .,
+    
+  '@1:Token <- '@1:Token)]-> 24
+16 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '*.Token)]-> 6[fold(
+  '@1:Proc <- '`[_`,crit`]['b.Name])]
+24 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`]['a.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label('a-enter)] ., 
+  '@1:Token <- '$.Token)]-> 16[fold(
+  '@1:Token <- '*.Token)]
+24 -[label(rl '`{_`}['__['*.Token,'C:Conf,'`[_`,wait`]['b.Name]]] => '`{_`}[
+    '__['C:Conf,'`[_`,crit`]['b.Name]]] [narrowing label('b-enter)] ., 
+  '@1:Token <- '@1:Token)]-> 0[fold(
+  'P:Proc <- '`[_`,crit`]['b.Name] ; 
+  'T:Token <- '@1:Token)])
+| 0 |-> state('`{_`}['__['T:Token,'P:Proc,'`[_`,wait`]['a.Name]]])
+2 |-> state('`{_`}['__['*.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'a.Name]]])
+4 |-> state('`{_`}['__['$.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+6 |-> state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]])
+8 |-> state('`{_`}['__['`[_`,crit`]['b.Name],'`[_`,wait`]['a.Name]]])
+12 |-> state('`{_`}['__['$.Token,'`[_`,crit`]['a.Name],'`[_`,wait`]['b.Name]]])
+16 |-> state('`{_`}['__['@1:Token,'`[_`,crit`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+24 |-> state('`{_`}['__['*.Token,'@1:Token,'`[_`,wait`]['a.Name],'`[_`,wait`][
+    'b.Name]]])
+| 31
+==========================================
+reduce in NARROW-SEARCH-2TOKEN : check state(init(0)) stable in state(init(1))
+    ; state(init(2)) ; state(init(3)) .
+rewrites: 288
+result Bool: true
+Bye.
