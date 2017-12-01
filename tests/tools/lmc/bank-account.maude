@@ -4,6 +4,43 @@ load ../../../contrib/systems/bank-account.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 load ../../../contrib/tools/meta/narrowing.maude
 
+--- Module BANK-ACCOUNT-CTOR
+--- ------------------------
+
+mod BANK-ACCOUNT-CTOR-NARROWING-GRAPH is
+    extending FVP-NARROWING-GRAPH .
+    extending GRAPH-ANALYSIS .
+
+    eq ##m## = upModule('BANK-ACCOUNT-CTOR, true) .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+endm
+
+--- Module BANK-ACCOUNT-DEFINEDOPS
+--- ------------------------------
+
+reduce wellFormed(##m##, init(0)) .
+reduce bfs(state(init(0))) .
+
+mod BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH is
+    extending FVP-NARROWING-MODULO-T-GRAPH .
+    extending GRAPH-ANALYSIS .
+
+    eq ##m## = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+endm
+
+reduce wellFormed(##m##, init(0)) .
+reduce bfs(state(init(0))) .
+
+--- set trace on .
+--- reduce bfs(state(init(0) | '_>=_['N:Nat, 'X:Nat] ?= 'tt.Truth /\ 'X:Nat ?= 'debts['MSGS:MsgConf]), 3) .
+
 --- ; The invariant satisfied by this protocol can be expressed as the constrained term:
 --- ;
 --- ;     < bal: n pend: x overdraft: ff > # msgs | n >= x = tt /\ x = debts(msgs)
