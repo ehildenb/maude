@@ -182,8 +182,11 @@ fmod GRAPH-FOLDING-SEARCH is
     ----------------------------------
     eq nodes(LG | NM | N | NS) = nodes(NM) .
 
+    op extend : NodeSet  -> [FLGraph?] .
     op extend : FLGraph? -> [FLGraph?] .
     ------------------------------------
+    eq extend(NS) = extend(insert(NS, .FLGraph)) .
+
     eq extend(FLG)                = FLG .
     eq extend(LG | NM | N | NeNS) = insert(all-step(NM [ NeNS ]), LG | NM | N) .
 endfm
