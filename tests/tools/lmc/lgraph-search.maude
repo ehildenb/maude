@@ -73,11 +73,11 @@ reduce all-step(E ; D ; D) .
 reduce all-step(E) .
 reduce all-step(.NodeSet) .
 
-reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ .NodeSet ] .
-reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ] .
-reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 7 ] .
-reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ; 3 ; 0 ] .
-reduce < 0 |-> A 1 |-> B 2 |-> F 3 |-> G , 4 > [ 2 ; 3 ; 7 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ .NodeSet ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 7 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ; 3 ; 0 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ; 3 ; 7 ] .
 
 reduce insert( 3 |-> A , .NodeMap ) .
 reduce insert( 3 |-> A , 2 |-> A  ) .
@@ -85,21 +85,30 @@ reduce insert( 3 |-> D , 2 |-> E  ) .
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
 reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
-reduce insert( A , .Environment ) .
-reduce insert( A , < 0 |-> A         , 1 > ) .
-reduce insert( D , < 0 |-> E         , 1 > ) .
-reduce insert( D , < 1 |-> A 0 |-> D , 2 > ) .
-reduce insert( E , < 1 |-> A 0 |-> D , 2 > ) .
-reduce insert( A ; B ; C , .Environment ) .
-reduce insert( A ; D ; C , < 0 |-> A 1 |-> E , 2 > ) .
+reduce insert( .NodeSet  ,                .FLGraph) .
+reduce insert( A ; B ; C ,                .FLGraph) .
+reduce insert( A ; B ; C ; D ; E ; F ; G, .FLGraph) .
 
-reduce insert(A ; B ; C ; D ; E ; F ; G, .FLGraph) .
-reduce insert(A ; B ; C,                 .FLGraph) .
+reduce insert( .NodeSet  , .LGraph | 0 |-> E         | 1 ) .
+reduce insert( A         , .LGraph | 0 |-> A         | 1 ) .
+reduce insert( D         , .LGraph | 0 |-> E         | 1 ) .
+reduce insert( D         , .LGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( E         , .LGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( A ; D ; C , .LGraph | 0 |-> A 1 |-> E | 2 ) .
 
-reduce ( .LGraph | < 1 |-> A , 2 > | 1 ) .
-reduce extend(.LGraph | < 1 |-> A , 2 > | 1) .
-reduce extend(extend(.LGraph | < 1 |-> A , 2 > | 1)) .
-reduce extend(.LGraph | < 0 |-> A 1 |-> B 2 |-> C , 3 > | 0 ; 1 ; 2) .
+reduce insert( .LGraph               , .FLGraph ) .
+reduce insert( A -[y]-> D            , .FLGraph ) .
+reduce insert( A -[y]-> D E -[z]-> B , .FLGraph ) .
+
+reduce insert( .LGraph ,              (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D ,           (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D E -[z]-> B, (0 -[x]-> 2) | 0 |-> E 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> E D -[x]-> B, (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+
+reduce              ( .LGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(        .LGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(extend( .LGraph | 0 |-> A                 | 1 | 0         )) .
+reduce extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 ) .
 reduce extend(insert(A ; B ; C, .FLGraph)) .
 
 --- Test Module GRAPH-ANALYSIS
@@ -123,6 +132,11 @@ reduce bfs(D ; A, unbounded) .
 
 reduce bfs(A ; B ; C ; D ; E ; F ; G, 1) .
 reduce bfs(A ; B ; C ; D ; E ; F ; G, unbounded) .
+
+reduce invariant(.NodeSet) .
+reduce invariant(E) .
+reduce invariant(A ; B ; C) .
+reduce invariant(A ; B ; C ; D ; E ; F ; G) .
 
 reduce check .NodeSet  stable in .NodeSet .
 reduce check A         stable in .NodeSet .
