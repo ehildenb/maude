@@ -236,8 +236,8 @@ fmod GRAPH-ANALYSIS is
    protecting EXT-BOOL .
 
     var N : Nat . var B : Bound .
-    vars NS NS' : NodeSet . var NeNS : NeNodeSet .
-    var FLG : FLGraph .
+    vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet .
+    var FLG : FLGraph . var FLG? : FLGraph? .
 
     op  bfs : NodeSet       -> [FLGraph] .
     op  bfs : NodeSet Bound -> [FLGraph] .
@@ -259,6 +259,18 @@ fmod GRAPH-ANALYSIS is
     op check_stable in_ : NodeSet NodeSet -> [Bool] .
     -------------------------------------------------
     eq check NS stable in NS' = NS <= NS' and-then invariant(NS') .
+
+    --- TODO: produce a `ReachPath` instead of a `Bool`
+    op _=>*_   : NodeSet       NodeSet -> Bool .
+    op _=>[_]_ : NodeSet Bound NodeSet -> Bool .
+    op _=>[_]_ : FLGraph Bound NodeSet -> Bool .
+    --------------------------------------------
+    eq NS =>*     NS' = NS =>[ unbounded ] NS' .
+    eq NS =>[ B ] NS' = intersect(NS, NS') or-else extend(NS) =>[ decrement(B) ] NS' .
+
+    eq FLG?         =>[ B ] .NodeSet = false .
+    eq FLG          =>[ B ] NeNS'    = false .
+    eq (FLG | NeNS) =>[ B ] NeNS'    = intersect(NeNS', frontier(FLG | NeNS)) or-else extend(FLG | NeNS) =>[ decrement(B) ] NeNS' .
 endfm
 ```
 
