@@ -26,7 +26,8 @@ fmod LABELLED-GRAPH is
     ------------------------------
     subsort Node < NeNodeSet < NodeSet .
 
-    vars N N' : Node . var NeNS : NeNodeSet .
+    --- TODO: change variables N, N' to ND, ND'
+    vars N N' : Node . vars NeNS NeNS' : NeNodeSet .
 
     op .NodeSet : -> NodeSet .
     op _;_      : NodeSet   NodeSet ->   NodeSet [assoc comm id: .NodeSet] .
@@ -117,6 +118,15 @@ fmod GRAPH-FOLDING-SEARCH is
     eq NeNS           <= .NodeSet   = false .
     eq (NeNS ; NeNS') <= NeNS''     = NeNS <= NeNS'' and-then NeNS' <= NeNS'' .
    ceq ND             <= (ND' ; NS) = true if fold(ND, ND') :: Fold .
+
+    op intersect : NodeSet NodeSet -> Bool [comm] .
+    -----------------------------------------------
+    eq intersect(ND, ND)           = true .
+    eq intersect(.NodeSet, NS)     = false .
+    eq intersect(NeNS ; NeNS', NS) = intersect(NeNS, NS) or intersect(NeNS', NS) .
+
+    --- Sometimes this may speed things up?
+   ceq intersect(ND, ND') = true if ND <= ND' .
 
     op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
     --------------------------------------------------------
