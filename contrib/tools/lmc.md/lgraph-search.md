@@ -214,6 +214,10 @@ fmod GRAPH-FOLDING-SEARCH is
     ----------------------------------
     eq nodes(LG | NM | N | NS) = nodes(NM) .
 
+    op frontier : FLGraph? -> [NodeSet] .
+    -------------------------------------
+    eq frontier(LG | NM | N | NS) = NM [ NS ] .
+
     op extend : NodeSet  -> [FLGraph?] .
     op extend : FLGraph? -> [FLGraph?] .
     ------------------------------------
