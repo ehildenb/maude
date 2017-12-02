@@ -82,6 +82,38 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : (B ; D) <= E .
 rewrites: 7
 result Bool: false
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A) .
+rewrites: 1
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(.NodeSet, A) .
+rewrites: 1
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, C) .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, A ; C) .
+rewrites: 14
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, C ; A ; E) .
+rewrites: 24
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(D, A ; B ; C) .
+rewrites: 25
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A ; B ; D) .
+rewrites: 21
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A ; E, E ; G) .
+rewrites: 31
+result Bool: true
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : step(E) .
 rewrites: 1
 result Transition: < x,E >
@@ -343,6 +375,37 @@ result FLGraph?: (0 -[x]-> 2
 | 7
 | 2 ; 4
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.NodeSet) .
+rewrites: 5
+result FLGraph: .LGraph
+| .NodeMap
+| 0
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(A) .
+rewrites: 64
+result FLGraph?: (0 -[x]-> 2
+0 -[y]-> 4
+0 -[z]-> 4)
+| 0 |-> A
+2 |-> B
+4 |-> D
+| 7
+| 2 ; 4
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(A ; B ; C) .
+rewrites: 155
+result FLGraph?: (0 -[x]-> 1
+0 -[y]-> 6
+0 -[z]-> 6
+1 -[y]-> 1
+2 -[x]-> 0)
+| 0 |-> A
+1 |-> B
+2 |-> C
+6 |-> D
+| 13
+| 6
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : .LGraph
 | 0 |-> A
 | 1
@@ -454,15 +517,36 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(insert(A ; B ; C,
 rewrites: 161
 result NeNodeSet: A ; B ; C ; D
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(.FLGraph) .
+rewrites: 3
+result NodeSet: .NodeSet
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(extend(A)) .
+rewrites: 81
+result NeNodeSet: B ; D
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(extend(E)) .
+rewrites: 26
+result NodeSet: .NodeSet
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(extend(A ; B ; C)) .
+rewrites: 168
+result Node: D
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(extend(A ; B ; C ; D ; E ; F ;
+    G)) .
+rewrites: 503
+result NodeSet: .NodeSet
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 0) .
-rewrites: 6
+rewrites: 7
 result FLGraph?: .LGraph
 | 0 |-> A
 | 1
 | 0
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 1) .
-rewrites: 65
+rewrites: 66
 result FLGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
@@ -473,7 +557,7 @@ result FLGraph?: (0 -[x]-> 2
 | 2 ; 4
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 2) .
-rewrites: 162
+rewrites: 163
 result FLGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
@@ -489,7 +573,7 @@ result FLGraph?: (0 -[x]-> 2
 | 10 ; 12
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A) .
-rewrites: 250
+rewrites: 251
 result FLGraph: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
@@ -506,11 +590,11 @@ result FLGraph: (0 -[x]-> 2
 | 17
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, unbounded) == bfs(A) .
-rewrites: 500
+rewrites: 502
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 1) .
-rewrites: 25
+rewrites: 26
 result FLGraph?: (0 -[x]-> 2)
 | 0 |-> C
 2 |-> A
@@ -518,7 +602,7 @@ result FLGraph?: (0 -[x]-> 2)
 | 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 2) .
-rewrites: 94
+rewrites: 95
 result FLGraph?: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -530,7 +614,7 @@ result FLGraph?: (0 -[x]-> 2
 | 6
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C) .
-rewrites: 195
+rewrites: 196
 result FLGraph: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -545,7 +629,7 @@ result FLGraph: (0 -[x]-> 2
 | 15
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, 0) .
-rewrites: 27
+rewrites: 28
 result FLGraph?: .LGraph
 | 0 |-> A
 1 |-> B
@@ -554,7 +638,7 @@ result FLGraph?: .LGraph
 | 0 ; 1 ; 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, 1) .
-rewrites: 156
+rewrites: 157
 result FLGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
@@ -568,7 +652,7 @@ result FLGraph?: (0 -[x]-> 1
 | 6
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, unbounded) .
-rewrites: 283
+rewrites: 284
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
@@ -585,7 +669,7 @@ result FLGraph: (0 -[x]-> 1
 | 19
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(B ; F, unbounded) .
-rewrites: 100
+rewrites: 101
 result FLGraph: (0 -[y]-> 0
 1 -[x]-> 5
 5 -[x]-> 5)
@@ -595,7 +679,7 @@ result FLGraph: (0 -[y]-> 0
 | 8
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; D, unbounded) .
-rewrites: 257
+rewrites: 258
 result FLGraph: (0 -[x]-> 3
 0 -[y]-> 1
 0 -[z]-> 1
@@ -612,7 +696,7 @@ result FLGraph: (0 -[x]-> 3
 | 18
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, 1) .
-rewrites: 502
+rewrites: 503
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3
@@ -634,7 +718,7 @@ result FLGraph: (0 -[x]-> 1
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, unbounded)
     .
-rewrites: 502
+rewrites: 503
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3
@@ -655,23 +739,23 @@ result FLGraph: (0 -[x]-> 1
 | 27
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(.NodeSet) .
-rewrites: 8
+rewrites: 9
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(E) .
-rewrites: 29
+rewrites: 28
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C) .
-rewrites: 175
+rewrites: 174
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C ; D ; E ; F ; G) .
-rewrites: 518
+rewrites: 517
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check .NodeSet stable in .NodeSet .
-rewrites: 11
+rewrites: 12
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A stable in .NodeSet .
@@ -679,7 +763,7 @@ rewrites: 3
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A stable in A .
-rewrites: 81
+rewrites: 80
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B stable in A .
@@ -687,11 +771,117 @@ rewrites: 6
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C .
-rewrites: 178
+rewrites: 177
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C ; D ;
     E ; F ; G .
-rewrites: 536
+rewrites: 535
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* A .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* D ; E .
+rewrites: 132
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* E .
+rewrites: 106
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* F .
+rewrites: 338
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* G .
+rewrites: 246
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : E =>* D .
+rewrites: 7
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : D =>* E .
+rewrites: 7
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : .NodeSet =>* .NodeSet .
+rewrites: 11
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : .NodeSet =>* A ; B ; C .
+rewrites: 11
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C) =>* .NodeSet .
+rewrites: 161
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C) =>* A .
+rewrites: 24
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C ; D ; E ; G) =>* F .
+rewrites: 466
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>[0]E .
+rewrites: 71
+result [Bool]: (0 -[x]-> 2
+0 -[y]-> 4
+0 -[z]-> 4)
+| 0 |-> A
+2 |-> B
+4 |-> D
+| 7
+| 2 ; 4 =>[decrement(0)]E
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : A =>[1]E .
+rewrites: 105
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : D =>[1]C .
+rewrites: 81
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[1]D .
+rewrites: 114
+result [Bool]: (0 -[x]-> 2
+2 -[x]-> 0[<]
+2 -[y]-> 6
+2 -[z]-> 6)
+| 0 |-> C
+2 |-> A
+6 |-> D
+| 9
+| 6 =>[decrement(0)]D
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]D .
+rewrites: 128
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]E .
+rewrites: 131
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]G .
+rewrites: 188
+result [Bool]: (0 -[x]-> 2
+2 -[x]-> 0[<]
+2 -[y]-> 6
+2 -[z]-> 6
+6 -[y]-> 0
+6 -[z]-> 12)
+| 0 |-> C
+2 |-> A
+6 |-> D
+12 |-> G
+| 13
+| 12 =>[decrement(0)]G
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[3]G .
+rewrites: 205
 result Bool: true
 Bye.

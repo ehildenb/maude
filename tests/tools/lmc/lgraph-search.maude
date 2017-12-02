@@ -22,7 +22,8 @@ fmod GRAPH-FOLDING-SEARCH-TEST is
 
     --- Add the following equation to reduce _<=_ to constructors
     vars NeNS NeNS' : NeNodeSet .
-    eq NeNS <= NeNS' = false [owise] .
+    eq NeNS <= NeNS'          = false [owise] .
+    eq intersect(NeNS, NeNS') = false [owise] .
 
     eq step(A) = < x , B > , < y , D > , < z , D > .
     eq step(B) = < y , B > .
@@ -65,6 +66,15 @@ reduce D       <= E .
 reduce (D ; B) <= (E ; B) .
 reduce (D ; B) <= E .
 
+reduce intersect(A, A) .
+reduce intersect(.NodeSet, A) .
+reduce intersect(B, C) .
+reduce intersect(B, C ; A) .
+reduce intersect(B, C ; A ; E) .
+reduce intersect(A ; B ; C, D) .
+reduce intersect(A ; B ; D, A) .
+reduce intersect(A ; E, G ; E) .
+
 reduce step(E) .
 reduce step(D) .
 
@@ -105,6 +115,10 @@ reduce insert( A -[y]-> D ,           (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
 reduce insert( A -[y]-> D E -[z]-> B, (0 -[x]-> 2) | 0 |-> E 2 |-> B | 3 | 2 ) .
 reduce insert( A -[y]-> E D -[x]-> B, (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
 
+reduce extend( .NodeSet  ) .
+reduce extend( A         ) .
+reduce extend( A ; B ; C ) .
+
 reduce              ( .LGraph | 0 |-> A                 | 1 | 0         ) .
 reduce extend(        .LGraph | 0 |-> A                 | 1 | 0         ) .
 reduce extend(extend( .LGraph | 0 |-> A                 | 1 | 0         )) .
@@ -116,6 +130,12 @@ reduce nodes(extend(        .LGraph | 0 |-> A                 | 1 | 0         ))
 reduce nodes(extend(extend( .LGraph | 0 |-> A                 | 1 | 0         ))) .
 reduce nodes(extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
 reduce nodes(extend(insert(A ; B ; C, .FLGraph))) .
+
+reduce frontier( .FLGraph | .NodeSet ) .
+reduce frontier(extend(A)) .
+reduce frontier(extend(E)) .
+reduce frontier(extend(A ; B ; C)) .
+reduce frontier(extend(A ; B ; C ; D ; E ; F ; G)) .
 
 --- Test Module GRAPH-ANALYSIS
 --- --------------------------
@@ -150,3 +170,26 @@ reduce check A         stable in A .
 reduce check A ; B     stable in A .
 reduce check A ; B ; C stable in A ; B ; C .
 reduce check A ; B ; C stable in A ; B ; C ; D ; E ; F ; G .
+
+reduce A =>* A .
+reduce A =>* D ; E .
+reduce A =>* E .
+reduce A =>* F .
+reduce A =>* G .
+reduce E =>* D .
+reduce D =>* E .
+
+reduce .NodeSet              =>* .NodeSet .
+reduce .NodeSet              =>* A ; B ; C .
+reduce A ; B ; C             =>* .NodeSet .
+reduce A ; B ; C             =>* A .
+reduce A ; B ; C ; D ; E ; G =>* F .
+
+reduce A =>[0] E .
+reduce A =>[1] E .
+reduce D =>[1] C .
+reduce C =>[1] D .
+reduce C =>[2] D .
+reduce C =>[2] E .
+reduce C =>[2] G .
+reduce C =>[3] G .
