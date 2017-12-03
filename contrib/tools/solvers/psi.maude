@@ -1,0 +1,93 @@
+set include BOOL off .
+
+fmod IDS is
+    sort Id .
+
+    ops a b c d e f g h i j k l m n o p q r s t u v w x y z : -> Id .
+endfm
+
+fmod RENAMED-RAT is
+   protecting RAT * ( op true  to tt
+                    , op false to ff
+                    , op _<_   to _P<_
+                    , op _>_   to _P>_
+                    ) .
+endfm
+
+fmod PSI-INTERNAL is
+   protecting IDS .
+   protecting RENAMED-RAT .
+
+    sorts DConst DExp .
+    subsort Rat < DConst .
+    subsorts Id DConst < DExp .
+
+    op pi : -> DConst .
+    -------------------
+
+    op _+_ : DExp DExp -> DExp [ditto] .
+    op _-_ : DExp DExp -> DExp [ditto] .
+    op _*_ : DExp DExp -> DExp [ditto] .
+    op _/_ : DExp DExp -> DExp [ditto] .
+    op _^_ : DExp DExp -> DExp [ditto] .
+    ------------------------------------
+
+    op [_<_] : DExp DExp -> DExp .
+    op [_>_] : DExp DExp -> DExp .
+    op [_≤_] : DExp DExp -> DExp .
+    op [_≥_] : DExp DExp -> DExp .
+    op [_=_] : DExp DExp -> DExp [comm] .
+    op [_≠_] : DExp DExp -> DExp [comm] .
+    -------------------------------------
+
+    op ln        : DExp -> DExp .
+    op sin       : DExp -> DExp .
+    op cos       : DExp -> DExp .
+    op floor     : DExp -> DExp .
+    op ceil      : DExp -> DExp .
+    op dirac     : DExp -> DExp .
+    op gaussAnti : Id DExp -> DExp .
+    --------------------------------
+
+    sort Binder .
+    -------------
+
+    op __._ : Binder Id DExp -> DExp [prec 20] .
+   ops sum int lim : -> Binder .
+   -----------------------------
+
+    sort Subst .
+    ------------
+
+    vars DE DE' : DExp . var DC : DConst .
+    vars X Y : Id . var S : Subst . var BIND : Binder .
+
+    op [_/_] : DExp Id    -> Subst .
+    op __    : DExp Subst -> DExp [prec 55] .
+    -----------------------------------------
+    eq X [ DE / Y ] = if X == Y then DE else X fi .
+
+    eq DC         S = DC .
+    eq (DE + DE') S = (DE S) + (DE' S) .
+    eq (DE - DE') S = (DE S) + (DE' S) .
+    eq (DE * DE') S = (DE S) * (DE' S) .
+    eq (DE / DE') S = (DE S) * (DE' S) .
+    eq (DE ^ DE') S = (DE S) ^ (DE' S) .
+
+    eq [ DE < DE' ] S = [ (DE S) < (DE' S) ] .
+    eq [ DE > DE' ] S = [ (DE S) > (DE' S) ] .
+    eq [ DE ≤ DE' ] S = [ (DE S) ≤ (DE' S) ] .
+    eq [ DE ≥ DE' ] S = [ (DE S) ≥ (DE' S) ] .
+    eq [ DE = DE' ] S = [ (DE S) = (DE' S) ] .
+    eq [ DE ≠ DE' ] S = [ (DE S) ≠ (DE' S) ] .
+
+    eq ln(DE)           S = ln(DE S) .
+    eq sin(DE)          S = sin(DE S) .
+    eq cos(DE)          S = cos(DE S) .
+    eq floor(DE)        S = floor(DE S) .
+    eq ceil(DE)         S = ceil(DE S) .
+    eq dirac(DE)        S = dirac(DE S) .
+    eq gaussAnti(X, DE) S = gaussAnti(X S, DE S) .
+
+    eq BIND X . DE [ DE' / Y ] = if X == Y then BIND X . DE else BIND X . (DE [ DE' / Y ]) fi .
+endfm
