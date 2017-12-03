@@ -91,3 +91,106 @@ fmod PSI-INTERNAL is
 
     eq BIND X . DE [ DE' / Y ] = if X == Y then BIND X . DE else BIND X . (DE [ DE' / Y ]) fi .
 endfm
+
+fmod PSI-DSL is
+   protecting PSI-INTERNAL .
+   protecting RENAMED-RAT .
+
+    sort Exp .
+    ----------
+    subsort DExp < Exp .
+
+    op _+_  : Exp Exp -> Exp [ditto] .
+    op _-_  : Exp Exp -> Exp [ditto] .
+    op _*_  : Exp Exp -> Exp [ditto] .
+    op _/_  : Exp Exp -> Exp [ditto] .
+    op _^_  : Exp Exp -> Exp [ditto] .
+
+   ops true false : -> Exp .
+    op _&&_  : Exp Exp -> Exp [assoc comm] .
+    op _||_  : Exp Exp -> Exp [assoc comm] .
+    ----------------------------------------
+
+    op _<_   : Exp Exp -> Exp .
+    op _>_   : Exp Exp -> Exp .
+    op _≤_   : Exp Exp -> Exp .
+    op _≥_   : Exp Exp -> Exp .
+    op _===_ : Exp Exp -> Exp [comm] .
+    op _≠_   : Exp Exp -> Exp [comm] .
+    ----------------------------------
+
+    sorts NeIdList IdList NeExpList ExpList .
+    -----------------------------------------
+    subsorts Id  < NeIdList  < IdList .
+    subsorts Exp < NeExpList < ExpList .
+    subsort NeIdList < NeExpList .
+    subsort IdList   < ExpList .
+
+    op .IdList : -> IdList .
+    op _,_     : IdList     IdList ->    IdList [assoc id: .IdList] .
+    op _,_     : IdList   NeIdList ->  NeIdList [ditto] .
+    op _,_     : ExpList   ExpList ->   ExpList [ditto] .
+    op _,_     : ExpList NeExpList -> NeExpList [ditto] .
+    -----------------------------------------------------
+
+    op _(_) : Id ExpList -> Exp .
+    -----------------------------
+
+    op bernoulli  : Exp     -> Exp .
+    op poisson    : Exp     -> Exp .
+    op uniformInt : Exp Exp -> Exp .
+    op uniform    : Exp Exp -> Exp .
+    op gauss      : Exp Exp -> Exp .
+    op pareto     : Exp Exp -> Exp .
+    op beta       : Exp Exp -> Exp .
+    op gamma      : Exp Exp -> Exp .
+    --------------------------------
+
+    sort Function .
+    ---------------
+
+    op fun_(_) =_ : Id IdList Exp  -> Function [prec 50] .
+    ------------------------------------------------------
+
+    sort Program .
+    --------------
+    subsort Function < Program .
+
+    op __ : Program Program -> Program [assoc prec 70] .
+    ----------------------------------------------------
+
+    --- No imperative support yet
+--- ;     sort Stmt .
+--- ;     -----------
+--- ;
+--- ;     op skip :           -> Stmt .
+--- ;     op _;_  : Stmt Stmt -> Stmt [assoc id: skip prec 55] .
+--- ;     ------------------------------------------------------
+--- ;
+--- ;     op _:=_     : Id  Exp -> Stmt [prec 50] .
+--- ;     op _=_      : Id  Exp -> Stmt [prec 50] .
+--- ;     op observe_ : Exp     -> Stmt [prec 50] .
+--- ;     op assert_  : Exp     -> Stmt [prec 50] .
+--- ;     op return_  : Exp     -> Stmt [prec 50] .
+--- ;     -----------------------------------------
+--- ;
+--- ;     op if_{_} else {_} : Exp Stmt Stmt -> Stmt .
+--- ;     op for_in [_.._] {_} : Id Exp Exp Stmt -> Stmt .
+--- ;     ------------------------------------------------
+--- ;
+--- ;     sort Procedure .
+--- ;     ----------------
+--- ;     subsort Procedure < Program .
+--- ;
+--- ;     op def _(_) {_} : Id IdList Stmt -> Procedure .
+--- ;     -----------------------------------------------
+
+    --- No array support yet
+--- ;     op _[_] : Id  Exp -> Exp [prec 35] .
+--- ;     op _:= array(_,_) : Id  Exp Exp -> Stmt [prec 50] .
+--- ;     op _[_] =_        : Id  Exp Exp -> Stmt [prec 50] .
+
+    --- No mariginalization yet
+--- ;    ops Expectation FromMarginal SampleFrom : -> Sample .
+--- ;     op _(_) : Sample ExpList -> Exp .   --- TODO: should be Exp or Stmt?
+endfm
