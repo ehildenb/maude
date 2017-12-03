@@ -120,4 +120,61 @@ reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
     7) .
 rewrites: 0
 result Program: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
+==========================================
+reduce in PSI-TRANSLATION : dist: m(r) .
+rewrites: 0
+result Query: dist: m(r)
+==========================================
+reduce in PSI-TRANSLATION : dist: n(m(r)) .
+rewrites: 0
+result Query: dist: n(m(r))
+==========================================
+reduce in PSI-TRANSLATION : dist: uniformInt(0, 5) .
+rewrites: 0
+result Query: dist: uniformInt(0, 5)
+==========================================
+reduce in PSI-TRANSLATION : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 *
+    uniformInt(y, 7) dist: n(m(r)) .
+rewrites: 0
+result Program?: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
+    dist: n(m(r))
+==========================================
+reduce in PSI-TRANSLATION : translate(x) .
+rewrites: 2
+result TranslateEnv: x | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : translate(x * y) .
+rewrites: 5
+result TranslateEnv: x * y | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : translate(x / y) .
+rewrites: 5
+result TranslateEnv: x / y | Assert([y ≠ 0])
+==========================================
+reduce in PSI-TRANSLATION : translate(x / (y + z)) .
+rewrites: 8
+result TranslateEnv: x / (y + z) | Assert([0 ≠ y + z])
+==========================================
+reduce in PSI-TRANSLATION : translate(3 / (y + z)) .
+rewrites: 8
+result TranslateEnv: 3 / (y + z) | Assert([0 ≠ y + z])
+==========================================
+reduce in PSI-TRANSLATION : translate(x / (y + z),y) .
+rewrites: 10
+result TranslateEnv: x / (y + z),y | Assert([0 ≠ y + z])
+==========================================
+reduce in PSI-TRANSLATION : translate(x / (y + z) < 4) .
+rewrites: 11
+result TranslateEnv: [x / (y + z) < 4] | Assert([0 ≠ y + z])
+==========================================
+reduce in PSI-TRANSLATION : translate(x * bernoulli(x * 3)) .
+rewrites: 9
+result TranslateEnv: x * (dirac(fv(x * 3)) * (1 - x * 3) + x * 3 * dirac(1 -
+    fv(x * 3))) | Assert([0 ≤ x * 3] * [x * 3 ≤ 1])
+==========================================
+reduce in PSI-TRANSLATION : translate((x * bernoulli(x * 3)) / z) .
+rewrites: 12
+result TranslateEnv: (x * (dirac(fv(x * 3)) * (1 - x * 3) + x * 3 * dirac(1 -
+    fv(x * 3)))) / z | Assert([0 ≤ x * 3] * [x * 3 ≤ 1]) ; Assert([z ≠
+    0])
 Bye.

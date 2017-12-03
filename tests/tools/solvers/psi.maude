@@ -50,3 +50,27 @@ reduce fun m(x) = 4 * uniformInt(0, x)
 reduce fun m(x) = 4 * uniformInt(0, x)  .
 reduce fun m(x) = 4 * uniformInt(0, x)
        fun n(y) = 3 * uniformInt(y, 7)  .
+
+--- Test Module PSI-TRANSLATION
+--- ===========================
+
+select PSI-TRANSLATION .
+
+reduce dist: m(r) .
+reduce dist: n(m(r)) .
+reduce dist: uniformInt(0,5) .
+reduce fun m(x) = 4 * uniformInt(0, x)
+       fun n(y) = 3 * uniformInt(y, 7)
+       dist: n(m(r)) .
+
+reduce translate(x) .
+reduce translate(x * y) .
+reduce translate(x / y) .
+reduce translate(x / (y + z)) .
+reduce translate(3 / (y + z)) .
+
+reduce translate(x / (y + z) , y) .
+reduce translate(x / (y + z) < 4) .
+
+reduce translate(x * bernoulli(3 * x)) .
+reduce translate((x * bernoulli(3 * x)) / z) .
