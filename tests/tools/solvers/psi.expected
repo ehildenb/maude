@@ -90,4 +90,34 @@ result DExp: int x . (y + x * 3)
 reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / y] .
 rewrites: 12
 result DExp: int x . (5 + x * 3)
+==========================================
+reduce in PSI-DSL : uniformInt(0, x) .
+rewrites: 0
+result Exp: uniformInt(0, x)
+==========================================
+reduce in PSI-DSL : 4 * uniformInt(0, x) .
+rewrites: 0
+result Exp: 4 * uniformInt(0, x)
+==========================================
+reduce in PSI-DSL : m(r) .
+rewrites: 0
+result Exp: m(r)
+==========================================
+reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) .
+rewrites: 0
+result Function: fun m(x)= 4 * uniformInt(0, x)
+==========================================
+reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
+    7) .
+rewrites: 0
+result Program: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
+==========================================
+reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) .
+rewrites: 0
+result Function: fun m(x)= 4 * uniformInt(0, x)
+==========================================
+reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
+    7) .
+rewrites: 0
+result Program: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
 Bye.

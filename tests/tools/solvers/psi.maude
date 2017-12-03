@@ -33,3 +33,20 @@ reduce dirac(3 * x + y)    [ 5 / x ] .
 reduce dirac(3 * x + y)    [ 5 / y ] .
 reduce int x . (3 * x + y) [ 5 / x ] .
 reduce int x . (3 * x + y) [ 5 / y ] .
+
+--- Test Module PSI-DSL
+--- ===================
+
+select PSI-DSL .
+
+reduce uniformInt(0, x) .
+reduce 4 * uniformInt(0, x) .
+
+reduce m(r) .
+
+reduce fun m(x) = 4 * uniformInt(0, x)  .
+reduce fun m(x) = 4 * uniformInt(0, x)
+       fun n(y) = 3 * uniformInt(y, 7)  .
+reduce fun m(x) = 4 * uniformInt(0, x)  .
+reduce fun m(x) = 4 * uniformInt(0, x)
+       fun n(y) = 3 * uniformInt(y, 7)  .
