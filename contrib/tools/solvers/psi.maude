@@ -194,3 +194,67 @@ fmod PSI-DSL is
 --- ;    ops Expectation FromMarginal SampleFrom : -> Sample .
 --- ;     op _(_) : Sample ExpList -> Exp .   --- TODO: should be Exp or Stmt?
 endfm
+
+fmod PSI-TRANSLATION is
+   protecting PSI-DSL .
+
+    sorts Query Program? .
+    ----------------------
+    subsorts Query Program < Program? .
+
+    op __ : Program? Program? -> Program? [ditto] .
+    -----------------------------------------------
+
+    op dist: _ : Exp -> Query [prec 50] .
+    -------------------------------------
+
+    op fv : DExp -> Id .
+    --------------------
+
+    sorts TranslateEnv .
+    --------------------
+
+    var X : Id . vars DE DE' DE'' : DExp . var DC : DConst .
+    vars E E' E'' : Exp . vars NeEL NeEL' : NeExpList . var EL : ExpList .
+    vars TE TE' TE'' : TranslateEnv .
+
+    op .TranslateEnv :                           -> TranslateEnv .
+    op _;_           : TranslateEnv TranslateEnv -> TranslateEnv [assoc id: .TranslateEnv prec 55] .
+    ------------------------------------------------------------------------------------------------
+
+    op Assert : DExp -> TranslateEnv .
+    ----------------------------------
+
+    op {_} :         TranslateEnv -> TranslateEnv .
+    op _|_ : ExpList TranslateEnv -> TranslateEnv [prec 60] .
+    ---------------------------------------------------------
+    eq { { TE } }        = { TE } .
+    eq { .IdList  | TE } = .IdList     | TE .
+   ceq { E , NeEL | TE } = DE' , NeEL' | TE''
+                        if DE'   | TE'  := { E    | TE  }
+                        /\ NeEL' | TE'' := { NeEL | TE' } .
+
+    eq { X  | TE } = X  | TE .
+    eq { DC | TE } = DC | TE .
+
+   ceq { E +   E' | TE } = DE + DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E -   E' | TE } = DE - DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E *   E' | TE } = DE * DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E /   E' | TE } = DE / DE'                   | TE' ; Assert([DE' ≠ 0]) if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E &&  E' | TE } = [DE ≠ 0] * [DE' ≠ 0]       | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E ||  E' | TE } = [[DE ≠ 0] + [DE' ≠ 0] ≠ 0] | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E <   E' | TE } = [ DE < DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E >   E' | TE } = [ DE > DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E ≤   E' | TE } = [ DE ≤ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E ≥   E' | TE } = [ DE ≥ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E === E' | TE } = [ DE = DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E ≠   E' | TE } = [ DE ≠ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+
+   ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
+---   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
+---   ceq { uniformInt(E, E') | TE } = uniformInt(DE, DE') | TE' if DE , DE' | TE' := { E , E' | TE } .
+
+    op translate : ExpList -> TranslateEnv .
+    ----------------------------------------
+    eq translate(EL) = { EL | .TranslateEnv } .
+endfm
