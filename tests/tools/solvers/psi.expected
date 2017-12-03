@@ -1,1 +1,93 @@
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * 2/5 + dirac(r) * 3/5 .
+rewrites: 0
+result DExp: dirac(r) * 2/5 + dirac(r) * 3/5
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * 2/5 + dirac(r) * 3/5 .
+rewrites: 0
+result DExp: dirac(r) * 2/5 + dirac(r) * 3/5
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * [3 < 4] .
+rewrites: 0
+result DExp: dirac(r) * [3 < 4]
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * [4 < 3] .
+rewrites: 0
+result DExp: dirac(r) * [4 < 3]
+==========================================
+reduce in PSI-INTERNAL : int x . x .
+rewrites: 0
+result DExp: int x . x
+==========================================
+reduce in PSI-INTERNAL : int x . gaussAnti(x, x) .
+rewrites: 0
+result DExp: int x . gaussAnti(x, x)
+==========================================
+reduce in PSI-INTERNAL : gaussAnti(x, 0) .
+rewrites: 0
+result DExp: gaussAnti(x, 0)
+==========================================
+reduce in PSI-INTERNAL : sum x . int x . gaussAnti(x, 0) .
+rewrites: 0
+result DExp: sum x . int x . gaussAnti(x, 0)
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * gaussAnti(x, 0) .
+rewrites: 0
+result DExp: dirac(r) * gaussAnti(x, 0)
+==========================================
+reduce in PSI-INTERNAL : ln(x + y * 3) .
+rewrites: 0
+result DExp: ln(x + y * 3)
+==========================================
+reduce in PSI-INTERNAL : 3 [5 / y] .
+rewrites: 1
+result NzNat: 3
+==========================================
+reduce in PSI-INTERNAL : pi [5 / y] .
+rewrites: 1
+result DConst: pi
+==========================================
+reduce in PSI-INTERNAL : x + y [3 / x] .
+rewrites: 7
+result DExp: y + 3
+==========================================
+reduce in PSI-INTERNAL : x + y [3 / y] .
+rewrites: 7
+result DExp: x + 3
+==========================================
+reduce in PSI-INTERNAL : ln((x + y * 3) - 22) [x / y] .
+rewrites: 12
+result DExp: ln(x + 22 + x * 3)
+==========================================
+reduce in PSI-INTERNAL : ln((x + y * 3) - 22) [x / y] [5 / x] .
+rewrites: 27
+result DExp: ln(42)
+==========================================
+reduce in PSI-INTERNAL : ln((x + y * 3) - 22) [x / y] [5 / x] [7 / z] .
+rewrites: 29
+result DExp: ln(42)
+==========================================
+reduce in PSI-INTERNAL : x * [3 < 45] [3 / x] .
+rewrites: 7
+result DExp: 3 * [3 < 45]
+==========================================
+reduce in PSI-INTERNAL : y * [x = 45] [3 / x] .
+rewrites: 9
+result DExp: y * [3 = 45]
+==========================================
+reduce in PSI-INTERNAL : dirac(y + x * 3) [5 / x] .
+rewrites: 11
+result DExp: dirac(y + 15)
+==========================================
+reduce in PSI-INTERNAL : dirac(y + x * 3) [5 / y] .
+rewrites: 10
+result DExp: dirac(5 + x * 3)
+==========================================
+reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / x] .
+rewrites: 3
+result DExp: int x . (y + x * 3)
+==========================================
+reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / y] .
+rewrites: 12
+result DExp: int x . (5 + x * 3)
 Bye.

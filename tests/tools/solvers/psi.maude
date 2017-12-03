@@ -1,3 +1,35 @@
 set show timing off .
 
 load ../../../contrib/tools/solvers/psi.maude
+
+--- Test Module PSI-INTERNAL
+--- ========================
+
+select PSI-INTERNAL .
+
+reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
+reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
+reduce [ 3 < 4 ] * dirac(r) .
+reduce [ 4 < 3 ] * dirac(r) .
+reduce int x . x .
+reduce int x . gaussAnti(x,x) .
+reduce gaussAnti(x,0) .
+reduce sum x . (int x . gaussAnti(x,0)) .
+reduce gaussAnti(x,0) * dirac(r) .
+reduce ln(x + y * 3) .
+
+reduce 3  [ 5 / y ] .
+reduce pi [ 5 / y ] .
+reduce x + y [ 3 / x ] .
+reduce x + y [ 3 / y ] .
+reduce ln((x + y * 3) - 22) [ x / y ] .
+reduce ln((x + y * 3) - 22) [ x / y ] [ 5 / x ] .
+reduce ln((x + y * 3) - 22) [ x / y ] [ 5 / x ] [ 7 / z ] .
+
+reduce [ 3 < 45 ] * x [ 3 / x ] .
+reduce [ x = 45 ] * y [ 3 / x ] .
+
+reduce dirac(3 * x + y)    [ 5 / x ] .
+reduce dirac(3 * x + y)    [ 5 / y ] .
+reduce int x . (3 * x + y) [ 5 / x ] .
+reduce int x . (3 * x + y) [ 5 / y ] .
