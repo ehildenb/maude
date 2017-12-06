@@ -12,7 +12,7 @@ rewrites: 4
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-NARROWING-GRAPH : bfs(state(init(0))) .
-rewrites: 147
+rewrites: 148
 result FLGraph: (0 -[label(getRls(', rl '_#_['<`bal:_pend:_overdraft:_>[
     'N1:Nat,'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]] => '_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
@@ -154,7 +154,7 @@ rewrites: 4
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH : bfs(state(init(0))) .
-rewrites: 147
+rewrites: 148
 result FLGraph: (0 -[label(getRls(', rl '_#_['<`bal:_pend:_overdraft:_>[
     'N1:Nat,'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]] => '_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
