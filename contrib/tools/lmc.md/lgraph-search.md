@@ -207,8 +207,10 @@ fmod GRAPH-FOLDING-SEARCH is
                                            /\ { NM'' , NID'' , NS'' } := insert(s N |-> ND', NM') .
 
     op .FLGraph : -> FLGraph .
-    --------------------------
-    eq .FLGraph = .LGraph | .NodeMap | 0 .
+    op flgraph  : NodeSet -> FLGraph? .
+    -----------------------------------
+    eq .FLGraph    = .LGraph | .NodeMap | 0 .
+    eq flgraph(NS) = insert(NS, .FLGraph) .
 
     op nodes : FLGraph? -> [NodeSet] .
     ----------------------------------
@@ -221,7 +223,7 @@ fmod GRAPH-FOLDING-SEARCH is
     op extend : NodeSet  -> [FLGraph?] .
     op extend : FLGraph? -> [FLGraph?] .
     ------------------------------------
-    eq extend(NS) = extend(insert(NS, .FLGraph)) .
+    eq extend(NS) = extend(flgraph(NS)) .
 
     eq extend(FLG)                = FLG .
     eq extend(LG | NM | N | NeNS) = insert(all-step(NM [ NeNS ]), LG | NM | N) .
@@ -244,7 +246,7 @@ fmod GRAPH-ANALYSIS is
     op #bfs : Bound FLGraph -> [FLGraph] .
     --------------------------------------
     eq bfs(NS)    = bfs(NS, unbounded) .
-    eq bfs(NS, B) = #bfs(B, insert(NS, .FLGraph)) .
+    eq bfs(NS, B) = #bfs(B, flgraph(NS)) .
 
     eq #bfs(B,         FLG)        = FLG .
     eq #bfs(0,         FLG |   NS) = FLG | NS .
