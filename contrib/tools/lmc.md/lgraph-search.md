@@ -256,7 +256,7 @@ fmod GRAPH-ANALYSIS is
     --- TODO: uniform command language (to perform multiple computations).
     op invariant : NodeSet -> [Bool] .
     ----------------------------------
-    eq invariant(NS) = nodes(bfs(NS, 1)) <= NS .
+    eq invariant(NS) = nodes(extend(NS)) <= NS .
 
     op check_stable in_ : NodeSet NodeSet -> [Bool] .
     -------------------------------------------------
