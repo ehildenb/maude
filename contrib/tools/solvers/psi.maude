@@ -134,16 +134,17 @@ fmod PSI-DSL is
     ----------
     subsort DExp < Exp .
 
-    op _+_  : Exp Exp -> Exp [ditto] .
-    op _-_  : Exp Exp -> Exp [ditto] .
-    op _*_  : Exp Exp -> Exp [ditto] .
-    op _/_  : Exp Exp -> Exp [ditto] .
-    op _^_  : Exp Exp -> Exp [ditto] .
+    op _+_ : Exp Exp -> Exp [ditto] .
+    op _-_ : Exp Exp -> Exp [ditto] .
+    op _*_ : Exp Exp -> Exp [ditto] .
+    op _/_ : Exp Exp -> Exp [ditto] .
+    op _^_ : Exp Exp -> Exp [ditto] .
+    ---------------------------------
 
    ops true false : -> Exp .
-    op _&&_  : Exp Exp -> Exp [assoc comm] .
-    op _||_  : Exp Exp -> Exp [assoc comm] .
-    ----------------------------------------
+    op _&&_ : Exp Exp -> Exp [assoc comm] .
+    op _||_ : Exp Exp -> Exp [assoc comm] .
+    ---------------------------------------
 
     op _<_   : Exp Exp -> Exp .
     op _>_   : Exp Exp -> Exp .
@@ -245,8 +246,8 @@ fmod PSI-TRANSLATION is
     op fv : DExp -> Id .
     --------------------
 
-    sorts TranslateEnv .
-    --------------------
+    sort TranslateEnv .
+    -------------------
 
     var X : Id . vars DE DE' DE'' : DExp . var DC : DConst .
     vars E E' E'' : Exp . vars NeEL NeEL' : NeExpList . var EL : ExpList .
