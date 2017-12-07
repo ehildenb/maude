@@ -101,6 +101,31 @@ fmod PSI-INTERNAL is
     eq BIND X . DE [ DE' / Y ] = if X == Y then BIND X . DE else BIND X . (DE [ DE' / Y ]) fi .
 endfm
 
+fmod PSI-INTERNAL-SIMPLIFICATION is
+    including PSI-INTERNAL .
+
+    vars R R' : Rat . var NzR : NzRat .
+    vars DE DE' : DExp . var DC : DConst . vars X Y : Id .
+
+    --- Arithmetic
+    eq    - (- DE)  = DE .
+    eq DE - (- DE') = DE + DE' .
+    eq 0  + DE'     = DE' .
+    eq 0  * DE'     = 0 .
+    eq 1  * DE'     = DE' .
+
+    --- Iverson Brackets
+    eq [ R < R' ] = if R P<  R' then 1 else 0 fi .
+    eq [ R > R' ] = if R P>  R' then 1 else 0 fi .
+    eq [ R ≤ R' ] = if R <=  R' then 1 else 0 fi .
+    eq [ R ≥ R' ] = if R >=  R' then 1 else 0 fi .
+    eq [ R = R' ] = if R ==  R' then 1 else 0 fi .
+    eq [ R ≠ R' ] = if R =/= R' then 1 else 0 fi .
+
+    --- Dirac Delta Arithmetic
+    eq δ(0)[NzR] = 0 .
+endfm
+
 fmod PSI-DSL is
    protecting PSI-INTERNAL .
    protecting RENAMED-RAT .
