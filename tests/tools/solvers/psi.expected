@@ -1,19 +1,19 @@
 ==========================================
 reduce in PSI-INTERNAL : dirac(r) * 2/5 + dirac(r) * 3/5 .
-rewrites: 0
-result DExp: dirac(r) * 2/5 + dirac(r) * 3/5
+rewrites: 1
+result DExp: δ(0)[r] * 2/5 + δ(0)[r] * 3/5
 ==========================================
 reduce in PSI-INTERNAL : dirac(r) * 2/5 + dirac(r) * 3/5 .
-rewrites: 0
-result DExp: dirac(r) * 2/5 + dirac(r) * 3/5
+rewrites: 1
+result DExp: δ(0)[r] * 2/5 + δ(0)[r] * 3/5
 ==========================================
 reduce in PSI-INTERNAL : dirac(r) * [3 < 4] .
-rewrites: 0
-result DExp: dirac(r) * [3 < 4]
+rewrites: 1
+result DExp: δ(0)[r] * [3 < 4]
 ==========================================
 reduce in PSI-INTERNAL : dirac(r) * [4 < 3] .
-rewrites: 0
-result DExp: dirac(r) * [4 < 3]
+rewrites: 1
+result DExp: δ(0)[r] * [4 < 3]
 ==========================================
 reduce in PSI-INTERNAL : int x . x .
 rewrites: 0
@@ -32,8 +32,8 @@ rewrites: 0
 result DExp: sum x . int x . gaussAnti(x, 0)
 ==========================================
 reduce in PSI-INTERNAL : dirac(r) * gaussAnti(x, 0) .
-rewrites: 0
-result DExp: dirac(r) * gaussAnti(x, 0)
+rewrites: 1
+result DExp: δ(0)[r] * gaussAnti(x, 0)
 ==========================================
 reduce in PSI-INTERNAL : ln(x + y * 3) .
 rewrites: 0
@@ -76,12 +76,12 @@ rewrites: 9
 result DExp: y * [3 = 45]
 ==========================================
 reduce in PSI-INTERNAL : dirac(y + x * 3) [5 / x] .
-rewrites: 11
-result DExp: dirac(y + 15)
+rewrites: 12
+result DExp: δ(0)[y + 15]
 ==========================================
 reduce in PSI-INTERNAL : dirac(y + x * 3) [5 / y] .
-rewrites: 10
-result DExp: dirac(5 + x * 3)
+rewrites: 11
+result DExp: δ(0)[5 + x * 3]
 ==========================================
 reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / x] .
 rewrites: 3
@@ -98,6 +98,26 @@ result Exp: uniformInt(0, x)
 reduce in PSI-DSL : 4 * uniformInt(0, x) .
 rewrites: 0
 result Exp: 4 * uniformInt(0, x)
+==========================================
+reduce in PSI-DSL : - ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] +
+    dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) =
+    dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) *
+    dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (
+    dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) +
+    dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) =
+    dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) *
+    1/2) / 30) ? dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) =
+    dirac(-1)] : dirac(-1) .
+rewrites: 3
+result Exp: - ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [
+    δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] +
+    δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[-1] + δ(
+    0)[-1] * δ(0)[-1]) * 1/2 < 0 || e ^ (- (- ((δ(0)[-1] * (δ(0)[1] * [δ(
+    0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (
+    δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) *
+    1/2) + (δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(0)[-1]) * 1/2) / 30) ? δ(
+    0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]] : δ(
+    0)[-1]
 ==========================================
 reduce in PSI-DSL : m(r) .
 rewrites: 0
@@ -139,6 +159,46 @@ rewrites: 0
 result Program?: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
     dist: n(m(r))
 ==========================================
+reduce in PSI-TRANSLATION : dirac(1) .
+rewrites: 1
+result DExp: δ(0)[1]
+==========================================
+reduce in PSI-TRANSLATION : {dirac(1) | .TranslateEnv} .
+rewrites: 3
+result TranslateEnv: δ(0)[1] | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : {dirac(1),dirac(2) | .TranslateEnv} .
+rewrites: 7
+result TranslateEnv: δ(0)[1],δ(0)[2] | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : {dirac(1),dirac(2),dirac(3) | .TranslateEnv} .
+rewrites: 11
+result TranslateEnv: δ(0)[1],δ(0)[2],δ(0)[3] | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : {[dirac(1) > 3/4] | .TranslateEnv} .
+rewrites: 6
+result TranslateEnv: [δ(0)[1] > 3/4] | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : {(- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(
+    -1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [
+    dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + (
+    dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((
+    dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) =
+    dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) *
+    [dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) *
+    dirac(-1)) * 1/2) / 30)),dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [
+    dirac(1) = dirac(-1)] | .TranslateEnv} .
+rewrites: 192
+result TranslateEnv: [- ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(
+    0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(
+    0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[
+    -1] + δ(0)[-1] * δ(0)[-1]) * 1/2 < [0 ≠ [0 ≠ 0] + [0 ≠ e ^ (- (- ((
+    δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] =
+    δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] *
+    [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(
+    0)[-1]) * 1/2) / 30)]]],δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [
+    δ(0)[1] = δ(0)[-1]] | Assert([0 ≠ 30])
+==========================================
 reduce in PSI-TRANSLATION : translate(x) .
 rewrites: 2
 result TranslateEnv: x | .TranslateEnv
@@ -146,6 +206,10 @@ result TranslateEnv: x | .TranslateEnv
 reduce in PSI-TRANSLATION : translate(x * y) .
 rewrites: 5
 result TranslateEnv: x * y | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : translateExp(x * y) .
+rewrites: 6
+result DExp: x * y
 ==========================================
 reduce in PSI-TRANSLATION : translate(x / y) .
 rewrites: 5
@@ -159,6 +223,10 @@ reduce in PSI-TRANSLATION : translate(3 / (y + z)) .
 rewrites: 8
 result TranslateEnv: 3 / (y + z) | Assert([0 ≠ y + z])
 ==========================================
+reduce in PSI-TRANSLATION : translateExp(3 / (y + z)) .
+rewrites: 8
+result [ExpList]: translateExp(3 / (y + z))
+==========================================
 reduce in PSI-TRANSLATION : translate(x / (y + z),y) .
 rewrites: 10
 result TranslateEnv: x / (y + z),y | Assert([0 ≠ y + z])
@@ -167,14 +235,88 @@ reduce in PSI-TRANSLATION : translate(x / (y + z) < 4) .
 rewrites: 11
 result TranslateEnv: [x / (y + z) < 4] | Assert([0 ≠ y + z])
 ==========================================
+reduce in PSI-TRANSLATION : translateExp(x / (y + z) < 4) .
+rewrites: 11
+result [ExpList]: translateExp(x / (y + z) < 4)
+==========================================
+reduce in PSI-TRANSLATION : translate(x < y ? z * 3 : k + 4) .
+rewrites: 16
+result TranslateEnv: (k + 4) * [0 = [x < y]] + z * 3 * [0 ≠ [x < y]] |
+    .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : translateExp(x < y ? z * 3 : k + 4) .
+rewrites: 17
+result DExp: (k + 4) * [0 = [x < y]] + z * 3 * [0 ≠ [x < y]]
+==========================================
+reduce in PSI-TRANSLATION : translate(- ((dirac(-1) * (dirac(1) * [dirac(-1) =
+    dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) *
+    [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + (
+    dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((
+    dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) =
+    dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) *
+    [dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) *
+    dirac(-1)) * 1/2) / 30)) .
+rewrites: 170
+result TranslateEnv: [- ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(
+    0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(
+    0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[
+    -1] + δ(0)[-1] * δ(0)[-1]) * 1/2 < [0 ≠ [0 ≠ 0] + [0 ≠ e ^ (- (- ((
+    δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] =
+    δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] *
+    [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(
+    0)[-1]) * 1/2) / 30)]]] | Assert([0 ≠ 30])
+==========================================
+reduce in PSI-TRANSLATION : translate(dirac(1) * [dirac(-1) = dirac(-1)] +
+    dirac(-1) * [dirac(1) = dirac(-1)]) .
+rewrites: 25
+result TranslateEnv: δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1]
+    = δ(0)[-1]] | .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : translate(dirac(1) ? dirac(2) : dirac(3)) .
+rewrites: 13
+result TranslateEnv: δ(0)[2] * [0 ≠ δ(0)[1]] + δ(0)[3] * [0 = δ(0)[1]] |
+    .TranslateEnv
+==========================================
+reduce in PSI-TRANSLATION : dirac(3) .
+rewrites: 1
+result DExp: δ(0)[3]
+==========================================
+reduce in PSI-TRANSLATION : translate(- ((dirac(-1) * (dirac(1) * [dirac(-1) =
+    dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) *
+    [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + (
+    dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((
+    dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) =
+    dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) *
+    [dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) *
+    dirac(-1)) * 1/2) / 30) ? dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) *
+    [dirac(1) = dirac(-1)] : dirac(-1)) .
+rewrites: 197
+result TranslateEnv: δ(0)[-1] * [0 = [- ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] =
+    δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] *
+    [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (
+    δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(0)[-1]) * 1/2 < [0 ≠ [0 ≠ 0] + [
+    0 ≠ e ^ (- (- ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[
+    -1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[
+    -1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[-1]
+    + δ(0)[-1] * δ(0)[-1]) * 1/2) / 30)]]]] + (δ(0)[1] * [δ(0)[-1] = δ(0)[
+    -1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]]) * [0 ≠ [- ((δ(0)[-1] * (δ(
+    0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(
+    0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(
+    0)[-1]])) * 1/2) + (δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(0)[-1]) * 1/2 <
+    [0 ≠ [0 ≠ 0] + [0 ≠ e ^ (- (- ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] =
+    δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]]) + δ(0)[-1] * (δ(0)[1] *
+    [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]])) * 1/2) + (
+    δ(0)[-1] * δ(0)[-1] + δ(0)[-1] * δ(0)[-1]) * 1/2) / 30)]]]] | Assert([0
+    ≠ 30])
+==========================================
 reduce in PSI-TRANSLATION : translate(x * bernoulli(x * 3)) .
-rewrites: 9
-result TranslateEnv: x * (dirac(fv(x * 3)) * (1 - x * 3) + x * 3 * dirac(1 -
-    fv(x * 3))) | Assert([0 ≤ x * 3] * [x * 3 ≤ 1])
+rewrites: 11
+result TranslateEnv: x * (δ(0)[fv(x * 3)] * (1 - x * 3) + x * 3 * δ(0)[1 -
+    fv(x * 3)]) | Assert([0 ≤ x * 3] * [x * 3 ≤ 1])
 ==========================================
 reduce in PSI-TRANSLATION : translate((x * bernoulli(x * 3)) / z) .
-rewrites: 12
-result TranslateEnv: (x * (dirac(fv(x * 3)) * (1 - x * 3) + x * 3 * dirac(1 -
-    fv(x * 3)))) / z | Assert([0 ≤ x * 3] * [x * 3 ≤ 1]) ; Assert([z ≠
+rewrites: 14
+result TranslateEnv: (x * (δ(0)[fv(x * 3)] * (1 - x * 3) + x * 3 * δ(0)[1 -
+    fv(x * 3)])) / z | Assert([0 ≤ x * 3] * [x * 3 ≤ 1]) ; Assert([z ≠
     0])
 Bye.

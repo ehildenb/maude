@@ -42,6 +42,10 @@ select PSI-DSL .
 reduce uniformInt(0, x) .
 reduce 4 * uniformInt(0, x) .
 
+reduce   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac( -1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [ dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + ( dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2) / 30))
+       ? dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]
+       : dirac(-1) .
+
 reduce m(r) .
 
 reduce fun m(x) = 4 * uniformInt(0, x)  .
@@ -63,14 +67,42 @@ reduce fun m(x) = 4 * uniformInt(0, x)
        fun n(y) = 3 * uniformInt(y, 7)
        dist: n(m(r)) .
 
+reduce dirac(1) .
+reduce { dirac(1) | .TranslateEnv } .
+reduce { dirac(1) , dirac(2) | .TranslateEnv } .
+reduce { dirac(1) , dirac(2) , dirac(3) | .TranslateEnv } .
+reduce { [ dirac(1) > 3 / 4 ] | .TranslateEnv } .
+
+reduce { (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac( -1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [ dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + ( dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2) / 30))
+       , dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]
+       | .TranslateEnv
+       } .
+
 reduce translate(x) .
 reduce translate(x * y) .
+reduce translateExp(x * y) .
 reduce translate(x / y) .
 reduce translate(x / (y + z)) .
 reduce translate(3 / (y + z)) .
+reduce translateExp(3 / (y + z)) .
 
 reduce translate(x / (y + z) , y) .
 reduce translate(x / (y + z) < 4) .
+reduce translateExp(x / (y + z) < 4) .
+
+reduce translate(x < y ? z * 3 : k + 4) .
+reduce translateExp(x < y ? z * 3 : k + 4) .
+
+reduce translate(- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac( -1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [ dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + ( dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2) / 30)) .
+reduce translate(dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) .
+
+reduce translate(dirac(1) ? dirac(2) : dirac(3)) .
+reduce dirac(3) .
+
+reduce translate(   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac( -1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [ dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + ( dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2) / 30))
+                  ? dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]
+                  : dirac(-1)
+                ) .
 
 reduce translate(x * bernoulli(3 * x)) .
 reduce translate((x * bernoulli(3 * x)) / z) .
