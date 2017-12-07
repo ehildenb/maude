@@ -448,6 +448,7 @@ fmod PSI-TRANSLATION is
 
     op Assert : DExp -> TranslateEnv .
     ----------------------------------
+    eq Assert(1) = .TranslateEnv .
 
     op {_} :         TranslateEnv -> TranslateEnv .
     op _|_ : ExpList TranslateEnv -> TranslateEnv [prec 60] .
