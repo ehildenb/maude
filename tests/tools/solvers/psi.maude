@@ -1,5 +1,6 @@
 set show timing off .
 
+load ../../../contrib/systems/caut.maude
 load ../../../contrib/tools/solvers/psi.maude
 
 --- Test Module PSI-INTERNAL
@@ -106,3 +107,76 @@ reduce translate(   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dira
 
 reduce translate(x * bernoulli(3 * x)) .
 reduce translate((x * bernoulli(3 * x)) / z) .
+
+--- Ising Model example
+--- ===================
+
+mod ISING-MODEL is
+   protecting PSI-TRANSLATION + PSI-INTERNAL-SIMPLIFICATION .
+    extending PERIODIC-GRID * ( op true  to tt
+                              , op false to ff
+                              , op _<_   to _P<_
+                              , op _>_   to _P>_
+                              ) .
+
+    vars DE DE' DE'' DH PF : DExp . var SS : States .
+
+    eq height = 1 .
+    eq width  = 10 .
+    ----------------
+
+    op dist : DExp -> State .
+    -------------------------
+
+   ops spinUp spinDown : -> DExp .
+   -------------------------------
+    eq spinUp   = dirac(1)  .
+    eq spinDown = dirac(-1) .
+
+   ops J T : -> Rat .
+   ------------------
+    eq J = 1/2 .
+    eq T = 30 .
+
+    op H : DExp DExp DExp -> [DExp] .
+    ---------------------------------
+    eq H(DE, DE', DE'') = - (J * (DE * DE' + DE * DE'')) .
+
+    op flip : DExp -> [DExp] .
+    --------------------------
+    eq flip(DE) = [ DE = spinUp   ] * spinDown
+                + [ DE = spinDown ] * spinUp .
+
+    op init : -> Cells .
+    --------------------
+    eq init = < 0 , 0 > :: dist(dirac(a))
+            ; < 0 , 1 > :: dist(dirac(b))
+            ; < 0 , 2 > :: dist(dirac(c))
+            ; < 0 , 3 > :: dist(dirac(d))
+            ; < 0 , 4 > :: dist(dirac(f))
+            ; < 0 , 5 > :: dist(dirac(g))
+            ; < 0 , 6 > :: dist(dirac(h))
+            ; < 0 , 7 > :: dist(dirac(i))
+            ; < 0 , 8 > :: dist(dirac(j))
+            ; < 0 , 9 > :: dist(dirac(k)) .
+
+    --- ; from querying PSI for the transition probability:
+    --- ; p(r|x,y,z) = ([-1+-x=0]+[-x+1=0])·[-x·y+-x·z != 0]·[-x·y+-x·z <= 0]·dirac(0)[-e^(-1/30·x·y+-1/30·x·z)+r]
+    --- ;            + ([-1+-x=0]+[-x+1=0])·[x·y+x·z <= 0]·dirac(1)[r]
+    --- ; 
+    --- ; Pr[error|x,y,z] = [-1+-x≠0]·[-x+1≠0]
+
+    eq dist(DE) -> left[dist(DE')] right[dist(DE'')] SS
+     = dist(DE) -> dist( ( ([(- 1) + (- DE) = 0] + [(- DE) + 1 = 0])
+                         * [(- DE * DE') + (- DE * DE'') ≠ 0] 
+                         * [(- DE * DE') + (- DE * DE'') ≤ 0]
+                         * dirac(- e ^ (((- 1 / 30) * DE * DE') + ((- 1 / 30) * DE * DE'')))
+                         )
+                       + ( ([ (- 1) + (- DE) = 0] + [(- DE) + 1 = 0])
+                         * [(DE * DE' + DE * DE'') ≤ 0]
+                         * dirac(1)
+                         )
+                       ) .
+endm
+
+search [1] [ init ] =>* { CS:Cells } .
