@@ -314,4 +314,8 @@ fmod PSI-TRANSLATION is
     op translate : ExpList -> TranslateEnv .
     ----------------------------------------
     eq translate(EL) = { EL | .TranslateEnv } .
+
+    op translateExp : Exp -> [Exp] .
+    --------------------------------
+   ceq translateExp(E) = DE if DE | .TranslateEnv := translate(E) .
 endfm
