@@ -154,6 +154,9 @@ fmod PSI-DSL is
     op _≠_   : Exp Exp -> Exp [comm] .
     ----------------------------------
 
+    op _?_:_ : Exp Exp Exp -> Exp [prec 50] .
+    -----------------------------------------
+
     sorts NeIdList IdList NeExpList ExpList .
     -----------------------------------------
     subsorts Id  < NeIdList  < IdList .
@@ -286,6 +289,8 @@ fmod PSI-TRANSLATION is
    ceq { E ≥   E' | TE } = [ DE ≥ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E === E' | TE } = [ DE = DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E ≠   E' | TE } = [ DE ≠ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+
+   ceq { E ? E' : E'' | TE } = [ DE ≠ 0 ] * DE' + [ DE = 0 ] * DE'' | TE' if DE , DE' , DE'' | TE' := { E , E', E'' | TE } .
 
    ceq { [ E < E' ] | TE } = [ DE < DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
    ceq { [ E > E' ] | TE } = [ DE > DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
