@@ -272,10 +272,12 @@ fmod PSI-TRANSLATION is
     eq { X  | TE } = X  | TE .
     eq { DC | TE } = DC | TE .
 
+   ceq {   -   E' | TE } =    - DE'                   | TE'                     if      DE' | TE' := {     E' | TE } .
    ceq { E +   E' | TE } = DE + DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E -   E' | TE } = DE - DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E *   E' | TE } = DE * DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E /   E' | TE } = DE / DE'                   | TE' ; Assert([DE' ≠ 0]) if DE , DE' | TE' := { E , E' | TE } .
+   ceq { E ^   E' | TE } = DE ^ DE'                   | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E &&  E' | TE } = [DE ≠ 0] * [DE' ≠ 0]       | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E ||  E' | TE } = [[DE ≠ 0] + [DE' ≠ 0] ≠ 0] | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E <   E' | TE } = [ DE < DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
@@ -284,6 +286,21 @@ fmod PSI-TRANSLATION is
    ceq { E ≥   E' | TE } = [ DE ≥ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E === E' | TE } = [ DE = DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
    ceq { E ≠   E' | TE } = [ DE ≠ DE' ]               | TE'                     if DE , DE' | TE' := { E , E' | TE } .
+
+   ceq { [ E < E' ] | TE } = [ DE < DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+   ceq { [ E > E' ] | TE } = [ DE > DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+   ceq { [ E ≤ E' ] | TE } = [ DE ≤ DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+   ceq { [ E ≥ E' ] | TE } = [ DE ≥ DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+   ceq { [ E = E' ] | TE } = [ DE = DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+   ceq { [ E ≠ E' ] | TE } = [ DE ≠ DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
+
+   ceq { ln(E)           | TE } = ln(DE)           | TE' ; Assert([DE > 0]) if DE | TE' := { E | TE } .
+   ceq { sin(E)          | TE } = sin(DE)          | TE'                    if DE | TE' := { E | TE } .
+   ceq { cos(E)          | TE } = cos(DE)          | TE'                    if DE | TE' := { E | TE } .
+   ceq { floor(E)        | TE } = floor(DE)        | TE'                    if DE | TE' := { E | TE } .
+   ceq { ceil(E)         | TE } = ceil(DE)         | TE'                    if DE | TE' := { E | TE } .
+   ceq { δ(0)[E]         | TE } = δ(0)[DE]         | TE'                    if DE | TE' := { E | TE } .
+   ceq { gaussAnti(X, E) | TE } = gaussAnti(X, DE) | TE'                    if DE | TE' := { E | TE } .
 
    ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
 ---   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
