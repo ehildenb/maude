@@ -1,0 +1,90 @@
+  Changes from Real-Time Maude 2.2 to version 2.3:
+  ------------------------------------------------------------
+
+     There are actually no changes, apart from the fact that
+     version 2.3 is implemented by extending (the publicly
+     available) version 2.3 of Duran's Full Maude. This in turn
+     runs on version 2.3 of Maude.
+
+     Notice that some new features of Maude version 2.3 
+     are not reflected in the current version of Full Maude.
+     This includes useful features such as rewrite bounds
+     in search commands, as well as exhibiting the rewrite path
+     to the (un)desired states found in searches. These features
+     are therefore not included in version 2.3 of Real-Time Maude.
+     (Of course, the bound on the number of rewrites is not crucial
+     in Real-Time Maude, since it allows for a time bound instead.)
+
+
+
+
+
+
+  Changes from Real-Time Maude 2.1 to version 2.2:
+  ------------------------------------------------------------
+
+      Fortunately, as described in the manual, there are very
+      few changes from version 2.1 to version 2.2 of Real-Time Maude.
+      Essentially all modules and analysis commands for 2.1 should also
+      work for 2.2, so there should be little need to redo
+      specifications or analyses.
+
+      1. Adapted to Maude version 2.2 and to Full Maude version 2.2.
+
+      2. In timed and untimed searches (and in contrast to Full Maude),
+         the system now gives a "match" if an object belonging
+         to a proper subclass of the class C given in the object
+         pattern (otherwise) matches the pattern. In addition, 
+         the object pattern no longer has to capture all attributes
+         (i.e., it is no longer needed to explicitly add a variable
+         of sort 'AttributeSet' to an object pattern).
+
+      3. The addition operator _+_ is extended to the infinity value
+         INF in the predefined modules NAT-TIME-DOMAIN-WITH-INF
+         and POSRAT-TIME-DOMAIN-WITH-INF. 
+
+      4. The operators 'min' and 'max' in the skeleton module TIME-INF 
+         are now called 'minimum' and 'maximum'. Any module
+         containing NAT-TIME-DOMAIN or POSRAT-TIME-DOMAIN can still
+         use 'min' and 'max'.
+
+      5. The new sort for the nonnegative rational numbers is
+         'NNegRat' (since in Maude 2.2, and hence in Real-Time Maude 2.2, 
+         PosRat denotes the non-zero positive rationals). If your
+         specifications use 'NzTime' and 'Time' you should not need
+         to make (m)any changes.
+
+
+-------------------------------------------------------------------
+Previous changes:
+-------------------------------------------------------------------
+        
+
+
+       Main changes from Real-Time Maude 2.0 to Real-Time Maude 2.1:
+
+       1. Adapted to Maude version 2.1 and to Full Maude version 2.1.
+      
+       2. Therefore, we allow "such that" (abbreviated "s.t.") 
+          conditions on the patterns in timed and search, find
+          latest/earliest, and check commands. Notice that the 
+          variables occurring the such conditions should be given
+          explicitly of the form "VAR:SORT".
+
+       3. The comparison operators >, >=, <, <= are extended
+          to the sort TimeInf in the predefined modules
+          NAT-TIME-DOMAIN-WITH-INF and POSRAT-TIME-DOMAIN-WITH-INF,
+          so that numbers can be compared also with the infinity
+          value INF using these comparison operators.
+       
+       4. The Full Maude search error is corrected on line 
+          12469 below. This line corresponds to line 12118 in 
+          the public distribution of full-maude.maude from April 19.
+
+--- -----
+  Change from April 30 version to May 5 version:
+    - the arrow '=>' in the tsearch and utsearch commands
+      is changed to the current Maude arrow for one-step
+      searches, namely, the arrow '=>1'. Furthermore, the semantics
+      is slightly changed in that states reachable in 0 steps are
+      no longer shown as a result of '=>1'-searches.
