@@ -9,7 +9,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 
 mod BAKERY-NARROWING-GRAPH is
    protecting BAKERY .
-    extending FVP-NARROWING-GRAPH .
+    extending FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
 
     eq ##m## = upModule('BAKERY, true) .
 
@@ -77,16 +77,17 @@ reduce bfs(state(init(4)), 10) .
 mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
    protecting BAKERY-FVP-CTOR .
     extending FVP-NARROWING-GRAPH .
+    extending GRAPH-ANALYSIS .
 
     eq ##m## = upModule('BAKERY-FVP-CTOR, true) .
 
     op init : Nat -> [Term] .
     -------------------------
-    eq init(0) = '<_`,_`,_`,_>['sleep.NcMode,'_+_['1.NzNat>,'1.NzNat>,'1.NzNat>],'wait.NcMode,'_+_['1.NzNat>,'1.NzNat>]] .
-    eq init(1) = '<_`,_`,_`,_>['PNC:NcMode , 'X1:Nat> , 'QC:Mode    , 'X2:Nat>] .
-    eq init(2) = '<_`,_`,_`,_>['PC:Mode    , 'Y1:Nat> , 'QNC:NcMode , 'Y2:Nat>] .
+    eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat>,'1.NzNat>,'1.NzNat>],'wait.NcMode,'_+_['1.NzNat>,'1.NzNat>]] .
+    eq init(1) = '<_`,_`,_`,_>['PNC:NcMode   , 'X1:Nat> , 'QC:Mode      , 'X2:Nat>] .
+    eq init(2) = '<_`,_`,_`,_>['PC:Mode      , 'Y1:Nat> , 'QNC:NcMode   , 'Y2:Nat>] .
+    eq init(3) = '<_`,_`,_`,_>['sleep.NcMode , 'X0:Nat> , 'sleep.NcMode , 'X0:Nat>] .
 endm
-
 
 ***(Desired initial states and invariant:
    vars X0 X Y X' Y' : Nat .
@@ -102,11 +103,42 @@ Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
 reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
 reduce wellFormed(##m##, init(2)) .
+reduce wellFormed(##m##, init(3)) .
 
 reduce step(state(init(0))) .
 reduce step(state(init(1))) .
 reduce step(state(init(2))) .
+reduce step(state(init(3))) .
+
+reduce state(init(3)) <= (state(init(1)) ; state(init(2))) .
+reduce state(init(1)) <= (state(init(1)) ; state(init(2))) .
+reduce state(init(2)) <= state(init(1)) .
 
 --- both initial states yield finite state-graphs
 reduce bfs(state(init(1))) .
 reduce bfs(state(init(2))) .
+reduce bfs(state(init(3))) .
+reduce bfs(state(init(1)) ; state(init(2))) .
+
+reduce nodes(bfs(state(init(1)))) .
+reduce nodes(bfs(state(init(2)))) .
+reduce nodes(bfs(state(init(3)))) .
+reduce nodes(bfs(state(init(1)) ; state(init(2)))) .
+
+reduce nodes(bfs(state(init(1)) ; state(init(2)))) <= (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) .
+reduce (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+
+reduce state(init(3))                                 <= (state(init(1)) ; state(init(2))) .
+reduce state(init(3))                                 <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+reduce (state(init(1)) ; state(init(2)))              <= nodes(extend(state(init(1)) ; state(init(2)))) .
+reduce (state(init(1)) ; state(init(2)))              <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+reduce nodes(extend(state(init(1)) ; state(init(2)))) <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+
+--- state init(3) stays within init(1) ; init(2)
+reduce nodes(bfs(state(init(3)))) <= (state(init(1)) ; state(init(2))) .
+
+--- even though in general init(1) ; init(2) is *not* an invariant
+--- this is because both the counters could be zero to start, which means both `sleep => wait` rules can fire
+reduce invariant(state(init(1)) ; state(init(2))) .
+reduce nodes(bfs(state(init(1)) ; state(init(2)))) <= (state(init(1)) ; state(init(2))) .
+reduce check state(init(3)) stable in state(init(1)) ; state(init(2)) .
