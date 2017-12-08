@@ -3,3 +3,16 @@ set show timing off .
 load ../../../contrib/systems/bank-account.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 load ../../../contrib/tools/meta/narrowing.maude
+
+--- ; The invariant satisfied by this protocol can be expressed as the constrained term:
+--- ;
+--- ;     < bal: n pend: x overdraft: ff > # msgs | n >= x = tt /\ x = debts(msgs)
+--- ;
+--- ; where debts is the recursive function:
+--- ;
+--- ;  op debts : MsgConf -> Nat .
+--- ;
+--- ;  eq debts(mt) = 0 .
+--- ;  eq debts(withdraw(m),msgs) = m + debts(msgs) .
+--- ;
+--- ; Note that this predicate should have an easy proof by contextual rewriting in reachability logic.
