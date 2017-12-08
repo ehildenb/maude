@@ -99,6 +99,9 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     eq init(4) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat>   , 'sleep.NcMode , 'X1:Nat>   ] .
     eq init(5) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:NzNat> ] .
     eq init(6) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat> , 'QNC:NcMode   , 'Y2:Nat>   ] .
+    eq init(7) = '<_`,_`,_`,_>[ 'wait.NcMode  , 'Y1:Nat>   , 'QC:Mode      , 'Y2:NzNat> ] .
+    eq init(8) = '<_`,_`,_`,_>[ 'QC:Mode      , 'Y1:NzNat> , 'wait.NcMode  , 'Y2:Nat>   ] .
+    eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat>   , 'crit.Mode    , 'X3:Nat>   ] .
 endm
 
 ***(Desired initial states and invariant:
@@ -112,6 +115,7 @@ Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
              or: state(init(1)) \/ state(init(2)) .
 )
 
+
 reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
 reduce wellFormed(##m##, init(2)) .
@@ -119,6 +123,9 @@ reduce wellFormed(##m##, init(3)) .
 reduce wellFormed(##m##, init(4)) .
 reduce wellFormed(##m##, init(5)) .
 reduce wellFormed(##m##, init(6)) .
+reduce wellFormed(##m##, init(7)) .
+reduce wellFormed(##m##, init(8)) .
+reduce wellFormed(##m##, init(9)) .
 
 reduce step(states(0)) .
 reduce step(states(1)) .
