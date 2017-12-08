@@ -1,0 +1,745 @@
+--- A slight modification for Monte Carlo simulation purposes
+--- of our CASH specifications.
+
+--- Modifications:
+---  -- whenever an old job is finished a new job is created,
+---     characterized by the time til the next job arrives, which
+---     could be zero, and by the length of the job, i.e., how long
+---     does it need to be executed.
+---  -- rules idleToExecuting and idleToActive only used when 
+---     timeToJob equals zero.
+---  -- rules stopExecuting1/2 only applied when leftOfJob equals 0.
+---  -- no need to use timeExecuted because a job length is nonzero
+---     to start with 
+
+--- Version of Oct 14, 2005.
+
+--- Start Real-Time Maude:
+
+load real-time-maude
+
+--- Preemptive earliest deadline first-based scheduling with reuse
+--- of unused budgets.
+--- --------------------------------------------------------------
+
+--- Simulation version.
+--- -------------------
+
+(tmod TIME-DOMAIN is
+   including NAT-TIME-DOMAIN-WITH-INF .
+endtm)
+
+
+--- First, we define a datatype for the CASH queue of spare capacities.
+--- This queue is modeled as a list of <deadline, budget>-pairs
+--- ordered by deadline.
+
+(tomod CASH is
+  protecting TIME-DOMAIN .
+  
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_ : Time Time -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue 
+                                         [ctor assoc id: emptyQueue] .
+  
+  sort Cash .
+  subsort Cash < Configuration .
+
+  op `[CASH:_`] : CapacityQueue -> Cash [format (sssg b o sg o) ctor] .
+
+  var T : Time .
+  var C : Capacity .
+  var CQ : CapacityQueue .
+  var CASH : Cash .
+  vars NZT NZT' NZT'' NZT''' : NzTime .
+
+  --- Crucial equation: a spare "capacity" is expired/exhausted and 
+  --- should be removed when its budget or deadline is 0:
+  eq deadline: T budget: 0 = emptyQueue .
+  eq deadline: 0 budget: T = emptyQueue .
+
+  --- Add a spare capacity to the cash in sorted order:
+  op addCapacity : Capacity Cash -> Cash .
+  op addCapacity : CapacityQueue Cash -> Cash .   --- for expired capacities
+  op addCapacity : Capacity CapacityQueue -> CapacityQueue .
+
+  eq addCapacity((deadline: NZT budget: NZT'), [CASH: CQ]) = 
+        [CASH: addCapacity((deadline: NZT budget: NZT'), CQ)] .
+  eq addCapacity(emptyQueue, CASH) = CASH .   --- for useless capacities
+
+  eq addCapacity((deadline: NZT budget: NZT'), emptyQueue) =
+       (deadline: NZT budget: NZT') .
+
+  eq addCapacity((deadline: NZT budget: NZT'), 
+             (deadline: NZT'' budget: NZT''') CQ) =
+        if NZT <= NZT'' then 
+          ((deadline: NZT budget: NZT') (deadline: NZT'' budget: NZT''') CQ)
+        else 
+          ((deadline: NZT'' budget: NZT''') 
+           addCapacity((deadline: NZT budget: NZT'), CQ))
+        fi .
+
+  --- find deadline of first fragment:
+  op firstDeadline : Cash -> TimeInf .
+  eq firstDeadline([CASH: (deadline: NZT budget: NZT') CQ]) = NZT .
+  eq firstDeadline([CASH: emptyQueue]) = INF .
+
+  --- Get first budget:
+  op firstBudget : Cash -> Time .
+  eq firstBudget([CASH: (deadline: NZT budget: NZT') CQ]) = NZT' .
+  eq firstBudget([CASH: emptyQueue]) = 0 .
+
+  --- removeFirst removes the first pair:
+  op removeFirst : Cash -> Cash .
+  eq removeFirst([CASH: (deadline: NZT budget: NZT') CQ]) = [CASH:  CQ] .
+  eq removeFirst([CASH: emptyQueue]) = [CASH: emptyQueue] .
+endtom)
+
+
+
+--- We model all possible task sets "implicitly".
+--- A server is IDLE when it is not serving a task. At ANY time, 
+--- it may become "waiting/executing," indicating that it serves a 
+--- new task. Furthermore, a job may stop at ANY time. So, ALL possible tasks
+--- are modeled this way, instead of using some random functions 
+--- to "generate" tasks!
+
+(tomod SERVER is
+  protecting TIME-DOMAIN .
+
+  class Server |
+        maxBudget      : NzTime,       --- maximum budget Q_i, constant
+        period         : NzTime,       --- period, constant
+        state          : ServerState,  --- state of the server/task
+        usedOfBudget   : Time,         --- how long time has this server
+                                       --- executed OF ITS OWN budget
+                                       --- in this period?
+        timeToDeadline : Time,         --- time left until "current" deadline
+                                       --- can remain 0 while idling 
+                                       --- (no "current" deadline)
+        timeToJob      : Time,         --- NEW! time to start of next job
+        leftOfJob      : Time .        --- NEW! Left to execute of current/next
+                                       --- job
+                                 
+  sort ServerState .
+  ops idle              --- No task "ready" yet
+      waiting           --- ready to run but blocked/preempted/...
+      executing :       --- this server is executing
+                   -> ServerState [ctor] .
+
+  op AVAILABLE-PROCESSOR : -> Configuration [ctor] .
+  --- Denotes an available processor.
+endtom)
+
+
+--- SIMULATION. Need a module for generating pseudo-random
+--- time values, which are asumed to be natuiral numbers ...
+--- Since we do not need more than one random number generator, we don't 
+--- need a full object!
+
+(tomod RANDOM is
+  including NAT .
+
+  sort Seed .
+  subsort Seed < NEConfiguration .
+  op `[Seed:_`] : Nat -> Seed [ctor] .  --- seed "object"
+
+  op random : Nat -> Nat .      --- random(x) generates the next random number
+
+  vars N N' : Nat .
+
+  eq random(N) = ((104 * N) + 7921) rem 10609 .
+  --- Obeys Knuths criteria for a "good" random function
+
+  --- The seed may be modified by applying the random function many times:
+  op repeatRandom : Nat Nat -> Nat .     --- repeatRandom(seed, noOfReps)
+  eq repeatRandom(N, s N') = repeatRandom(random(N), N') .
+  eq repeatRandom(N, 0) = N .
+endtom)
+
+
+
+
+
+--- Now, we define the common rules of both protocols, where 
+---   every task is generated ... without generating the tasks!!
+
+(tomod CASH-COMMON is
+  protecting CASH .
+  protecting SERVER .
+  protecting RANDOM .
+
+  vars O O' : Oid .
+  vars C C' REST-OF-SYSTEM : Configuration .
+  var STATE : ServerState .
+  var CASH : Cash .
+  vars T T' T'' T''' REMAINING-BUDGET : Time .
+  vars NZT NZT' NZT'' : NzTime .
+  var BUDGET-LEFT : Bool .
+  var CQ : CapacityQueue .
+  var N : Nat .
+
+
+  --- Idle to executing when the processor is available:
+  --- SIMULATION: only happens when timeToJob is 0:
+
+  rl [idleToExecuting1] :
+     < O : Server | period : NZT, state : idle, timeToDeadline : T,
+                    timeToJob : 0 >
+     AVAILABLE-PROCESSOR
+    =>
+     < O : Server | state : executing, timeToDeadline : T + NZT,
+                    usedOfBudget : 0 > .
+
+
+  --- A server becomes active and another server is executing.
+  --- This server will either preempt or not according to usual EDF:
+  --- SIMUATION: only applicable when timeToJob is 0.
+
+  rl [idleToActive] :
+     < O : Server | period : NZT, state : idle, timeToDeadline : T,
+                    timeToJob : 0 >
+     < O' : Server | state : executing, timeToDeadline : T' >
+    =>
+     if (T + NZT) < T' then   --- start to execute and preempt O'
+        (< O : Server | state :  executing, timeToDeadline : T + NZT,
+                        usedOfBudget : 0 >
+         < O' : Server | state :  waiting >)
+     else
+        (< O : Server | state : waiting, timeToDeadline : T + NZT,
+                        usedOfBudget : 0 >
+         < O' : Server | >)
+     fi .
+       
+  
+  --- Finish executing. If more budget, add to CASH.
+  --- There are two main cases: wake up the first waiting server, or nobody
+  --- is waiting. First case: someone else is waiting:
+  --- We have also added an additional check that the current job
+  --- has actually executed more than zero time.
+  --- SIMULATION: only happens when leftOfJob is 0:
+  --- SIMULATION: must also generate new job!
+
+  crl [stopExecuting1] :
+      {< O : Server | state : executing, usedOfBudget : T,
+                      maxBudget : NZT, timeToDeadline : T',
+                      period : NZT'', leftOfJob : 0 >
+       < O' : Server | state : waiting, timeToDeadline : T'' >
+       [Seed: N]
+       REST-OF-SYSTEM
+       CASH}
+     =>
+      {< O : Server | state : idle,  usedOfBudget : NZT,
+                      timeToJob : random(N) rem (2 * NZT'' + 1),
+                      leftOfJob : 
+                         1 + random(random(N)) rem (2 * NZT) >
+       < O' : Server | state : executing >
+       [Seed: random(random(N))]
+       REST-OF-SYSTEM
+       (if BUDGET-LEFT 
+        then addCapacity((deadline: T' budget: REMAINING-BUDGET), CASH)
+        else CASH fi)}
+     if REMAINING-BUDGET := NZT monus T       /\
+        BUDGET-LEFT := REMAINING-BUDGET > 0   /\
+        REMAINING-BUDGET <= T'                /\   --- overflow check
+        T'' == nextDeadlineWaiting(< O' : Server | >  REST-OF-SYSTEM) .
+
+  --- Finish executing when no other server is waiting. Just release the 
+  --- processor:
+  --- SIMULATION: same as above!
+
+  crl [stopExecuting2] :
+      {< O : Server | state : executing, usedOfBudget : T, 
+                      timeToDeadline : T', maxBudget : NZT,
+                      period : NZT'', leftOfJob : 0 >
+       [Seed: N]
+       REST-OF-SYSTEM
+       CASH}
+     =>
+      {< O : Server | state : idle, usedOfBudget : NZT,
+                      timeToJob : random(N) rem (2 * NZT'' + 1),
+                      leftOfJob : 
+                         1 + random(random(N)) rem (2 * NZT) >
+       [Seed: random(random(N))]
+       AVAILABLE-PROCESSOR
+       REST-OF-SYSTEM
+       (if BUDGET-LEFT 
+        then addCapacity((deadline: T' budget: REMAINING-BUDGET), CASH)
+        else CASH fi)}
+     if REMAINING-BUDGET := NZT monus T        /\
+        BUDGET-LEFT := REMAINING-BUDGET > 0    /\
+        REMAINING-BUDGET <= T'                 /\   --- overflow check
+        nooneWaiting(REST-OF-SYSTEM) .
+  
+  op nextDeadlineWaiting : Configuration -> TimeInf [frozen (1)] .
+  eq nextDeadlineWaiting(none) = INF .
+  ceq nextDeadlineWaiting(C C') = 
+         min(nextDeadlineWaiting(C), nextDeadlineWaiting(C')) 
+      if C =/= none /\ C' =/= none .
+  eq nextDeadlineWaiting(< O : Server | state : STATE, timeToDeadline : T >) =
+         if STATE == waiting then T else INF fi .
+  eq nextDeadlineWaiting(DEADLINE-MISS) = INF .
+
+
+  op nooneWaiting : Configuration -> Bool [frozen (1)] .       
+  eq nooneWaiting(none) = true .
+  ceq nooneWaiting(C C') = nooneWaiting(C) and nooneWaiting(C')
+      if C =/= none /\ C' =/= none .
+  eq nooneWaiting(< O : Server | state : STATE >) = STATE =/= waiting .
+  eq nooneWaiting(DEADLINE-MISS) = true .
+
+  --- SIMULATION: add
+  var SEED : Seed .
+  eq nextDeadlineWaiting(SEED) = INF .
+  eq nooneWaiting(SEED) = true .
+
+
+  --- Finally, we make an overflow explicit:
+  op DEADLINE-MISS : -> Configuration [ctor format (r o)] .
+
+  --- The following rule can be applied when we have reached an overflow 
+  --- situation:
+
+  crl [deadlineMiss] :
+      < O : Server | state : STATE, usedOfBudget : T, timeToDeadline : T',
+                     maxBudget : NZT >
+     =>
+      DEADLINE-MISS
+     if (NZT monus T) > T' /\ STATE == waiting or STATE == executing .
+
+
+
+  --- SIMULATION: add a conditioon that there is still time left 
+  ---             of job!
+
+  --- Case 1: no other server is waiting:
+  crl [continueExInNextRound] :
+      {< O : Server | state : executing, maxBudget : NZT,
+                      usedOfBudget : NZT, period : NZT', 
+                      timeToDeadline : T, leftOfJob : NZT'' >
+       REST-OF-SYSTEM CASH}
+     =>
+      {< O : Server | usedOfBudget : 0, timeToDeadline : T + NZT' >
+       REST-OF-SYSTEM CASH}
+     if nooneWaiting(REST-OF-SYSTEM) .               
+
+  --- Case 2: someone else is waiting, so maybe our server becomes preempted:
+  crl [continueActInNextRound] :
+      {< O : Server | state : executing, maxBudget : NZT, 
+                      usedOfBudget : NZT, period : NZT',
+                      timeToDeadline : T, leftOfJob : NZT'' >
+       < O' : Server | state : waiting, timeToDeadline : T' >
+       REST-OF-SYSTEM  CASH}
+     =>
+      if T' < T + NZT' then    --- we become preempted 
+        {< O : Server | state : waiting, usedOfBudget : 0,
+                        timeToDeadline : T + NZT' >
+         < O' : Server | state : executing >
+         REST-OF-SYSTEM CASH}
+      else                     --- can continue executing
+        {< O : Server | usedOfBudget : 0, timeToDeadline : T + NZT' >
+         < O' : Server | >
+         REST-OF-SYSTEM CASH}
+      fi
+     if T' == nextDeadlineWaiting(< O' : Server | >  REST-OF-SYSTEM) .
+
+
+  --- Tick rules, except for idling:
+  --- ------------------------------
+
+  --- SIMULATION: must not execute past leftOfJob, and update leftOfJob!
+
+  crl [tickExecutingSpareCapacity] :
+      {< O : Server | state : executing, 
+                      timeToDeadline : T'', leftOfJob : NZT >
+       REST-OF-SYSTEM 
+       CASH}
+     =>
+      {< O : Server | timeToDeadline : T'' monus T,
+                      leftOfJob : NZT monus T >
+       delta(REST-OF-SYSTEM, T)
+       delta(useSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= min(mte(CASH  REST-OF-SYSTEM), mteCashUse(< O : Server | >)) 
+        /\ firstDeadline(CASH) <= T'' [nonexec] .
+
+  
+  --- Case 2: tick when a server is executing its own budget:
+  --- SIMULATION: do not execute past leftOfJob, and update leftOfJob
+
+  crl [tickExecutingOwnBudget] :
+      {< O : Server | state : executing,  usedOfBudget : T'', 
+                      timeToDeadline : T''', leftOfJob : NZT >
+       REST-OF-SYSTEM 
+       CASH}
+     =>
+      {< O : Server | usedOfBudget : T'' + T, timeToDeadline : T''' monus T,
+                      leftOfJob : NZT monus T >
+       delta(REST-OF-SYSTEM, T)
+       delta(CASH, T)} 
+      in time T
+     if T <= mte(< O : Server | >  REST-OF-SYSTEM) 
+        /\ T''' <  firstDeadline(CASH)   [nonexec] .
+
+  --- Mte should be 0 when an overflow is detected:
+  op mte : Configuration -> TimeInf [frozen (1)] .
+  eq mte(none) = INF .
+  ceq mte(C C') = min(mte(C), mte(C'))  if C =/= none /\ C' =/= none .
+  
+  --- SIMULATON: must take timeToJob into account:
+  eq mte(< O : Server | state : idle, timeToJob : T >) = T .
+
+  eq mte(< O : Server | state : waiting, usedOfBudget : T, maxBudget : NZT,
+                        timeToDeadline : T' >) =
+        if (NZT monus T) > T'    --- overflow!!!
+        then 0 else T' fi .
+
+  --- SIMULATION: leftOfJob new parameter below!
+  eq mte(< O : Server | state : executing, usedOfBudget : T, maxBudget : NZT,
+                        timeToDeadline : T', leftOfJob : T'' >) =
+        if (NZT monus T) > T'     --- overflow!
+        then 0 else min(T'', NZT monus T) fi .
+
+  eq mte([CASH: CQ]) = if CQ == emptyQueue then INF 
+                          else min(firstBudget([CASH: CQ]),
+                                   firstDeadline([CASH: CQ])) fi .
+
+  eq mte(DEADLINE-MISS) = 0 .
+  
+  --- The mte differs slightly in the cases where a node is executing on 
+  --- whether it executes its own budget or a spare capacity:
+  --- SIMULATION: must also take into account leftOfJob!
+
+  op mteCashUse : Object -> Time .
+  eq mteCashUse(< O : Server | state : executing, usedOfBudget : T, 
+                               maxBudget : NZT, timeToDeadline : T',
+                               leftOfJob : T'' >) =
+        if (NZT monus T) > T'     --- overflow!
+        then 0 else min(T'', T') fi .
+
+  --- SIMULATION, must also take leftOfJob and timeToJob into account:
+  op delta : Configuration Time -> Configuration [frozen (1)] .
+  eq delta(none, T) = none .
+  ceq delta(C C', T) = delta(C, T) delta(C', T) if C =/= none /\ C' =/= none .
+  eq delta(< O : Server | state : idle, timeToDeadline : T,
+                          timeToJob : T'' >, T') =
+           < O : Server | timeToDeadline : T monus T',
+                          timeToJob : T'' monus T' > .
+  eq delta(< O : Server | state : waiting, timeToDeadline : T >, T') =
+           < O : Server | timeToDeadline : T monus T' > .
+  --- Note that the effect of time elapse on an executing node is given 
+  --- directly in the tick rules.
+
+  eq delta([CASH: CQ], T) = [CASH: delta(CQ, T)] .
+  
+  op delta : CapacityQueue Time -> CapacityQueue .
+  eq delta(emptyQueue, T) = emptyQueue .
+  eq delta((deadline: NZT budget: NZT') CQ, T) =
+       ((deadline: (NZT monus T) budget: NZT') delta(CQ, T)) .
+
+  --- SIMULATION: new:
+  eq mte(SEED) = INF .
+  eq delta(SEED, T) = SEED .
+
+---( This is as submitted to FASE. To make it correct, it should be changed.  
+  op useSpareCapacity : Cash Time -> Cash .
+  eq useSpareCapacity([CASH: emptyQueue], T) = [CASH: emptyQueue] .
+  eq useSpareCapacity([CASH: (deadline: NZT budget: NZT') CQ], T) =
+       if T <= NZT' then    --- enough time in first budget ...
+          [CASH: (deadline: NZT budget: NZT' monus T) CQ]
+       else
+          useSpareCapacity([CASH: CQ], T monus NZT')
+       fi .
+)---
+
+--- The new version also takes adds a third parameter denoting
+--- how much time has been spent in this round. Think of a setting
+--- where we have capacities (6,5) and (7,5) and (10,3), and 
+--- useSpareCapacity needs to use 10 time units. We must ensure
+--- that ALL available spare budgets are exhausted in the above example:
+  op useSpareCapacity : Cash Time -> Cash .
+  op useSpareCapacity : Cash Time Time -> Cash .
+  --- usage: useSpareCapacity(cash,LeftToComsume, UsedSoFarInTick)
+  eq useSpareCapacity(CASH, T) = useSpareCapacity(CASH, T, 0) .
+  eq useSpareCapacity([CASH: emptyQueue], T, T') = [CASH: emptyQueue] .
+  eq useSpareCapacity([CASH: (deadline: NZT budget: NZT') CQ], T, T') =
+       if T <= min(NZT monus T', NZT') then --- enough time in first budget ...
+          [CASH: (deadline: NZT budget: NZT' monus T) CQ]
+       else
+          useSpareCapacity([CASH: CQ], T monus min(NZT monus T', NZT'),
+                                       T' + min(NZT monus T', NZT'))
+       fi .
+endtom)  
+
+
+
+
+(tomod CASH-USE-EARLIEST-BUDGET-WHEN-IDLING is
+  including CASH-COMMON .
+
+  var REST-OF-SYSTEM : Configuration .
+  var CASH : Cash .
+  var T : Time .
+
+  crl [tickIdle] :
+      {REST-OF-SYSTEM 
+       AVAILABLE-PROCESSOR
+       CASH}
+     =>
+      {delta(REST-OF-SYSTEM, T)
+       AVAILABLE-PROCESSOR
+       delta(useSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= mte(REST-OF-SYSTEM) [nonexec] .   
+endtom)
+
+
+
+--- First modification: when idling, steal time from "backwards" ...
+--- instead of from the front ... only change that useSpareCapacity 
+--- is replaced by useLatestSpareCapacity:
+
+(tomod CASH-USE-LATEST-BUDGET-WHEN-IDLING is
+  protecting CASH-COMMON .
+
+  var REST-OF-SYSTEM : Configuration .
+  var CASH : Cash .
+  vars T : Time .
+  vars NZT NZT' : NzTime .
+  var CQ : CapacityQueue .
+
+
+  crl [tickIdle] :
+      {REST-OF-SYSTEM 
+       AVAILABLE-PROCESSOR
+       CASH}
+     =>
+      {delta(REST-OF-SYSTEM, T)
+       AVAILABLE-PROCESSOR
+       delta(useLatestSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= mte(REST-OF-SYSTEM) [nonexec] .
+
+
+  op useLatestSpareCapacity : Cash Time -> Cash .
+  eq useLatestSpareCapacity([CASH: emptyQueue], T) = [CASH: emptyQueue] .
+  eq useLatestSpareCapacity([CASH: CQ (deadline: NZT budget: NZT')], T) =
+       if T <= NZT' then    --- enough time in LAST budget ...
+          [CASH: CQ (deadline: NZT budget: NZT' monus T)]
+       else
+          useLatestSpareCapacity([CASH: CQ], T monus NZT')
+       fi .
+
+endtom)
+
+
+
+
+--- SIMULATION: Add first job for these guys!
+
+(tomod TEST-STATES-FOR-SIMULATION is 
+  including CASH .
+  including SERVER .
+  including RANDOM .
+ 
+  ops s1 s2 s3 s4 : -> Oid .
+
+  var N : Nat .                 --- Initial seed.
+
+  --- SIMULATION: add a parameter for seed:
+  --- SIMULATION: generate first jobs!
+  --- A simple 2/5  3/5 system:
+  op init1 : Nat -> GlobalSystem .
+  eq init1(N) =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 7,
+                       leftOfJob : 1 + (random(random(N)) rem 3) >
+       < s2 : Server | maxBudget : 3, period : 5, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 7,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 4) >
+       [Seed: repeatRandom(N, 4)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  --- A slightly more complex 2/5  4/7 system (34/35 total bandwidth used):
+  op init2 : Nat -> GlobalSystem .
+  eq init2(N) =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 7,
+                       leftOfJob : 1 + (random(random(N)) rem 3) >
+       < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 9,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 5) >
+       [Seed: repeatRandom(N, 4)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  op init2b : Nat -> GlobalSystem .
+  eq init2b(N) =
+      {< s1 : Server | maxBudget : 5, period : 12, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 14,
+                       leftOfJob : 1 + (random(random(N)) rem 6) >
+       < s2 : Server | maxBudget : 7, period : 13, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 15,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 8) >
+       [Seed: repeatRandom(N, 4)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  --- A bad state where bandwidth usage is more than 1:
+  op initBad : Nat -> GlobalSystem .
+  eq initBad(N) =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 7,
+                       leftOfJob : 1 + (random(random(N)) rem 3) >
+       < s2 : Server | maxBudget : 5, period : 7, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 9,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 6) >
+       [Seed: repeatRandom(N, 4)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+
+  op init3 : Nat -> GlobalSystem .
+  eq init3(N) =
+      {< s1 : Server | maxBudget : 2, period : 7, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 9,
+                       leftOfJob : 1 + (random(random(N)) rem 3) >
+       < s2 : Server | maxBudget : 2, period : 8, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0, 
+                       timeToJob : repeatRandom(N, 3) rem 10,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 3) >
+       < s3 : Server | maxBudget : 2, period : 9, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 5) rem 11,
+                       leftOfJob : 1 + (repeatRandom(N, 6) rem 3) >
+       < s4 : Server | maxBudget : 1, period : 5, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 7) rem 7,
+                       leftOfJob : 1 + (repeatRandom(N, 8) rem 2) >
+       [Seed: repeatRandom(N, 8)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  op init5 : Nat -> GlobalSystem . 
+  eq init5(N) =
+      {< s1 : Server | maxBudget : 1, period : 3, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 5,
+                       leftOfJob : 1 + (random(random(N)) rem 2) >
+       < s2 : Server | maxBudget : 4, period : 8, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 10,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 5) >
+       < s3 : Server | maxBudget : 4, period : 24, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 5) rem 26,
+                       leftOfJob : 1 + (repeatRandom(N, 6) rem 5) >
+       [Seed: repeatRandom(N, 6)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  op init6 : Nat -> GlobalSystem . 
+  eq init6(N) =
+      {< s1 : Server | maxBudget : 100, period : 1000, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : random(N) rem 100,
+                       leftOfJob : 1 + (random(random(N)) rem 102) >
+       < s2 : Server | maxBudget : 5, period : 10, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 3) rem 10,
+                       leftOfJob : 1 + (repeatRandom(N, 4) rem 5) >
+       < s3 : Server | maxBudget : 1, period : 3, state : idle,
+                       usedOfBudget : 0, timeToDeadline : 0,
+                       timeToJob : repeatRandom(N, 5) rem 5,
+                       leftOfJob : 1 + (repeatRandom(N, 6) rem 2) >
+       [Seed: repeatRandom(N, 6)]
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+
+endtom)
+
+
+
+(tomod SIMULATE-CASH-USE-EARLIEST-BUDGET-WHEN-IDLING is
+  including CASH-USE-EARLIEST-BUDGET-WHEN-IDLING .
+  including TEST-STATES-FOR-SIMULATION .
+endtom)
+
+
+
+(tomod SIMULATE-CASH-USE-LATEST-BUDGET-WHEN-IDLING is
+  including CASH-USE-LATEST-BUDGET-WHEN-IDLING .
+  including TEST-STATES-FOR-SIMULATION .
+endtom)
+
+
+ 
+
+--- --------------------------------------------------
+--- ANALYSIS:
+--- --------------------------------------------------
+
+(set tick max .)
+(tfrew init1(1757) in time <= 20000 .)
+(tfrew initBad(17) in time <= 1000 .)
+(tfrew init2(19979537) in time <= 20000 .)
+(tfrew init2b(195327) in time <= 20000 .)
+(tfrew init3(192337) in time <= 20000 .)
+(tfrew init5(9537) in time <= 20000 .)
+(tfrew init6(9537) in time <= 20000 .)
+
+
+--- ----------------------------------------------------------
+--- Analysis of ORIGINAL protocol, which is supposed to be OK:
+--- ----------------------------------------------------------
+
+--- (select SIMULATE-CASH-USE-EARLIEST-BUDGET-WHEN-IDLING .)
+
+
+eof
+
+--- Results of simulations up to time 1000000:
+--- ------------------------------------------
+
+---(
+Maude> (tfrew init5(133) in time <= 1000000 .)
+rewrites: 155423876 in 331890ms cpu (334850ms real) (468299 rewrites/second)
+
+Timed fair rewrite  init5(133)in SIMULATE-CASH-USE-LATEST-BUDGET-WHEN-IDLING
+    with mode maximal time increase in time <= 1000000
+
+Result ClockedSystem :
+  {   [CASH: emptyQueue ][Seed: 8491]< s1 : Server | leftOfJob : 2,maxBudget :
+    1,period : 3,state : idle,timeToDeadline : 2,timeToJob : 5,usedOfBudget : 1
+    > < s2 : Server | leftOfJob : 4,maxBudget : 4,period : 8,state : idle,
+    timeToDeadline : 1,timeToJob : 4,usedOfBudget : 4 > < s3 : Server |
+    leftOfJob : 8,maxBudget : 4,period : 24,state : executing,timeToDeadline :
+    23,timeToJob : 0,usedOfBudget : 0 >} in time 999998
+
+Maude> (tfrew init2(133) in time <= 1000000 .)
+rewrites: 72296988 in 160490ms cpu (162940ms real) (450476 rewrites/second)
+
+Timed fair rewrite  init2(133)in SIMULATE-CASH-USE-LATEST-BUDGET-WHEN-IDLING
+    with mode maximal time increase in time <= 1000000
+
+Result ClockedSystem :
+  {   [CASH: emptyQueue ][Seed: 3457]< s1 : Server | leftOfJob : 2,maxBudget :
+    2,period : 5,state : waiting,timeToDeadline : 9,timeToJob : 0,usedOfBudget
+    : 0 > < s2 : Server | leftOfJob : 5,maxBudget : 4,period : 7,state :
+    executing,timeToDeadline : 4,timeToJob : 0,usedOfBudget : 3 >} in time
+    1000000
+)---
