@@ -126,7 +126,7 @@ fmod GRAPH-FOLDING-SEARCH is
     eq intersect(.NodeSet, NS)     = false .
     eq intersect(NeNS ; NeNS', NS) = intersect(NeNS, NS) or intersect(NeNS', NS) .
 
-    --- Sometimes this may speed things up?
+    --- TODO: Sometimes this may speed things up? Check performance.
    ceq intersect(ND, ND') = true if ND <= ND' .
 
     op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
