@@ -534,6 +534,18 @@ reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(3)) .
 rewrites: 3
 result Bool: true
 ==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(4)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(5)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(6)) .
+rewrites: 3
+result Bool: true
+==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(0))) .
 rewrites: 37
 result Transition: < label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,

@@ -84,9 +84,12 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     op init : Nat -> [Term] .
     -------------------------
     eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat>,'1.NzNat>,'1.NzNat>],'wait.NcMode,'_+_['1.NzNat>,'1.NzNat>]] .
-    eq init(1) = '<_`,_`,_`,_>['PNC:NcMode   , 'X1:Nat> , 'QC:Mode      , 'X2:Nat>] .
-    eq init(2) = '<_`,_`,_`,_>['PC:Mode      , 'Y1:Nat> , 'QNC:NcMode   , 'Y2:Nat>] .
-    eq init(3) = '<_`,_`,_`,_>['sleep.NcMode , 'X0:Nat> , 'sleep.NcMode , 'X0:Nat>] .
+    eq init(1) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:Nat>   ] .
+    eq init(2) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:Nat>   , 'QNC:NcMode   , 'Y2:Nat>   ] .
+    eq init(3) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat>   , 'sleep.NcMode , 'X0:Nat>   ] .
+    eq init(4) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat>   , 'sleep.NcMode , 'X1:Nat>   ] .
+    eq init(5) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:NzNat> ] .
+    eq init(6) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat> , 'QNC:NcMode   , 'Y2:Nat>   ] .
 endm
 
 ***(Desired initial states and invariant:
@@ -104,6 +107,9 @@ reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
 reduce wellFormed(##m##, init(2)) .
 reduce wellFormed(##m##, init(3)) .
+reduce wellFormed(##m##, init(4)) .
+reduce wellFormed(##m##, init(5)) .
+reduce wellFormed(##m##, init(6)) .
 
 reduce step(state(init(0))) .
 reduce step(state(init(1))) .
