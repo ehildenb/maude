@@ -546,16 +546,16 @@ reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(6)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(0))) .
-rewrites: 37
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(states(0)) .
+rewrites: 38
 result Transition: < label(rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,
     'Y:Nat>] => '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'Y:Nat>],'Q:Mode,
     'Y:Nat>] [narrowing label('p1_sleep)] ., none),state('<_`,_`,_`,_>[
     'wait.NcMode,'_+_['1.Zero>,'1.Zero>,'1.Zero>],'wait.NcMode,'_+_['1.Zero>,
     '1.Zero>]]) >
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(1))) .
-rewrites: 226
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(states(1)) .
+rewrites: 227
 result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
@@ -617,8 +617,8 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
   'X2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,
     '@3:Nat>],'@2:Mode,'@3:Nat>]) >
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(2))) .
-rewrites: 226
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(states(2)) .
+rewrites: 227
 result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
@@ -681,8 +681,8 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
   'Y2:Nat> <- '@3:Nat>),state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,
     '@3:Nat>],'@2:NcMode,'@3:Nat>]) >
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(state(init(3))) .
-rewrites: 70
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : step(states(3)) .
+rewrites: 71
 result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,
     'X:Nat>]] [narrowing label('p2_sleep)] ., 
@@ -693,23 +693,21 @@ result NeTransitionSet: < label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
   'X0:Nat> <- '@1:Nat>),state('<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,
     '@1:Nat>],'sleep.NcMode,'@1:Nat>]) >
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state(init(3)) <= (state(init(1)) ;
-    state(init(2))) .
-rewrites: 8
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(3) <= states(1 ; 2) .
+rewrites: 12
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state(init(1)) <= (state(init(1)) ;
-    state(init(2))) .
-rewrites: 8
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(1) <= states(1 ; 2) .
+rewrites: 13
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state(init(2)) <= state(init(1)) .
-rewrites: 5
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(2) <= states(1) .
+rewrites: 7
 result [Bool]: state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) <=
     state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(1))) .
-rewrites: 936
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(1)) .
+rewrites: 937
 result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
@@ -879,8 +877,8 @@ rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
 8 |-> state('<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:Mode,'0.Zero>])
 | 33
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(2))) .
-rewrites: 1262
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(2)) .
+rewrites: 1263
 result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
@@ -1069,8 +1067,8 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
 34 |-> state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'crit.Mode,'0.Zero>])
 | 41
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(3))) .
-rewrites: 5942
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(3)) .
+rewrites: 5943
 result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.Zero>,
     'X:Nat>]] [narrowing label('p2_sleep)] ., 
@@ -1275,9 +1273,8 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
     '@1:Nat>],'sleep.NcMode,'0.Zero>])
 | 73
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(state(init(1)) ; state(init(
-    2))) .
-rewrites: 2175
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(1 ; 2)) .
+rewrites: 2178
 result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
@@ -1621,22 +1618,22 @@ rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
 23 |-> state('<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:Mode,'0.Zero>])
 | 66
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(1)))) .
-rewrites: 942
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(1))) .
+rewrites: 943
 result NeNodeSet: state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>])
     ; state('<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:Mode,'0.Zero>]) ; state(
     '<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_['@2:Nat>,'@3:Nat>]])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(2)))) .
-rewrites: 1272
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(2))) .
+rewrites: 1273
 result NeNodeSet: state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,'@2:Nat>]) ;
     state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat>,'@3:NzNat>],'crit.Mode,
     '@2:Nat>]) ; state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) ;
     state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'crit.Mode,'0.Zero>]) ; state(
     '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'@1:Nat>],'crit.Mode,'@1:Nat>])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(3)))) .
-rewrites: 5986
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(3))) .
+rewrites: 5987
 result NeNodeSet: state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'sleep.NcMode,
     '0.Zero>]) ; state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'wait.NcMode,'_+_[
     '1.Zero>,'1.Zero>]]) ; state('<_`,_`,_`,_>['crit.Mode,'_+_['1.Zero>,
@@ -1667,9 +1664,8 @@ result NeNodeSet: state('<_`,_`,_`,_>['crit.Mode,'1.Zero>,'sleep.NcMode,
     '<_`,_`,_`,_>['wait.NcMode,'_+_['1.Zero>,'1.Zero>,'1.Zero>,'@1:Nat>],
     'sleep.NcMode,'0.Zero>])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(1)) ; state(
-    init(2)))) .
-rewrites: 2187
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(1 ; 2))) .
+rewrites: 2190
 result NeNodeSet: state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,'@2:Nat>]) ;
     state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat>,'@3:NzNat>],'crit.Mode,
     '@2:Nat>]) ; state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) ;
@@ -1677,50 +1673,47 @@ result NeNodeSet: state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,'@2:Nat>]) ;
     '<_`,_`,_`,_>['crit.Mode,'@1:Nat>,'@2:Mode,'0.Zero>]) ; state(
     '<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_['@2:Nat>,'@3:Nat>]])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(1)) ; state(
-    init(2)))) <= (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) .
-rewrites: 4478
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(1 ; 2))) <= (
+    nodes(bfs(states(1))) ; nodes(bfs(states(2)))) .
+rewrites: 4485
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : (nodes(bfs(state(init(1)))) ;
-    nodes(bfs(state(init(2))))) <= nodes(bfs(state(init(1)) ; state(init(2))))
-    .
-rewrites: 4507
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : (nodes(bfs(states(1))) ; nodes(bfs(
+    states(2)))) <= nodes(bfs(states(1 ; 2))) .
+rewrites: 4514
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state(init(3)) <= (state(init(1)) ;
-    state(init(2))) .
-rewrites: 8
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(3) <= states(1 ; 2) .
+rewrites: 12
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state(init(3)) <= nodes(bfs(state(
-    init(1)) ; state(init(2)))) .
-rewrites: 2199
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(3) <= nodes(bfs(states(1 ;
+    2))) .
+rewrites: 2203
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : (state(init(1)) ; state(init(2)))
-    <= nodes(extend(state(init(1)) ; state(init(2)))) .
-rewrites: 855
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(1 ; 2) <= nodes(extend(
+    states(1 ; 2))) .
+rewrites: 858
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : (state(init(1)) ; state(init(2)))
-    <= nodes(bfs(state(init(1)) ; state(init(2)))) .
-rewrites: 2210
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(1 ; 2) <= nodes(bfs(states(1
+    ; 2))) .
+rewrites: 2213
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(extend(state(init(1)) ;
-    state(init(2)))) <= nodes(bfs(state(init(1)) ; state(init(2)))) .
-rewrites: 3018
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(extend(states(1 ; 2))) <=
+    nodes(bfs(states(1 ; 2))) .
+rewrites: 3021
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(3)))) <= (
-    state(init(1)) ; state(init(2))) .
-rewrites: 6158
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(3))) <= states(1 ;
+    2) .
+rewrites: 6162
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : invariant(state(init(1)) ; state(
-    init(2))) .
-rewrites: 844
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : invariant(states(1 ; 2)) .
+rewrites: 847
 result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_[
     '@2:Nat>,'@3:Nat>]]) <= (state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,
     'Y2:Nat>]) ; state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>]))
@@ -1740,9 +1733,9 @@ result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_[
     '<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) ; state(
     '<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>]))
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(state(init(1)) ; state(
-    init(2)))) <= (state(init(1)) ; state(init(2))) .
-rewrites: 2198
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(1 ; 2))) <=
+    states(1 ; 2) .
+rewrites: 2201
 result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_[
     '@2:Nat>,'@3:Nat>]]) <= (state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,
     'Y2:Nat>]) ; state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>]))
@@ -1762,9 +1755,9 @@ result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_[
     '<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) ; state(
     '<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>]))
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : check state(init(3)) stable in
-    state(init(1)) ; state(init(2)) .
-rewrites: 852
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : check states(3) stable in states(1
+    ; 2) .
+rewrites: 856
 result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat>,'@1:Mode,'_+_[
     '@2:Nat>,'@3:Nat>]]) <= (state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,
     'Y2:Nat>]) ; state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>]))

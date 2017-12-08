@@ -79,6 +79,15 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     extending FVP-NARROWING-GRAPH .
     extending GRAPH-ANALYSIS .
 
+    var N : Nat . vars NeNS NeNS' : NeNodeSet .
+
+    op states : NodeSet -> [NodeSet] .
+    ----------------------------------
+    eq states(N) = state(init(N)) .
+
+    eq states(.NodeSet)     = .NodeSet .
+    eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
+
     eq ##m## = upModule('BAKERY-FVP-CTOR, true) .
 
     op init : Nat -> [Term] .
@@ -111,40 +120,40 @@ reduce wellFormed(##m##, init(4)) .
 reduce wellFormed(##m##, init(5)) .
 reduce wellFormed(##m##, init(6)) .
 
-reduce step(state(init(0))) .
-reduce step(state(init(1))) .
-reduce step(state(init(2))) .
-reduce step(state(init(3))) .
+reduce step(states(0)) .
+reduce step(states(1)) .
+reduce step(states(2)) .
+reduce step(states(3)) .
 
-reduce state(init(3)) <= (state(init(1)) ; state(init(2))) .
-reduce state(init(1)) <= (state(init(1)) ; state(init(2))) .
-reduce state(init(2)) <= state(init(1)) .
+reduce states(3) <= states(1 ; 2) .
+reduce states(1) <= states(1 ; 2) .
+reduce states(2) <= states(1) .
 
 --- both initial states yield finite state-graphs
-reduce bfs(state(init(1))) .
-reduce bfs(state(init(2))) .
-reduce bfs(state(init(3))) .
-reduce bfs(state(init(1)) ; state(init(2))) .
+reduce bfs(states(1)) .
+reduce bfs(states(2)) .
+reduce bfs(states(3)) .
+reduce bfs(states(1 ; 2)) .
 
-reduce nodes(bfs(state(init(1)))) .
-reduce nodes(bfs(state(init(2)))) .
-reduce nodes(bfs(state(init(3)))) .
-reduce nodes(bfs(state(init(1)) ; state(init(2)))) .
+reduce nodes(bfs(states(1))) .
+reduce nodes(bfs(states(2))) .
+reduce nodes(bfs(states(3))) .
+reduce nodes(bfs(states(1 ; 2))) .
 
-reduce nodes(bfs(state(init(1)) ; state(init(2)))) <= (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) .
-reduce (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+reduce nodes(bfs(states(1 ; 2))) <= (nodes(bfs(states(1))) ; nodes(bfs(states(2)))) .
+reduce (nodes(bfs(states(1))) ; nodes(bfs(states(2)))) <= nodes(bfs(states(1 ; 2))) .
 
-reduce state(init(3))                                 <= (state(init(1)) ; state(init(2))) .
-reduce state(init(3))                                 <= nodes(bfs(state(init(1)) ; state(init(2)))) .
-reduce (state(init(1)) ; state(init(2)))              <= nodes(extend(state(init(1)) ; state(init(2)))) .
-reduce (state(init(1)) ; state(init(2)))              <= nodes(bfs(state(init(1)) ; state(init(2)))) .
-reduce nodes(extend(state(init(1)) ; state(init(2)))) <= nodes(bfs(state(init(1)) ; state(init(2)))) .
+reduce states(3)                    <= (states(1 ; 2)) .
+reduce states(3)                    <= nodes(bfs(states(1 ; 2))) .
+reduce (states(1 ; 2))              <= nodes(extend(states(1 ; 2))) .
+reduce (states(1 ; 2))              <= nodes(bfs(states(1 ; 2))) .
+reduce nodes(extend(states(1 ; 2))) <= nodes(bfs(states(1 ; 2))) .
 
 --- state init(3) stays within init(1) ; init(2)
-reduce nodes(bfs(state(init(3)))) <= (state(init(1)) ; state(init(2))) .
+reduce nodes(bfs(states(3))) <= (states(1 ; 2)) .
 
 --- even though in general init(1) ; init(2) is *not* an invariant
 --- this is because both the counters could be zero to start, which means both `sleep => wait` rules can fire
-reduce invariant(state(init(1)) ; state(init(2))) .
-reduce nodes(bfs(state(init(1)) ; state(init(2)))) <= (state(init(1)) ; state(init(2))) .
-reduce check state(init(3)) stable in state(init(1)) ; state(init(2)) .
+reduce invariant(states(1 ; 2)) .
+reduce nodes(bfs(states(1 ; 2))) <= (states(1 ; 2)) .
+reduce check states(3) stable in states(1 ; 2) .
