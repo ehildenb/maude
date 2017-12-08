@@ -10,6 +10,7 @@ Abstract Graph Search Algorithms
 load ../meta/narrowing.maude
 load ../meta/cterms.maude
 load ../meta/mtransform.maude
+load ../meta/variables.maude
 load lmc.maude
 
 set include BOOL off .
@@ -284,6 +285,7 @@ Instantiation to Narrowing
 ```maude
 fmod FVP-NARROWING-GRAPH is
    protecting NARROWING2 .
+   protecting VARIABLE-NUMBERS .
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
 
@@ -304,6 +306,9 @@ fmod FVP-NARROWING-GRAPH is
     ---------------------------------
     eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
+
+    --- Unification based intersection
+    eq intersect(state(T), state(T')) = metaVariantDisjointUnify(##m##, T =? T', empty, metaHighestVar((T, T')), 0) :: UnificationTriple .
 endfm
 ```
 
