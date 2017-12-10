@@ -12,12 +12,12 @@ reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
 reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
 reduce [ 3 < 4 ] * dirac(r) .
 reduce [ 4 < 3 ] * dirac(r) .
+reduce ln(x + y * 3) .
+reduce gaussAnti(x,0) .
+reduce gaussAnti(x,0) * dirac(r) .
 reduce int x . x .
 reduce int x . gaussAnti(x,x) .
-reduce gaussAnti(x,0) .
 reduce sum x . (int x . gaussAnti(x,0)) .
-reduce gaussAnti(x,0) * dirac(r) .
-reduce ln(x + y * 3) .
 
 reduce 3  [ 5 / y ] .
 reduce pi [ 5 / y ] .
