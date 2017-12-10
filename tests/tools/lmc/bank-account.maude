@@ -4,25 +4,32 @@ load ../../../contrib/systems/bank-account.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 load ../../../contrib/tools/meta/narrowing.maude
 
---- Module BANK-ACCOUNT-CTOR
---- ------------------------
+--- Initial states
+--- --------------
 
-mod BANK-ACCOUNT-CTOR-NARROWING-GRAPH is
+mod BANK-ACCOUNT-INIT-STATES is
     extending FVP-NARROWING-GRAPH .
-    extending GRAPH-ANALYSIS .
-
-    eq ##m## = upModule('BANK-ACCOUNT-CTOR, true) .
 
     op init : Nat -> [Term] .
     -------------------------
     eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
 endm
 
---- Module BANK-ACCOUNT-DEFINEDOPS
---- ------------------------------
+--- Module BANK-ACCOUNT-CTOR
+--- ------------------------
+
+mod BANK-ACCOUNT-CTOR-NARROWING-GRAPH is
+    extending BANK-ACCOUNT-INIT-STATES .
+    extending GRAPH-ANALYSIS .
+
+    eq ##m## = upModule('BANK-ACCOUNT-CTOR, true) .
+endm
 
 reduce wellFormed(##m##, init(0)) .
 reduce bfs(state(init(0))) .
+
+--- Module BANK-ACCOUNT-DEFINEDOPS
+--- ------------------------------
 
 mod BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH is
     extending FVP-NARROWING-MODULO-T-GRAPH .
