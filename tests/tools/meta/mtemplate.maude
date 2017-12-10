@@ -1,1 +1,38 @@
+set show timing off .
+
+load ../../../contrib/systems/dijkstra.maude
+load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/meta/mtemplate.maude
+
+--- Test MODULE-DECLARATION
+--- =======================
+
+select MODULE-DECLARATION .
+
+reduce sortSet( none ) .
+reduce sortSet( sorts none . ) .
+reduce sortSet( sorts 'S ; 'T ; 'R . ) .
+reduce sortSet( (sorts 'S ; 'T .) (sorts 'Q ; 'R .) ) .
+reduce sortSet( (sorts 'S ; 'T .) (sorts 'Q ; 'T .) ) .
+
+--- Test MODULE-TEMPLATE
+--- ====================
+
+select MODULE-TEMPLATE .
+
+reduce asTemplate(fmod 'TEST is nil sorts none . none none none none endfm) .
+
+reduce asTemplate(upModule('BOOL, true)) .
+reduce asTemplate(upModule('BOOL, false)) .
+reduce asTemplate(upModule('DIJKSTRA, true)) .
+reduce asTemplate(upModule('BAKERY-FVP, true)) .
+
+reduce fromTemplate('TEST, (none).ModuleDeclSet) .
+reduce fromTemplate('TEST, asTemplate(upModule('BOOL, false))) .
+reduce fromTemplate('DIJKSTRA, asTemplate(upModule('DIJKSTRA, true))) .
+reduce fromTemplate('BAKERY-FVP, asTemplate(upModule('BAKERY-FVP, true))) .
+
+reduce wellFormed(fromTemplate('TEST, (none).ModuleDeclSet)) .
+reduce wellFormed(fromTemplate('TEST, asTemplate(upModule('BOOL, false)))) .
+reduce wellFormed(fromTemplate('DIJKSTRA, asTemplate(upModule('DIJKSTRA, true)))) .
+reduce wellFormed(fromTemplate('BAKERY-FVP, asTemplate(upModule('BAKERY-FVP, true)))) .
