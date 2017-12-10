@@ -243,4 +243,329 @@ op 'mt : nil -> 'Soup [ctor] .
 op 'nil : nil -> 'Queue [ctor] .
 op 'true : nil -> 'Pred [ctor] .
 op 'tt : nil -> 'Bool* [ctor] .
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
+    stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
+rewrites: 128
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
+    stripConditions(asTemplate(upModule('BAKERY-FVP, true))))) .
+rewrites: 60
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('FT-COMM, stripConditions(
+    asTemplate(upModule('FT-COMM, true))))) .
+rewrites: 118
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
+    stripConditions(asTemplate(upModule('QLOCK-STATE, true))))) .
+rewrites: 8
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : unconditionalize('State, 'Condition, '_|_,
+    'META-LEVEL, asTemplate(upModule('DIJKSTRA, false))) .
+rewrites: 337
+result NeModuleDeclSet: pr 'DIJKSTRA-DATA .
+pr 'META-LEVEL .
+(sorts 'CState ; 'Conf ; 'State .)
+rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
+    'stop)] .
+rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
+    '__['`{1`,try`}.WProc,'PS:ProcSet]]] [label('start1)] .
+rl '<_>['_|_['P:Proc,'__['`{1`,upf`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
+    '__['`{2`,chf`}.2Proc,'PS:ProcSet]]] [label('set-flag1)] .
+rl '<_>['_|_['P:Proc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
+    '`{1`,upf`}.WProc,'__['P:Proc,'PS:ProcSet]]] [label('set-turn1)] .
+rl '<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
+    '__['`{2`,ext`}.2Proc,'PS:ProcSet]]] [label('done-crit1)] .
+rl '<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
+    '__['`{0`,try`}.WProc,'PS:ProcSet]]] [label('exit-crit1)] .
+rl '<_>['_|_['`{0`,try`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{1`,try`}.WProc,
+    'PS:ProcSet]] [label('start2)] .
+rl '<_>['_|_['`{0`,try`}.WProc,'__['`{1`,try`}.WProc,'PS:ProcSet]]] => '<_>[
+    '_|_['`{0`,try`}.WProc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]] [label(
+    'chk-turn1)] .
+rl '<_>['_|_['`{1`,try`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{1`,upf`}.WProc,
+    'PS:ProcSet]] [label('chk-turn2)] .
+rl '<_>['_|_['`{1`,upf`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{2`,chf`}.2Proc,
+    'PS:ProcSet]] [label('set-flag2)] .
+rl '<_>['_|_['`{2`,chf`}.2Proc,'2PS:2ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
+    '2PS:2ProcSet]] [label('fail-crit2)] .
+rl '<_>['_|_['`{2`,chf`}.2Proc,'WPS:WProcSet]] => '<_>['_|_['`{2`,crt`}.CProc,
+    'WPS:WProcSet]] [label('go-crit2)] .
+rl '<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
+    'PS:ProcSet]] [label('done-crit2)] .
+rl '<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]] => '<_>['_|_['`{0`,try`}.WProc,
+    'PS:ProcSet]] [label('exit-crit2)] .
+rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''tt.Bool*.Constant]],''tt.Bool*.Constant]]] [
+    label('go-crit1)] .
+rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''ff.Bool*.Constant]],''tt.Bool*.Constant]]] [
+    label('fail-crit1)] .
+op '<_> : 'Conf -> 'State [ctor] .
+op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
+op '_|_ : 'State 'Condition -> 'CState [none] .
+op '`[_`] : 'Conf -> 'State [ctor] .
+==========================================
+reduce in UNCONDITIONALIZE : unconditionalize('BState, 'Condition, '_|_,
+    'META-LEVEL, asTemplate(upModule('BAKERY-FVP, false))) .
+rewrites: 231
+result NeModuleDeclSet: pr 'META-LEVEL .
+pr 'NAT> .
+(sorts 'BState ; 'CBState ; 'Mode ; 'NcMode .)
+subsort 'NcMode < 'Mode .
+rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [label('p2_wait)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat>,'sleep.NcMode,'0.Zero>] [label('p2_crit)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.NzNat>,'X:Nat>]] [label('p2_sleep)] .
+rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [label('p1_crit)] .
+rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'wait.NcMode,'_+_['1.NzNat>,'Y:Nat>],'Q:Mode,'Y:Nat>] [label('p1_sleep)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [label('p1_wait)] .
+rl '_|_['<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'Y:Nat>],'#makeVariable`(<_`,_`,_`,_>`[P:Mode`,X:Nat>`,wait.NcMode`,Y:Nat>`]`,<_`,_`,_`,_>`[P:Mode`,X:Nat>`,crit.Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'tt.Bool>.Constant`]`):Condition] => '_|_['<_`,_`,_`,_>['P:Mode,
+    'X:Nat>,'crit.Mode,'Y:Nat>],'_/\_['#makeVariable`(<_`,_`,_`,_>`[P:Mode`,X:Nat>`,wait.NcMode`,Y:Nat>`]`,<_`,_`,_`,_>`[P:Mode`,X:Nat>`,crit.Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'tt.Bool>.Constant`]`):Condition,'_=_['_`[_`][''_>_.Sort,'_`,_[''X:Nat>.Variable,
+    ''Y:Nat>.Variable]],''tt.Bool>.Constant]]] [label('p2_wait)] .
+rl '_|_['<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>],'#makeVariable`(<_`,_`,_`,_>`[wait.NcMode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,<_`,_`,_`,_>`[crit.Mode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'ff.Bool>.Constant`]`):Condition] => '_|_['<_`,_`,_`,_>['crit.Mode,
+    'X:Nat>,'Q:Mode,'Y:Nat>],'_/\_['#makeVariable`(<_`,_`,_`,_>`[wait.NcMode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,<_`,_`,_`,_>`[crit.Mode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'ff.Bool>.Constant`]`):Condition,'_=_['_`[_`][''_>_.Sort,'_`,_[''X:Nat>.Variable,
+    ''Y:Nat>.Variable]],''ff.Bool>.Constant]]] [label('p1_wait)] .
+op '<_`,_`,_`,_> : 'Mode 'Nat> 'Mode 'Nat> -> 'BState [ctor] .
+op '_|_ : 'BState 'Condition -> 'CBState [none] .
+op 'crit : nil -> 'Mode [ctor] .
+op 'sleep : nil -> 'NcMode [ctor] .
+op 'wait : nil -> 'NcMode [ctor] .
+==========================================
+reduce in UNCONDITIONALIZE : unconditionalize('State, 'Condition, '_|_,
+    'META-LEVEL, asTemplate(upModule('FT-COMM, false))) .
+rewrites: 311
+result NeModuleDeclSet: pr 'FT-COMM-DATA .
+pr 'META-LEVEL .
+(sorts 'CState ; 'State .)
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'n?:MaybeNat*,
+    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'null.MaybeNat*,'`[_`,_`]['n:Nat*,
+    'p:NzNat*],'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
+    '_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],''tt.Bool*.Constant]]]
+    [label('resend-1)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'l:NeListNat*],'n?:MaybeNat*,
+    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,
+    'l:NeListNat*],'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],'l1:ListNat*,
+    'm:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_[
+    '_`[_`][''_=/=_.Sort,'_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],
+    ''tt.Bool*.Constant]]] [label('resend-+)] .
+rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'k:Nat*,'pa?:MaybePairNat*,
+    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
+    'null.MaybeNat*,'pa?:MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-ack)]
+    .
+rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,'pa:PairNat*,
+    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
+    'n?:MaybeNat*,'nullp.MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-snd)]
+    .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
+    'q:NzNat*],'l':NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['p:NzNat*,
+    'l:NeListNat*,'q:NzNat*,'nullp.MaybePairNat*,'l':NeListNat*,'q:NzNat*] [
+    label('resend-ack)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
+    '_:+_['1.NzNat*,'m:Nat*]],'l':NeListNat*,'m:Nat*] => '`[_::_|_|_|_::_`][
+    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'__[
+    'l':NeListNat*,'n:Nat*],'_:+_['1.NzNat*,'m:Nat*]] [label('rec-+)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
+    '_:+_['1.NzNat*,'m:Nat*]],'nil.ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`][
+    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,
+    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]] [label('rec-1)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'p:NzNat*,'pa?:MaybePairNat*,
+    'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['p:NzNat*,'nil.ListNat*,
+    'null.MaybeNat*,'nullp.MaybePairNat*,'l:NeListNat*,'q:NzNat*] [label(
+    'rec-ack-1)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*],'p:NzNat*,
+    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['_:+_[
+    '1.NzNat*,'p:NzNat*],'m:Nat*,'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_[
+    '1.NzNat*,'p:NzNat*]],'l:NeListNat*,'q:NzNat*] [label('rec-ack-2)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*,'l':NeListNat*],'p:NzNat*,
+    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['_:+_[
+    '1.NzNat*,'p:NzNat*],'__['m:Nat*,'l':NeListNat*],'null.MaybeNat*,'`[_`,_`][
+    'm:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],'l:NeListNat*,'q:NzNat*] [label(
+    'rec-ack-+)] .
+op '_|_ : 'State 'Condition -> 'CState [none] .
+op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
+    'Nat* -> 'State [ctor] .
+==========================================
+reduce in UNCONDITIONALIZE : fromTemplate('DIJKSTRA, unconditionalize('State,
+    'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA, false)))) .
+rewrites: 342
+result SModule: mod 'DIJKSTRA is
+  protecting 'DIJKSTRA-DATA .
+  protecting 'META-LEVEL .
+  sorts 'CState ; 'Conf ; 'State .
+  none
+  op '<_> : 'Conf -> 'State [ctor] .
+  op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
+  op '_|_ : 'State 'Condition -> 'CState [none] .
+  op '`[_`] : 'Conf -> 'State [ctor] .
+  none
+  none
+  rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [
+    label('stop)] .
+  rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
+    'P:Proc,'__['`{1`,try`}.WProc,'PS:ProcSet]]] [label('start1)] .
+  rl '<_>['_|_['P:Proc,'__['`{1`,upf`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
+    'P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] [label('set-flag1)] .
+  rl '<_>['_|_['P:Proc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
+    '`{1`,upf`}.WProc,'__['P:Proc,'PS:ProcSet]]] [label('set-turn1)] .
+  rl '<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] => '<_>['_|_[
+    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] [label('done-crit1)] .
+  rl '<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
+    'P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] [label('exit-crit1)] .
+  rl '<_>['_|_['`{0`,try`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{1`,try`}.WProc,
+    'PS:ProcSet]] [label('start2)] .
+  rl '<_>['_|_['`{0`,try`}.WProc,'__['`{1`,try`}.WProc,'PS:ProcSet]]] => '<_>[
+    '_|_['`{0`,try`}.WProc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]] [label(
+    'chk-turn1)] .
+  rl '<_>['_|_['`{1`,try`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{1`,upf`}.WProc,
+    'PS:ProcSet]] [label('chk-turn2)] .
+  rl '<_>['_|_['`{1`,upf`}.WProc,'PS:ProcSet]] => '<_>['_|_['`{2`,chf`}.2Proc,
+    'PS:ProcSet]] [label('set-flag2)] .
+  rl '<_>['_|_['`{2`,chf`}.2Proc,'2PS:2ProcSet]] => '<_>['_|_[
+    '`{2`,ext`}.2Proc,'2PS:2ProcSet]] [label('fail-crit2)] .
+  rl '<_>['_|_['`{2`,chf`}.2Proc,'WPS:WProcSet]] => '<_>['_|_[
+    '`{2`,crt`}.CProc,'WPS:WProcSet]] [label('go-crit2)] .
+  rl '<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
+    'PS:ProcSet]] [label('done-crit2)] .
+  rl '<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]] => '<_>['_|_['`{0`,try`}.WProc,
+    'PS:ProcSet]] [label('exit-crit2)] .
+  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''tt.Bool*.Constant]],''tt.Bool*.Constant]]] [
+    label('go-crit1)] .
+  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''ff.Bool*.Constant]],''tt.Bool*.Constant]]] [
+    label('fail-crit1)] .
+endm
+==========================================
+reduce in UNCONDITIONALIZE : fromTemplate('BAKERY-FVP, unconditionalize(
+    'BState, 'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('BAKERY-FVP,
+    false)))) .
+rewrites: 236
+result SModule: mod 'BAKERY-FVP is
+  protecting 'META-LEVEL .
+  protecting 'NAT> .
+  sorts 'BState ; 'CBState ; 'Mode ; 'NcMode .
+  subsort 'NcMode < 'Mode .
+  op '<_`,_`,_`,_> : 'Mode 'Nat> 'Mode 'Nat> -> 'BState [ctor] .
+  op '_|_ : 'BState 'Condition -> 'CBState [none] .
+  op 'crit : nil -> 'Mode [ctor] .
+  op 'sleep : nil -> 'NcMode [ctor] .
+  op 'wait : nil -> 'NcMode [ctor] .
+  none
+  none
+  rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [label('p2_wait)] .
+  rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [label('p2_crit)] .
+  rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.NzNat>,'X:Nat>]] [label('p2_sleep)] .
+  rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [label('p1_crit)] .
+  rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
+    'wait.NcMode,'_+_['1.NzNat>,'Y:Nat>],'Q:Mode,'Y:Nat>] [label('p1_sleep)] .
+  rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [label('p1_wait)] .
+  rl '_|_['<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'Y:Nat>],'#makeVariable`(<_`,_`,_`,_>`[P:Mode`,X:Nat>`,wait.NcMode`,Y:Nat>`]`,<_`,_`,_`,_>`[P:Mode`,X:Nat>`,crit.Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'tt.Bool>.Constant`]`):Condition] => '_|_['<_`,_`,_`,_>['P:Mode,
+    'X:Nat>,'crit.Mode,'Y:Nat>],'_/\_['#makeVariable`(<_`,_`,_`,_>`[P:Mode`,X:Nat>`,wait.NcMode`,Y:Nat>`]`,<_`,_`,_`,_>`[P:Mode`,X:Nat>`,crit.Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'tt.Bool>.Constant`]`):Condition,'_=_['_`[_`][''_>_.Sort,'_`,_[''X:Nat>.Variable,
+    ''Y:Nat>.Variable]],''tt.Bool>.Constant]]] [label('p2_wait)] .
+  rl '_|_['<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>],'#makeVariable`(<_`,_`,_`,_>`[wait.NcMode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,<_`,_`,_`,_>`[crit.Mode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'ff.Bool>.Constant`]`):Condition] => '_|_['<_`,_`,_`,_>['crit.Mode,
+    'X:Nat>,'Q:Mode,'Y:Nat>],'_/\_['#makeVariable`(<_`,_`,_`,_>`[wait.NcMode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,<_`,_`,_`,_>`[crit.Mode`,X:Nat>`,Q:Mode`,Y:Nat>`]`,_=_`[_`[_`]`['_>_.Sort`,_`,_`['X:Nat>.Variable`,'Y:Nat>.Variable`]`]`,'ff.Bool>.Constant`]`):Condition,'_=_['_`[_`][''_>_.Sort,'_`,_[''X:Nat>.Variable,
+    ''Y:Nat>.Variable]],''ff.Bool>.Constant]]] [label('p1_wait)] .
+endm
+==========================================
+reduce in UNCONDITIONALIZE : fromTemplate('FT-COMM, unconditionalize('State,
+    'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('FT-COMM, false)))) .
+rewrites: 316
+result SModule: mod 'FT-COMM is
+  protecting 'FT-COMM-DATA .
+  protecting 'META-LEVEL .
+  sorts 'CState ; 'State .
+  none
+  op '_|_ : 'State 'Condition -> 'CState [none] .
+  op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
+    'Nat* -> 'State [ctor] .
+  none
+  none
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'n?:MaybeNat*,
+    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'null.MaybeNat*,'`[_`,_`]['n:Nat*,
+    'p:NzNat*],'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
+    '_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],''tt.Bool*.Constant]]]
+    [label('resend-1)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'l:NeListNat*],
+    'n?:MaybeNat*,'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__[
+    'n:Nat*,'l:NeListNat*],'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],
+    'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,'_`,_[''n?:MaybeNat*.Variable,
+    ''p:NzNat*.Variable]],''tt.Bool*.Constant]]] [label('resend-+)] .
+  rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'k:Nat*,'pa?:MaybePairNat*,
+    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
+    'null.MaybeNat*,'pa?:MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-ack)]
+    .
+  rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,'pa:PairNat*,
+    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
+    'n?:MaybeNat*,'nullp.MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-snd)]
+    .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
+    'n:Nat*,'q:NzNat*],'l':NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`][
+    'p:NzNat*,'l:NeListNat*,'q:NzNat*,'nullp.MaybePairNat*,'l':NeListNat*,
+    'q:NzNat*] [label('resend-ack)] .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
+    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'l':NeListNat*,'m:Nat*] =>
+    '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],
+    'nullp.MaybePairNat*,'__['l':NeListNat*,'n:Nat*],'_:+_['1.NzNat*,'m:Nat*]]
+    [label('rec-+)] .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
+    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'nil.ListNat*,'m:Nat*] =>
+    '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],
+    'nullp.MaybePairNat*,'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]] [label('rec-1)] .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'p:NzNat*,'pa?:MaybePairNat*,
+    'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['p:NzNat*,'nil.ListNat*,
+    'null.MaybeNat*,'nullp.MaybePairNat*,'l:NeListNat*,'q:NzNat*] [label(
+    'rec-ack-1)] .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*],'p:NzNat*,
+    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['_:+_[
+    '1.NzNat*,'p:NzNat*],'m:Nat*,'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_[
+    '1.NzNat*,'p:NzNat*]],'l:NeListNat*,'q:NzNat*] [label('rec-ack-2)] .
+  rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*,'l':NeListNat*],
+    'p:NzNat*,'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] =>
+    '`[_::_|_|_|_::_`]['_:+_['1.NzNat*,'p:NzNat*],'__['m:Nat*,'l':NeListNat*],
+    'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],
+    'l:NeListNat*,'q:NzNat*] [label('rec-ack-+)] .
+endm
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
+    unconditionalize('State, 'Condition, '_|_, 'META-LEVEL, asTemplate(
+    upModule('DIJKSTRA, false))))) .
+rewrites: 343
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
+    unconditionalize('BState, 'Condition, '_|_, 'META-LEVEL, asTemplate(
+    upModule('BAKERY-FVP, false))))) .
+rewrites: 237
+result Bool: true
+==========================================
+reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('FT-COMM,
+    unconditionalize('State, 'Condition, '_|_, 'META-LEVEL, asTemplate(
+    upModule('FT-COMM, false))))) .
+rewrites: 317
+result Bool: true
 Bye.
