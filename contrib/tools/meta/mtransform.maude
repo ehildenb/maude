@@ -124,6 +124,10 @@ fmod UNCONDITIONALIZE is
        rmConditions(S, CS, OP, MDS)
     if S' := qid("C" + string(S)) .
 
+    op unconditionalize : Sort Sort Qid Qid Module -> [Module] .
+    ------------------------------------------------------------
+    eq unconditionalize(S, CS, OP, Q, M) = fromTemplate(getName(M), unconditionalize(S, CS, OP, Q, asTemplate(M))) .
+
     op stripConditions : ModuleDeclSet -> [ModuleDeclSet] .
     -------------------------------------------------------
     eq stripConditions(IS SDS SSDS OPDS MAS EQS)    = IS SDS SSDS OPDS MAS EQS .
