@@ -88,7 +88,7 @@ fmod UNCONDITIONALIZE is
    protecting MODULE-TEMPLATE .
    protecting DETERMINISTIC-VARIABLES .
 
-    var M : Module . var FM : FModule . var S : Sort .
+    var Q : Qid . var M : Module . var FM : FModule . var S : Sort .
     vars T T' C' : Term . var AS : AttrSet . var C : Condition . var V : Variable .
     var H : Header . var MDS : ModuleDeclSet .
     vars NeMDS NeMDS' : NeModuleDeclSet .
@@ -123,9 +123,9 @@ fmod UNCONDITIONALIZE is
     eq rmConditions'(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
     eq rmConditions'( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
 
-    op unconditionalize : Sort ModuleDeclSet -> [ModuleDeclSet] .
-    -------------------------------------------------------------
-    eq unconditionalize(S, MDS) = ( pr 'META-LEVEL . ) ctermOp(S) rmConditions(S, MDS) .
+    op unconditionalize : Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
+    -----------------------------------------------------------------
+    eq unconditionalize(S, Q, MDS) = ( pr Q . ) ctermOp(S) rmConditions(S, MDS) .
 endfm
 
 
