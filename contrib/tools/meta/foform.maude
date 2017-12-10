@@ -9,6 +9,7 @@
 
 
 load variables.maude
+load ../base/full-maude.maude
 
 fmod REFLECT is
   pr META-LEVEL .
