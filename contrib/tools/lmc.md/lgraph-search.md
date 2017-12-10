@@ -249,10 +249,9 @@ fmod GRAPH-ANALYSIS is
     eq bfs(NS)    = bfs(NS, unbounded) .
     eq bfs(NS, B) = #bfs(B, flgraph(NS)) .
 
-    eq #bfs(B,         FLG)        = FLG .
-    eq #bfs(0,         FLG |   NS) = FLG | NS .
-    eq #bfs(s N,       FLG | NeNS) = #bfs(N,         extend(FLG | NeNS)) .
-    eq #bfs(unbounded, FLG | NeNS) = #bfs(unbounded, extend(FLG | NeNS)) .
+    eq #bfs(B, FLG)        = FLG .
+    eq #bfs(0, FLG?)       = FLG? .
+    eq #bfs(B, FLG | NeNS) = #bfs(decrement(B), extend(FLG | NeNS)) .
 
     --- TODO: uniform command language (to perform multiple computations).
     op invariant : NodeSet -> [Bool] .
