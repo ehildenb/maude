@@ -88,7 +88,7 @@ fmod UNCONDITIONALIZE is
    protecting MODULE-TEMPLATE .
    protecting DETERMINISTIC-VARIABLES .
 
-    var Q : Qid . var M : Module . var FM : FModule . var S : Sort .
+    vars Q OP : Qid . var M : Module . var FM : FModule . vars S S' CS : Sort .
     vars T T' C' : Term . var AS : AttrSet . var C : Condition . var V : Variable .
     var H : Header . var MDS : ModuleDeclSet .
     vars NeMDS NeMDS' : NeModuleDeclSet .
@@ -100,25 +100,29 @@ fmod UNCONDITIONALIZE is
     -------------------------
     eq cSort(S) = qid("C" + string(S)) .
 
-    op ctermOp : Sort -> OpDecl .
-    -----------------------------
-    eq ctermOp(S) = (op '_|_ : S 'Condition -> cSort(S) [none] .) .
+    op rmConditions : Sort Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
+    ------------------------------------------------------------------
+    eq rmConditions(S, CS, OP, IS SDS SSDS OPDS MAS EQS) = IS SDS SSDS OPDS MAS EQS .
+    eq rmConditions(S, CS, OP, NeMDS NeMDS')             = rmConditions(S, CS, OP, NeMDS) rmConditions(S, CS, OP, NeMDS') .
 
-    op rmConditions : Sort ModuleDeclSet -> [ModuleDeclSet] .
-    ---------------------------------------------------------
-    eq rmConditions(S, IS SDS SSDS OPDS MAS EQS) = IS SDS SSDS OPDS MAS EQS .
-    eq rmConditions(S, NeMDS NeMDS')             = rmConditions(S, NeMDS) rmConditions(S, NeMDS') .
+--- TODO: is it safe to not touch rules with no conditions? Makes theory not topmost anymore?
+    eq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl T => T' [AS] . ) .
+---   ceq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl OP[T, V] => OP[T', V] [AS] . )
+---    if V := #var((T, T'), CS) .
 
-   ceq rmConditions(S, rl T => T' [AS] .) = ( rl '_|_[T, V] => '_|_[T', V] [AS] . )
-    if V := #var((T, T'), 'Condition) .
-
-   ceq rmConditions(S, crl T => T' if C [AS] .) = ( rl '_|_[T, V] => '_|_[T', '_/\_[V, C']] [AS] . )
+--- TODO: make parametric in operator '_/\_ as well?
+   ceq rmConditions(S, CS, OP, crl T => T' if C [AS] .) = ( rl OP[T, V] => OP[T', '_/\_[V, C']] [AS] . )
     if C' := upTerm(C)
-    /\ V  := #var((T, T', C'), 'Condition) .
+    /\ V  := #var((T, T', C'), CS) .
 
-    op unconditionalize : Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
-    -----------------------------------------------------------------
-    eq unconditionalize(S, Q, MDS) = ( pr Q . ) ctermOp(S) rmConditions(S, MDS) .
+    op unconditionalize : Sort Sort Qid Qid ModuleDeclSet -> [ModuleDeclSet] .
+    --------------------------------------------------------------------------
+   ceq unconditionalize(S, CS, OP, Q, MDS)
+     = ( pr Q . )
+       ( sorts cSort(S) . )
+       ( op OP : S CS -> cSort(S) [none] . )
+       rmConditions(S, CS, OP, MDS)
+    if S' := qid("C" + string(S)) .
 
     op stripConditions : ModuleDeclSet -> [ModuleDeclSet] .
     -------------------------------------------------------
