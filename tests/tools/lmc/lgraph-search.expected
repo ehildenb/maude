@@ -546,7 +546,7 @@ result FLGraph?: .LGraph
 | 0
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 1) .
-rewrites: 66
+rewrites: 67
 result FLGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
@@ -557,7 +557,7 @@ result FLGraph?: (0 -[x]-> 2
 | 2 ; 4
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 2) .
-rewrites: 163
+rewrites: 165
 result FLGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
@@ -573,7 +573,7 @@ result FLGraph?: (0 -[x]-> 2
 | 10 ; 12
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A) .
-rewrites: 251
+rewrites: 254
 result FLGraph: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
@@ -590,11 +590,11 @@ result FLGraph: (0 -[x]-> 2
 | 17
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, unbounded) == bfs(A) .
-rewrites: 502
+rewrites: 508
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 1) .
-rewrites: 26
+rewrites: 27
 result FLGraph?: (0 -[x]-> 2)
 | 0 |-> C
 2 |-> A
@@ -602,7 +602,7 @@ result FLGraph?: (0 -[x]-> 2)
 | 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 2) .
-rewrites: 95
+rewrites: 97
 result FLGraph?: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -614,7 +614,7 @@ result FLGraph?: (0 -[x]-> 2
 | 6
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C) .
-rewrites: 196
+rewrites: 200
 result FLGraph: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -638,7 +638,7 @@ result FLGraph?: .LGraph
 | 0 ; 1 ; 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, 1) .
-rewrites: 157
+rewrites: 158
 result FLGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
@@ -652,7 +652,7 @@ result FLGraph?: (0 -[x]-> 1
 | 6
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, unbounded) .
-rewrites: 284
+rewrites: 287
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
@@ -669,7 +669,7 @@ result FLGraph: (0 -[x]-> 1
 | 19
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(B ; F, unbounded) .
-rewrites: 101
+rewrites: 103
 result FLGraph: (0 -[y]-> 0
 1 -[x]-> 5
 5 -[x]-> 5)
@@ -679,7 +679,7 @@ result FLGraph: (0 -[y]-> 0
 | 8
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; D, unbounded) .
-rewrites: 258
+rewrites: 260
 result FLGraph: (0 -[x]-> 3
 0 -[y]-> 1
 0 -[z]-> 1
@@ -696,7 +696,7 @@ result FLGraph: (0 -[x]-> 3
 | 18
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, 1) .
-rewrites: 503
+rewrites: 504
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3
@@ -718,7 +718,7 @@ result FLGraph: (0 -[x]-> 1
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, unbounded)
     .
-rewrites: 503
+rewrites: 504
 result FLGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3

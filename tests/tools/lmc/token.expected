@@ -169,7 +169,7 @@ result Fold: fold(
   'P:Proc <- '`[_`,wait`]['b.Name])
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(0))) .
-rewrites: 246
+rewrites: 250
 result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
     'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
     'a-enter)] ., none)]-> 2
@@ -189,7 +189,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(1))) .
-rewrites: 210
+rewrites: 212
 result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
     'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
     'a-enter)] ., 
@@ -212,7 +212,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(2))) .
-rewrites: 248
+rewrites: 252
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] =>
     '`{_`}['__['`[_`,wait`]['b.Name],'__['$.Token,'C:Conf]]] [narrowing label(
     'b-exit)] ., none)]-> 2
@@ -231,7 +231,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['b.Name]]] =>
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(3))) .
-rewrites: 248
+rewrites: 252
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
     '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
     'a-exit)] ., none)]-> 2
@@ -250,7 +250,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(4))) .
-rewrites: 543
+rewrites: 546
 result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
     'a.Name]]] => '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] [narrowing label(
     'a-enter)] ., 
@@ -302,7 +302,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['$.Token,'C:Conf,'`[_`,wait`][
 | 21
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(5))) .
-rewrites: 1600
+rewrites: 1606
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
     '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
     'a-exit)] ., 
@@ -383,7 +383,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
 | 35
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(6))) .
-rewrites: 1751
+rewrites: 1756
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
     '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
     'a-exit)] ., 
@@ -456,7 +456,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
 | 35
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
-rewrites: 1107
+rewrites: 1111
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
     '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
     'a-exit)] ., 
@@ -539,7 +539,7 @@ result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
 | 31
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
-rewrites: 1107
+rewrites: 1111
 result FLGraph: (0 -[label(rl '`{_`}['__['C:Conf,'`[_`,crit`]['a.Name]]] =>
     '`{_`}['__['`[_`,wait`]['a.Name],'__['*.Token,'C:Conf]]] [narrowing label(
     'a-exit)] ., 
