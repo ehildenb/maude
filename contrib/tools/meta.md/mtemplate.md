@@ -105,6 +105,11 @@ Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treat
     eq ( sorts none . )               = none .
     eq ( sorts SS . ) ( sorts SS' . ) = ( sorts SS ; SS' . ) .
 
+    op sortSet : SortDeclSet -> SortSet .
+    -------------------------------------
+    eq sortSet(none)       = none .
+    eq sortSet(sorts SS .) = SS .
+
     op _<_ : SortPoset SortPoset -> SortPoset [assoc id: none prec 122] .
     op (subsorts_.) : SortPoset -> SubsortDeclSet .
     -----------------------------------------------
@@ -306,7 +311,7 @@ fmod MODULE-TEMPLATE is
    protecting META-LEVEL .
 
     var H : Header . var IL : ImportList . var SS : SortSet .
-    var IS : ImportDeclSet . var SSDS : SubsortDeclSet . var OPDS : OpDeclSet .
+    var IS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . var OPDS : OpDeclSet .
     var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet . var NeRLS : NeRuleSet .
     var ME : ModuleExpression . vars MOD MOD' : Module . var NeMTS : NeModuleTemplateSet .
 
@@ -319,8 +324,8 @@ fmod MODULE-TEMPLATE is
 
     op fromTemplate : Header ModuleDeclSet -> [Module] .
     ----------------------------------------------------
-    eq fromTemplate(H, (IS (sorts SS .) SSDS OPDS MAS EQS))       = (fmod H is importList(IS) sorts SS . SSDS OPDS MAS EQS       endfm) .
-    eq fromTemplate(H, (IS (sorts SS .) SSDS OPDS MAS EQS NeRLS)) =  (mod H is importList(IS) sorts SS . SSDS OPDS MAS EQS NeRLS endm) .
+    eq fromTemplate(H, (IS SDS SSDS OPDS MAS EQS))       = (fmod H is importList(IS) sorts sortSet(SDS) . SSDS OPDS MAS EQS       endfm) .
+    eq fromTemplate(H, (IS SDS SSDS OPDS MAS EQS NeRLS)) =  (mod H is importList(IS) sorts sortSet(SDS) . SSDS OPDS MAS EQS NeRLS endm) .
 
     op _++_ : Module ModuleTemplateSet -> [Module] [right id: none prec 72] .
     -------------------------------------------------------------------------
