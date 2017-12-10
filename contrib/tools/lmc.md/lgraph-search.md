@@ -271,8 +271,8 @@ fmod GRAPH-ANALYSIS is
     eq NS =>*     NS' = NS =>[ unbounded ] NS' .
     eq NS =>[ B ] NS' = intersect(NS, NS') or-else extend(NS) =>[ decrement(B) ] NS' .
 
-    eq FLG?         =>[ B ] .NodeSet = false .
-    eq FLG          =>[ B ] NeNS'    = false .
+    eq  FLG?        =>[ B ] .NodeSet = false .
+    eq  FLG         =>[ B ] NeNS'    = false .
     eq (FLG | NeNS) =>[ B ] NeNS'    = intersect(NeNS', frontier(FLG | NeNS)) or-else extend(FLG | NeNS) =>[ decrement(B) ] NeNS' .
 endfm
 ```
