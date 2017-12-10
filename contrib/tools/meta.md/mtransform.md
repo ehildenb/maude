@@ -119,15 +119,15 @@ fmod UNCONDITIONALIZE is
     if C' := upTerm(C)
     /\ V  := #var((T, T', C'), 'Condition) .
 
+    op unconditionalize : Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
+    -----------------------------------------------------------------
+    eq unconditionalize(S, Q, MDS) = ( pr Q . ) ctermOp(S) rmConditions(S, MDS) .
+
     op rmConditions' : ModuleDeclSet -> [ModuleDeclSet] .
     ----------------------------------------------------
     eq rmConditions'(IS SDS SSDS OPDS MAS EQS)    = IS SDS SSDS OPDS MAS EQS .
     eq rmConditions'(NeMDS NeMDS')                = rmConditions'(NeMDS) rmConditions'(NeMDS') .
     eq rmConditions'(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
     eq rmConditions'( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
-
-    op unconditionalize : Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
-    -----------------------------------------------------------------
-    eq unconditionalize(S, Q, MDS) = ( pr Q . ) ctermOp(S) rmConditions(S, MDS) .
 endfm
 ```
