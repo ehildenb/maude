@@ -43,6 +43,11 @@ fmod NAT-PRES-MONUS is
     eq m + n >= n         = tt [variant] .
     eq n     >= m + n + 1 = ff [variant] .
 
+    op _==_ : Nat Nat -> Truth [comm] .
+    -----------------------------------
+    eq n == n         = tt [variant] .
+    eq n == n + m + 1 = ff [variant] .
+
     op _-_ : Nat Nat -> Nat .  *** monus
     ------------------------------------
     eq n       - (n + m) = 0 [variant] .
