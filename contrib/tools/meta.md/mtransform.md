@@ -107,13 +107,17 @@ fmod UNCONDITIONALIZE is
     ------------------------------------------------------------------
     eq rmConditions(S, CS, OP, IS SDS SSDS OPDS MAS EQS) = IS SDS SSDS OPDS MAS EQS .
     eq rmConditions(S, CS, OP, NeMDS NeMDS')             = rmConditions(S, CS, OP, NeMDS) rmConditions(S, CS, OP, NeMDS') .
+```
 
---- TODO: is it safe to not touch rules with no conditions? Makes theory not topmost anymore?
-    eq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl T => T' [AS] . ) .
----   ceq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl OP[T, V] => OP[T', V] [AS] . )
----    if V := #var((T, T'), CS) .
+The following rules add an extra variable to each rule to capture the accumulated condition.
+Currently, we assume syntax `'_/\_` exists to conjunct the conditions together (though the transformation could probably be made parametric in this).
+Note that we must transform both conditional and unconditional rules, so that narrowing substitutions into the original term also instantiate variables in the condition.
+This also assumes that the given theory is topmost.
 
---- TODO: make parametric in operator '_/\_ as well?
+```maude
+   ceq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl OP[T, V] => OP[T', V] [AS] . )
+    if V := #var((T, T'), CS) .
+
    ceq rmConditions(S, CS, OP, crl T => T' if C [AS] .) = ( rl OP[T, V] => OP[T', '_/\_[V, C']] [AS] . )
     if C' := upTerm(C)
     /\ V  := #var((T, T', C'), CS) .
