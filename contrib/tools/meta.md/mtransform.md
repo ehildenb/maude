@@ -123,11 +123,11 @@ fmod UNCONDITIONALIZE is
     -----------------------------------------------------------------
     eq unconditionalize(S, Q, MDS) = ( pr Q . ) ctermOp(S) rmConditions(S, MDS) .
 
-    op rmConditions' : ModuleDeclSet -> [ModuleDeclSet] .
-    ----------------------------------------------------
-    eq rmConditions'(IS SDS SSDS OPDS MAS EQS)    = IS SDS SSDS OPDS MAS EQS .
-    eq rmConditions'(NeMDS NeMDS')                = rmConditions'(NeMDS) rmConditions'(NeMDS') .
-    eq rmConditions'(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
-    eq rmConditions'( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
+    op stripConditions : ModuleDeclSet -> [ModuleDeclSet] .
+    -------------------------------------------------------
+    eq stripConditions(IS SDS SSDS OPDS MAS EQS)    = IS SDS SSDS OPDS MAS EQS .
+    eq stripConditions(NeMDS NeMDS')                = stripConditions(NeMDS) stripConditions(NeMDS') .
+    eq stripConditions(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
+    eq stripConditions( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
 endfm
 ```
