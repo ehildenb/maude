@@ -3,7 +3,7 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
-reduce in UNCONDITIONALIZE : rmConditions'(asTemplate(upModule('DIJKSTRA,
+reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
 rewrites: 124
 result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool* ; 'CProc ; 'Conf ;
@@ -86,7 +86,7 @@ op 'not*_ : 'Bool* -> 'Bool* [none] .
 op 'safe? : 'ProcSet -> 'Bool* [none] .
 op 'tt : nil -> 'Bool* [ctor] .
 ==========================================
-reduce in UNCONDITIONALIZE : rmConditions'(asTemplate(upModule('BAKERY-FVP,
+reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
 rewrites: 56
 result NeModuleDeclSet: (sorts 'BState ; 'Bool> ; 'Mode ; 'Nat> ; 'NcMode ;
@@ -126,7 +126,7 @@ op 'sleep : nil -> 'NcMode [ctor] .
 op 'tt : nil -> 'Bool> [ctor] .
 op 'wait : nil -> 'NcMode [ctor] .
 ==========================================
-reduce in UNCONDITIONALIZE : rmConditions'(asTemplate(upModule('FT-COMM,
+reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('FT-COMM,
     true))) .
 rewrites: 114
 result NeModuleDeclSet: (sorts 'Bool* ; 'ListNat* ; 'MaybeNat* ; 'MaybePairNat*
@@ -219,7 +219,7 @@ op 's : 'Nat* -> 'Nat* [none] .
 op 'sd : 'Nat* 'Nat* -> 'Nat* [none] .
 op 'tt : nil -> 'Bool* [ctor] .
 ==========================================
-reduce in UNCONDITIONALIZE : rmConditions'(asTemplate(upModule('QLOCK-STATE,
+reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('QLOCK-STATE,
     true))) .
 rewrites: 4
 result NeModuleDeclSet: (sorts 'Bool* ; 'Nat* ; 'NeQueue ; 'Pred ; 'Queue ;
