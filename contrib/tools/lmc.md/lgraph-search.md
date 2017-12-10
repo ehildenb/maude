@@ -182,12 +182,20 @@ fmod GRAPH-FOLDING-SEARCH is
 
     var FLG : FLGraph . var FLG? : FLGraph? .
 
-    op _|_|_ : LGraph NodeMap Nat -> FLGraph [format(d n d n d d)] .
-    ----------------------------------------------------------------
+    op .FLGraph :                    -> FLGraph .
+    op _|_|_    : LGraph NodeMap Nat -> FLGraph [format(d n d n d d)] .
+    -------------------------------------------------------------------
+    eq .FLGraph = .LGraph | .NodeMap | 0 .
 
     op _|_ : FLGraph NodeSet -> FLGraph? [right id: .NodeSet format(d n d d)] .
     ---------------------------------------------------------------------------
     eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
+
+    op nodes    : FLGraph? -> [NodeSet] .
+    op frontier : FLGraph? -> [NodeSet] .
+    -------------------------------------
+    eq nodes   (LG | NM | N | NS) = nodes(NM) .
+    eq frontier(LG | NM | N | NS) = NM [ NS ] .
 
     op insert : NodeSet FLGraph? -> FLGraph? .
     op insert : LGraph  FLGraph? -> FLGraph? .
@@ -204,22 +212,12 @@ fmod GRAPH-FOLDING-SEARCH is
                               if { NM' , NID , NS } := insert(N |-> ND, NM) .
 
    ceq insert(ND -[ L ]-> ND', LG | NM | N) = (NID' -[ L ]-> NID'' LG) | NM'' | s s N | NS' ; NS''
-                                           if { NM'  , NID'  , NS'  } := insert(N   |-> ND,  NM)
+                                           if { NM'  , NID'  , NS'  } := insert(  N |-> ND,  NM)
                                            /\ { NM'' , NID'' , NS'' } := insert(s N |-> ND', NM') .
 
-    op .FLGraph : -> FLGraph .
-    op flgraph  : NodeSet -> FLGraph? .
-    -----------------------------------
-    eq .FLGraph    = .LGraph | .NodeMap | 0 .
-    eq flgraph(NS) = insert(NS, .FLGraph) .
-
-    op nodes : FLGraph? -> [NodeSet] .
+    op flgraph : NodeSet -> FLGraph? .
     ----------------------------------
-    eq nodes(LG | NM | N | NS) = nodes(NM) .
-
-    op frontier : FLGraph? -> [NodeSet] .
-    -------------------------------------
-    eq frontier(LG | NM | N | NS) = NM [ NS ] .
+    eq flgraph(NS) = insert(NS, .FLGraph) .
 
     op extend : NodeSet  -> [FLGraph?] .
     op extend : FLGraph? -> [FLGraph?] .
