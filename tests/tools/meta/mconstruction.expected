@@ -1,1 +1,214 @@
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving LIST .
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+rewrites: 628
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'List{'A} ; 'List{'B} ; 'NeList{'A} ; 'NeList{'B} .
+  subsort 'A < 'B .
+  subsort 'A < 'NeList{'A} .
+  subsort 'B < 'NeList{'B} .
+  subsort 'List{'A} < 'List{'B} .
+  subsort 'NeList{'A} < 'List{'A} .
+  subsort 'NeList{'A} < 'NeList{'B} .
+  subsort 'NeList{'B} < 'List{'B} .
+  op '.List : nil -> 'List{'A} [ctor] .
+  op '.List : nil -> 'List{'B} [ctor] .
+  op '_`,_ : ('List{'A}) ('List{'A}) -> 'List{'A} [assoc ctor id(const('.List,
+    'List{'A}))] .
+  op '_`,_ : ('List{'A}) ('NeList{'A}) -> 'NeList{'A} [assoc ctor id(const(
+    '.List, 'List{'A}))] .
+  op '_`,_ : ('List{'B}) ('List{'B}) -> 'List{'B} [assoc ctor id(const('.List,
+    'List{'B}))] .
+  op '_`,_ : ('List{'B}) ('NeList{'B}) -> 'NeList{'B} [assoc ctor id(const(
+    '.List, 'List{'B}))] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving SET .
+rewrites: 739
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'NeSet{'A} ; 'NeSet{'B} ; 'Set{'A} ; 'Set{'B} .
+  subsort 'A < 'B .
+  subsort 'A < 'NeSet{'A} .
+  subsort 'B < 'NeSet{'B} .
+  subsort 'NeSet{'A} < 'NeSet{'B} .
+  subsort 'NeSet{'A} < 'Set{'A} .
+  subsort 'NeSet{'B} < 'Set{'B} .
+  subsort 'Set{'A} < 'Set{'B} .
+  op '.Set : nil -> 'Set{'A} [ctor] .
+  op '.Set : nil -> 'Set{'B} [ctor] .
+  op '_;_ : ('Set{'A}) ('NeSet{'A}) -> 'NeSet{'A} [assoc comm ctor id(const(
+    '.Set, 'Set{'A}))] .
+  op '_;_ : ('Set{'A}) ('Set{'A}) -> 'Set{'A} [assoc comm ctor id(const('.Set,
+    'Set{'A}))] .
+  op '_;_ : ('Set{'B}) ('NeSet{'B}) -> 'NeSet{'B} [assoc comm ctor id(const(
+    '.Set, 'Set{'B}))] .
+  op '_;_ : ('Set{'B}) ('Set{'B}) -> 'Set{'B} [assoc comm ctor id(const('.Set,
+    'Set{'B}))] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq '_;_[var('NeS, 'NeSet{'A}),var('NeS, 'NeSet{'A})] = var('NeS, 'NeSet{'A})
+    [none] .
+  eq '_;_[var('NeS, 'NeSet{'B}),var('NeS, 'NeSet{'B})] = var('NeS, 'NeSet{'B})
+    [none] .
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving MSET .
+rewrites: 636
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'MSet{'A} ; 'MSet{'B} ; 'NeMSet{'A} ; 'NeMSet{'B} .
+  subsort 'A < 'B .
+  subsort 'A < 'NeMSet{'A} .
+  subsort 'B < 'NeMSet{'B} .
+  subsort 'MSet{'A} < 'MSet{'B} .
+  subsort 'NeMSet{'A} < 'MSet{'A} .
+  subsort 'NeMSet{'A} < 'NeMSet{'B} .
+  subsort 'NeMSet{'B} < 'MSet{'B} .
+  op '.MSet : nil -> 'MSet{'A} [ctor] .
+  op '.MSet : nil -> 'MSet{'B} [ctor] .
+  op '_;_ : ('MSet{'A}) ('MSet{'A}) -> 'MSet{'A} [assoc comm ctor id(const(
+    '.MSet, 'MSet{'A}))] .
+  op '_;_ : ('MSet{'A}) ('NeMSet{'A}) -> 'NeMSet{'A} [assoc comm ctor id(const(
+    '.MSet, 'MSet{'A}))] .
+  op '_;_ : ('MSet{'B}) ('MSet{'B}) -> 'MSet{'B} [assoc comm ctor id(const(
+    '.MSet, 'MSet{'B}))] .
+  op '_;_ : ('MSet{'B}) ('NeMSet{'B}) -> 'NeMSet{'B} [assoc comm ctor id(const(
+    '.MSet, 'MSet{'B}))] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : upModule('TEST-MODULE2, false) deriving LIST .
+rewrites: 628
+result FModule: fmod 'TEST-MODULE2 is
+  nil
+  sorts 'C ; 'D ; 'List{'C} ; 'List{'D} ; 'NeList{'C} ; 'NeList{'D} .
+  subsort 'C < 'D .
+  subsort 'C < 'NeList{'C} .
+  subsort 'D < 'NeList{'D} .
+  subsort 'List{'C} < 'List{'D} .
+  subsort 'NeList{'C} < 'List{'C} .
+  subsort 'NeList{'C} < 'NeList{'D} .
+  subsort 'NeList{'D} < 'List{'D} .
+  op '.List : nil -> 'List{'C} [ctor] .
+  op '.List : nil -> 'List{'D} [ctor] .
+  op '_`,_ : ('List{'C}) ('List{'C}) -> 'List{'C} [assoc ctor id(const('.List,
+    'List{'C}))] .
+  op '_`,_ : ('List{'C}) ('NeList{'C}) -> 'NeList{'C} [assoc ctor id(const(
+    '.List, 'List{'C}))] .
+  op '_`,_ : ('List{'D}) ('List{'D}) -> 'List{'D} [assoc ctor id(const('.List,
+    'List{'D}))] .
+  op '_`,_ : ('List{'D}) ('NeList{'D}) -> 'NeList{'D} [assoc ctor id(const(
+    '.List, 'List{'D}))] .
+  op 'c : nil -> 'C [none] .
+  op 'd : nil -> 'D [none] .
+  op 'g : 'C -> 'D [none] .
+  none
+  eq 'g['c.C] = 'd.D [none] .
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : upModule('EMPTY, false) deriving LIST .
+rewrites: 180
+result FModule: fmod 'EMPTY is
+  nil
+  sorts none .
+  none
+  none
+  none
+  none
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving LIST)) .
+rewrites: 1089
+result Bool: true
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving SET)) .
+rewrites: 1326
+result Bool: true
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving MSET)) .
+rewrites: 1109
+result Bool: true
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE2,
+    false) deriving LIST)) .
+rewrites: 1076
+result Bool: true
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('EMPTY, false)
+    deriving LIST)) .
+rewrites: 190
+result Bool: true
+==========================================
+reduce in MODULE-EXPRESSION : #upModule('TEST-MODULE deriving DOWN-TERM <
+    'TEST-MODULE >) .
+rewrites: 506
+result FModule: fmod 'TEST-MODULE is
+  protecting 'META-LEVEL .
+  protecting 'TEST-MODULE .
+  sorts 'A ; 'B ; 'A ? ; 'B ? .
+  subsort 'A < 'B .
+  subsort 'A < 'A ? .
+  subsort 'B < 'B ? .
+  subsort 'A ? < 'B ? .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  op 'downTerm < 'A > : 'Term -> 'A ? [none] .
+  op 'downTerm < 'B > : 'Term -> 'B ? [none] .
+  op 'downTermError < 'A > : nil -> 'A ? [ctor] .
+  op 'downTermError < 'B > : nil -> 'B ? [ctor] .
+  op 'wellFormed < 'A > : 'Term -> 'Bool [none] .
+  op 'wellFormed < 'B > : 'Term -> 'Bool [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+  ceq 'downTerm < 'A >[var('T, 'Term)] = var('X, 'A) if var('X, 'A) :=
+    'downTerm[var('T, 'Term),const('downTermError < 'A >, 'A ?)] [none] .
+  ceq 'downTerm < 'B >[var('T, 'Term)] = var('X, 'B) if var('X, 'B) :=
+    'downTerm[var('T, 'Term),const('downTermError < 'B >, 'B ?)] [none] .
+  ceq 'wellFormed < 'A >[var('T, 'Term)] = 'true.Bool if var('X, 'A) :=
+    'downTerm < 'A >[var('T, 'Term)] [none] .
+  ceq 'wellFormed < 'B >[var('T, 'Term)] = 'true.Bool if var('X, 'B) :=
+    'downTerm < 'B >[var('T, 'Term)] [none] .
+endfm
+==========================================
+reduce in MODULE-EXPRESSION : wellFormed(resolveNames(#upModule('TEST-MODULE
+    deriving DOWN-TERM < 'TEST-MODULE >))) .
+rewrites: 518
+result Bool: true
 Bye.
