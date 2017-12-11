@@ -9,6 +9,7 @@ tools: \
 	tools/meta/foform.maude \
 	tools/meta/mtemplate.maude \
 	tools/meta/mtransform.maude \
+	tools/meta/mconstruction.maude \
 	tools/meta/unification.maude \
 	tools/meta/variables.maude \
 	tools/meta/narrowing.maude
