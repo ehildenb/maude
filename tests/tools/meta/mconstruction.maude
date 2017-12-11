@@ -1,1 +1,59 @@
+set show timing off .
+
 load ../../../contrib/tools/meta/mconstruction.maude
+
+set include BOOL off .
+
+--- Testing Modules
+--- ===============
+
+fmod EMPTY is endfm
+
+fmod TEST-MODULE is
+  sorts A B .
+  subsort A < B .
+
+  op a : -> A .
+  op b : -> B .
+
+  op f : B -> A .
+  ---------------
+  eq f(b) = a .
+
+  op g : B -> B .
+  ---------------
+  eq g(a) = a .
+endfm
+
+fmod TEST-MODULE2 is
+  sorts C D .
+  subsort C < D .
+
+  op c : -> C .
+  op d : -> D .
+
+  op g : C -> D .
+  ---------------
+  eq g(c) = d .
+endfm
+
+--- Module MODULE-EXPRESSION
+--- ========================
+
+select MODULE-EXPRESSION .
+
+reduce upModule('TEST-MODULE, false) deriving LIST .
+reduce upModule('TEST-MODULE, false) deriving SET  .
+reduce upModule('TEST-MODULE, false) deriving MSET .
+
+reduce upModule('TEST-MODULE2, false) deriving LIST .
+reduce upModule('EMPTY,        false) deriving LIST .
+
+reduce wellFormed(resolveNames(upModule('TEST-MODULE,  false) deriving LIST)) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE,  false) deriving SET )) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE,  false) deriving MSET)) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE2, false) deriving LIST)) .
+reduce wellFormed(resolveNames(upModule('EMPTY,        false) deriving LIST)) .
+
+reduce #upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >) .
+reduce wellFormed(resolveNames(#upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >))) .
