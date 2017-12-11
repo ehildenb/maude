@@ -4,15 +4,48 @@ load ../../../contrib/systems/bank-account.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 load ../../../contrib/tools/meta/narrowing.maude
 
---- Initial states
---- --------------
+--- Initial states and Conditions
+--- =============================
+
+mod BANK-ACCOUNT-CONDITIONS is
+   protecting BANK-ACCOUNT-CTOR .
+
+    var N : Nat . var MSGS : MsgConf .
+
+    op debts : MsgConf -> Nat .
+    ---------------------------
+    eq debts(mt)                 = 0 .
+    eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
+endm
 
 mod BANK-ACCOUNT-INIT-STATES is
     extending FVP-NARROWING-GRAPH .
 
+    var N : Nat . vars NeNS NeNS' : NeNodeSet .
+
     op init : Nat -> [Term] .
     -------------------------
     eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+    eq init(1) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'tt.Truth],'MSGS:MsgConf] .
+
+    op pred : Nat -> [Term] .
+    -------------------------
+    eq pred(0) = 'C:Truth .
+    eq pred(1) = '_/\_['_>=_['N:Nat, 'X:Nat], '_==_['X:Nat, 'debts['MSGS:MsgConf]]] .
+
+    op cinit : Nat -> [Term] .
+    --------------------------
+    eq cinit(0) = '_|_[init(0), pred(0)] .
+    eq cinit(1) = '_|_[init(0), pred(1)] .
+    eq cinit(2) = '_|_[init(1), pred(0)] .
+    eq cinit(3) = '_|_[init(1), pred(1)] .
+
+    op states : NodeSet -> [NodeSet] .
+    ----------------------------------
+    eq states(.NodeSet)     = .NodeSet .
+    eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
+
+    eq states(N) = state(cinit(N)) .
 endm
 
 --- Module BANK-ACCOUNT-CTOR
@@ -44,6 +77,37 @@ endm
 
 reduce wellFormed(##m##, init(0)) .
 reduce bfs(state(init(0))) .
+
+--- Module BANK-ACCOUNT-UNCONDITIONALIZED
+--- -------------------------------------
+
+mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
+   protecting UNCONDITIONALIZE .
+    extending BANK-ACCOUNT-INIT-STATES .
+    extending GRAPH-ANALYSIS .
+
+    eq ##m## = unconditionalize('State, 'Truth, '_|_, 'BANK-ACCOUNT-CONDITIONS, upModule('BANK-ACCOUNT-CTOR, true)) .
+endm
+
+reduce ##m## .
+reduce wellFormed(##m##) .
+
+reduce init(0) .
+reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(##m##, init(1)) .
+reduce leastSort (##m##, init(0)) .
+
+reduce pred(0) .
+reduce wellFormed(##m##, pred(0)) .
+reduce wellFormed(##m##, pred(1)) .
+reduce leastSort (##m##, pred(0)) .
+
+reduce cinit(0) .
+reduce wellFormed(##m##, cinit(0)) .
+reduce wellFormed(##m##, cinit(1)) .
+reduce wellFormed(##m##, cinit(2)) .
+reduce wellFormed(##m##, cinit(3)) .
+reduce leastSort (##m##, cinit(0)) .
 
 --- set trace on .
 --- reduce bfs(state(init(0) | '_>=_['N:Nat, 'X:Nat] ?= 'tt.Truth /\ 'X:Nat ?= 'debts['MSGS:MsgConf]), 3) .

@@ -1,8 +1,8 @@
-Warning: "bank-account.maude", line 101 (mod BANK-ACCOUNT): variable m is used
+Warning: "bank-account.maude", line 106 (mod BANK-ACCOUNT): variable m is used
     before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs .
-Warning: "bank-account.maude", line 155 (mod BANK-ACCOUNT-CTOR): variable m is
+Warning: "bank-account.maude", line 160 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs [narrowing] .
@@ -283,4 +283,136 @@ rl '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
 8 |-> state('_#_['<`bal:_pend:_overdraft:_>['@3:Nat,'@1:Nat,'tt.Truth],
     '@2:MsgConf])
 | 11
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : ##m## .
+rewrites: 598
+result SModule: mod 'BANK-ACCOUNT-CTOR is
+  protecting 'BANK-ACCOUNT-CONDITIONS .
+  sorts 'Account ; 'CState ; 'Msg ; 'MsgConf ; 'Nat ; 'State ; 'StatePair ;
+    'Truth .
+  subsort 'Msg < 'MsgConf .
+  op '0 : nil -> 'Nat [ctor] .
+  op '1 : nil -> 'Nat [ctor] .
+  op '<`bal:_pend:_overdraft:_> : 'Nat 'Nat 'Truth -> 'Account [ctor] .
+  op '_#_ : 'Account 'MsgConf -> 'State [ctor] .
+  op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+  op '_-_ : 'Nat 'Nat -> 'Nat [none] .
+  op '_/\_ : 'Truth 'Truth -> 'Truth [none] .
+  op '_==_ : 'Nat 'Nat -> 'Truth [comm] .
+  op '_>=_ : 'Nat 'Nat -> 'Truth [none] .
+  op '_>_ : 'Nat 'Nat -> 'Truth [none] .
+  op '_\/_ : 'Truth 'Truth -> 'Truth [none] .
+  op '_`,_ : 'MsgConf 'MsgConf -> 'MsgConf [assoc comm ctor id('mt.MsgConf)] .
+  op '_|_ : 'State 'Truth -> 'CState [none] .
+  op '`[_`,_`,_`] : 'Truth 'State 'State -> 'State [frozen(1 2 3)] .
+  op '`[_`,_`] : 'State 'State -> 'StatePair [ctor] .
+  op 'ff : nil -> 'Truth [ctor] .
+  op 'mt : nil -> 'MsgConf [ctor] .
+  op 'tt : nil -> 'Truth [ctor] .
+  op 'withdraw : 'Nat -> 'Msg [ctor] .
+  op '~ : 'Truth -> 'Truth [none] .
+  none
+  eq '_-_['n:Nat,'_+_['n:Nat,'m:Nat]] = '0.Nat [variant] .
+  eq '_-_['_+_['n:Nat,'m:Nat],'n:Nat] = 'm:Nat [variant] .
+  eq '_/\_['ff.Truth,'B:Truth] = 'ff.Truth [variant] .
+  eq '_/\_['tt.Truth,'B:Truth] = 'B:Truth [variant] .
+  eq '_==_['n:Nat,'n:Nat] = 'tt.Truth [variant] .
+  eq '_==_['n:Nat,'_+_['1.Nat,'n:Nat,'m:Nat]] = 'ff.Truth [variant] .
+  eq '_>=_['n:Nat,'_+_['1.Nat,'n:Nat,'m:Nat]] = 'ff.Truth [variant] .
+  eq '_>=_['_+_['n:Nat,'m:Nat],'n:Nat] = 'tt.Truth [variant] .
+  eq '_>_['n:Nat,'_+_['n:Nat,'m:Nat]] = 'ff.Truth [variant] .
+  eq '_>_['_+_['1.Nat,'n:Nat,'m:Nat],'n:Nat] = 'tt.Truth [variant] .
+  eq '_\/_['ff.Truth,'B:Truth] = 'B:Truth [variant] .
+  eq '_\/_['tt.Truth,'B:Truth] = 'tt.Truth [variant] .
+  eq '`[_`,_`,_`]['ff.Truth,'s:State,'s':State] = 's':State [variant] .
+  eq '`[_`,_`,_`]['tt.Truth,'s:State,'s':State] = 's:State [variant] .
+  eq '~['ff.Truth] = 'tt.Truth [variant] .
+  eq '~['tt.Truth] = 'ff.Truth [variant] .
+  rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],'_`,_[
+    'M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
+  rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
+  rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
+    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
+  rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],
+    'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] =>
+    '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
+  rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
+    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .
+endm
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##) .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : init(0) .
+rewrites: 1
+result Term: '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
+    'MSGS:MsgConf]
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(0)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(1)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, init(0)) .
+rewrites: 3
+result Sort: 'State
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : pred(0) .
+rewrites: 1
+result Variable: 'C:Truth
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(0)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(1)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, pred(0)) .
+rewrites: 3
+result Sort: 'Truth
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : cinit(0) .
+rewrites: 3
+result Term: '_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
+    'MSGS:MsgConf],'C:Truth]
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(0)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(1)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(2)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(3)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, cinit(0)) .
+rewrites: 5
+result Sort: 'CState
 Bye.
