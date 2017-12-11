@@ -3,7 +3,7 @@ Module Transformations
 
 ```maude
 load cterms.maude
-load mtemplate.maude
+load mconstruction.maude
 load variables.maude
 ```
 
