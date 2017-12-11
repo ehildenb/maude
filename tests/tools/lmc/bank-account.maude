@@ -121,6 +121,52 @@ reduce wellFormed(##m##, cinit(2)) .
 reduce wellFormed(##m##, cinit(3)) .
 reduce leastSort (##m##, cinit(0)) .
 
+eof
+
+reduce bfs(state(cinit(0))) .
+reduce bfs(state(cinit(1)), 1) .
+
+reduce state(pred(1)) <= state(pred(0)) .
+reduce states(1)      <= states(0) .
+reduce states(1)      <= states(2) .
+
+reduce intersect(states(0), states(2)) .
+
+reduce states(0) .
+reduce invariant(states(0)) .
+reduce invariant(states(2)) .
+reduce invariant(states(0 ; 2)) .
+
+reduce states(1) .
+reduce nodes(extend(states(1))) .
+reduce invariant(states(1)) .
+
+--- Without condition subsumption works, condition is always true given subsuming substitution.
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] , 'debts['@1:MsgConf]               , 'ff.Truth ] , '@1:MsgConf                              ] , 'tt.Truth])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] , '_+_['@3:Nat,'debts['@1:MsgConf]] , 'ff.Truth ] , '_`,_['@1:MsgConf,'withdraw['@3:Nat]]    ] , 'tt.Truth])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+  
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat,'%4:Nat]             , '%2:Nat                           , 'ff.Truth ] , '%1:MsgConf                              ] , '_==_['%2:Nat,'debts['%1:MsgConf]]])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%1:Nat,'%3:Nat,'%4:Nat]             , '_+_['%1:Nat,'%4:Nat]             , 'ff.Truth ] , '_`,_['%2:MsgConf,'withdraw['%4:Nat]]    ] , '_==_['%1:Nat,'debts['%2:MsgConf]]])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf],'_/\_['_>=_['N:Nat,'X:Nat ] , '_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+  
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat]                     , '@2:Nat                           , 'ff.Truth ] , '@3:MsgConf                              ] , '_/\_['_>=_['@1:Nat,'@2:Nat],'_==_['@2:Nat,'debts['@3:MsgConf]]]])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%4:Nat]                     , '_+_['1.Nat,'%2:Nat,'%3:Nat]      , 'ff.Truth ] , '%1:MsgConf                              ] , 'ff.Truth])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat]                     , '%2:Nat                           , 'tt.Truth ] , '%1:MsgConf                              ] , 'ff.Truth])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+
+reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat]                     , '%2:Nat                           , 'ff.Truth ] , '%4:MsgConf                              ] , '_==_['_+_['%1:Nat,'%2:Nat],'_+_['%1:Nat,'debts['%4:MsgConf]]]])
+    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+--- And more
+
 --- set trace on .
 --- reduce bfs(state(init(0) | '_>=_['N:Nat, 'X:Nat] ?= 'tt.Truth /\ 'X:Nat ?= 'debts['MSGS:MsgConf]), 3) .
 
