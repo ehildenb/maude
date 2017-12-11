@@ -172,9 +172,10 @@ fmod INTERSECTION is
      = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
 
     op intersect : Module Module -> Module .
-    ----------------------------------------
-    eq intersect(MOD, MOD') = fromTemplate(resolveNames(getName(MOD) /\ getName(MOD')), intersect(asTemplate(MOD), asTemplate(MOD'))) .
-    eq upModule(H /\ H', B) = intersect(upModule(H, B), upModule(H', B)) .
+    op intersect : ModuleExpression ModuleExpression -> Module .
+    ------------------------------------------------------------
+    eq intersect(MOD, MOD') = fromTemplate(qid("INTERSECT{" + string(resolveNames(getName(MOD))) + "," + string(resolveNames(getName(MOD'))) + "}"), intersect(asTemplate(MOD), asTemplate(MOD'))) .
+    eq intersect(ME, ME')   = intersect(upModule(ME, true), upModule(ME', true)) .
 
 
 --- ; It will often be useful to know if a sort or an operator is in a `ModuleDeclSet`.
@@ -210,7 +211,7 @@ fmod INTERSECTION is
     op joint-sort : Sort Module           Module           -> Sort .
     op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
     ----------------------------------------------------------------
-    eq joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME /\ ME', true), upModule(ME /\ ME', true)) .
+    eq joint-sort(S, ME,  ME')  = joint-sort(S, intersect(ME, ME'), intersect(ME, ME')) .
     eq joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
 
     op #top-sort : ModuleDeclSet -> [Sort] .
