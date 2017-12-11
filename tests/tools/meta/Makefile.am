@@ -5,6 +5,7 @@ TESTS = \
 	foform \
 	mtemplate \
 	mtransform \
+	mconstruction \
 	unification \
 	variables \
 	narrowing
@@ -16,6 +17,7 @@ MAUDE_FILES = \
 	foform.maude \
 	mtemplate.maude \
 	mtransform.maude \
+	mconstruction.maude \
 	unification.maude \
 	variables.maude \
 	narrowing.maude
@@ -27,6 +29,7 @@ RESULT_FILES = \
 	foform.expected \
 	mtemplate.expected \
 	mtransform.expected \
+	mconstruction.expected \
 	unification.expected \
 	variables.expected \
 	narrowing.expected
