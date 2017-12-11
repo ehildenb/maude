@@ -14,8 +14,9 @@ Variant Sets
 fmod VARIANT-SET is
     protecting RENAMING .
 
-    var N N' : Nat .
-    var M : Module . var T : Term . var V : Variant .
+    var N N' : Nat . var P : Parent . var B : Bool .
+    var M : Module . var T : Term . var SUB : Substitution .
+    vars V V' : Variant . var VS : VariantSet .
 
     sort VariantSet .
     -----------------
@@ -39,6 +40,13 @@ fmod VARIANT-SET is
     eq metaGenVariant2(M, T, N', N) = .VariantSet [owise] .
    ceq metaGenVariant2(M, T, N', N) = V # metaGenVariant2(M,T,N',s N)
     if V := metaGetVariant(M,T,empty,N',N) .
+
+    op getTerms : VariantSet -> TermList .
+    --------------------------------------
+    eq getTerms(.VariantSet) = empty .
+    eq getTerms(V # V' # VS) = getTerms(V) , getTerms(V') , getTerms(VS) .
+
+    eq getTerms( { T , SUB , N , P , B } ) = T .
 endfm
 ```
 
