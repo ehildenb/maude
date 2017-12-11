@@ -5,6 +5,58 @@ load ../../../contrib/systems/token.maude
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/meta/narrowing.maude
 
+--- Testing Harnesses
+--- =================
+
+fmod NAT>-HARNESS is
+   protecting NARROWING2 .
+
+    op ##m## : ~> SModule [memo] .
+    ------------------------------
+    eq ##m## = upModule('NAT>, true) .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = 'X:Nat> .
+    eq init(1) = '_+_['1.NzNat>, 'Y:Nat>] .
+    eq init(2) = 'Z:NzNat> .
+    eq init(3) = '_>_[init(0), init(2)] .
+    eq init(4) = '_>_[init(0), init(1)] .
+    eq init(5) = '_>_[init(2), init(1)] .
+    eq init(6) = '_>_['_+_[init(1), init(1)], init(1)] .
+    eq init(7) = '_>_[init(0), '_+_[init(1), init(0)]] .
+endfm
+
+reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(##m##, init(1)) .
+reduce wellFormed(##m##, init(2)) .
+reduce wellFormed(##m##, init(3)) .
+reduce wellFormed(##m##, init(4)) .
+reduce wellFormed(##m##, init(5)) .
+reduce wellFormed(##m##, init(6)) .
+reduce wellFormed(##m##, init(7)) .
+
+--- Module `VARIANT-SET`
+--- ====================
+
+--- ### Module `NAT>`
+
+reduce metaGenVariant(##m##, init(0)) .
+reduce metaGenVariant(##m##, init(1)) .
+reduce metaGenVariant(##m##, init(2)) .
+reduce metaGenVariant(##m##, init(3)) .
+reduce metaGenVariant(##m##, init(4)) .
+reduce metaGenVariant(##m##, init(5)) .
+reduce metaGenVariant(##m##, init(6)) .
+reduce metaGenVariant(##m##, init(7)) .
+
+reduce getTerms(metaGenVariant(##m##, init(0))) .
+reduce getTerms(metaGenVariant(##m##, init(3))) .
+reduce getTerms(metaGenVariant(##m##, init(4))) .
+reduce getTerms(metaGenVariant(##m##, init(5))) .
+reduce getTerms(metaGenVariant(##m##, init(6))) .
+reduce getTerms(metaGenVariant(##m##, init(7))) .
+
 --- Module `NARROWNG2`
 --- ==================
 
