@@ -86,7 +86,19 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     extending BANK-ACCOUNT-INIT-STATES .
     extending GRAPH-ANALYSIS .
 
-    eq ##m## = unconditionalize('State, 'Truth, '_|_, 'BANK-ACCOUNT-CONDITIONS, upModule('BANK-ACCOUNT-CTOR, true)) .
+    eq ##m## = unconditionalize(##s##, ##c##, ##o##, ##m-condition##, ##m-orig##) .
+
+    op ##s## : ~> Sort [memo] .
+    op ##c## : ~> Sort [memo] .
+    op ##o## : ~> Qid  [memo] .
+    op ##m-condition## : ~> Qid     [memo] .
+    op ##m-orig##      : ~> SModule [memo] .
+    ----------------------------------------
+    eq ##s## = 'State .
+    eq ##c## = 'Truth .
+    eq ##o## = '_|_   .
+    eq ##m-condition## = 'BANK-ACCOUNT-CONDITIONS .
+    eq ##m-orig##      = upModule('BANK-ACCOUNT-CTOR, true) .
 endm
 
 reduce ##m## .

@@ -291,7 +291,7 @@ Warning: sort declarations for operator clearNonExec failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : ##m## .
-rewrites: 598
+rewrites: 603
 result SModule: mod 'BANK-ACCOUNT-CTOR is
   protecting 'BANK-ACCOUNT-CONDITIONS .
   sorts 'Account ; 'CState ; 'Msg ; 'MsgConf ; 'Nat ; 'State ; 'StatePair ;
