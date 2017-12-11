@@ -23,7 +23,6 @@ fmod STRUCTURED-NAME is
     op _@_   : Sort Sort     -> Sort     [ctor prec 23] .
     op _?    : Sort          -> Sort     [ctor prec 23] .
     op _==>_ : Sort Sort     -> Sort     [ctor prec 25] .
-    op _/\_  : Header Header -> Header   [ctor prec 25] .
     op const : Qid  Sort     -> Constant [ctor] .
     op var   : Qid  Sort     -> Variable [ctor] .
     ---------------------------------------------
@@ -117,7 +116,6 @@ fmod STRUCTURED-NAME is
     op resolveNames : Header -> Header .
     ------------------------------------
     eq resolveNames(H) = H [owise] .
-    eq resolveNames(H /\ H') = qid(string(resolveNames(H)) + "/\\" + string(resolveNames(H'))) .
 
     op #tl-string : TypeList -> String .
     ------------------------------------
