@@ -67,36 +67,6 @@ mod BANK-ACCOUNT-INIT-STATES is
     eq states(N) = state(cinit(N)) .
 endm
 
---- Module BANK-ACCOUNT-CTOR
---- ------------------------
-
-mod BANK-ACCOUNT-CTOR-NARROWING-GRAPH is
-    extending BANK-ACCOUNT-INIT-STATES .
-    extending GRAPH-ANALYSIS .
-
-    eq #M = upModule('BANK-ACCOUNT-CTOR, true) .
-endm
-
-reduce wellFormed(#M, init(0)) .
-reduce bfs(state(init(0))) .
-
---- Module BANK-ACCOUNT-DEFINEDOPS
---- ------------------------------
-
-mod BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH is
-    extending FVP-NARROWING-MODULO-T-GRAPH .
-    extending GRAPH-ANALYSIS .
-
-    eq #M = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
-
-    op init : Nat -> [Term] .
-    -------------------------
-    eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
-endm
-
-reduce wellFormed(#M, init(0)) .
-reduce bfs(state(init(0))) .
-
 --- Module BANK-ACCOUNT-UNCONDITIONALIZED
 --- -------------------------------------
 
