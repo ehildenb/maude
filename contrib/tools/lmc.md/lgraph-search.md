@@ -313,92 +313,28 @@ endfm
 
 ```maude
 fmod FVP-NARROWING-MODULO-T-GRAPH is
-   protecting CTERM-SET .
-   protecting SUBSTITUTIONSET .
    protecting FVP-NARROWING-GRAPH .
-   protecting UNCONDITIONALIZE .
+    extending META-CONDITIONAL-LMC-PARAMETERS .
 
-    vars T T' : Term . vars F F' : FOForm . var C : Condition . var AS : AttrSet . var Q : Qid .
-    var TYPE : Type . var SUB : Substitution . var RS : RuleSet . vars SR SR' : StepResult . var SRS : StepResultSet .
+    vars ND ND' : Node . vars T T' C C' : Term .
+    var Q : Qid . var SUB : Substitution . var N : Nat .
 
-    op side-condition : Condition -> FOForm .
-
-    op ##m-stripped## : ~> SModule [memo] .
+    op foldAny  : Node Node Nat -> [Fold] .
     ---------------------------------------
-    eq ##m-stripped## = fromTemplate(qid(string(getName(#M)) + "-NO-CONDITIONS"), stripConditions(asTemplate(#M))) .
+    eq fold(ND, ND') = foldAny(ND, ND', 0) [owise] .
 
-    op getLabel : RuleSet -> Qid .
-    ------------------------------
-    eq getLabel( rl T => T'      [label(Q) AS] .) = Q .
-    eq getLabel(crl T => T' if C [label(Q) AS] .) = Q .
+   ceq foldAny(ND, ND', N) = if implies?(C << SUB, C' << SUB) then fold(SUB) else foldAny(ND, ND', s N) fi
+                          if state(Q[T,  C ]) := ND  /\ Q == #ST
+                          /\ state(Q[T', C']) := ND' /\ Q == #ST
+                          /\ SUB := metaMatch(#MO, T', T, nil, N) .
+```
 
-    op getCondition : RuleSet -> FOForm .
-    -------------------------------------
-    eq getCondition( rl T => T'      [AS] .) = tt .
-    eq getCondition(crl T => T' if C [AS] .) = side-condition(C) .
+-   `implies?` is supplied by the user and should check that the models of the first condition are contained in those of the second.
 
-    op lookupCondition : RuleSet -> FOForm .
-    ----------------------------------------
-    eq lookupCondition(RS) = getCondition(getRls(getLabel(RS), #M)) .
-
-    op transition : StepResultSet FOForm -> [TransitionSet] .
-    ---------------------------------------------------------
-    eq transition({T , TYPE , SUB / RS }, F) = < label(RS, SUB) , state(T | F /\ getCondition(RS)) > .
-    eq transition(.StepResultSet,         F) = .TransitionSet .
-    eq transition(SR || SR' || SRS,       F) = transition(SR, F) , transition(SR', F) , transition(SRS, F) .
-
-    op state : CTerm -> Node .
-    --------------------------
-    eq step(state(T | F)) = transition(metaNarrow2(##m-stripped##, T), F) .
-   --- ceq fold(state(T | C), state(T' | C')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
-endfm
-
-eof
-
-    sorts Constraint CState .
-    subsort State < CState .
-    ------------------------
-    vars NeTS NeTS' : NeTransitionSet . var T : Term . var N : Nat .
-    vars C C' : Constraint . var M : Module . vars S S' : State .
-    var SUBST : Substitution . var SUBSTS : SubstitutionSet .
-
-    op downConstraintError : -> [Constraint] .
-    op _<<_ : Constraint Substitution -> Constraint .
-    -------------------------------------------------
-   ceq C << SUBST = C'
-    if T  := upTerm(C) << SUBST
-    /\ C' := downTerm(T, downConstraintError) .
-
-    op unsatis? : Constraint            -> [Bool] .
-    op entails? : Constraint Constraint -> [Bool] .
-    -----------------------------------------------
-
-    op _|_ : State Constraint -> CState .
-    op <_,_> : Step CState -> Transition .
-    --------------------------------------
-
-    op step : Module CState -> [TransitionSet] .
-    --------------------------------------------
-    eq step(M, S | C) = updateTransitions(C, step(M, S)) .
-
-    op updateTransitions : Constraint TransitionSet -> [TransitionSet] .
-    --------------------------------------------------------------------
-    eq updateTransitions(C, .TransitionSet) = .TransitionSet .
-    eq updateTransitions(C, (NeTS , NeTS')) = updateTransitions(C, NeTS) , updateTransitions(C, NeTS') .
-
-   ceq updateTransitions(C, < SUBST , S >) = .TransitionSet             if C' := C << SUBST /\ unsatis?(C') .
-    eq updateTransitions(C, < SUBST , S >) = < SUBST , S | C << SUBST > [owise] .
-
-    op allMatches : Module State State Nat -> [SubstitutionSet] .
-    -------------------------------------------------------------
-    eq allMatches(M, S, S', N) = none [owise] .
-   ceq allMatches(M, S, S', N) = SUBST | allMatches(M, S, S', N + 1)
-    if SUBST := metaMatch(M, upTerm(S'), upTerm(S), nil, N) .
-
-    op fold : Module CState CState -> [Fold] .
-    ------------------------------------------
-   ceq fold(M, S | C, S' | C') = SUBST
-    if SUBST | SUBSTS := allMatches(M, S, S', 0)
-    /\ entails?(C', C << SUBST) .
+```maude
+    --- TODO: Measure performance of this with `memo` on `implies?` vs not.
+    --- Probably theory specific, maybe best to leave the choice of `memo` to each individual theory.
+    op implies? : Term Term -> [Bool] .
+    -----------------------------------
 endfm
 ```
