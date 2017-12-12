@@ -25,6 +25,7 @@ endfm
 Conditional Model Checking
 --------------------------
 
+-   `#MO` should be filled as the module with the original system.
 -   `#MC` should be filled as the module to resolve conditions in.
 -   `#T` should be filled as the topmost rewriting sort of `#M` from `META-LMC-PARAMETERS`.
 -   `#C` should be filled as the sort of conditions.
@@ -32,10 +33,11 @@ Conditional Model Checking
 
 ```maude
 fmod META-CONDITIONAL-LMC-PARAMETERS is
-   protecting META-LMC-PARAMETERS * ( op #M to #M-ORIG ) .
+   protecting META-LMC-PARAMETERS .
    protecting UNCONDITIONALIZE .
 
     op #MC : ~> SModule [memo] .
+    op #MO : ~> SModule [memo] .
     op #T  : ~> Sort    [memo] .
     op #C  : ~> Sort    [memo] .
     op #ST : ~> Qid     [memo] .
@@ -43,6 +45,6 @@ fmod META-CONDITIONAL-LMC-PARAMETERS is
 
     op #M : ~> SModule [memo] .
     ---------------------------
-    eq #M = unconditionalize(#T, #C, #ST, getName(#MC), #M-ORIG) .
+    eq #M = unconditionalize(#T, #C, #ST, getName(#MC), #MO) .
 endfm
 ```
