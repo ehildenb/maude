@@ -103,7 +103,7 @@ Narrowing using Santiago Escobar's Code
 
 ```maude
 fmod NARROWING is
-   protecting VARIANT-SET .
+   protecting VARIANT-SET * ( op getTerms to getVariantTerms ) .
    protecting NARROWING-STEP-SET .
    protecting META-NARROWING-SEARCH .
 
