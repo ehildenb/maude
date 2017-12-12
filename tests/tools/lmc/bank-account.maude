@@ -71,23 +71,22 @@ endm
 --- -------------------------------------
 
 mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
-   protecting UNCONDITIONALIZE .
+    extending FVP-NARROWING-MODULO-T-GRAPH .
     extending BANK-ACCOUNT-INIT-STATES .
     extending GRAPH-ANALYSIS .
 
-    eq #M = unconditionalize(##s##, ##c##, ##o##, ##m-condition##, ##m-orig##) .
+    vars C C' : Term .
 
-    op ##s## : ~> Sort [memo] .
-    op ##c## : ~> Sort [memo] .
-    op ##o## : ~> Qid  [memo] .
-    op ##m-condition## : ~> Qid     [memo] .
-    op ##m-orig##      : ~> SModule [memo] .
-    ----------------------------------------
-    eq ##s## = 'State .
-    eq ##c## = 'Truth .
-    eq ##o## = '_|_   .
-    eq ##m-condition## = 'BANK-ACCOUNT-CONDITIONS .
-    eq ##m-orig##      = upModule('BANK-ACCOUNT-CTOR, true) .
+    eq #T  = 'State .
+    eq #C  = 'Truth .
+    eq #ST = '_|_   .
+
+    eq #MC = upModule('BANK-ACCOUNT-CONDITIONS, true) .
+    eq #MO = upModule('BANK-ACCOUNT-CTOR,       true) .
+
+   ceq implies?(C, C') = true  if {'tt.Truth, 'Truth} := metaReduce(#MC, '_->_[C, C']) .
+   ceq implies?(C, C') = true  if 'tt.Truth           := getTerms(metaGenVariant(#MC, '_->_[C, C'])) .
+    eq implies?(C, C') = false [owise] .
 endm
 
 reduce #M .

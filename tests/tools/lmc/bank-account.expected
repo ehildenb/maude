@@ -6,15 +6,15 @@ Warning: "bank-account.maude", line 160 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs [narrowing] .
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
-Warning: sort declarations for operator clearNonExec failed preregularity check
-    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #M .
-rewrites: 603
+rewrites: 605
 result SModule: mod 'BANK-ACCOUNT-CTOR is
   protecting 'BANK-ACCOUNT-CONDITIONS .
   sorts 'Account ; 'CState ; 'Msg ; 'MsgConf ; 'Nat ; 'State ; 'StatePair ;
