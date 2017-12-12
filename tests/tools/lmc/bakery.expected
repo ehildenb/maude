@@ -1,21 +1,21 @@
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(0)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(0)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(1)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(1)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(2)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(2)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(3)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(3)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(##m##, init(4)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(4)) .
 rewrites: 5
 result Bool: true
 ==========================================
@@ -518,43 +518,43 @@ result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 | 31
 | 30
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(0)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(0)) .
 rewrites: 4
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(1)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(2)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(2)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(3)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(3)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(4)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(4)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(5)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(5)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(6)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(6)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(7)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(7)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(8)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(8)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(9)) .
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : wellFormed(#M, init(9)) .
 rewrites: 3
 result Bool: true
 ==========================================
@@ -724,7 +724,7 @@ rewrites: 7
 result [Bool]: state('<_`,_`,_`,_>['PC:Mode,'Y1:Nat>,'QNC:NcMode,'Y2:Nat>]) <=
     state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat>,'QC:Mode,'X2:Nat>])
 ==========================================
-reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : leastSort(##m##, '_+_['1.Zero>,
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : leastSort(#M, '_+_['1.Zero>,
     '@3:Nat>]) .
 rewrites: 2
 result Sort: 'NzNat>

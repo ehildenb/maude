@@ -74,10 +74,10 @@ mod BANK-ACCOUNT-CTOR-NARROWING-GRAPH is
     extending BANK-ACCOUNT-INIT-STATES .
     extending GRAPH-ANALYSIS .
 
-    eq ##m## = upModule('BANK-ACCOUNT-CTOR, true) .
+    eq #M = upModule('BANK-ACCOUNT-CTOR, true) .
 endm
 
-reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(#M, init(0)) .
 reduce bfs(state(init(0))) .
 
 --- Module BANK-ACCOUNT-DEFINEDOPS
@@ -87,14 +87,14 @@ mod BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH is
     extending FVP-NARROWING-MODULO-T-GRAPH .
     extending GRAPH-ANALYSIS .
 
-    eq ##m## = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
+    eq #M = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
 
     op init : Nat -> [Term] .
     -------------------------
     eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
 endm
 
-reduce wellFormed(##m##, init(0)) .
+reduce wellFormed(#M, init(0)) .
 reduce bfs(state(init(0))) .
 
 --- Module BANK-ACCOUNT-UNCONDITIONALIZED
@@ -105,7 +105,7 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     extending BANK-ACCOUNT-INIT-STATES .
     extending GRAPH-ANALYSIS .
 
-    eq ##m## = unconditionalize(##s##, ##c##, ##o##, ##m-condition##, ##m-orig##) .
+    eq #M = unconditionalize(##s##, ##c##, ##o##, ##m-condition##, ##m-orig##) .
 
     op ##s## : ~> Sort [memo] .
     op ##c## : ~> Sort [memo] .
@@ -120,29 +120,29 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     eq ##m-orig##      = upModule('BANK-ACCOUNT-CTOR, true) .
 endm
 
-reduce ##m## .
-reduce wellFormed(##m##) .
+reduce #M .
+reduce wellFormed(#M) .
 
-reduce leastSort (##m##, init(0)) .
-reduce wellFormed(##m##, init(0)) .
-reduce wellFormed(##m##, init(1)) .
-reduce wellFormed(##m##, init(2)) .
-reduce wellFormed(##m##, init(3)) .
+reduce leastSort (#M, init(0)) .
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
 
-reduce leastSort (##m##, pred(0)) .
-reduce wellFormed(##m##, pred(0)) .
-reduce wellFormed(##m##, pred(1)) .
-reduce wellFormed(##m##, pred(2)) .
-reduce wellFormed(##m##, pred(3)) .
-reduce wellFormed(##m##, pred(4)) .
+reduce leastSort (#M, pred(0)) .
+reduce wellFormed(#M, pred(0)) .
+reduce wellFormed(#M, pred(1)) .
+reduce wellFormed(#M, pred(2)) .
+reduce wellFormed(#M, pred(3)) .
+reduce wellFormed(#M, pred(4)) .
 
-reduce leastSort (##m##, cinit(0)) .
-reduce wellFormed(##m##, cinit(0)) .
-reduce wellFormed(##m##, cinit(1)) .
-reduce wellFormed(##m##, cinit(2)) .
-reduce wellFormed(##m##, cinit(3)) .
-reduce wellFormed(##m##, cinit(4)) .
-reduce wellFormed(##m##, cinit(5)) .
+reduce leastSort (#M, cinit(0)) .
+reduce wellFormed(#M, cinit(0)) .
+reduce wellFormed(#M, cinit(1)) .
+reduce wellFormed(#M, cinit(2)) .
+reduce wellFormed(#M, cinit(3)) .
+reduce wellFormed(#M, cinit(4)) .
+reduce wellFormed(#M, cinit(5)) .
 
 eof
 

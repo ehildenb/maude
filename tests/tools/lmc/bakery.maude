@@ -11,7 +11,7 @@ mod BAKERY-NARROWING-GRAPH is
    protecting BAKERY .
     extending FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
 
-    eq ##m## = upModule('BAKERY, true) .
+    eq #M = upModule('BAKERY, true) .
 
     op upIdle : -> [Term] .
     -----------------------
@@ -31,11 +31,11 @@ endm
 
 --- ### ensure that init(0..4) are well formed
 
-reduce wellFormed(##m##, init(0)) .
-reduce wellFormed(##m##, init(1)) .
-reduce wellFormed(##m##, init(2)) .
-reduce wellFormed(##m##, init(3)) .
-reduce wellFormed(##m##, init(4)) .
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
 
 --- ### Function `step`
 
@@ -88,7 +88,7 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     eq states(.NodeSet)     = .NodeSet .
     eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
 
-    eq ##m## = upModule('BAKERY-FVP-CTOR, true) .
+    eq #M = upModule('BAKERY-FVP-CTOR, true) .
 
     op init : Nat -> [Term] .
     -------------------------
@@ -116,16 +116,16 @@ Mutex Invariant:  < P', X, Q, Y > \/ < P, X', Q', Y' > .
 )
 
 
-reduce wellFormed(##m##, init(0)) .
-reduce wellFormed(##m##, init(1)) .
-reduce wellFormed(##m##, init(2)) .
-reduce wellFormed(##m##, init(3)) .
-reduce wellFormed(##m##, init(4)) .
-reduce wellFormed(##m##, init(5)) .
-reduce wellFormed(##m##, init(6)) .
-reduce wellFormed(##m##, init(7)) .
-reduce wellFormed(##m##, init(8)) .
-reduce wellFormed(##m##, init(9)) .
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
+reduce wellFormed(#M, init(6)) .
+reduce wellFormed(#M, init(7)) .
+reduce wellFormed(#M, init(8)) .
+reduce wellFormed(#M, init(9)) .
 
 reduce step(states(0)) .
 reduce step(states(1)) .
@@ -137,7 +137,7 @@ reduce states(1) <= states(1 ; 2) .
 reduce states(2) <= states(1) .
 
 --- regression for when we had `ops 0 1 : -> Zero> [ctor] .`
-reduce leastSort(##m##, '_+_['1.Zero>,'@3:Nat>]) .
+reduce leastSort(#M, '_+_['1.Zero>,'@3:Nat>]) .
 
 reduce state('wait.NcMode)            <= state('PC:Mode) .
 reduce state('_+_['1.Zero>,'@3:Nat>]) <= state('Y1:NzNat>) .

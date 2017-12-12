@@ -1,33 +1,33 @@
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(0)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(0)) .
 rewrites: 4
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(1)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(2)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(2)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(3)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(3)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(4)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(4)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(5)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(5)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(6)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(6)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NARROW-SEARCH-2TOKEN : wellFormed(##m##, init(7)) .
+reduce in NARROW-SEARCH-2TOKEN : wellFormed(#M, init(7)) .
 rewrites: 3
 result Bool: true
 ==========================================

@@ -11,7 +11,7 @@ mod NARROW-SEARCH-2TOKEN is
     protecting 2TOKEN .
     including FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
 
-    eq ##m## = upModule('2TOKEN, true) .
+    eq #M = upModule('2TOKEN, true) .
 
     op init : Nat -> Term .
     -----------------------
@@ -27,14 +27,14 @@ endm
 
 --- Initial states are well-formed
 
-reduce wellFormed(##m##, init(0)) .
-reduce wellFormed(##m##, init(1)) .
-reduce wellFormed(##m##, init(2)) .
-reduce wellFormed(##m##, init(3)) .
-reduce wellFormed(##m##, init(4)) .
-reduce wellFormed(##m##, init(5)) .
-reduce wellFormed(##m##, init(6)) .
-reduce wellFormed(##m##, init(7)) .
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
+reduce wellFormed(#M, init(6)) .
+reduce wellFormed(#M, init(7)) .
 
 --- Take a synce step from each state
 

@@ -7,7 +7,7 @@ Warning: "bank-account.maude", line 160 (mod BANK-ACCOUNT-CTOR): variable m is
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs [narrowing] .
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-NARROWING-GRAPH : wellFormed(##m##, init(0)) .
+reduce in BANK-ACCOUNT-CTOR-NARROWING-GRAPH : wellFormed(#M, init(0)) .
 rewrites: 4
 result Bool: true
 ==========================================
@@ -148,8 +148,8 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH : wellFormed(##m##, init(
-    0)) .
+reduce in BANK-ACCOUNT-CTOR-NARROWING-MODULO-T-GRAPH : wellFormed(#M, init(0))
+    .
 rewrites: 4
 result Bool: true
 ==========================================
@@ -290,7 +290,7 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator clearNonExec failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : ##m## .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #M .
 rewrites: 603
 result SModule: mod 'BANK-ACCOUNT-CTOR is
   protecting 'BANK-ACCOUNT-CONDITIONS .
@@ -354,79 +354,79 @@ result SModule: mod 'BANK-ACCOUNT-CTOR is
     'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .
 endm
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M) .
 rewrites: 2
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, init(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(#M, init(0)) .
 rewrites: 3
 result Sort: 'State
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, init(0)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(1)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, init(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(2)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, init(2)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(3)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, init(3)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, pred(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(#M, pred(0)) .
 rewrites: 3
 result Sort: 'Truth
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(0)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(1)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(2)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(2)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(3)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(3)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(4)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(4)) .
 rewrites: 20
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, cinit(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(#M, cinit(0)) .
 rewrites: 5
 result Sort: 'CState
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(0)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(1)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(1)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(2)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(2)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(3)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(3)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(4)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(4)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(5)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, cinit(5)) .
 rewrites: 5
 result Bool: true
 Bye.
