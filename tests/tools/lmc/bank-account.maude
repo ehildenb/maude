@@ -26,7 +26,7 @@ mod BANK-ACCOUNT-CONDITIONS is
 endm
 
 mod BANK-ACCOUNT-INIT-STATES is
-    extending FVP-NARROWING-GRAPH .
+    extending FVP-NARROWING-MODULO-T-GRAPH .
 
     var N : Nat . vars NeNS NeNS' : NeNodeSet .
 
@@ -36,6 +36,8 @@ mod BANK-ACCOUNT-INIT-STATES is
     eq init(1) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'tt.Truth],'MSGS:MsgConf] .
     eq init(2) = '_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]],'debts['@1:MsgConf],'ff.Truth],'@1:MsgConf] .
     eq init(3) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+    eq init(4) = '_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat] , '@2:Nat ,'ff.Truth ] , '@3:MsgConf   ] .
+    eq init(5) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat                , 'X:Nat  ,'ff.Truth ] , 'MSGS:MsgConf ] .
 
     op pred : Nat -> [Term] .
     -------------------------
@@ -44,6 +46,9 @@ mod BANK-ACCOUNT-INIT-STATES is
     eq pred(2) = 'tt.Truth .
     eq pred(3) = '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]] .
     eq pred(4) = '_->_[pred(3), pred(2)] << sub(0) .
+    eq pred(5) = '_>=_['@1:Nat,'@2:Nat] .
+    eq pred(6) = '_>=_['N:Nat,'X:Nat] .
+    eq pred(7) = '_->_[pred(5),pred(6)] << sub(1) .
 
     op cinit : Nat -> [Term] .
     --------------------------
@@ -53,10 +58,14 @@ mod BANK-ACCOUNT-INIT-STATES is
     eq cinit(3) = '_|_[init(1), pred(1)] .
     eq cinit(4) = '_|_[init(2), pred(2)] .
     eq cinit(5) = '_|_[init(3), pred(3)] .
+    eq cinit(6) = '_|_[init(4), pred(5)] .
+    eq cinit(7) = '_|_[init(5), pred(6)] .
 
     op sub : Nat -> [Substitution] .
     --------------------------------
     eq sub(0) = ('MSGS:MsgConf <- '@1:MsgConf ; 'N:Nat <- '_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] ; 'X:Nat <- 'debts['@1:MsgConf]) .
+    eq sub(1) = ('MSGS:MsgConf <- '@3:MsgConf ; 'N:Nat <- '_+_['@1:Nat,'@4:Nat] ; 'X:Nat <- '@2:Nat) .
+
 
     op states : NodeSet -> [NodeSet] .
     ----------------------------------
@@ -70,7 +79,6 @@ endm
 --- -------------------------------------
 
 mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
-    extending FVP-NARROWING-MODULO-T-GRAPH .
     extending BANK-ACCOUNT-INIT-STATES .
     extending GRAPH-ANALYSIS .
 
@@ -89,13 +97,19 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
 endm
 
 reduce #M .
+reduce #MC .
+reduce #MO .
 reduce wellFormed(#M) .
+reduce wellFormed(#MC) .
+reduce wellFormed(#MO) .
 
 reduce leastSort (#M, init(0)) .
 reduce wellFormed(#M, init(0)) .
 reduce wellFormed(#M, init(1)) .
 reduce wellFormed(#M, init(2)) .
 reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
 
 reduce leastSort (#M, pred(0)) .
 reduce wellFormed(#M, pred(0)) .
@@ -103,6 +117,9 @@ reduce wellFormed(#M, pred(1)) .
 reduce wellFormed(#M, pred(2)) .
 reduce wellFormed(#M, pred(3)) .
 reduce wellFormed(#M, pred(4)) .
+reduce wellFormed(#M, pred(5)) .
+reduce wellFormed(#M, pred(6)) .
+reduce wellFormed(#M, pred(7)) .
 
 reduce leastSort (#M, cinit(0)) .
 reduce wellFormed(#M, cinit(0)) .
@@ -111,8 +128,8 @@ reduce wellFormed(#M, cinit(2)) .
 reduce wellFormed(#M, cinit(3)) .
 reduce wellFormed(#M, cinit(4)) .
 reduce wellFormed(#M, cinit(5)) .
-
-eof
+reduce wellFormed(#M, cinit(6)) .
+reduce wellFormed(#M, cinit(7)) .
 
 reduce bfs(state(cinit(0))) .
 reduce bfs(state(cinit(1)), 1) .
@@ -123,36 +140,15 @@ reduce states(1)      <= states(2) .
 
 reduce intersect(states(0), states(2)) .
 
-reduce states(0) .
+reduce implies?(pred(0), pred(0)) .
+reduce implies?(pred(0), pred(1)) .
+reduce implies?(pred(1), pred(2)) .
+
 reduce invariant(states(0)) .
 reduce invariant(states(2)) .
 reduce invariant(states(0 ; 2)) .
 
-reduce states(1) .
-reduce nodes(extend(states(1))) .
-reduce invariant(states(1)) .
-
---- Without condition subsumption works, condition is always true given subsuming substitution.
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] , 'debts['@1:MsgConf]               , 'ff.Truth ] , '@1:MsgConf                              ] , 'tt.Truth])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] , '_+_['@3:Nat,'debts['@1:MsgConf]] , 'ff.Truth ] , '_`,_['@1:MsgConf,'withdraw['@3:Nat]]    ] , 'tt.Truth])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-  
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat,'%4:Nat]             , '%2:Nat                           , 'ff.Truth ] , '%1:MsgConf                              ] , '_==_['%2:Nat,'debts['%1:MsgConf]]])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%1:Nat,'%3:Nat,'%4:Nat]             , '_+_['%1:Nat,'%4:Nat]             , 'ff.Truth ] , '_`,_['%2:MsgConf,'withdraw['%4:Nat]]    ] , '_==_['%1:Nat,'debts['%2:MsgConf]]])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf],'_/\_['_>=_['N:Nat,'X:Nat ] , '_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-  
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat]                     , '@2:Nat                           , 'ff.Truth ] , '@3:MsgConf                              ] , '_/\_['_>=_['@1:Nat,'@2:Nat],'_==_['@2:Nat,'debts['@3:MsgConf]]]])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%4:Nat]                     , '_+_['1.Nat,'%2:Nat,'%3:Nat]      , 'ff.Truth ] , '%1:MsgConf                              ] , 'ff.Truth])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
-
-reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat]                     , '%2:Nat                           , 'tt.Truth ] , '%1:MsgConf                              ] , 'ff.Truth])
-    <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
+eof
 
 reduce state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat]                     , '%2:Nat                           , 'ff.Truth ] , '%4:MsgConf                              ] , '_==_['_+_['%1:Nat,'%2:Nat],'_+_['%1:Nat,'debts['%4:MsgConf]]]])
     <= state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat                                    , 'X:Nat                            , 'ff.Truth ] , 'MSGS:MsgConf                            ] , '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]]]) .
