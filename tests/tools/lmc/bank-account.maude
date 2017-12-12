@@ -14,10 +14,9 @@ mod BANK-ACCOUNT-CONDITIONS is
 
     op _->_ : Truth Truth -> Truth .
     --------------------------------
---- TODO: check if these improve performance at all
----    eq X  -> X  = tt        [variant] .
----    eq ff -> X  = tt        [variant] .
----    eq X  -> tt = tt        [variant] .
+    eq X  -> X  = tt        [variant] .
+    eq ff -> X  = tt        [variant] .
+    eq X  -> tt = tt        [variant] .
     eq X  -> Y  = ~(X) \/ Y [variant] .
 
     op debts : MsgConf -> Nat .
