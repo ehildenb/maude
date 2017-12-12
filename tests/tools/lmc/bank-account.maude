@@ -10,7 +10,11 @@ load ../../../contrib/tools/meta/narrowing.maude
 mod BANK-ACCOUNT-CONDITIONS is
    protecting BANK-ACCOUNT-CTOR .
 
-    var N : Nat . var MSGS : MsgConf .
+    var N : Nat . vars X Y : Truth . var MSGS : MsgConf .
+
+    op _->_ : Truth Truth -> Truth .
+    --------------------------------
+    eq X  -> Y  = ~(X) \/ Y [variant] .
 
     op debts : MsgConf -> Nat .
     ---------------------------
