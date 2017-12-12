@@ -358,10 +358,9 @@ reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##) .
 rewrites: 2
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : init(0) .
-rewrites: 1
-result Term: '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
-    'MSGS:MsgConf]
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, init(0)) .
+rewrites: 3
+result Sort: 'State
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(0)) .
 rewrites: 3
@@ -371,13 +370,17 @@ reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, init(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(2)) .
 rewrites: 3
-result Sort: 'State
+result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : pred(0) .
-rewrites: 1
-result Variable: 'C:Truth
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, init(3)) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, pred(0)) .
+rewrites: 3
+result Sort: 'Truth
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(0)) .
 rewrites: 3
@@ -387,14 +390,21 @@ reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, pred(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(2)) .
 rewrites: 3
-result Sort: 'Truth
+result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : cinit(0) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(3)) .
 rewrites: 3
-result Term: '_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
-    'MSGS:MsgConf],'C:Truth]
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, pred(4)) .
+rewrites: 20
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, cinit(0)) .
+rewrites: 5
+result Sort: 'CState
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(0)) .
 rewrites: 5
@@ -412,7 +422,11 @@ reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(3)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(##m##, cinit(0)) .
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(4)) .
 rewrites: 5
-result Sort: 'CState
+result Bool: true
+==========================================
+reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(##m##, cinit(5)) .
+rewrites: 5
+result Bool: true
 Bye.

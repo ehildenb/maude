@@ -35,11 +35,16 @@ mod BANK-ACCOUNT-INIT-STATES is
     -------------------------
     eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
     eq init(1) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'tt.Truth],'MSGS:MsgConf] .
+    eq init(2) = '_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]],'debts['@1:MsgConf],'ff.Truth],'@1:MsgConf] .
+    eq init(3) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
 
     op pred : Nat -> [Term] .
     -------------------------
     eq pred(0) = 'C:Truth .
-    eq pred(1) = '_/\_['_>=_['N:Nat, 'X:Nat], '_==_['X:Nat, 'debts['MSGS:MsgConf]]] .
+    eq pred(1) = '_>=_['N:Nat, 'X:Nat] .
+    eq pred(2) = 'tt.Truth .
+    eq pred(3) = '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]] .
+    eq pred(4) = '_->_[pred(3), pred(2)] << sub(0) .
 
     op cinit : Nat -> [Term] .
     --------------------------
@@ -47,6 +52,12 @@ mod BANK-ACCOUNT-INIT-STATES is
     eq cinit(1) = '_|_[init(0), pred(1)] .
     eq cinit(2) = '_|_[init(1), pred(0)] .
     eq cinit(3) = '_|_[init(1), pred(1)] .
+    eq cinit(4) = '_|_[init(2), pred(2)] .
+    eq cinit(5) = '_|_[init(3), pred(3)] .
+
+    op sub : Nat -> [Substitution] .
+    --------------------------------
+    eq sub(0) = ('MSGS:MsgConf <- '@1:MsgConf ; 'N:Nat <- '_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] ; 'X:Nat <- 'debts['@1:MsgConf]) .
 
     op states : NodeSet -> [NodeSet] .
     ----------------------------------
@@ -112,22 +123,26 @@ endm
 reduce ##m## .
 reduce wellFormed(##m##) .
 
-reduce init(0) .
+reduce leastSort (##m##, init(0)) .
 reduce wellFormed(##m##, init(0)) .
 reduce wellFormed(##m##, init(1)) .
-reduce leastSort (##m##, init(0)) .
+reduce wellFormed(##m##, init(2)) .
+reduce wellFormed(##m##, init(3)) .
 
-reduce pred(0) .
+reduce leastSort (##m##, pred(0)) .
 reduce wellFormed(##m##, pred(0)) .
 reduce wellFormed(##m##, pred(1)) .
-reduce leastSort (##m##, pred(0)) .
+reduce wellFormed(##m##, pred(2)) .
+reduce wellFormed(##m##, pred(3)) .
+reduce wellFormed(##m##, pred(4)) .
 
-reduce cinit(0) .
+reduce leastSort (##m##, cinit(0)) .
 reduce wellFormed(##m##, cinit(0)) .
 reduce wellFormed(##m##, cinit(1)) .
 reduce wellFormed(##m##, cinit(2)) .
 reduce wellFormed(##m##, cinit(3)) .
-reduce leastSort (##m##, cinit(0)) .
+reduce wellFormed(##m##, cinit(4)) .
+reduce wellFormed(##m##, cinit(5)) .
 
 eof
 
