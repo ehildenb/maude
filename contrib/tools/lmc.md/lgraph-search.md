@@ -301,11 +301,11 @@ fmod FVP-NARROWING-GRAPH is
     op state : Term         -> Node .
     op fold  : Substitution -> Fold .
     ---------------------------------
-    eq step(state(T))            = transition(metaNarrow2(##m##, T)) .
-   ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
+    eq step(state(T))            = transition(metaNarrow2(#M, T)) .
+   ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
 
     --- Unification based intersection
-    eq intersect(state(T), state(T')) = metaVariantDisjointUnify(##m##, T =? T', empty, metaHighestVar((T, T')), 0) :: UnificationTriple .
+    eq intersect(state(T), state(T')) = metaVariantDisjointUnify(#M, T =? T', empty, metaHighestVar((T, T')), 0) :: UnificationTriple .
 endfm
 ```
 
@@ -325,7 +325,7 @@ fmod FVP-NARROWING-MODULO-T-GRAPH is
 
     op ##m-stripped## : ~> SModule [memo] .
     ---------------------------------------
-    eq ##m-stripped## = fromTemplate(qid(string(getName(##m##)) + "-NO-CONDITIONS"), stripConditions(asTemplate(##m##))) .
+    eq ##m-stripped## = fromTemplate(qid(string(getName(#M)) + "-NO-CONDITIONS"), stripConditions(asTemplate(#M))) .
 
     op getLabel : RuleSet -> Qid .
     ------------------------------
@@ -339,7 +339,7 @@ fmod FVP-NARROWING-MODULO-T-GRAPH is
 
     op lookupCondition : RuleSet -> FOForm .
     ----------------------------------------
-    eq lookupCondition(RS) = getCondition(getRls(getLabel(RS), ##m##)) .
+    eq lookupCondition(RS) = getCondition(getRls(getLabel(RS), #M)) .
 
     op transition : StepResultSet FOForm -> [TransitionSet] .
     ---------------------------------------------------------
@@ -350,7 +350,7 @@ fmod FVP-NARROWING-MODULO-T-GRAPH is
     op state : CTerm -> Node .
     --------------------------
     eq step(state(T | F)) = transition(metaNarrow2(##m-stripped##, T), F) .
-   --- ceq fold(state(T | C), state(T' | C')) = fold(SUB) if SUB := metaMatch(##m##, T', T, nil, 0) .
+   --- ceq fold(state(T | C), state(T' | C')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
 endfm
 
 eof
