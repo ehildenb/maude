@@ -326,7 +326,7 @@ fmod FVP-NARROWING-MODULO-T-GRAPH is
    ceq foldAny(ND, ND', N) = if implies?(C << SUB, C' << SUB) then fold(SUB) else foldAny(ND, ND', s N) fi
                           if state(Q[T,  C ]) := ND  /\ Q == #ST
                           /\ state(Q[T', C']) := ND' /\ Q == #ST
-                          /\ SUB := metaMatch(#MO, T', T, nil, N) .
+                          /\ SUB := metaMatch(#M, T', T, nil, N) .
 ```
 
 -   `implies?` is supplied by the user and should check that the models of the first condition are contained in those of the second.
