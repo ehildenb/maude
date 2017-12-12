@@ -3,6 +3,10 @@ Logical Model Checking Parameter Modules
 
 Here we define several modules with empty operators for the user to instantiate to their systems/tools.
 
+```maude
+load ../meta/mtransform.maude
+```
+
 Model Checking
 --------------
 
@@ -15,5 +19,30 @@ fmod META-LMC-PARAMETERS is
 
     op #M  : ~> SModule  [memo] .
     op #FS : ~> TermList [memo] .
+endfm
+```
+
+Conditional Model Checking
+--------------------------
+
+-   `#MC` should be filled as the module to resolve conditions in.
+-   `#T` should be filled as the topmost rewriting sort of `#M` from `META-LMC-PARAMETERS`.
+-   `#C` should be filled as the sort of conditions.
+-   `#ST` should be filled as a suitable operator for holding a tuple of `#T` and `#C` (which won't clash with operators from `#M` or `#MC`).
+
+```maude
+fmod META-CONDITIONAL-LMC-PARAMETERS is
+   protecting META-LMC-PARAMETERS * ( op #M to #M-ORIG ) .
+   protecting UNCONDITIONALIZE .
+
+    op #MC : ~> SModule [memo] .
+    op #T  : ~> Sort    [memo] .
+    op #C  : ~> Sort    [memo] .
+    op #ST : ~> Qid     [memo] .
+    ----------------------------
+
+    op #M : ~> SModule [memo] .
+    ---------------------------
+    eq #M = unconditionalize(#T, #C, #ST, getName(#MC), #M-ORIG) .
 endfm
 ```
