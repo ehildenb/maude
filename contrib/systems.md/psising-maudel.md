@@ -75,7 +75,7 @@ State tuples `[_,_]` are elements of a *vector field* with the sort `DExp` for s
     op _*>_ : DExp  State -> State .
     --------------------------------
     eq [ DE1 , DE1' ] +  [ DE2 , DE2' ] = [ DE1 + DE2 , DE1' + DE2' ] .
-    eq            DE  *> [ DE1 , DE1' ] = [ DE  * DE1 , DE   * DE1' ] .
+    eq             DE *> [ DE1 , DE1' ] = [ DE  * DE1 , DE   * DE1' ] .
 
     op _?_:_ : DExp State State -> State .
     --------------------------------------
