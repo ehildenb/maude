@@ -15,6 +15,18 @@ reduce in PSI-INTERNAL : dirac(r) * [4 < 3] .
 rewrites: 1
 result DExp: δ(0)[r] * [4 < 3]
 ==========================================
+reduce in PSI-INTERNAL : ln(x + y * 3) .
+rewrites: 0
+result DExp: ln(x + y * 3)
+==========================================
+reduce in PSI-INTERNAL : gaussAnti(x, 0) .
+rewrites: 0
+result DExp: gaussAnti(x, 0)
+==========================================
+reduce in PSI-INTERNAL : dirac(r) * gaussAnti(x, 0) .
+rewrites: 1
+result DExp: δ(0)[r] * gaussAnti(x, 0)
+==========================================
 reduce in PSI-INTERNAL : int x . x .
 rewrites: 0
 result DExp: int x . x
@@ -23,21 +35,9 @@ reduce in PSI-INTERNAL : int x . gaussAnti(x, x) .
 rewrites: 0
 result DExp: int x . gaussAnti(x, x)
 ==========================================
-reduce in PSI-INTERNAL : gaussAnti(x, 0) .
-rewrites: 0
-result DExp: gaussAnti(x, 0)
-==========================================
 reduce in PSI-INTERNAL : sum x . int x . gaussAnti(x, 0) .
 rewrites: 0
 result DExp: sum x . int x . gaussAnti(x, 0)
-==========================================
-reduce in PSI-INTERNAL : dirac(r) * gaussAnti(x, 0) .
-rewrites: 1
-result DExp: δ(0)[r] * gaussAnti(x, 0)
-==========================================
-reduce in PSI-INTERNAL : ln(x + y * 3) .
-rewrites: 0
-result DExp: ln(x + y * 3)
 ==========================================
 reduce in PSI-INTERNAL : 3 [5 / y] .
 rewrites: 1
@@ -91,15 +91,15 @@ reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / y] .
 rewrites: 12
 result DExp: int x . (5 + x * 3)
 ==========================================
-reduce in PSI-DSL : uniformInt(0, x) .
+reduce in PSI-USER : uniformInt(0, x) .
 rewrites: 0
 result Exp: uniformInt(0, x)
 ==========================================
-reduce in PSI-DSL : 4 * uniformInt(0, x) .
+reduce in PSI-USER : 4 * uniformInt(0, x) .
 rewrites: 0
 result Exp: 4 * uniformInt(0, x)
 ==========================================
-reduce in PSI-DSL : - ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] +
+reduce in PSI-USER : - ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] +
     dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) =
     dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) *
     dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (
@@ -119,24 +119,24 @@ result Exp: - ((δ(0)[-1] * (δ(0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [
     0)[1] * [δ(0)[-1] = δ(0)[-1]] + δ(0)[-1] * [δ(0)[1] = δ(0)[-1]] : δ(
     0)[-1]
 ==========================================
-reduce in PSI-DSL : m(r) .
+reduce in PSI-USER : m(r) .
 rewrites: 0
 result Exp: m(r)
 ==========================================
-reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) .
+reduce in PSI-USER : fun m(x)= 4 * uniformInt(0, x) .
 rewrites: 0
 result Function: fun m(x)= 4 * uniformInt(0, x)
 ==========================================
-reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
+reduce in PSI-USER : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
     7) .
 rewrites: 0
 result Program: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
 ==========================================
-reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) .
+reduce in PSI-USER : fun m(x)= 4 * uniformInt(0, x) .
 rewrites: 0
 result Function: fun m(x)= 4 * uniformInt(0, x)
 ==========================================
-reduce in PSI-DSL : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
+reduce in PSI-USER : fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y,
     7) .
 rewrites: 0
 result Program: fun m(x)= 4 * uniformInt(0, x) fun n(y)= 3 * uniformInt(y, 7)
