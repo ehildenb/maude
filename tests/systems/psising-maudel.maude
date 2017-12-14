@@ -1,12 +1,20 @@
+set show timing off .
+
 load ../../contrib/systems/psising-maudel.maude
 
 mod PSISING-MAUDEL-10-SITE is
     including PSISING-MAUDEL .
 
+    var DE : DExp .
+
     eq width = 10 .
     eq J     = 1/2 .
     eq T     = 30 .
     ---------------
+
+    op [[_]] : DExp -> State .
+    --------------------------
+    eq [[ DE ]] = DE ? spinUp : spinDown .
 
     op init : Nat -> [Cells] .
     --------------------------
@@ -31,6 +39,17 @@ mod PSISING-MAUDEL-10-SITE is
                ; < 0 , 7 > :: spinDown
                ; < 0 , 8 > :: spinDown
                ; < 0 , 9 > :: spinDown .
+
+    eq init(2) = < 0 , 0 > :: [[ 1/2 ]]
+               ; < 0 , 1 > :: [[ 1/4 ]]
+               ; < 0 , 2 > :: [[ 3/8 ]]
+               ; < 0 , 3 > :: [[ x   ]]
+               ; < 0 , 4 > :: [[ 2/3 ]]
+               ; < 0 , 5 > :: [[ 1   ]]
+               ; < 0 , 6 > :: [[ 0   ]]
+               ; < 0 , 7 > :: [[ 0   ]]
+               ; < 0 , 8 > :: [[ 0   ]]
+               ; < 0 , 9 > :: [[ 0   ]] .
 endm
 
 reduce init(0) .
@@ -42,3 +61,4 @@ reduce [ init(0) ] .
 reduce [ init(1) ] .
 
 search [2] [ init(0) ] =>* { CS:Cells } .
+search [1] [ init(2) ] =>* { CS:Cells } .
