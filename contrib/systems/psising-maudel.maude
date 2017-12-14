@@ -6,14 +6,14 @@ load caut.maude
 load ../tools/solvers/psi.maude
 
 mod PSISING-MAUDEL is
-   protecting PSI-TRANSLATION + PSI-INTERNAL-SIMPLIFICATION .
+   protecting PSI-INTERNAL-SIMPLIFICATION .
     extending PERIODIC-GRID * ( op true  to tt
                               , op false to ff
                               , op _<_   to _P<_
                               , op _>_   to _P>_
                               ) .
 
-    vars E E' E1 E1' E2 E2' HD : Exp .
+    vars DE DE' DE1 DE1' DE2 DE2' HD : DExp .
     vars S S' SL SR : State . var SS : States .
 
 
@@ -48,8 +48,8 @@ mod PSISING-MAUDEL is
 --- ; -   `flip` switches the probabilities of being spin up/down around.
 
 
-    op [_,_] : Exp Exp -> State .
-    -----------------------------
+    op [_,_] : DExp DExp -> State .
+    -------------------------------
 
    ops spinUp spinDown : -> State .
    --------------------------------
@@ -58,10 +58,10 @@ mod PSISING-MAUDEL is
 
     op flip : State -> State .
     --------------------------
-    eq flip([ E , E' ]) = [ E' , E ] .
+    eq flip([ DE , DE' ]) = [ DE' , DE ] .
 
 
---- ; State tuples `[_,_]` are elements of a *vector field* with the sort `Exp` for scalars.
+--- ; State tuples `[_,_]` are elements of a *vector field* with the sort `DExp` for scalars.
 
 --- ; -   `_+_` provides vector addition,
 --- ; -   `_*>_` provides scalar-vector multiplication, and
@@ -72,14 +72,14 @@ mod PSISING-MAUDEL is
 
 
     op _+_  : State State -> State .
-    op _*>_ : Exp   State -> State .
+    op _*>_ : DExp  State -> State .
     --------------------------------
-    eq [ E1 , E1' ] +  [ E2 , E2' ] = [ E1 + E2 , E1' + E2' ] .
-    eq            E *> [ E1 , E1' ] = [ E  * E1 , E   * E1' ] .
+    eq [ DE1 , DE1' ] +  [ DE2 , DE2' ] = [ DE1 + DE2 , DE1' + DE2' ] .
+    eq            DE  *> [ DE1 , DE1' ] = [ DE  * DE1 , DE   * DE1' ] .
 
-    op _?_:_ : Exp State State -> State .
-    -------------------------------------
-    eq E ? S : S' = (E *> S) + ((1 - E) *> S') .
+    op _?_:_ : DExp State State -> State .
+    --------------------------------------
+    eq DE ? S : S' = (DE *> S) + ((1 - DE) *> S') .
 
 
 --- ; -   `_**_` calculates the correlation between two states.
@@ -88,7 +88,7 @@ mod PSISING-MAUDEL is
 
     op _**_ : State State -> DExp .
     -------------------------------
-    eq [ E1 , E1' ] ** [ E2 , E2' ] = E1 * (E2 - E2') + E1' * (E2' - E2) .
+    eq [ DE1 , DE1' ] ** [ DE2 , DE2' ] = DE1 * (DE2 - DE2') + DE1' * (DE2' - DE2) .
 
     op Hlocal : State State State -> DExp .
     ---------------------------------------
@@ -104,8 +104,8 @@ mod PSISING-MAUDEL is
 --- ; **TODO**: Is there a better way to format this for readability?
 
 
-   ceq S -> left[SL] right[SR] SS = S -> (HD < 0) ? flip(S)
-                                                  : (exp(- HD / T) ? flip(S) : S)
+   ceq S -> left[SL] right[SR] SS = S -> [ HD < 0 ] ? flip(S)
+                                                    : (exp(- HD / T) ? flip(S) : S)
                                  if HD := Hlocal(flip(S), SL, SR) - Hlocal(S, SL, SR) .
 endm
 
