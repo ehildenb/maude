@@ -1,0 +1,3 @@
+load ../../contrib/systems/psising-maudel.maude
+
+search [1] [ init ] =>* { CS:Cells } .
