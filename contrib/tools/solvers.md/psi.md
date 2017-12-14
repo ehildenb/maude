@@ -27,13 +27,12 @@ fmod RENAMED-RAT is
 endfm
 ```
 
-PSI Languages
--------------
+PSI Internal Language
+---------------------
 
-PSI has two languages, an internal representation and a user language.
-Probabalistic simplifications and reasoning happen over the internal language; the user language is compiled to the internal language by PSI.
+Probabalistic simplifications and reasoning happen in PSI over the internal language.
 
-### Internal Language
+### Internal Language Syntax
 
 The internal language is that of arithmetic expressions over discrete and continuous probability distributions.
 Sort `DExp` is the grammar of this language:
@@ -159,7 +158,7 @@ Finally, substitutions over `DExp` are provided.
 endfm
 ```
 
-### PSI Simplification
+### PSI Internal Language Simplifications
 
 Many simple algebraic simplifications can be expressed directly in Maude and greatly reduce the size of the generated terms.
 
@@ -195,11 +194,43 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
 endfm
 ```
 
-### PSI User Language
+PSI User DSLs
+-------------
+
+### Primitive Distributions
+
+Many primitive distributions are useful for building up complicated probability distributions.
+PSI has support for several by translating them into the internal language.
+
+**TODO**: Decide on how to handle error terms at the PSI internal level.
+
+```maude
+fmod PSI-PRIMITIVE-DISTRIBUTIONS is
+   protecting PSI-INTERNAL .
+
+    var X : Id . var DE : DExp .
+
+    op bernoulli  : Id DExp      -> DExp .
+    op poisson    : Id DExp      -> DExp .
+    op uniformInt : Id DExp DExp -> DExp .
+    op uniform    : Id DExp DExp -> DExp .
+    op gauss      : Id DExp DExp -> DExp .
+    op pareto     : Id DExp DExp -> DExp .
+    op beta       : Id DExp DExp -> DExp .
+    op gamma      : Id DExp DExp -> DExp .
+    --------------------------------------
+    eq bernoulli(X, DE) = DE * dirac(1 - X) + (1 - DE) * dirac(X) .
+---   ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
+---   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
+---   ceq { uniformInt(E, E') | TE } = uniformInt(DE, DE') | TE' if DE , DE' | TE' := { E , E' | TE } .
+endfm
+```
+
+### PSI Imperative User Language
 
 ```maude
 fmod PSI-USER is
-   protecting PSI-INTERNAL .
+   protecting PSI-PRIMITIVE-DISTRIBUTIONS .
    protecting RENAMED-RAT .
 
     sort Exp .
@@ -245,16 +276,6 @@ fmod PSI-USER is
 
     op _(_) : Id ExpList -> Exp .
     -----------------------------
-
-    op bernoulli  : Exp     -> Exp .
-    op poisson    : Exp     -> Exp .
-    op uniformInt : Exp Exp -> Exp .
-    op uniform    : Exp Exp -> Exp .
-    op gauss      : Exp Exp -> Exp .
-    op pareto     : Exp Exp -> Exp .
-    op beta       : Exp Exp -> Exp .
-    op gamma      : Exp Exp -> Exp .
-    --------------------------------
 
     sort Function .
     ---------------
@@ -382,10 +403,6 @@ fmod PSI-TRANSLATION is
    ceq { ceil(E)         | TE } = ceil(DE)         | TE'                    if DE | TE' := { E | TE } .
    ceq { δ(0)[E]         | TE } = δ(0)[DE]         | TE'                    if DE | TE' := { E | TE } .
    ceq { gaussAnti(X, E) | TE } = gaussAnti(X, DE) | TE'                    if DE | TE' := { E | TE } .
-
-   ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
----   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
----   ceq { uniformInt(E, E') | TE } = uniformInt(DE, DE') | TE' if DE , DE' | TE' := { E , E' | TE } .
 
     op translate : ExpList -> TranslateEnv .
     ----------------------------------------
