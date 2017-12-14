@@ -4,6 +4,8 @@ mod PSISING-MAUDEL-10-SITE is
     including PSISING-MAUDEL .
 
     eq width = 10 .
+    eq J     = 1/2 .
+    eq T     = 30 .
     ---------------
 
     op init : Nat -> [Cells] .
