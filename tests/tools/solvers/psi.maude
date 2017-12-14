@@ -50,8 +50,8 @@ reduce [ 3 < 4 ] * dirac(x) .
 
 select PSI-USER .
 
-reduce uniformInt(0, x) .
-reduce 4 * uniformInt(0, x) .
+reduce uniformInt(x, 0, 1) .
+reduce 4 * uniformInt(x, 0, 1) .
 
 reduce   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac( -1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [ dirac(1) = dirac(-1)])) * 1/2) + (dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2 < 0 || exp(- (- ((dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]) + dirac(-1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)])) * 1/2) + ( dirac(-1) * dirac(-1) + dirac(-1) * dirac(-1)) * 1/2) / 30))
        ? dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [dirac(1) = dirac(-1)]
@@ -59,12 +59,12 @@ reduce   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dirac(-1) * [di
 
 reduce m(r) .
 
-reduce fun m(x) = 4 * uniformInt(0, x)  .
-reduce fun m(x) = 4 * uniformInt(0, x)
-       fun n(y) = 3 * uniformInt(y, 7)  .
-reduce fun m(x) = 4 * uniformInt(0, x)  .
-reduce fun m(x) = 4 * uniformInt(0, x)
-       fun n(y) = 3 * uniformInt(y, 7)  .
+reduce fun m(x) = 4 * uniformInt(x, 0, 1)  .
+reduce fun m(x) = 4 * uniformInt(x, 0, 1)
+       fun n(y) = 3 * uniformInt(y, 7, 2)  .
+reduce fun m(x) = 4 * uniformInt(x, 0, 2)  .
+reduce fun m(x) = 4 * uniformInt(x, 1, 3)
+       fun n(y) = 3 * uniformInt(y, 2, 7)  .
 
 --- Test Module PSI-TRANSLATION
 --- ===========================
@@ -73,9 +73,9 @@ select PSI-TRANSLATION .
 
 reduce dist: m(r) .
 reduce dist: n(m(r)) .
-reduce dist: uniformInt(0,5) .
-reduce fun m(x) = 4 * uniformInt(0, x)
-       fun n(y) = 3 * uniformInt(y, 7)
+reduce dist: uniformInt(x,0,5) .
+reduce fun m(x) = 4 * uniformInt(x,0, 2)
+       fun n(y) = 3 * uniformInt(y, 7, 1)
        dist: n(m(r)) .
 
 reduce dirac(1) .
@@ -115,5 +115,5 @@ reduce translate(   (- ((dirac( -1) * (dirac(1) * [dirac(-1) = dirac(-1)] + dira
                   : dirac(-1)
                 ) .
 
-reduce translate(x * bernoulli(3 * x)) .
-reduce translate((x * bernoulli(3 * x)) / z) .
+reduce translate(x * bernoulli(x, 3)) .
+reduce translate((x * bernoulli(x, 3)) / z) .
