@@ -1,3 +1,37 @@
 load ../../contrib/systems/psising-maudel.maude
 
-search [1] [ init ] =>* { CS:Cells } .
+mod PSISING-MAUDEL-10-SITE is
+    including PSISING-MAUDEL .
+
+    eq width = 10 .
+    ---------------
+
+    op init : Nat -> [Cells] .
+    --------------------------
+    eq init(0) = < 0 , 0 > :: spinUp
+               ; < 0 , 1 > :: spinUp
+               ; < 0 , 2 > :: spinUp
+               ; < 0 , 3 > :: spinUp
+               ; < 0 , 4 > :: spinUp
+               ; < 0 , 5 > :: spinUp
+               ; < 0 , 6 > :: spinUp
+               ; < 0 , 7 > :: spinUp
+               ; < 0 , 8 > :: spinUp
+               ; < 0 , 9 > :: spinUp .
+
+    eq init(1) = < 0 , 0 > :: spinDown
+               ; < 0 , 1 > :: spinDown
+               ; < 0 , 2 > :: spinDown
+               ; < 0 , 3 > :: spinDown
+               ; < 0 , 4 > :: spinDown
+               ; < 0 , 5 > :: spinDown
+               ; < 0 , 6 > :: spinDown
+               ; < 0 , 7 > :: spinDown
+               ; < 0 , 8 > :: spinDown
+               ; < 0 , 9 > :: spinDown .
+endm
+
+reduce 2 < 0 ? spinUp : spinDown .
+reduce init(0) .
+search [1] [ init(0) ] =>* { CS:Cells } .
+reduce [ init(0) ] .
