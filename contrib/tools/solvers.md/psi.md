@@ -168,7 +168,7 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
     including PSI-INTERNAL .
 
     vars R R' : Rat . var NzR : NzRat .
-    vars DE DE' : DExp . var DC : DConst . vars X Y : Id .
+    vars DE DE' DE'' : DExp . var DC : DConst . vars X Y : Id .
 
     --- Arithmetic
     eq    - (- DE)  = DE .
@@ -176,6 +176,9 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
     eq 0  + DE'     = DE' .
     eq 0  * DE'     = 0 .
     eq 1  * DE'     = DE' .
+
+    --- Exponentiation
+    eq (DE ^ DE') * (DE ^ DE'') = DE ^ (DE + DE') .
 
     --- Iverson Brackets
     eq [ R < R' ] = if R P<  R' then 1 else 0 fi .
