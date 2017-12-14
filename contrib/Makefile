@@ -12,7 +12,8 @@ tools: \
 	tools/meta/mconstruction.maude \
 	tools/meta/unification.maude \
 	tools/meta/variables.maude \
-	tools/meta/narrowing.maude
+	tools/meta/narrowing.maude \
+	tools/solvers/psi.maude
 
 systems: \
 	systems/nim.maude \
@@ -22,6 +23,9 @@ systems: \
 # Download it from 'https://github.com/ehildenb/pandoc'
 
 tools/meta/%.maude: tools/meta.md/%.md
+	pd --from markdown --to 'code{.maude}' $< > $@
+
+tools/solvers/%.maude: tools/solvers.md/%.md
 	pd --from markdown --to 'code{.maude}' $< > $@
 
 systems/%.maude: systems.md/%.md

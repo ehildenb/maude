@@ -1,7 +1,7 @@
---- ; PSI - Exact Probabalistic Inference
---- ; ===================================
+PSI - Exact Probabalistic Inference
+===================================
 
-
+```maude
 set include BOOL off .
 
 fmod IDS is
@@ -323,6 +323,4 @@ fmod PSI-TRANSLATION is
     --------------------------------
    ceq translateExp(E) = DE if DE | .TranslateEnv := translate(E) .
 endfm
-
-
-
+```
