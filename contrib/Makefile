@@ -17,7 +17,8 @@ tools: \
 
 systems: \
 	systems/nim.maude \
-	systems/caut.maude
+	systems/caut.maude \
+	systems/psising-maudel.maude
 
 # `pd` is a patched version of `pandoc` capable of writing code files
 # Download it from 'https://github.com/ehildenb/pandoc'
