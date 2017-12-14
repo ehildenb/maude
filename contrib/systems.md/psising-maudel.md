@@ -100,8 +100,8 @@ State tuples `[_,_]` are elements of a *vector field* with the sort `DExp` for s
 ### Local Update Rule
 
 After specifying the state vector field data-structure, it's relatively simple to define the update rule.
-The variable `HD` is the change in energy associated with flipping the current site.
-This says, "if it's energetically favorable (`H < 0)`), then flip; otherwise only flip with probability (`exp(- HD / T)`)".
+The variable `HD` is calculated to be the change in energy associated with flipping the current site.
+This says, "if it's energetically favorable (`HD < 0`), then flip; otherwise only flip with probability (`exp(- HD / T)`)".
 
 **TODO**: Is there a better way to format this for readability?
 
