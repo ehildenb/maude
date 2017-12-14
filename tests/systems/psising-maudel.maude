@@ -31,7 +31,7 @@ mod PSISING-MAUDEL-10-SITE is
                ; < 0 , 9 > :: spinDown .
 endm
 
-reduce 2 < 0 ? spinUp : spinDown .
+reduce [ 2 < 0 ] ? spinUp : spinDown .
 reduce init(0) .
 search [1] [ init(0) ] =>* { CS:Cells } .
 reduce [ init(0) ] .
