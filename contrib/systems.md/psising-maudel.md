@@ -28,15 +28,17 @@ To instantiate the `PERIODIC-GRID` module, we need to supply several things:
 
 ### Parameters
 
-We'll restrict to 1D situations, but leave the number of sites open (the `width`).
+We'll restrict to 1D situations by setting `height` to 1, but leave the number of sites open (the `width`).
+
+```maude
+    eq height = 1 .
+```
+
 Parameters `J` and `T` are the coupling coefficient and temperature, respectively.
 
 ```maude
    ops J T : -> Rat .
    ------------------
-    eq height = 1 .
-    eq J      = 1/2 .
-    eq T      = 30 .
 ```
 
 ### System State
