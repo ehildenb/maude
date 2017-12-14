@@ -1,6 +1,14 @@
 PSI - Exact Probabalistic Inference
 ===================================
 
+The [PSI Solver](http://psisolver.org) does exact symbolic inference/simplifications over Probability Distributions.
+Here we build the syntax and some semantics of the PSI solver, allowing us to use probability distributions directly in Maude.
+
+### Utilities
+
+-   `IDS` gives us a handy back of variables.
+-   `RENAMED-RATS` allows us to re-use syntax from the Prelude.
+
 ```maude
 set include BOOL off .
 
@@ -17,7 +25,23 @@ fmod RENAMED-RAT is
                     , op _>_   to _P>_
                     ) .
 endfm
+```
 
+PSI Languages
+-------------
+
+PSI has two languages, an internal representation and a user language.
+Probabalistic simplifications and reasoning happen over the internal language; the user language is compiled to the internal language by PSI.
+
+### Internal Language
+
+The internal language is that of arithmetic expressions over discrete and continuous probability distributions.
+Sort `DExp` is the grammar of this language:
+
+-   Subsort `Id` is for variables.
+-   Subsort `DConst` is for rational numbers and other special constants.
+
+```maude
 fmod PSI-INTERNAL is
    protecting IDS .
    protecting RENAMED-RAT .
@@ -28,7 +52,11 @@ fmod PSI-INTERNAL is
     subsorts Id DConst < DExp .
 
     var DC : DConst . vars DE DE' : DExp .
+```
 
+Arithmetic is supported, with some special constants added.
+
+```maude
    ops pi e : -> DConst .
    ----------------------
 
@@ -41,7 +69,14 @@ fmod PSI-INTERNAL is
     op _/_ : DExp DExp -> DExp [ditto] .
     op _^_ : DExp DExp -> DExp [ditto] .
     ------------------------------------
+```
 
+[Iverson Brackets](https://en.wikipedia.org/wiki/Iverson_bracket) are used to represent various conditionals.
+
+TODO: Stop using non-ascii syntax variants.
+TODO: Add subsort `BDExp` and operator `[_]` to turn any boolean into a condition.
+
+```maude
     op [_<_] : DExp DExp -> DExp .
     op [_>_] : DExp DExp -> DExp .
     op [_≤_] : DExp DExp -> DExp .
@@ -49,7 +84,17 @@ fmod PSI-INTERNAL is
     op [_=_] : DExp DExp -> DExp [comm] .
     op [_≠_] : DExp DExp -> DExp [comm] .
     -------------------------------------
+```
 
+Some primitive functions are included, including:
+
+-   Logarithms, exponentials, and trigonometric functions,
+-   Floor and ceiling functions, and
+-   Dirac delta (point distribution) and Error function (anti-derivative of normal distribution).
+
+TODO: Rename `gaussAnti` to `err`.
+
+```maude
     op ln        : DExp -> DExp .
     op exp       : DExp -> DExp .
     op sin       : DExp -> DExp .
@@ -62,7 +107,11 @@ fmod PSI-INTERNAL is
     --------------------------------
     eq dirac(DE) = δ(0)[DE] .
     eq exp(DE)   = e ^ DE .
+```
 
+Operators in sort `Binder` bind a variable in context, which must be taken into account when doing substitution.
+
+```maude
     sort Binder .
     -------------
     vars X Y : Id . var S : Subst . var BIND : Binder .
@@ -70,7 +119,11 @@ fmod PSI-INTERNAL is
     op __._ : Binder Id DExp -> DExp [prec 20] .
    ops sum int lim : -> Binder .
    -----------------------------
+```
 
+Finally, substitutions over `DExp` are provided.
+
+```maude
     sort Subst .
     ------------
 
@@ -104,7 +157,13 @@ fmod PSI-INTERNAL is
 
     eq BIND X . DE [ DE' / Y ] = if X == Y then BIND X . DE else BIND X . (DE [ DE' / Y ]) fi .
 endfm
+```
 
+### PSI Simplification
+
+Many simple algebraic simplifications can be expressed directly in Maude and greatly reduce the size of the generated terms.
+
+```maude
 fmod PSI-INTERNAL-SIMPLIFICATION is
     including PSI-INTERNAL .
 
@@ -129,8 +188,12 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
     --- Dirac Delta Arithmetic
     eq δ(0)[NzR] = 0 .
 endfm
+```
 
-fmod PSI-DSL is
+### PSI User Language
+
+```maude
+fmod PSI-USER is
    protecting PSI-INTERNAL .
    protecting RENAMED-RAT .
 
@@ -236,9 +299,13 @@ fmod PSI-DSL is
 --- ;    ops Expectation FromMarginal SampleFrom : -> Sample .
 --- ;     op _(_) : Sample ExpList -> Exp .   --- TODO: should be Exp or Stmt?
 endfm
+```
 
+### PSI User to Internal Translation
+
+```maude
 fmod PSI-TRANSLATION is
-   protecting PSI-DSL .
+   protecting PSI-USER .
 
     sorts Query Program? .
     ----------------------
