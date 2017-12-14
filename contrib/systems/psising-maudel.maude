@@ -13,64 +13,100 @@ mod PSISING-MAUDEL is
                               , op _>_   to _P>_
                               ) .
 
-    vars DE DE' DE'' DH PF : DExp . var SS : States .
+    vars E E' E1 E1' E2 E2' HD : Exp .
+    vars S S' SL SR : State . var SS : States .
 
-    eq height = 1 .
-    eq width  = 10 .
-    ----------------
 
-    op dist : DExp -> State .
-    -------------------------
+--- ; System Specialization
+--- ; ---------------------
 
-   ops spinUp spinDown : -> DExp .
-   -------------------------------
-    eq spinUp   = dirac(1)  .
-    eq spinDown = dirac(-1) .
+--- ; To instantiate the `PERIODIC-GRID` module, we need to supply several things:
+
+--- ; -   Definitions for the `height` and `width` of the grid.
+--- ; -   The datatype of system state.
+--- ; -   The local system update rule.
+
+--- ; ### Parameters
+
+--- ; We’ll restrict to 1D situations, but leave the number of sites open (the `width`).
+--- ; Parameters `J` and `T` are the coupling coefficient and temperature, respectively.
+
 
    ops J T : -> Rat .
    ------------------
-    eq J = 1/2 .
-    eq T = 30 .
+    eq height = 1 .
+    eq J      = 1/2 .
+    eq T      = 30 .
 
-    op H : DExp DExp DExp -> [DExp] .
-    ---------------------------------
-    eq H(DE, DE', DE'') = - (J * (DE * DE' + DE * DE'')) .
 
-    op flip : DExp -> [DExp] .
+--- ; ### System State
+
+--- ; The state of a system at a given time is a tuple of the probability of finding it spin up/down respectively.
+
+--- ; -   `[_,_]` is a system state vector.
+--- ; -   `spinUp` and `spinDown` are example (useful) states.
+--- ; -   `flip` switches the probabilities of being spin up/down around.
+
+
+    op [_,_] : Exp Exp -> State .
+    -----------------------------
+
+   ops spinUp spinDown : -> State .
+   --------------------------------
+    eq spinUp   = [ 1 , 0 ] .
+    eq spinDown = [ 0 , 1 ] .
+
+    op flip : State -> State .
     --------------------------
-    eq flip(DE) = [ DE = spinUp   ] * spinDown
-                + [ DE = spinDown ] * spinUp .
+    eq flip([ E , E' ]) = [ E' , E ] .
 
-    op init : -> Cells .
-    --------------------
-    eq init = < 0 , 0 > :: dist(dirac(a))
-            ; < 0 , 1 > :: dist(dirac(b))
-            ; < 0 , 2 > :: dist(dirac(c))
-            ; < 0 , 3 > :: dist(dirac(d))
-            ; < 0 , 4 > :: dist(dirac(f))
-            ; < 0 , 5 > :: dist(dirac(g))
-            ; < 0 , 6 > :: dist(dirac(h))
-            ; < 0 , 7 > :: dist(dirac(i))
-            ; < 0 , 8 > :: dist(dirac(j))
-            ; < 0 , 9 > :: dist(dirac(k)) .
 
-    --- ; from querying PSI for the transition probability:
-    --- ; p(r|x,y,z) = ([-1+-x=0]+[-x+1=0])·[-x·y+-x·z != 0]·[-x·y+-x·z <= 0]·dirac(0)[-e^(-1/30·x·y+-1/30·x·z)+r]
-    --- ;            + ([-1+-x=0]+[-x+1=0])·[x·y+x·z <= 0]·dirac(1)[r]
-    --- ;
-    --- ; Pr[error|x,y,z] = [-1+-x≠0]·[-x+1≠0]
+--- ; State tuples `[_,_]` are elements of a *vector field* with the sort `Exp` for scalars.
 
-    eq dist(DE) -> left[dist(DE')] right[dist(DE'')] SS
-     = dist(DE) -> dist( ( ([(- 1) + (- DE) = 0] + [(- DE) + 1 = 0])
-                         * [(- DE * DE') + (- DE * DE'') ≠ 0]
-                         * [(- DE * DE') + (- DE * DE'') ≤ 0]
-                         * dirac(- e ^ (((- 1 / 30) * DE * DE') + ((- 1 / 30) * DE * DE'')))
-                         )
-                       + ( ([ (- 1) + (- DE) = 0] + [(- DE) + 1 = 0])
-                         * [(DE * DE' + DE * DE'') ≤ 0]
-                         * dirac(1)
-                         )
-                       ) .
+--- ; -   `_+_` provides vector addition,
+--- ; -   `_*>_` provides scalar-vector multiplication, and
+--- ; -   `_?_:_` provides probabalistic choice.
+
+--- ; **TODO**: Should we be doing some normalization on vector addition?
+--- ; **TODO**: Vector field or Module? Do we really have division?
+
+
+    op _+_  : State State -> State .
+    op _*>_ : Exp   State -> State .
+    --------------------------------
+    eq [ E1 , E1' ] +  [ E2 , E2' ] = [ E1 + E2 , E1' + E2' ] .
+    eq            E *> [ E1 , E1' ] = [ E  * E1 , E   * E1' ] .
+
+    op _?_:_ : Exp State State -> State .
+    -------------------------------------
+    eq E ? S : S' = (E *> S) + ((1 - E) *> S') .
+
+
+--- ; -   `_**_` calculates the correlation between two states.
+--- ; -   `Hlocal` is the local *Hamiltonial*, which calculates the energy of a sites correlation with its neighbors.
+
+
+    op _**_ : State State -> DExp .
+    -------------------------------
+    eq [ E1 , E1' ] ** [ E2 , E2' ] = E1 * (E2 - E2') + E1' * (E2' - E2) .
+
+    op Hlocal : State State State -> DExp .
+    ---------------------------------------
+    eq Hlocal(S, SL, SR) = (- J) * ((S ** SL) + (S ** SR)) .
+
+
+--- ; ### Local Update Rule
+
+--- ; After specifying the state vector field data-structure, it’s relatively simple to define the update rule.
+--- ; The variable `HD` is the change in energy associated with flipping the current site.
+--- ; This says, “if it’s energetically favorable (`H < 0)`), then flip; otherwise only flip with probability (`exp(- HD / T)`)”.
+
+--- ; **TODO**: Is there a better way to format this for readability?
+
+
+   ceq S -> left[SL] right[SR] SS = S -> (HD < 0) ? flip(S)
+                                                  : (exp(- HD / T) ? flip(S) : S)
+                                 if HD := Hlocal(flip(S), SL, SR) - Hlocal(S, SL, SR) .
 endm
 
 
