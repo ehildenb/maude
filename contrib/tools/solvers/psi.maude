@@ -178,6 +178,8 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
     eq 1  * DE'     = DE' .
 
     --- Exponentiation
+    eq DE ^ 0 = 1 .
+    eq DE ^ 1 = DE .
     eq (DE ^ DE') * (DE ^ DE'') = DE ^ (DE + DE') .
 
     --- Iverson Brackets
