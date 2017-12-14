@@ -91,6 +91,22 @@ reduce in PSI-INTERNAL : int x . (y + x * 3) [5 / y] .
 rewrites: 12
 result DExp: int x . (5 + x * 3)
 ==========================================
+reduce in PSI-INTERNAL-SIMPLIFICATION : [3 ≤ 3] .
+rewrites: 3
+result NzNat: 1
+==========================================
+reduce in PSI-INTERNAL-SIMPLIFICATION : dirac(3) .
+rewrites: 2
+result Zero: 0
+==========================================
+reduce in PSI-INTERNAL-SIMPLIFICATION : x * 0 .
+rewrites: 1
+result Zero: 0
+==========================================
+reduce in PSI-INTERNAL-SIMPLIFICATION : dirac(x) * [3 < 4] .
+rewrites: 5
+result DExp: δ(0)[x]
+==========================================
 reduce in PSI-USER : uniformInt(0, x) .
 rewrites: 0
 result Exp: uniformInt(0, x)

@@ -35,6 +35,16 @@ reduce dirac(3 * x + y)    [ 5 / y ] .
 reduce int x . (3 * x + y) [ 5 / x ] .
 reduce int x . (3 * x + y) [ 5 / y ] .
 
+--- Test Module PSI-INTERNAL-SIMPLIFICATION
+--- =======================================
+
+select PSI-INTERNAL-SIMPLIFICATION .
+
+reduce [ 3 ≤ 3 ] .
+reduce dirac(3) .
+reduce 0 * x .
+reduce [ 3 < 4 ] * dirac(x) .
+
 --- Test Module PSI-USER
 --- ====================
 
