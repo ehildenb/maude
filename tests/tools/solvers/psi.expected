@@ -19,25 +19,25 @@ reduce in TEST-PSI-INTERNAL : ln(x + y * 3) .
 rewrites: 0
 result DExp: ln(x + y * 3)
 ==========================================
-reduce in TEST-PSI-INTERNAL : gaussAnti(x, 0) .
-rewrites: 0
-result DExp: gaussAnti(x, 0)
-==========================================
-reduce in TEST-PSI-INTERNAL : dirac(r) * gaussAnti(x, 0) .
-rewrites: 1
-result DExp: δ(0)[r] * gaussAnti(x, 0)
-==========================================
 reduce in TEST-PSI-INTERNAL : int x . x .
 rewrites: 0
 result DExp: int x . x
 ==========================================
-reduce in TEST-PSI-INTERNAL : int x . gaussAnti(x, x) .
+reduce in TEST-PSI-INTERNAL : int x . err x . x .
 rewrites: 0
-result DExp: int x . gaussAnti(x, x)
+result DExp: int x . err x . x
 ==========================================
-reduce in TEST-PSI-INTERNAL : sum x . int x . gaussAnti(x, 0) .
+reduce in TEST-PSI-INTERNAL : sum x . int x . err x . 0 .
 rewrites: 0
-result DExp: sum x . int x . gaussAnti(x, 0)
+result DExp: sum x . int x . err x . 0
+==========================================
+reduce in TEST-PSI-INTERNAL : err x . 0 .
+rewrites: 0
+result DExp: err x . 0
+==========================================
+reduce in TEST-PSI-INTERNAL : dirac(r) * err x . 0 .
+rewrites: 1
+result DExp: δ(0)[r] * err x . 0
 ==========================================
 reduce in TEST-PSI-INTERNAL : 3 [5 / y] .
 rewrites: 1
