@@ -231,6 +231,27 @@ fmod PSI-PRIMITIVE-DISTRIBUTIONS is
 endfm
 ```
 
+### Probabalistic Choice
+
+Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
+This operator is used by many higher-level language features.
+
+**TODO**: Should the translation be `[ C ≠ 0 ] * B1 + [ C = 0 ] * B2`?
+          Or perhaps something using the measure-theoretic version of conditional probabilities?
+          I think the given translation only works for statistically independent branches, which seems rather unlikely.
+
+```maude
+fmod PSI-CHOICE is
+   protecting PSI-INTERNAL .
+
+    vars C B1 B2 : DExp .
+
+    op _?_:_ : DExp DExp DExp -> DExp .
+    -----------------------------------
+    eq C ? B1 : B2 = (C * B1) + ((1 - C) * B2) .
+endfm
+```
+
 ### Probability Vectors
 
 Probability vectors are vectors with entries between 0 and 1 which sum to 1.
@@ -240,7 +261,7 @@ They represent the probability of finding a system in any given discrete state (
 
 ```maude
 fmod PSI-PROBABILITY-VECTORS is
-   protecting PSI-INTERNAL .
+   protecting PSI-INTERNAL + PSI-CHOICE .
 
     sorts 2PVect 3PVect .
     ---------------------
@@ -272,20 +293,14 @@ These can be used to scale/sum probability vectors.
     eq DE *> < DE1 , DE1' , DE1'' > = < DE * DE1 , DE * DE1' , DE * DE1'' > .
 ```
 
-Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
-Defining it in terms of the vector operators supplied above is relatively straightforward.
-
-**TODO**: Provide `_?_:_` in a `PSI-PROBABALISTIC-CHOICE` module then lift to `2PVect` and `3PVect` instead.
-
-**TODO**: Should the translation be `[ DE ≠ 0 ] *> 2P + [ DE = 0 ] *> 2P'`?
-          I think the given translation only works for statistically independent branches, which seems rather unlikely.
+Here we piecewise lift probabilistic choice to `2PVect` and `3PVect`.
 
 ```maude
     op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
     op _?_:_ : DExp 3PVect 3PVect -> 3PVect .
     -----------------------------------------
-    eq DE ? 2P : 2P' = (DE *> 2P) + ((1 - DE) *> 2P') .
-    eq DE ? 3P : 3P' = (DE *> 3P) + ((1 - DE) *> 3P') .
+    eq DE ? < DE1 , DE1' >         : < DE2 , DE2' >         = < DE ? DE1 : DE2 , DE ? DE1' : DE2' > .
+    eq DE ? < DE1 , DE1' , DE1'' > : < DE2 , DE2' , DE2'' > = < DE ? DE1 : DE2 , DE ? DE1' : DE2' , DE ? DE1'' : DE2'' > .
 ```
 
 The correlation (`_**_`) between two probability vectors measures roughly how much they agree on the individual components.
