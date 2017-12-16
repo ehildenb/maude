@@ -108,12 +108,12 @@ rewrites: 5
 result DExp: δ(0)[x]
 ==========================================
 reduce in TEST-PSI-PROBABILITY-VECTORS : [2 < 0] ? < x,1 - x > : < 1 - x,x > .
-rewrites: 4
+rewrites: 3
 result 2PVect: < x * [2 < 0] + (1 - x) * (1 - [2 < 0]),x * (1 - [2 < 0]) + (1 -
     x) * [2 < 0] >
 ==========================================
 reduce in TEST-PSI-PROBABILITY-VECTORS : [2 < x] ? < x,1 - x > : < 1 - x,x > .
-rewrites: 4
+rewrites: 3
 result 2PVect: < x * [2 < x] + (1 - x) * (1 - [2 < x]),x * (1 - [2 < x]) + (1 -
     x) * [2 < x] >
 ==========================================
