@@ -287,6 +287,7 @@ Defining it in terms of the vector operators supplied above is relatively straig
     eq DE ? 2P : 2P' = (DE *> 2P) + ((1 - DE) *> 2P') .
     eq DE ? 3P : 3P' = (DE *> 3P) + ((1 - DE) *> 3P') .
 ```
+
 The correlation (`_**_`) between two probability vectors measures roughly how much they agree on the individual components.
 This quantity has useful interpretations in many systems.
 
