@@ -289,12 +289,17 @@ This quantity has useful interpretations in many systems.
 
 **TODO**: Is `_**_` assoc/comm?
 
-**TODO**: Define `_**_` over `3PVect`.
-
 ```maude
     op _**_ : 2PVect 2PVect -> DExp .
     ---------------------------------
-    eq < DE1 , DE1' > ** < DE2 , DE2' > = (DE1 * (DE2 - DE2')) + (DE1' * (DE2' - DE2)) .
+    eq < DE1 , DE1' > ** < DE2 , DE2' > = (DE1  * (DE2  - DE2'))
+                                        + (DE1' * (DE2' - DE2)) .
+
+    op _**_ : 3PVect 3PVect -> DExp .
+    ---------------------------------
+    eq < DE1 , DE1' , DE1'' > ** < DE2 , DE2' , DE2'' > = (DE1   * (DE2   - (DE2' + DE2'')))
+                                                        + (DE1'  * (DE2'  - (DE2  + DE2'')))
+                                                        + (DE1'' * (DE2'' - (DE2  + DE2'))) .
 endfm
 ```
 
