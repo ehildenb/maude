@@ -1,6 +1,48 @@
 PSIsing Maudel
 ==============
 
+Ising Model
+-----------
+
+The Ising model is a simple model from statistical mechanics which demonstrates the phenomenon of *phase transitions*[@gallovati-phase-transitions-ising-model].
+A $d$-dimensional lattice of particles with spin are set up to have pairwise interactions and interactions with the environment.
+As the number of dimensions goes beyond 4, the Ising model is studied using *mean field theory* in physics[@kadanoff-phase-transitions-mean-field-theory].
+
+For a configuration space $\Sigma : [I \to \{+1,-1\}]$ (assignment to spin up/down for each lattice site $i \in I$), the *energy* $E$ of the system in any configuration can be calculated exactly.
+This is done using the *Hamiltonian* $H : \Sigma \to E$ where:
+
+-   $\sigma \in \Sigma$ is the global spin configuration ($\sigma_j$ being the spin at site $j$);
+-   $J_{i,j}$ is an interaction constant between sites $i$ and $j$;
+-   $\mu$ is the magnetic moment of the material (how responsive it is to external magnetic fields); and
+-   $h_j$ is the external magnetic field at site $j$.
+
+$$H(\sigma) = - \sum_{\langle i , j \rangle} J_{i,j} \sigma_i \sigma_j - \mu \sum_j h_j \sigma_j$$
+
+The probability of finding the system in a given configuration is given as a function of only the energy of the configuration $P_\beta : \Sigma \to [0,1]$, where:
+
+-   $\beta = 1 / (k_B T)$ is inverse temperature (scaled by the the Boltzmann constant $k_B$); and
+-   $Z_\beta$ is a normalization constant $\sum_{\sigma} e^{-\beta H(\sigma)}$.
+
+$$P_\beta(\sigma) = \frac{e^{-\beta H(\sigma)}}{Z_\beta}$$
+
+### Simplifying Assumptions
+
+For the sake of this model, we:
+
+-   set interaction between sites to be constant ($J_{i, j} = J$),
+-   only consider nearest neighbor interactions (sum over $\langle i , j \rangle$), and
+-   assume no external magnetic field ($\mu = 0$).
+
+$$H(\sigma) = - J \sum_{\langle i , j \rangle} \sigma_i \sigma_j$$
+
+Modelling in Maude
+------------------
+
+The Ising model is a 1D probabilistic cellular automata, so the Maude libraries for cellular automata and the PSI solver are imported here.
+
+-   Modules `PSI-INTERNAL-SIMPLIFICATION` and `PSI-PROBABILITY-VECTORS` give us the probabalistic state needed for the Ising model.
+-   Module `PERIODIC-GRID` is a 2D periodic cellular automata with parameters for setting the height, width, and local update rule.
+
 ```maude
 load caut.maude
 load ../tools/solvers/psi.maude
