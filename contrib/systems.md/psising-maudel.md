@@ -48,102 +48,75 @@ load caut.maude
 load ../tools/solvers/psi.maude
 
 mod PSISING-MAUDEL is
-   protecting PSI-INTERNAL-SIMPLIFICATION .
+   protecting PSI-INTERNAL-SIMPLIFICATION + PSI-PROBABILITY-VECTORS .
     extending PERIODIC-GRID * ( op true  to tt
                               , op false to ff
                               , op _<_   to _P<_
                               , op _>_   to _P>_
+                              , op <_`,_> to [_`,_]
                               ) .
 
-    vars DE DE' DE1 DE1' DE2 DE2' HD : DExp .
-    vars S S' SL SR : State . var SS : States .
+    vars DE DE' HD : DExp . vars S SL SR : State . var SS : States .
 ```
-
-System Specialization
----------------------
-
-To instantiate the `PERIODIC-GRID` module, we need to supply several things:
-
--   Definitions for the `height` and `width` of the grid.
--   The datatype of system state.
--   The local system update rule.
 
 ### Parameters
 
-We'll restrict to 1D situations by setting `height` to 1, but leave the number of sites open (the `width`).
+We'll restrict to 1D by setting `height` to 1, but leave the number of sites open (the `width`).
 
 ```maude
     eq height = 1 .
+    ---------------
 ```
 
-Parameters `J` and `T` are the coupling coefficient and temperature, respectively.
+Parameters `J` and `T` are the site-coupling coefficient and temperature, respectively.
+These must be provided by the user.
 
 ```maude
    ops J T : -> Rat .
    ------------------
 ```
 
-### System State
+### Cellular Automata State
 
-The state of a system at a given time is a tuple of the probability of finding it spin up/down respectively.
-
--   `[_,_]` is a system state vector.
--   `spinUp` and `spinDown` are example (useful) states.
--   `flip` switches the probabilities of being spin up/down around.
+The cellular automata state is a probability vector of length 2 (probability of spin up, probability of spin down).
+Sort `2PVect` is subsorted into `State` to instantiate the cellular automata to hold a spin on each site.
 
 ```maude
-    op [_,_] : DExp DExp -> State .
-    -------------------------------
+    subsort 2PVect < State .
+    ------------------------
+```
 
+The operators `spinUp` and `spinDown` are common states, provided here:
+
+```maude
    ops spinUp spinDown : -> State .
    --------------------------------
-    eq spinUp   = [ 1 , 0 ] .
-    eq spinDown = [ 0 , 1 ] .
+    eq spinUp   = < 1 , 0 > .
+    eq spinDown = < 0 , 1 > .
+```
 
+Operator `flip` will switch the probability distributions of sites.
+We have that `flip(spinUp) == spinDown` and `flip(spinDown) == spinUp`.
+
+```maude
     op flip : State -> State .
     --------------------------
-    eq flip([ DE , DE' ]) = [ DE' , DE ] .
+    eq flip(< DE , DE' >) = < DE' , DE > .
 ```
 
-State tuples `[_,_]` are elements of a *vector field* with the sort `DExp` for scalars.
+### Local Update Rule
 
--   `_+_` provides vector addition,
--   `_*>_` provides scalar-vector multiplication, and
--   `_?_:_` provides probabalistic choice.
-
-**TODO**: Should we be doing some normalization on vector addition?
-**TODO**: Vector field or Module? Do we really have division?
+The local update rule for the Ising model depends on the change of energy associated with the state change.
+`Hlocal` is the local *Hamiltonial*, which calculates the energy of a sites correlation with its neighbors (using correlation operator `_**_`).
 
 ```maude
-    op _+_  : State State -> State .
-    op _*>_ : DExp  State -> State .
-    --------------------------------
-    eq [ DE1 , DE1' ] +  [ DE2 , DE2' ] = [ DE1 + DE2 , DE1' + DE2' ] .
-    eq             DE *> [ DE1 , DE1' ] = [ DE  * DE1 , DE   * DE1' ] .
-
-    op _?_:_ : DExp State State -> State .
-    --------------------------------------
-    eq DE ? S : S' = (DE *> S) + ((1 - DE) *> S') .
-```
-
--   `_**_` calculates the correlation between two states.
--   `Hlocal` is the local *Hamiltonial*, which calculates the energy of a sites correlation with its neighbors.
-
-```maude
-    op _**_ : State State -> DExp .
-    -------------------------------
-    eq [ DE1 , DE1' ] ** [ DE2 , DE2' ] = DE1 * (DE2 - DE2') + DE1' * (DE2' - DE2) .
-
     op Hlocal : State State State -> DExp .
     ---------------------------------------
     eq Hlocal(S, SL, SR) = (- J) * ((S ** SL) + (S ** SR)) .
 ```
 
-### Local Update Rule
-
-After specifying the state vector field data-structure, it's relatively simple to define the update rule.
+Here the update rule is specified assuming the `CELLULAR-AUTOMATA` code has already loaded the surrounding system states.
 The variable `HD` is calculated to be the change in energy associated with flipping the current site.
-This says, "if it's energetically favorable (`HD < 0`), then flip; otherwise only flip with probability (`exp(- HD / T)`)".
 
 **TODO**: Is there a better way to format this for readability?
 
@@ -153,3 +126,6 @@ This says, "if it's energetically favorable (`HD < 0`), then flip; otherwise onl
                                  if HD := Hlocal(flip(S), SL, SR) - Hlocal(S, SL, SR) .
 endm
 ```
+
+The left-hand side of the rule matches on a state `S` with left neighbor `SL` and right neighbor `SR`.
+The right-hand says, "if it's energetically favorable (`HD < 0`), then flip; otherwise only flip with probability (`exp(- HD / T)`)".
