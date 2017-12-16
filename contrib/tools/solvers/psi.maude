@@ -204,6 +204,27 @@ endfm
 --- ; The goal is to make these language extensions modular so that each individually has clear semantics.
 --- ; Each Maude tool or system can import whichever extensions make expressing their model or system most elegant; over time we’ll have a better idea about which ones are used frequently.
 
+--- ; ### Probabalistic Choice
+
+--- ; Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
+--- ; This operator is used by many higher-level language features.
+
+--- ; **TODO**: Should the translation be `[ C ≠ 0 ] * B1 + [ C = 0 ] * B2`?
+--- ; Or perhaps something using the measure-theoretic version of conditional probabilities?
+--- ; I think the given translation only works for statistically independent branches, which seems rather unlikely.
+
+
+fmod PSI-CHOICE is
+   protecting PSI-INTERNAL .
+
+    vars C B1 B2 : DExp .
+
+    op _?_:_ : DExp DExp DExp -> DExp .
+    -----------------------------------
+    eq C ? B1 : B2 = (C * B1) + ((1 - C) * B2) .
+endfm
+
+
 --- ; ### Primitive Distributions
 
 --- ; Many primitive distributions are useful for building up complicated probability distributions.
@@ -230,27 +251,6 @@ fmod PSI-PRIMITIVE-DISTRIBUTIONS is
     op gamma      : DVar DExp DExp -> DExp .
     ----------------------------------------
     eq bernoulli(X, DE) = DE * dirac(1 - X) + (1 - DE) * dirac(X) .
-endfm
-
-
---- ; ### Probabalistic Choice
-
---- ; Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
---- ; This operator is used by many higher-level language features.
-
---- ; **TODO**: Should the translation be `[ C ≠ 0 ] * B1 + [ C = 0 ] * B2`?
---- ; Or perhaps something using the measure-theoretic version of conditional probabilities?
---- ; I think the given translation only works for statistically independent branches, which seems rather unlikely.
-
-
-fmod PSI-CHOICE is
-   protecting PSI-INTERNAL .
-
-    vars C B1 B2 : DExp .
-
-    op _?_:_ : DExp DExp DExp -> DExp .
-    -----------------------------------
-    eq C ? B1 : B2 = (C * B1) + ((1 - C) * B2) .
 endfm
 
 
