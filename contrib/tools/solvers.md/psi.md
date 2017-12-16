@@ -6,7 +6,7 @@ Here we build the syntax and some semantics of the PSI solver, allowing us to us
 
 ### Utilities
 
--   `IDS` gives us a handy back of variables.
+-   `IDS` gives us a handy bag of variables.
 -   `RENAMED-RATS` allows us to re-use syntax from the Prelude.
 
 ```maude
@@ -85,13 +85,13 @@ TODO: Add subsort `BDExp` and operator `[_]` to turn any boolean into a conditio
     -------------------------------------
 ```
 
-Some primitive functions are included, including:
+Some primitive functions are included:
 
 -   Logarithms, exponentials, and trigonometric functions,
 -   Floor and ceiling functions, and
 -   Dirac delta (point distribution) and Error function (anti-derivative of normal distribution).
 
-TODO: Rename `gaussAnti` to `err`.
+TODO: Rename `gaussAnti` to `err` and make a binder?
 
 ```maude
     op ln        : DExp -> DExp .
@@ -194,13 +194,15 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
 endfm
 ```
 
-PSI User DSLs
--------------
+PSI Language Extensions
+-----------------------
+
+Here are several of the PSI language extensions provided incrementally as Maude modules.
 
 ### Primitive Distributions
 
 Many primitive distributions are useful for building up complicated probability distributions.
-PSI has support for several by translating them into the internal language.
+PSI has support for several by translating them into the internal language, along with assertions about the passed parameters.
 
 **TODO**: Decide on how to handle error terms at the PSI internal level.
 
@@ -225,6 +227,9 @@ fmod PSI-PRIMITIVE-DISTRIBUTIONS is
 ---   ceq { uniformInt(E, E') | TE } = uniformInt(DE, DE') | TE' if DE , DE' | TE' := { E , E' | TE } .
 endfm
 ```
+
+PSI User Language
+-----------------
 
 ### PSI Imperative User Language
 
