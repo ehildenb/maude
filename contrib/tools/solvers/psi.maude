@@ -228,6 +228,67 @@ fmod PSI-PRIMITIVE-DISTRIBUTIONS is
 endfm
 
 
+--- ; ### Probability Vectors
+
+--- ; Probability vectors are vectors with entries between 0 and 1 which sum to 1.
+--- ; They represent the probability of finding a system in any given discrete state (each state is an entry in the vector).
+
+--- ; **TODO**: Procedurally generate this module for any `N` (length of probability vectors).
+
+
+fmod PSI-PROBABILITY-VECTORS is
+   protecting PSI-INTERNAL .
+
+    sorts 2PVect 3PVect .
+    ---------------------
+
+    vars DE DE1 DE1' DE1'' DE2 DE2' DE2'' : DExp .
+    vars 2P 2P' : 2PVect . vars 3P 3P' : 3PVect .
+
+    op <_,_>   : DExp DExp      -> 2PVect .
+    op <_,_,_> : DExp DExp DExp -> 3PVect .
+    ---------------------------------------
+
+
+--- ; -   `_+_` provides vector addition,
+--- ; -   `_*>_` provides scalar-vector multiplication, and
+--- ; -   `_?_:_` provides probabalistic choice.
+
+--- ; **TODO**: Should we be doing some normalization on vector addition?
+--- ; As long as only operator `_?_:_` is used, we know the vectors will stay length 1.
+
+
+    op _+_ : 2PVect 2PVect -> 2PVect .
+    op _+_ : 3PVect 3PVect -> 3PVect .
+    ----------------------------------
+    eq < DE1 , DE1' >         +  < DE2 , DE2' >         = < DE1 + DE2 , DE1' + DE2' > .
+    eq < DE1 , DE1' , DE1'' > +  < DE2 , DE2' , DE2'' > = < DE1 + DE2 , DE1' + DE2' , DE1'' + DE2'' > .
+
+    op _*>_ : DExp 2PVect -> 2PVect .
+    op _*>_ : DExp 3PVect -> 3PVect .
+    ---------------------------------
+    eq DE *> < DE1 , DE1' >         = < DE * DE1 , DE * DE1' > .
+    eq DE *> < DE1 , DE1' , DE1'' > = < DE * DE1 , DE * DE1' , DE * DE1'' > .
+
+    op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
+    op _?_:_ : DExp 3PVect 3PVect -> 3PVect .
+    -----------------------------------------
+    eq DE ? 2P : 2P' = (DE *> 2P) + ((1 - DE) *> 2P') .
+    eq DE ? 3P : 3P' = (DE *> 3P) + ((1 - DE) *> 3P') .
+
+
+--- ; -   `_**_` provides the correlation function on probability vectors.
+
+--- ; **TODO**: Is `_**_` assoc/comm?
+--- ; What is this quantity actually?
+--- ; Why is it hard to define over `3PVect`?
+
+
+    op _**_ : 2PVect 2PVect -> DExp .
+    ---------------------------------
+    eq < DE1 , DE1' > ** < DE2 , DE2' > = (DE1 * (DE2 - DE2')) + (DE1' * (DE2' - DE2)) .
+endfm
+
 
 --- ; PSI User Language
 --- ; -----------------
