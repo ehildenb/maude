@@ -107,7 +107,7 @@ fmod PSI-INTERNAL is
 
 --- ; -   infinite sums over the integers (`sum_._`),
 --- ; -   integrals over the real line (`int_._`), and
---- ; -   limites at a point on the real line (`lim_._`).
+--- ; -   limits at a point on the real line (`lim_._`).
 
 --- ; **TODO**: `lim` needs to take a rational argument specifying the location to take the limit to?
 
@@ -282,7 +282,10 @@ fmod PSI-PROBABILITY-VECTORS is
 --- ; Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
 --- ; Defining it in terms of the vector operators supplied above is relatively straightforward.
 
+--- ; **TODO**: Provide `_?_:_` in a `PSI-PROBABALISTIC-CHOICE` module then lift to `2PVect` and `3PVect` instead.
+
 --- ; **TODO**: Should the translation be `[ DE ≠ 0 ] *> 2P + [ DE = 0 ] *> 2P'`?
+--- ; I think the given translation only works for statistically independent branches, which seems rather unlikely.
 
 
     op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
