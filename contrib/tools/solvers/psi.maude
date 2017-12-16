@@ -228,9 +228,6 @@ fmod PSI-PRIMITIVE-DISTRIBUTIONS is
     op gamma      : DVar DExp DExp -> DExp .
     ----------------------------------------
     eq bernoulli(X, DE) = DE * dirac(1 - X) + (1 - DE) * dirac(X) .
----   ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
----   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
----   ceq { uniformInt(E, E') | TE } = uniformInt(DE, DE') | TE' if DE , DE' | TE' := { E , E' | TE } .
 endfm
 
 
