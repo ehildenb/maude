@@ -45,6 +45,15 @@ reduce dirac(3) .
 reduce 0 * x .
 reduce [ 3 < 4 ] * dirac(x) .
 
+--- Test Module PSI-PROBABILITY-VECTORS
+--- ===================================
+
+select PSI-PROBABILITY-VECTORS .
+
+reduce [ 2 < 0 ] ? < x , 1 - x > : < 1 - x , x > .
+reduce [ 2 < x ] ? < x , 1 - x > : < 1 - x , x > .
+reduce < x , y > ** < z , d > .
+
 --- Test Module PSI-USER
 --- ====================
 

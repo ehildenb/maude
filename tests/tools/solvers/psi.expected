@@ -107,6 +107,20 @@ reduce in PSI-INTERNAL-SIMPLIFICATION : dirac(x) * [3 < 4] .
 rewrites: 5
 result DExp: δ(0)[x]
 ==========================================
+reduce in PSI-PROBABILITY-VECTORS : [2 < 0] ? < x,1 - x > : < 1 - x,x > .
+rewrites: 4
+result 2PVect: < x * [2 < 0] + (1 - x) * (1 - [2 < 0]),x * (1 - [2 < 0]) + (1 -
+    x) * [2 < 0] >
+==========================================
+reduce in PSI-PROBABILITY-VECTORS : [2 < x] ? < x,1 - x > : < 1 - x,x > .
+rewrites: 4
+result 2PVect: < x * [2 < x] + (1 - x) * (1 - [2 < x]),x * (1 - [2 < x]) + (1 -
+    x) * [2 < x] >
+==========================================
+reduce in PSI-PROBABILITY-VECTORS : < x,y > ** < z,d > .
+rewrites: 1
+result DExp: x * (z - d) + y * (d - z)
+==========================================
 reduce in PSI-USER : uniformInt(x, 0, 1) .
 rewrites: 0
 result DExp: uniformInt(x, 0, 1)
