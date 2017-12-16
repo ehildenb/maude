@@ -85,31 +85,27 @@ The distribution $\left[ p \otimes q \right]$ for $\otimes \in \{ < , > , ≤ , 
 
 Support for the named primitives of PSI is provided here.
 
-**TODO**: Rename `gaussAnti` to `err` and make a binder?
-
 ```maude
-    op ln        : DExp -> DExp .
-    op exp       : DExp -> DExp .
-    op sin       : DExp -> DExp .
-    op cos       : DExp -> DExp .
-    op floor     : DExp -> DExp .
-    op ceil      : DExp -> DExp .
-    op dirac     : DExp -> DExp .
-    op δ(0)[_]   : DExp -> DExp .
-    op gaussAnti : DVar DExp -> DExp .
-    ----------------------------------
+    op ln      : DExp -> DExp .
+    op exp     : DExp -> DExp .
+    op sin     : DExp -> DExp .
+    op cos     : DExp -> DExp .
+    op floor   : DExp -> DExp .
+    op ceil    : DExp -> DExp .
+    op dirac   : DExp -> DExp .
+    op δ(0)[_] : DExp -> DExp .
+    ---------------------------
     eq dirac(DE) = δ(0)[DE] .
     eq exp(DE)   = e ^ DE .
 ```
 
 Operators in sort `Binder` bind a variable in context, which must be taken into account when doing substitution.
-Three binders are provided for:
+Four binders are provided for:
 
 -   infinite sums over the integers (`sum_._`),
--   integrals over the real line (`int_._`), and
--   limits at a point on the real line (`lim_._`).
-
-**TODO**: `lim` needs to take a rational argument specifying the location to take the limit to?
+-   integrals over the real line (`int_._`),
+-   the Error function, which is the antiderivative of the Gaussian distribution (`err_._`), and
+-   limits at a point on the real line (`lim[N]_._`).
 
 ```maude
     sort Binder .
@@ -117,14 +113,15 @@ Three binders are provided for:
     vars X Y : DVar . var S : Subst . var BIND : Binder .
 
     op __._ : Binder DVar DExp -> DExp [prec 20] .
-   ops sum int lim : -> Binder .
-   -----------------------------
+    ----------------------------------------------
+
+    op lim[_]      : Rat -> Binder .
+   ops sum int err :     -> Binder .
+   ---------------------------------
 ```
 
 Substitutions are useful to rename variables in sub-expression or instantiate an expression with variables.
 Here we provide an explicit substitution operator which is binder-aware (to avoid $\alpha$-capture).
-
-**TODO**: Add substitution over `-_`.
 
 ```maude
     sort Subst .
@@ -136,6 +133,7 @@ Here we provide an explicit substitution operator which is binder-aware (to avoi
     eq X [ DE / Y ] = if X == Y then DE else X fi .
 
     eq DC         S = DC .
+    eq (- DE)     S = - (DE S) .
     eq (DE + DE') S = (DE S) + (DE' S) .
     eq (DE - DE') S = (DE S) + (DE' S) .
     eq (DE * DE') S = (DE S) * (DE' S) .
@@ -149,14 +147,13 @@ Here we provide an explicit substitution operator which is binder-aware (to avoi
     eq [ DE = DE' ] S = [ (DE S) = (DE' S) ] .
     eq [ DE ≠ DE' ] S = [ (DE S) ≠ (DE' S) ] .
 
-    eq ln(DE)           S = ln(DE S) .
-    eq exp(DE)          S = exp(DE S) .
-    eq sin(DE)          S = sin(DE S) .
-    eq cos(DE)          S = cos(DE S) .
-    eq floor(DE)        S = floor(DE S) .
-    eq ceil(DE)         S = ceil(DE S) .
-    eq δ(0)[DE]         S = δ(0)[DE S] .
-    eq gaussAnti(X, DE) S = gaussAnti(X S, DE S) .
+    eq ln(DE)    S = ln(DE S) .
+    eq exp(DE)   S = exp(DE S) .
+    eq sin(DE)   S = sin(DE S) .
+    eq cos(DE)   S = cos(DE S) .
+    eq floor(DE) S = floor(DE S) .
+    eq ceil(DE)  S = ceil(DE S) .
+    eq δ(0)[DE]  S = δ(0)[DE S] .
 
     eq BIND X . DE [ DE' / Y ] = if X == Y then BIND X . DE else BIND X . (DE [ DE' / Y ]) fi .
 endfm
@@ -480,13 +477,12 @@ fmod PSI-TRANSLATION is
    ceq { [ E = E' ] | TE } = [ DE = DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
    ceq { [ E ≠ E' ] | TE } = [ DE ≠ DE' ] | TE' if DE , DE' | TE' := { E , E' | TE } .
 
-   ceq { ln(E)           | TE } = ln(DE)           | TE' ; Assert([DE > 0]) if DE | TE' := { E | TE } .
-   ceq { sin(E)          | TE } = sin(DE)          | TE'                    if DE | TE' := { E | TE } .
-   ceq { cos(E)          | TE } = cos(DE)          | TE'                    if DE | TE' := { E | TE } .
-   ceq { floor(E)        | TE } = floor(DE)        | TE'                    if DE | TE' := { E | TE } .
-   ceq { ceil(E)         | TE } = ceil(DE)         | TE'                    if DE | TE' := { E | TE } .
-   ceq { δ(0)[E]         | TE } = δ(0)[DE]         | TE'                    if DE | TE' := { E | TE } .
-   ceq { gaussAnti(X, E) | TE } = gaussAnti(X, DE) | TE'                    if DE | TE' := { E | TE } .
+   ceq { ln(E)    | TE } = ln(DE)    | TE' ; Assert([DE > 0]) if DE | TE' := { E | TE } .
+   ceq { sin(E)   | TE } = sin(DE)   | TE'                    if DE | TE' := { E | TE } .
+   ceq { cos(E)   | TE } = cos(DE)   | TE'                    if DE | TE' := { E | TE } .
+   ceq { floor(E) | TE } = floor(DE) | TE'                    if DE | TE' := { E | TE } .
+   ceq { ceil(E)  | TE } = ceil(DE)  | TE'                    if DE | TE' := { E | TE } .
+   ceq { δ(0)[E]  | TE } = δ(0)[DE]  | TE'                    if DE | TE' := { E | TE } .
 
     op translate : ExpList -> TranslateEnv .
     ----------------------------------------
