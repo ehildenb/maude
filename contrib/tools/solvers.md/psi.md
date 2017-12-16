@@ -203,11 +203,15 @@ PSI Language Extensions
 -----------------------
 
 Here are several of the PSI language extensions provided incrementally as Maude modules.
+The goal is to make these language extensions modular so that each individually has clear semantics.
+Each Maude tool or system can import whichever extensions make expressing their model or system most elegant; over time we'll have a better idea about which ones are used frequently.
 
 ### Primitive Distributions
 
 Many primitive distributions are useful for building up complicated probability distributions.
 PSI has support for several by translating them into the internal language, along with assertions about the passed parameters.
+
+**TODO**: Finish translation of primitive distributions.
 
 **TODO**: Decide on how to handle error terms at the PSI internal level.
 
@@ -254,10 +258,8 @@ fmod PSI-PROBABILITY-VECTORS is
     op <_,_,_> : DExp DExp DExp -> 3PVect .
     ---------------------------------------
 ```
-
--   `_+_` provides vector addition,
--   `_*>_` provides scalar-vector multiplication, and
--   `_?_:_` provides probabalistic choice.
+Operators `_+_` and `_*_` provide vector addition and scalar-vector multiplication, respectively.
+These can be used to scale/sum probability vectors.
 
 **TODO**: Should we be doing some normalization on vector addition?
           As long as only operator `_?_:_` is used, we know the vectors will stay length 1.
@@ -274,19 +276,26 @@ fmod PSI-PROBABILITY-VECTORS is
     ---------------------------------
     eq DE *> < DE1 , DE1' >         = < DE * DE1 , DE * DE1' > .
     eq DE *> < DE1 , DE1' , DE1'' > = < DE * DE1 , DE * DE1' , DE * DE1'' > .
+```
 
+Probabalistic choice (operator `_?_:_`) is a conditional where the condition is a sample from a probability distribution.
+Defining it in terms of the vector operators supplied above is relatively straightforward.
+
+**TODO**: Should the translation be `[ DE ≠ 0 ] *> 2P + [ DE = 0 ] *> 2P'`?
+
+```maude
     op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
     op _?_:_ : DExp 3PVect 3PVect -> 3PVect .
     -----------------------------------------
     eq DE ? 2P : 2P' = (DE *> 2P) + ((1 - DE) *> 2P') .
     eq DE ? 3P : 3P' = (DE *> 3P) + ((1 - DE) *> 3P') .
 ```
-
--   `_**_` provides the correlation function on probability vectors.
+The correlation (`_**_`) between two probability vectors measures roughly how much they agree on the individual components.
+This quantity has useful interpretations in many systems.
 
 **TODO**: Is `_**_` assoc/comm?
-          What is this quantity actually?
-          Why is it hard to define over `3PVect`?
+
+**TODO**: Define `_**_` over `3PVect`.
 
 ```maude
     op _**_ : 2PVect 2PVect -> DExp .
