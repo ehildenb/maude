@@ -6,17 +6,10 @@
 
 --- ; ### Utilities
 
---- ; -   `IDS` gives us a handy bag of variables.
---- ; -   `RENAMED-RATS` allows us to re-use syntax from the Prelude.
+--- ; `RENAMED-RATS` allows us to re-use syntax from the Prelude without operator names clashing.
 
 
 set include BOOL off .
-
-fmod IDS is
-    sort Id .
-
-    ops a b c d f g h i j k l m n o p q r s t u v w x y z : -> Id .
-endfm
 
 fmod RENAMED-RAT is
    protecting RAT * ( op true  to tt
@@ -37,18 +30,17 @@ endfm
 --- ; The internal language is that of arithmetic expressions over discrete and continuous probability distributions.
 --- ; Sort `DExp` is the grammar of this language:
 
---- ; -   Subsort `Id` is for variables.
+--- ; -   Subsort `DVar` is for variables.
 --- ; -   Subsort `DConst` is for rational numbers and other special constants.
 
 
 fmod PSI-INTERNAL is
-   protecting IDS .
    protecting RENAMED-RAT .
 
-    sorts DConst DExp .
-    -------------------
+    sorts DVar DConst DExp .
+    ------------------------
     subsort Rat < DConst .
-    subsorts Id DConst < DExp .
+    subsorts DVar DConst < DExp .
 
     var DC : DConst . vars DE DE' : DExp .
 
@@ -102,31 +94,41 @@ fmod PSI-INTERNAL is
     op ceil      : DExp -> DExp .
     op dirac     : DExp -> DExp .
     op δ(0)[_]   : DExp -> DExp .
-    op gaussAnti : Id DExp -> DExp .
-    --------------------------------
+    op gaussAnti : DVar DExp -> DExp .
+    ----------------------------------
     eq dirac(DE) = δ(0)[DE] .
     eq exp(DE)   = e ^ DE .
 
 
 --- ; Operators in sort `Binder` bind a variable in context, which must be taken into account when doing substitution.
+--- ; Three binders are provided for:
+
+--- ; -   infinite sums over the integers (`sum_._`),
+--- ; -   integrals over the real line (`int_._`), and
+--- ; -   limites at a point on the real line (`lim_._`).
+
+--- ; **TODO**: `lim` needs to take a rational argument specifying the location to take the limit to?
 
 
     sort Binder .
     -------------
-    vars X Y : Id . var S : Subst . var BIND : Binder .
+    vars X Y : DVar . var S : Subst . var BIND : Binder .
 
-    op __._ : Binder Id DExp -> DExp [prec 20] .
+    op __._ : Binder DVar DExp -> DExp [prec 20] .
    ops sum int lim : -> Binder .
    -----------------------------
 
 
---- ; Finally, substitutions over `DExp` are provided.
+--- ; Substitutions are useful to rename variables in sub-expression or instantiate an expression with variables.
+--- ; Here we provide an explicit substitution operator which is binder-aware (to avoid *α*-capture).
+
+--- ; **TODO**: Add substitution over `-_`.
 
 
     sort Subst .
     ------------
 
-    op [_/_] : DExp Id    -> Subst .
+    op [_/_] : DExp DVar  -> Subst .
     op __    : DExp Subst -> DExp [prec 55] .
     -----------------------------------------
     eq X [ DE / Y ] = if X == Y then DE else X fi .
@@ -167,7 +169,7 @@ fmod PSI-INTERNAL-SIMPLIFICATION is
     including PSI-INTERNAL .
 
     vars R R' : Rat . var NzR : NzRat .
-    vars DE DE' DE'' : DExp . var DC : DConst . vars X Y : Id .
+    vars DE DE' DE'' : DExp . var DC : DConst . vars X Y : DVar .
 
     --- Arithmetic
     eq    - (- DE)  = DE .
@@ -210,17 +212,17 @@ endfm
 fmod PSI-PRIMITIVE-DISTRIBUTIONS is
    protecting PSI-INTERNAL .
 
-    var X : Id . var DE : DExp .
+    var X : DVar . var DE : DExp .
 
-    op bernoulli  : Id DExp      -> DExp .
-    op poisson    : Id DExp      -> DExp .
-    op uniformInt : Id DExp DExp -> DExp .
-    op uniform    : Id DExp DExp -> DExp .
-    op gauss      : Id DExp DExp -> DExp .
-    op pareto     : Id DExp DExp -> DExp .
-    op beta       : Id DExp DExp -> DExp .
-    op gamma      : Id DExp DExp -> DExp .
-    --------------------------------------
+    op bernoulli  : DVar DExp      -> DExp .
+    op poisson    : DVar DExp      -> DExp .
+    op uniformInt : DVar DExp DExp -> DExp .
+    op uniform    : DVar DExp DExp -> DExp .
+    op gauss      : DVar DExp DExp -> DExp .
+    op pareto     : DVar DExp DExp -> DExp .
+    op beta       : DVar DExp DExp -> DExp .
+    op gamma      : DVar DExp DExp -> DExp .
+    ----------------------------------------
     eq bernoulli(X, DE) = DE * dirac(1 - X) + (1 - DE) * dirac(X) .
 ---   ceq { bernoulli(E) | TE } = DE * dirac(1 - fv(DE)) + (1 - DE) * dirac(fv(DE)) | TE' ; Assert([0 ≤ DE] * [DE ≤ 1]) if DE | TE' := { E | TE } .
 ---   ceq { gauss(E, E')      | TE } = gauss(DE, DE')      | TE' if DE , DE' | TE' := { E , E' | TE } .
@@ -327,28 +329,28 @@ fmod PSI-USER is
     op _?_:_ : Exp Exp Exp -> Exp [prec 50] .
     -----------------------------------------
 
-    sorts NeIdList IdList NeExpList ExpList .
-    -----------------------------------------
-    subsorts Id  < NeIdList  < IdList .
-    subsorts Exp < NeExpList < ExpList .
-    subsort NeIdList < NeExpList .
-    subsort IdList   < ExpList .
+    sorts NeDVarList DVarList NeExpList ExpList .
+    ---------------------------------------------
+    subsorts DVar < NeDVarList < DVarList .
+    subsorts Exp  < NeExpList  < ExpList .
+    subsort NeDVarList < NeExpList .
+    subsort DVarList   < ExpList .
 
-    op .IdList : -> IdList .
-    op _,_     : IdList     IdList ->    IdList [assoc id: .IdList] .
-    op _,_     : IdList   NeIdList ->  NeIdList [ditto] .
-    op _,_     : ExpList   ExpList ->   ExpList [ditto] .
-    op _,_     : ExpList NeExpList -> NeExpList [ditto] .
-    -----------------------------------------------------
+    op .DVarList : -> DVarList .
+    op _,_     : DVarList   DVarList ->   DVarList [assoc id: .DVarList] .
+    op _,_     : DVarList NeDVarList -> NeDVarList [ditto] .
+    op _,_     : ExpList     ExpList ->   ExpList  [ditto] .
+    op _,_     : ExpList   NeExpList -> NeExpList  [ditto] .
+    ------------------------------------------------------
 
-    op _(_) : Id ExpList -> Exp .
-    -----------------------------
+    op _(_) : DVar ExpList -> Exp .
+    -------------------------------
 
     sort Function .
     ---------------
 
-    op fun_(_) =_ : Id IdList Exp  -> Function [prec 50] .
-    ------------------------------------------------------
+    op fun_(_) =_ : DVar DVarList Exp  -> Function [prec 50] .
+    ----------------------------------------------------------
 
     sort Program .
     --------------
@@ -365,28 +367,28 @@ fmod PSI-USER is
 --- ;     op _;_  : Stmt Stmt -> Stmt [assoc id: skip prec 55] .
 --- ;     ------------------------------------------------------
 --- ;
---- ;     op _:=_     : Id  Exp -> Stmt [prec 50] .
---- ;     op _=_      : Id  Exp -> Stmt [prec 50] .
+--- ;     op _:=_     : DVar  Exp -> Stmt [prec 50] .
+--- ;     op _=_      : DVar  Exp -> Stmt [prec 50] .
 --- ;     op observe_ : Exp     -> Stmt [prec 50] .
 --- ;     op assert_  : Exp     -> Stmt [prec 50] .
 --- ;     op return_  : Exp     -> Stmt [prec 50] .
 --- ;     -----------------------------------------
 --- ;
 --- ;     op if_{_} else {_} : Exp Stmt Stmt -> Stmt .
---- ;     op for_in [_.._] {_} : Id Exp Exp Stmt -> Stmt .
+--- ;     op for_in [_.._] {_} : DVar Exp Exp Stmt -> Stmt .
 --- ;     ------------------------------------------------
 --- ;
 --- ;     sort Procedure .
 --- ;     ----------------
 --- ;     subsort Procedure < Program .
 --- ;
---- ;     op def _(_) {_} : Id IdList Stmt -> Procedure .
+--- ;     op def _(_) {_} : DVar DVarList Stmt -> Procedure .
 --- ;     -----------------------------------------------
 
     --- No array support yet
---- ;     op _[_] : Id  Exp -> Exp [prec 35] .
---- ;     op _:= array(_,_) : Id  Exp Exp -> Stmt [prec 50] .
---- ;     op _[_] =_        : Id  Exp Exp -> Stmt [prec 50] .
+--- ;     op _[_] : DVar  Exp -> Exp [prec 35] .
+--- ;     op _:= array(_,_) : DVar  Exp Exp -> Stmt [prec 50] .
+--- ;     op _[_] =_        : DVar  Exp Exp -> Stmt [prec 50] .
 
     --- No mariginalization yet
 --- ;    ops Expectation FromMarginal SampleFrom : -> Sample .
@@ -410,13 +412,13 @@ fmod PSI-TRANSLATION is
     op dist: _ : Exp -> Query [prec 50] .
     -------------------------------------
 
-    op fv : DExp -> Id .
-    --------------------
+    op fv : DExp -> DVar .
+    ----------------------
 
     sort TranslateEnv .
     -------------------
 
-    var X : Id . vars DE DE' DE'' : DExp . var DC : DConst .
+    var X : DVar . vars DE DE' DE'' : DExp . var DC : DConst .
     vars E E' E'' : Exp . vars NeEL NeEL' : NeExpList . var EL : ExpList .
     vars TE TE' TE'' : TranslateEnv .
 
@@ -430,11 +432,11 @@ fmod PSI-TRANSLATION is
     op {_} :         TranslateEnv -> TranslateEnv .
     op _|_ : ExpList TranslateEnv -> TranslateEnv [prec 60] .
     ---------------------------------------------------------
-    eq { { TE } }        = { TE } .
-    eq { .IdList  | TE } = .IdList     | TE .
-   ceq { E , NeEL | TE } = DE' , NeEL' | TE''
-                        if DE'   | TE'  := { E    | TE  }
-                        /\ NeEL' | TE'' := { NeEL | TE' } .
+    eq { { TE } }          = { TE } .
+    eq { .DVarList  | TE } = .DVarList   | TE .
+   ceq { E , NeEL | TE }   = DE' , NeEL' | TE''
+                          if DE'   | TE'  := { E    | TE  }
+                          /\ NeEL' | TE'' := { NeEL | TE' } .
 
     eq { X  | TE } = X  | TE .
     eq { DC | TE } = DC | TE .
