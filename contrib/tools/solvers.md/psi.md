@@ -3,15 +3,16 @@ PSI - Exact Probabalistic Inference
 
 The [PSI Solver](http://psisolver.org) is an exact symbolic solver for probabilistic systems which can be expressed in its internal language[@gehr-misailovic-vechev-psi-solver].
 The internal language supports arithmetic, logarithms/exponentials, Iverson brackets, Dirac delta functions, infinite sums, and some primitive distributions/integrals/anti-derivatives.
-A high level imperative language is supplied which exports arithmetic, sampling from builtin distributions (both discrete and continuous), distribution marginalization, choice, and bounded looping.
-The high level language is compiled into the internal language, where PSI performs many algebraic, guard, and integral simplifications to generate an exact symbolic closed-form solution distribution.
-PSI also supports an approximation backend, which would allow for simulations of larger systems where exact symbolic solutions are not feasible.
+Many simplifications over this internal language are supported, including algebraic simplifications, guard reasoning, and some exact integration/summation.
 
-Here we build the syntax and some semantics of the PSI solver, allowing us to use probability distributions directly in Maude.
+The PSI tool also understands a high level imperative language with arithmetic, several primitive distributions (both discrete and continuous), distribution marginalization, choice, and bounded looping.
+PSI compiles the high level language into the internal language and then further simplies the resulting expression.
+
+Here we build the syntax and (partial) semantics of the PSI solver, allowing us to use probability distributions directly in Maude.
 
 ### Utilities
 
-`RENAMED-RATS` allows us to re-use syntax from the Prelude without operator names clashing.
+`RENAMED-RAT` allows us to re-use syntax from the Prelude without operator names clashing.
 
 ```maude
 set include BOOL off .
@@ -209,6 +210,7 @@ Many primitive distributions are useful for building up complicated probability 
 PSI has support for several by translating them into the internal language, along with assertions about the passed parameters.
 
 **TODO**: Finish translation of primitive distributions.
+          Probably at least a few of them can be made easier by using `_?_:_`.
 
 **TODO**: Decide on how to handle error terms at the PSI internal level.
 
@@ -278,16 +280,18 @@ Here we piecewise lift probabilistic choice to `2PVect` and `3PVect`.
 
 ```maude
     op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
+    -----------------------------------------
+    eq DE ? < DE1 , DE1' > : < DE2 , DE2' > = < DE ? DE1 : DE2 , DE ? DE1' : DE2' > .
+
     op _?_:_ : DExp 3PVect 3PVect -> 3PVect .
     -----------------------------------------
-    eq DE ? < DE1 , DE1' >         : < DE2 , DE2' >         = < DE ? DE1 : DE2 , DE ? DE1' : DE2' > .
     eq DE ? < DE1 , DE1' , DE1'' > : < DE2 , DE2' , DE2'' > = < DE ? DE1 : DE2 , DE ? DE1' : DE2' , DE ? DE1'' : DE2'' > .
 ```
 
 The correlation (`_**_`) between two probability vectors measures roughly how much they agree on the individual components.
 This quantity has useful interpretations in many systems.
 
-**TODO**: Is `_**_` assoc/comm?
+**TODO**: Is `_**_` comm?
 
 ```maude
     op _**_ : 2PVect 2PVect -> DExp .
@@ -345,7 +349,7 @@ fmod PSI-USER is
     subsorts DVar < NeDVarList < DVarList .
     subsorts Exp  < NeExpList  < ExpList .
     subsort NeDVarList < NeExpList .
-    subsort DVarList   < ExpList .
+    subsort   DVarList <   ExpList .
 
     op .DVarList : -> DVarList .
     op _,_     : DVarList   DVarList ->   DVarList [assoc id: .DVarList] .
