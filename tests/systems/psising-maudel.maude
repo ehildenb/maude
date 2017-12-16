@@ -7,6 +7,9 @@ mod PSISING-MAUDEL-10-SITE is
 
     var DE : DExp .
 
+    ops a b c d f g h i j k l m n o p q r s t u v w x y z : -> DVar .
+    -----------------------------------------------------------------
+
     eq width = 10 .
     eq J     = 1/2 .
     eq T     = 30 .
