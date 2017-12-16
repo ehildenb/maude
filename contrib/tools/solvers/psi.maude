@@ -274,26 +274,6 @@ fmod PSI-PROBABILITY-VECTORS is
     ---------------------------------------
 
 
---- ; Operators `_+_` and `_*_` provide vector addition and scalar-vector multiplication, respectively.
---- ; These can be used to scale/sum probability vectors.
-
---- ; **TODO**: Should we be doing some normalization on vector addition?
---- ; As long as only operator `_?_:_` is used, we know the vectors will stay length 1.
-
-
-    op _+_ : 2PVect 2PVect -> 2PVect .
-    op _+_ : 3PVect 3PVect -> 3PVect .
-    ----------------------------------
-    eq < DE1 , DE1' >         +  < DE2 , DE2' >         = < DE1 + DE2 , DE1' + DE2' > .
-    eq < DE1 , DE1' , DE1'' > +  < DE2 , DE2' , DE2'' > = < DE1 + DE2 , DE1' + DE2' , DE1'' + DE2'' > .
-
-    op _*>_ : DExp 2PVect -> 2PVect .
-    op _*>_ : DExp 3PVect -> 3PVect .
-    ---------------------------------
-    eq DE *> < DE1 , DE1' >         = < DE * DE1 , DE * DE1' > .
-    eq DE *> < DE1 , DE1' , DE1'' > = < DE * DE1 , DE * DE1' , DE * DE1'' > .
-
-
 --- ; Here we piecewise lift probabilistic choice to `2PVect` and `3PVect`.
 
 
