@@ -1,7 +1,12 @@
 PSI - Exact Probabalistic Inference
 ===================================
 
-The [PSI Solver](http://psisolver.org) does exact symbolic inference/simplifications over Probability Distributions.
+The [PSI Solver](http://psisolver.org) is an exact symbolic solver for probabilistic systems which can be expressed in its internal language[@gehr-misailovic-vechev-psi-solver].
+The internal language supports arithmetic, logarithms/exponentials, Iverson brackets, Dirac delta functions, infinite sums, and some primitive distributions/integrals/anti-derivatives.
+A high level imperative language is supplied which exports arithmetic, sampling from builtin distributions (both discrete and continuous), distribution marginalization, choice, and bounded looping.
+The high level language is compiled into the internal language, where PSI performs many algebraic, guard, and integral simplifications to generate an exact symbolic closed-form solution distribution.
+PSI also supports an approximation backend, which would allow for simulations of larger systems where exact symbolic solutions are not feasible.
+
 Here we build the syntax and some semantics of the PSI solver, allowing us to use probability distributions directly in Maude.
 
 ### Utilities
@@ -23,8 +28,6 @@ endfm
 PSI Internal Language
 ---------------------
 
-Probabalistic simplifications and reasoning happen in PSI over the internal language.
-
 ### Internal Language Syntax
 
 The internal language is that of arithmetic expressions over discrete and continuous probability distributions.
@@ -45,7 +48,8 @@ fmod PSI-INTERNAL is
     var DC : DConst . vars DE DE' : DExp .
 ```
 
-Arithmetic is supported, with some special constants added.
+Constants `pi` and `e` are real-valued constants added to sort `DConst`.
+Distribution arithmetic over sort `DExp` is supported.
 
 ```maude
    ops pi e : -> DConst .
@@ -63,9 +67,11 @@ Arithmetic is supported, with some special constants added.
 ```
 
 [Iverson Brackets](https://en.wikipedia.org/wiki/Iverson_bracket) are used to represent various conditionals.
+The distribution $\left[ p \otimes q \right]$ for $\otimes \in \{ < , > , ≤ , ≥ , = , ≠ \}$ represents the probability of $cop$ evaluating to true on samples from distribution $p$ and $q$.
 
-TODO: Stop using non-ascii syntax variants.
-TODO: Add subsort `BDExp` and operator `[_]` to turn any boolean into a condition.
+**TODO**: Stop using non-ascii syntax variants.
+
+**TODO**: Add subsort `BDExp` and operator `[_]` to turn any boolean into a condition?
 
 ```maude
     op [_<_] : DExp DExp -> DExp .
@@ -77,13 +83,9 @@ TODO: Add subsort `BDExp` and operator `[_]` to turn any boolean into a conditio
     -------------------------------------
 ```
 
-Some primitive functions are included:
+Support for the named primitives of PSI is provided here.
 
--   Logarithms, exponentials, and trigonometric functions,
--   Floor and ceiling functions, and
--   Dirac delta (point distribution) and Error function (anti-derivative of normal distribution).
-
-TODO: Rename `gaussAnti` to `err` and make a binder?
+**TODO**: Rename `gaussAnti` to `err` and make a binder?
 
 ```maude
     op ln        : DExp -> DExp .
@@ -101,6 +103,13 @@ TODO: Rename `gaussAnti` to `err` and make a binder?
 ```
 
 Operators in sort `Binder` bind a variable in context, which must be taken into account when doing substitution.
+Three binders are provided for:
+
+-   infinite sums over the integers (`sum_._`),
+-   integrals over the real line (`int_._`), and
+-   limites at a point on the real line (`lim_._`).
+
+**TODO**: `lim` needs to take a rational argument specifying the location to take the limit to?
 
 ```maude
     sort Binder .
@@ -112,7 +121,10 @@ Operators in sort `Binder` bind a variable in context, which must be taken into 
    -----------------------------
 ```
 
-Finally, substitutions over `DExp` are provided.
+Substitutions are useful to rename variables in sub-expression or instantiate an expression with variables.
+Here we provide an explicit substitution operator which is binder-aware (to avoid $\alpha$-capture).
+
+**TODO**: Add substitution over `-_`.
 
 ```maude
     sort Subst .
@@ -153,6 +165,7 @@ endfm
 ### PSI Internal Language Simplifications
 
 Many simple algebraic simplifications can be expressed directly in Maude and greatly reduce the size of the generated terms.
+Here they are provided in a separate module so that in the future we can benchmark using Maude for these simplifications versus leaving all simplification to PSI.
 
 ```maude
 fmod PSI-INTERNAL-SIMPLIFICATION is
