@@ -3,10 +3,16 @@ set show timing off .
 load ../../../contrib/systems/caut.maude
 load ../../../contrib/tools/solvers/psi.maude
 
+fmod DVARS is
+   protecting PSI-INTERNAL .
+
+    ops a b c d f g h i j k l m n o p q r s t u v w x y z : -> DVar .
+endfm
+
 --- Test Module PSI-INTERNAL
 --- ========================
 
-select PSI-INTERNAL .
+fmod TEST-PSI-INTERNAL is pr PSI-INTERNAL + DVARS . endfm
 
 reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
 reduce ((2/5) * dirac(r)) + ((3/5) * dirac(r)) .
@@ -38,7 +44,7 @@ reduce int x . (3 * x + y) [ 5 / y ] .
 --- Test Module PSI-INTERNAL-SIMPLIFICATION
 --- =======================================
 
-select PSI-INTERNAL-SIMPLIFICATION .
+fmod TEST-PSI-INTERNAL-SIMPLIFICATION is pr PSI-INTERNAL-SIMPLIFICATION + DVARS . endfm
 
 reduce [ 3 ≤ 3 ] .
 reduce dirac(3) .
@@ -48,7 +54,7 @@ reduce [ 3 < 4 ] * dirac(x) .
 --- Test Module PSI-PROBABILITY-VECTORS
 --- ===================================
 
-select PSI-PROBABILITY-VECTORS .
+fmod TEST-PSI-PROBABILITY-VECTORS is pr PSI-PROBABILITY-VECTORS + DVARS . endfm
 
 reduce [ 2 < 0 ] ? < x , 1 - x > : < 1 - x , x > .
 reduce [ 2 < x ] ? < x , 1 - x > : < 1 - x , x > .
@@ -57,7 +63,7 @@ reduce < x , y > ** < z , d > .
 --- Test Module PSI-USER
 --- ====================
 
-select PSI-USER .
+fmod TEST-PSI-USER is pr PSI-USER + DVARS . endfm
 
 reduce uniformInt(x, 0, 1) .
 reduce 4 * uniformInt(x, 0, 1) .
@@ -78,7 +84,7 @@ reduce fun m(x) = 4 * uniformInt(x, 1, 3)
 --- Test Module PSI-TRANSLATION
 --- ===========================
 
-select PSI-TRANSLATION .
+fmod TEST-PSI-TRANSLATION is pr PSI-TRANSLATION + DVARS . endfm
 
 reduce dist: m(r) .
 reduce dist: n(m(r)) .
