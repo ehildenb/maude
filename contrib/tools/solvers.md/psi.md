@@ -67,7 +67,7 @@ Distribution arithmetic over sort `DExp` is supported.
 ```
 
 [Iverson Brackets](https://en.wikipedia.org/wiki/Iverson_bracket) are used to represent various conditionals.
-The distribution $\left[ p \otimes q \right]$ for $\otimes \in \{ < , > , ≤ , ≥ , = , ≠ \}$ represents the probability of $cop$ evaluating to true on samples from distribution $p$ and $q$.
+The distribution $\left[ p \otimes q \right]$ for $\otimes \in \{ < , > , ≤ , ≥ , = , ≠ \}$ represents the probability of $\otimes$ evaluating to true on samples from distribution $p$ and $q$.
 
 **TODO**: Stop using non-ascii syntax variants.
 

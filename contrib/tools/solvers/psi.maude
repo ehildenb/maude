@@ -67,7 +67,7 @@ fmod PSI-INTERNAL is
 
 
 --- ; [Iverson Brackets](https://en.wikipedia.org/wiki/Iverson_bracket) are used to represent various conditionals.
---- ; The distribution \[*p*⊗*q*\] for ⊗ ∈ { &lt; , &gt; , ≤ , ≥ , = , ≠ } represents the probability of *c**o**p* evaluating to true on samples from distribution *p* and *q*.
+--- ; The distribution \[*p*⊗*q*\] for ⊗ ∈ { &lt; , &gt; , ≤ , ≥ , = , ≠ } represents the probability of ⊗ evaluating to true on samples from distribution *p* and *q*.
 
 --- ; **TODO**: Stop using non-ascii syntax variants.
 
