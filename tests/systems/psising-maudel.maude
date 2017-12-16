@@ -18,44 +18,41 @@ mod PSISING-MAUDEL-10-SITE is
 
     op init : Nat -> [Cells] .
     --------------------------
-    eq init(0) = < 0 , 0 > :: spinUp
-               ; < 0 , 1 > :: spinUp
-               ; < 0 , 2 > :: spinUp
-               ; < 0 , 3 > :: spinUp
-               ; < 0 , 4 > :: spinUp
-               ; < 0 , 5 > :: spinUp
-               ; < 0 , 6 > :: spinUp
-               ; < 0 , 7 > :: spinUp
-               ; < 0 , 8 > :: spinUp
-               ; < 0 , 9 > :: spinUp .
+    eq init(0) = [ 0 , 0 ] :: spinUp
+               ; [ 0 , 1 ] :: spinUp
+               ; [ 0 , 2 ] :: spinUp
+               ; [ 0 , 3 ] :: spinUp
+               ; [ 0 , 4 ] :: spinUp
+               ; [ 0 , 5 ] :: spinUp
+               ; [ 0 , 6 ] :: spinUp
+               ; [ 0 , 7 ] :: spinUp
+               ; [ 0 , 8 ] :: spinUp
+               ; [ 0 , 9 ] :: spinUp .
 
-    eq init(1) = < 0 , 0 > :: spinDown
-               ; < 0 , 1 > :: spinDown
-               ; < 0 , 2 > :: spinDown
-               ; < 0 , 3 > :: spinDown
-               ; < 0 , 4 > :: spinDown
-               ; < 0 , 5 > :: spinDown
-               ; < 0 , 6 > :: spinDown
-               ; < 0 , 7 > :: spinDown
-               ; < 0 , 8 > :: spinDown
-               ; < 0 , 9 > :: spinDown .
+    eq init(1) = [ 0 , 0 ] :: spinDown
+               ; [ 0 , 1 ] :: spinDown
+               ; [ 0 , 2 ] :: spinDown
+               ; [ 0 , 3 ] :: spinDown
+               ; [ 0 , 4 ] :: spinDown
+               ; [ 0 , 5 ] :: spinDown
+               ; [ 0 , 6 ] :: spinDown
+               ; [ 0 , 7 ] :: spinDown
+               ; [ 0 , 8 ] :: spinDown
+               ; [ 0 , 9 ] :: spinDown .
 
-    eq init(2) = < 0 , 0 > :: [[ 1/2 ]]
-               ; < 0 , 1 > :: [[ 1/4 ]]
-               ; < 0 , 2 > :: [[ 3/8 ]]
-               ; < 0 , 3 > :: [[ x   ]]
-               ; < 0 , 4 > :: [[ 2/3 ]]
-               ; < 0 , 5 > :: [[ 1   ]]
-               ; < 0 , 6 > :: [[ 0   ]]
-               ; < 0 , 7 > :: [[ 0   ]]
-               ; < 0 , 8 > :: [[ 0   ]]
-               ; < 0 , 9 > :: [[ 0   ]] .
+    eq init(2) = [ 0 , 0 ] :: [[ 1/2 ]]
+               ; [ 0 , 1 ] :: [[ 1/4 ]]
+               ; [ 0 , 2 ] :: [[ 3/8 ]]
+               ; [ 0 , 3 ] :: [[ x   ]]
+               ; [ 0 , 4 ] :: [[ 2/3 ]]
+               ; [ 0 , 5 ] :: [[ 1   ]]
+               ; [ 0 , 6 ] :: [[ 0   ]]
+               ; [ 0 , 7 ] :: [[ 0   ]]
+               ; [ 0 , 8 ] :: [[ 0   ]]
+               ; [ 0 , 9 ] :: [[ 0   ]] .
 endm
 
 reduce init(0) .
-
-reduce [ 2 < 0 ] ? spinUp : spinDown .
-reduce [ 2 < x ] ? spinUp : spinDown .
 
 reduce [ init(0) ] .
 reduce [ init(1) ] .
