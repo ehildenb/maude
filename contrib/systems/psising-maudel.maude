@@ -35,8 +35,8 @@
 
 --- ; *H*(*σ*)= − *J*∑_(⟨*i*, *j*⟩)*σ*_(*i*)*σ*_(*j*)
 
---- ; Modelling in Maude
---- ; ------------------
+--- ; Modeling in Maude
+--- ; -----------------
 
 --- ; The Ising model is a 1D probabilistic cellular automata, so the Maude libraries for cellular automata and the PSI solver are imported here.
 

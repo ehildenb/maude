@@ -35,8 +35,8 @@ For the sake of this model, we:
 
 $$H(\sigma) = - J \sum_{\langle i , j \rangle} \sigma_i \sigma_j$$
 
-Modelling in Maude
-------------------
+Modeling in Maude
+-----------------
 
 The Ising model is a 1D probabilistic cellular automata, so the Maude libraries for cellular automata and the PSI solver are imported here.
 
