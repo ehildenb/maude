@@ -281,11 +281,16 @@ Here we piecewise lift probabilistic choice to `2PVect` and `3PVect`.
 ```maude
     op _?_:_ : DExp 2PVect 2PVect -> 2PVect .
     -----------------------------------------
-    eq DE ? < DE1 , DE1' > : < DE2 , DE2' > = < DE ? DE1 : DE2 , DE ? DE1' : DE2' > .
+    eq DE ? < DE1 , DE1' > : < DE2 , DE2' > = < DE ? DE1  : DE2
+                                              , DE ? DE1' : DE2'
+                                              > .
 
     op _?_:_ : DExp 3PVect 3PVect -> 3PVect .
     -----------------------------------------
-    eq DE ? < DE1 , DE1' , DE1'' > : < DE2 , DE2' , DE2'' > = < DE ? DE1 : DE2 , DE ? DE1' : DE2' , DE ? DE1'' : DE2'' > .
+    eq DE ? < DE1 , DE1' , DE1'' > : < DE2 , DE2' , DE2'' > = < DE ? DE1   : DE2
+                                                              , DE ? DE1'  : DE2'
+                                                              , DE ? DE1'' : DE2''
+                                                              > .
 ```
 
 The correlation (`_**_`) between two probability vectors measures roughly how much they agree on the individual components.
