@@ -6,7 +6,7 @@
 --- ; Many simplifications over this internal language are supported, including algebraic simplifications, guard reasoning, and some exact integration/summation.
 
 --- ; The PSI tool also understands a high level imperative language with arithmetic, several primitive distributions (both discrete and continuous), distribution marginalization, choice, and bounded looping.
---- ; PSI compiles the high level language into the internal language and then further simplies the resulting expression.
+--- ; PSI compiles the high level language into the internal language and then further simplifies the resulting expression.
 
 --- ; Here we build the syntax and (partial) semantics of the PSI solver, allowing us to use probability distributions directly in Maude.
 
