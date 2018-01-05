@@ -138,8 +138,8 @@ Operator `univ_` turns a `ModuleDeclSet` into a module constuction parametric ov
     eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
 ```
 
-Useful Constructions
---------------------
+Functor Constructions
+---------------------
 
 ### Functors
 

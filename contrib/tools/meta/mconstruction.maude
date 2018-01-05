@@ -136,8 +136,8 @@ fmod MODULE-CONSTRUCTION is
 --- ;         eq (forall MT exists MT' ; MC) over MT'' = (forall MT exists MT' over MT'') ; (MC over MT'') .
 --- ;         eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
 
---- ; Useful Constructions
---- ; --------------------
+--- ; Functor Constructions
+--- ; ---------------------
 
 --- ; ### Functors
 
