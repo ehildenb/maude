@@ -48,6 +48,8 @@ A module construction is either just a declaration of existence (the empty theor
 Operator `_deriving_` applies a module construction to a module.
 Helper `not-instance-of?` helps implement the "away from" construct for building modules.
 
+**TODO**: Should `not-instance-of?` be moved to `mtemplate.maude`?
+
 ```maude
     op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [prec 76] .
     -----------------------------------------------------------------------------
@@ -72,7 +74,7 @@ Helper `not-instance-of?` helps implement the "away from" construct for building
 
 `#upModule` defaults to passing `false` to `upModule`.
 
-**TODO**: Move this to the prelude.
+**TODO**: Move this to the prelude, and name `upModule`.
 
 ```maude
     op #upModule : ModuleExpression -> Module [memo] .
@@ -84,6 +86,8 @@ Operators Over Constructions
 ----------------------------
 
 Module constructions can be instantiated further with substitutions using `_<<_`.
+
+**TODO**: It feels strange to also generate `forall MTS exists MDS` in the first equation.
 
 ```maude
     op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction .
