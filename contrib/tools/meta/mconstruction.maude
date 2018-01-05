@@ -21,6 +21,12 @@ fmod MODULE-CONSTRUCTION is
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z TH TH' : Sort . vars T T' : Term .
 
 
+--- ; Primitive Constructions
+--- ; -----------------------
+
+--- ; **TODO**: Organize the order of these module constructions.
+--- ; **TODO**: Add in identity `ModuleConstruction`.
+
 --- ; `_<_>` allows building module constructions which need to know the module header.
 --- ; `_;_` gives sequential composition of module constructions, and `_|_` gives parallel.
 
@@ -104,16 +110,18 @@ fmod MODULE-CONSTRUCTION is
     eq not-instance-of?((NeMTS | NeMTS'), MTS) = not-instance-of?(NeMTS, MTS) | not-instance-of?(NeMTS', MTS) .
 
 
---- ; Covariant Constructions
---- ; -----------------------
+--- ; Useful Constructions
+--- ; --------------------
 
---- ; Covariant constructions copy sort structure and subsort relations, preserving the ordering.
+--- ; ### Functors
+
+--- ; Covariant constructions copy sort structure and preserve the subsort relation.
 --- ; In general, you may want to just copy the sort structure with a new name, or copy the sort structure and then make the copies subsorts (or supersorts) of the original.
 
---- ; -   `covariant : Sort Sort -> ModuleConstruction` will just copy the sort and subsort structure.
---- ;     The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build.
---- ; -   `covariant-data-up : Sort Sort -> ModuleConstruction` creates a copy of the sort structure and makes the copy super-sorts of the original.
---- ; -   `covariant-data-down : Sort Sort -> ModuleConstruction` creates a copy of the sort structure and makes the copy subsorts of the original.
+--- ; **TODO**: Rename `covariant` to `FUNCTOR`.
+
+--- ; `covariant` copies the sort and subsort structure without linking the original and new sort structures.
+--- ; The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
 
 
     op covariant : Sort Sort -> ModuleConstruction .
@@ -125,6 +133,12 @@ fmod MODULE-CONSTRUCTION is
                                  )
                                  ( subsort S  < prime(S) . )
                           exists ( subsort S' < prime(S') . ) .
+
+
+--- ; `covariant-data-up/down` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
+
+--- ; **TODO**: Rename to `FUNCTOR-ABOVE` and `FUNCTOR-BELOW`.
+
 
     op covariant-data-up : Sort Sort -> ModuleConstruction .
     --------------------------------------------------------
@@ -141,9 +155,9 @@ fmod MODULE-CONSTRUCTION is
 
 --- ; A common idiom is to create the subsort-chain `X < NeF{X} < F{X}`, where `F` is some data-structure and `NeF` is the non-empty version.
 --- ; These data-structures are often over binary operators with given axioms.
---- ; Here, `covariant-data-up` is used twice to build the desired sort structure, then the appropriate binary operators with unit are declared.
+--- ; Here, `covariant-data-binary` uses `covariant-data-up` to build the desired sort structure, then the appropriate binary operators with unit are declared.
 
---- ; -   `covariant-data-binary : Sort Qid AttrSet -> ModuleConstruction` makes a covariant data-structure with a binary operator as constructor.
+--- ; **TODO**: Rename to `BINARY-DATA`.
 
 
     op covariant-data-binary : Sort Qid AttrSet -> ModuleConstruction .
@@ -161,7 +175,9 @@ fmod MODULE-CONSTRUCTION is
                                        /\ Nil := qid("."  + string(S)) .
 
 
---- ; The module constructions for the list and set data-types are provided here in terms of `covariant-binary-data`.
+--- ; Here, some useful module constructions for the list and set data-types are provided:
+
+--- ; **TODO**: Add `TUPLE : Nat -> ModuleConstruction` declaring all tuples up to specified size.
 
 --- ; -   `LIST : -> ModuleConstruction` constructs the sorts `X < NeList{X} < List{X}` for every `X` in the module, using `_,_` as the associative constructor and `.List` as the empty list.
 --- ; -   `MSET : -> ModuleConstruction` constructs the sorts `X < NeMSet{X} < MSet{X}` for every `X` in the module, using `_;_` as the associative-commutative constructor and `.MSet` as the empty set.
@@ -179,8 +195,7 @@ fmod MODULE-CONSTRUCTION is
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 
 
---- ; Signature Refinement
---- ; --------------------
+--- ; **TODO**: Signature refinement isn’t used anywhere and it’s not clear that it’s nice/good.
 
 --- ; Signature refinements add subsorts to every sort (adding the annotation that they are refined), as well as copying operators over only the refined sorts down.
 --- ; Right now only operators up to arity 2 are handled (until we have a better way to generate them).
@@ -219,8 +234,13 @@ fmod MODULE-CONSTRUCTION is
                                  /\ OP := var<Qid>('OP) .
 
 
---- ; Exponential Objects
---- ; -------------------
+--- ; ### Cofunctors
+
+--- ; **TODO**: Fill in generic `COFUNCTOR` definition.
+
+--- ; ### Profunctors
+
+--- ; **TODO**: Implement `EXPONENTIAL` in terms of a generic `PROFUNCTOR` implementation.
 
 --- ; For functional-style programming (including higher-order functional programming), it’s necessary to reify arrows between sorts (functions) as objects themselves.
 --- ; This `EXPONENTIAL` module construction does that.
@@ -252,8 +272,10 @@ fmod MODULE-CONSTRUCTION is
                   /\ Z := var<Sort>('Z) .
 
 
---- ; Meta Theory
---- ; -----------
+--- ; Meta Theory Constructions
+--- ; -------------------------
+
+--- ; **TODO**: Fix, finish, and test these.
 
 --- ; Sometimes you want a “meta theory” specific to your module.
 --- ; For example, you may want to express using just a sort that a meta-level `Term` is a well-formed term in your theory, or that it is a well-formed term of a specific sort in your theory.
@@ -316,6 +338,8 @@ endfm
 
 --- ; Module Expressions
 --- ; ==================
+
+--- ; **TODO**: Move this towards the beginning of `MODULE-CONSTRUCTION` where they are first defined.
 
 --- ; This module simply provides the hookup to our extension of the Meta-Level module expressions.
 --- ; A memo-ised version of `upModule` is provided too for the extensions.
