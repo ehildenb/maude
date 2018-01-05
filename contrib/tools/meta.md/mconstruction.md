@@ -258,7 +258,20 @@ Right now only operators up to arity 2 are handled (until we have a better way t
 
 ### Cofunctors
 
-**TODO**: Fill in generic `COFUNCTOR` definition.
+Cofunctors are contravariant in the subsort relation.
+Their construction is similar to functors.
+
+```maude
+    op COFUNCTOR : Sort Sort -> ModuleConstruction .
+    ------------------------------------------------
+    eq COFUNCTOR(S, S') = forall ( sorts S . )
+                          exists ( sorts S' . )
+                        ; forall ( sorts S        ; S'
+                                       ; prime(S) ; prime(S') .
+                                 )
+                                 ( subsort       S   < prime(S) . )
+                          exists ( subsort prime(S') < S'       . ) .
+```
 
 ### Profunctors
 
