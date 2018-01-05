@@ -11,11 +11,12 @@ load mtemplate.maude
 fmod MODULE-CONSTRUCTION is
     protecting MODULE-TEMPLATE .
 
-    sort ModuleConstruction .
-    -------------------------
+    sorts NeModuleConstruction ModuleConstruction .
+    -----------------------------------------------
+    subsort NeModuleConstruction < ModuleConstruction .
 
     vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression .
-    vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction .
+    vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
     vars S S' S'' NeS : Sort . vars SS SS' : SortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z TH TH' : Sort . vars T T' : Term .
 ```
@@ -23,26 +24,30 @@ fmod MODULE-CONSTRUCTION is
 Primitive Constructions
 -----------------------
 
-**TODO**: Add in identity `ModuleConstruction`.
-
 A module construction is either just a declaration of existence (the empty theory matches anything), or the pair of the theory and the parametric module.
+`.ModuleConstruction` is the empty module construction.
 
 ```maude
-    op        exists_ : ModuleTemplateSet                   -> ModuleConstruction [prec 75] .
-    op forall_exists_ : ModuleTemplateSet ModuleTemplateSet -> ModuleConstruction [ctor prec 75] .
-    ----------------------------------------------------------------------------------------------
+    op        exists_ : ModuleTemplateSet                   -> NeModuleConstruction [     prec 75] .
+    op forall_exists_ : ModuleTemplateSet ModuleTemplateSet -> NeModuleConstruction [ctor prec 75] .
+    ------------------------------------------------------------------------------------------------
     eq exists MTS = forall none exists MTS .
     eq forall MTS exists NeMTS | NeMTS' = (forall MTS exists NeMTS) | (forall MTS exists NeMTS) .
+
+    op .ModuleConstruction : -> ModuleConstruction [ctor] .
+    -------------------------------------------------------
+    eq forall MTS exists none = .ModuleConstruction .
 ```
 
 `_;_` gives sequential composition of module constructions, and `_|_` gives parallel.
 
 ```maude
-    op _;_ : ModuleConstruction ModuleConstruction -> ModuleConstruction [ctor assoc prec 76 format(d n d d)] .
-    op _|_ : ModuleConstruction ModuleConstruction -> ModuleConstruction [ctor assoc comm prec 77 format(d n d d)] .
-    ----------------------------------------------------------------------------------------------------------------
-    eq (forall MTS exists none) ; MC = MC .
-    eq MC | MC = MC .
+    op _;_ : ModuleConstruction   ModuleConstruction ->   ModuleConstruction [ctor assoc      id: .ModuleConstruction prec 76 format(d n d d)] .
+    op _;_ : ModuleConstruction NeModuleConstruction -> NeModuleConstruction [ctor assoc      id: .ModuleConstruction prec 76 format(d n d d)] .
+    op _|_ : ModuleConstruction   ModuleConstruction ->   ModuleConstruction [ctor assoc comm id: .ModuleConstruction prec 77 format(d n d d)] .
+    op _|_ : ModuleConstruction NeModuleConstruction -> NeModuleConstruction [ctor assoc comm id: .ModuleConstruction prec 77 format(d n d d)] .
+    ----------------------------------------------------------------------------------------------------------------------------------------
+    eq NeMC | NeMC = NeMC .
 ```
 
 Operator `_deriving_` applies a module construction to a module.
@@ -51,25 +56,25 @@ Helper `not-instance-of?` helps implement the "away from" construct for building
 **TODO**: Should `not-instance-of?` be moved to `mtemplate.maude`?
 
 ```maude
-    op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [prec 76] .
-    -----------------------------------------------------------------------------
+    op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [right id: .ModuleConstruction prec 76] .
+    -----------------------------------------------------------------------------------------------------------
    ceq MDS deriving forall MTS exists MDS'           = ++(MDS | (MDS' << SUBSTS))                          if SUBSTS := match MTS with MDS .
    ceq MDS deriving forall MTS exists (MDS' \ NeMTS) = ++(MDS | not-instance-of?((MDS' << SUBSTS), NeMTS)) if SUBSTS := match MTS with MDS .
-    eq MDS deriving (MC ; MC')                       = (MDS deriving MC) deriving MC' .
-    eq MDS deriving (MC | MC')                       = (MDS deriving MC) (MDS deriving MC') .
+    eq MDS deriving (NeMC ; NeMC')                   = (MDS deriving NeMC) deriving NeMC' .
+    eq MDS deriving (NeMC | NeMC')                   = (MDS deriving NeMC) (MDS deriving NeMC') .
 
     op not-instance-of? : ModuleTemplateSet ModuleTemplateSet -> ModuleTemplateSet .
     --------------------------------------------------------------------------------
    ceq not-instance-of?(MDS, MTS)              = if SUBSTS == empty then MDS else none fi if SUBSTS := match MTS with MDS .
     eq not-instance-of?((NeMTS | NeMTS'), MTS) = not-instance-of?(NeMTS, MTS) | not-instance-of?(NeMTS', MTS) .
 
-    op _deriving_ : ModuleExpression ModuleConstruction -> ModuleExpression [prec 80] .
-    -----------------------------------------------------------------------------------
-    eq #upModule(ME deriving MC) = #upModule(ME) deriving MC .
+    op _deriving_ : ModuleExpression ModuleConstruction -> ModuleExpression [right id: .ModuleConstruction prec 80] .
+    -----------------------------------------------------------------------------------------------------------------
+    eq #upModule(ME deriving NeMC) = #upModule(ME) deriving NeMC .
 
-    op _deriving_ : Module ModuleConstruction -> [Module] [prec 80] .
-    -----------------------------------------------------------------
-    eq MOD deriving MC = fromTemplate(getName(MOD), asTemplate(MOD) deriving MC) .
+    op _deriving_ : Module ModuleConstruction -> [Module] [right id: .ModuleConstruction prec 80] .
+    -----------------------------------------------------------------------------------------------
+    eq MOD deriving NeMC = fromTemplate(getName(MOD), asTemplate(MOD) deriving NeMC) .
 ```
 
 `#upModule` defaults to passing `false` to `upModule`.
@@ -93,10 +98,13 @@ Module constructions can be instantiated further with substitutions using `_<<_`
     op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction .
     --------------------------------------------------------------------
     eq MC << empty                   = MC .
-    eq MC << (SU | SU' | SUBSTS)     = (MC << SU) | (MC << SU') | (MC << SUBSTS) .
-    eq (MC | MC') << SU              = (MC << SU) | (MC' << SU) .
-    eq (MC ; MC') << SU              = (MC << SU) ; (MC' << SU) .
     eq (forall MTS exists MDS) << SU = (forall (MTS << SU) exists (MDS << SU)) | (forall MTS exists MDS) .
+
+    eq NeMC << (SU | SU' | SUBSTS) = (NeMC << SU) | (NeMC << SU') | (NeMC << SUBSTS) .
+
+    eq .ModuleConstruction << SU = .ModuleConstruction .
+    eq (NeMC | NeMC')      << SU = (NeMC << SU) | (NeMC' << SU) .
+    eq (NeMC ; NeMC')      << SU = (NeMC << SU) ; (NeMC' << SU) .
 ```
 
 `for_in__` allows building the same structure for many different sorts at a time.
@@ -106,10 +114,10 @@ Module constructions can be instantiated further with substitutions using `_<<_`
     -----------------------------------------------------------------------------------
    ceq for S in ( sorts S' . ) (forall MTS exists MDS) = forall (MTS << SU) exists (MDS << SU) if SU := upTerm(S) <- upTerm(S') .
 
-    eq for S in SDS (MC ; MC') = (for S in SDS MC) ; (for S in SDS MC') .
-    eq for S in SDS (MC | MC') = (for S in SDS MC) | (for S in SDS MC') .
+    eq for S in SDS (NeMC ; NeMC') = (for S in SDS NeMC) ; (for S in SDS NeMC') .
+    eq for S in SDS (NeMC | NeMC') = (for S in SDS NeMC) | (for S in SDS NeMC') .
 
-    eq for S in none                      MC = exists none .
+    eq for S in none                      MC = .ModuleConstruction .
     eq for S in ( sorts S' ; S'' ; SS . ) MC = (for S in ( sorts S' . ) MC) | (for S in ( sorts S'' . ) MC) | (for S in ( sorts SS . ) MC) .
 ```
 
