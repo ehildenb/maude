@@ -144,61 +144,55 @@ fmod MODULE-CONSTRUCTION is
 --- ; Covariant constructions copy sort structure and preserve the subsort relation.
 --- ; In general, you may want to just copy the sort structure with a new name, or copy the sort structure and then make the copies subsorts (or supersorts) of the original.
 
---- ; **TODO**: Rename `covariant` to `FUNCTOR`.
-
---- ; `covariant` copies the sort and subsort structure without linking the original and new sort structures.
+--- ; `FUNCTOR` copies the sort and subsort structure without linking the original and new sort structures.
 --- ; The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
 
 
-    op covariant : Sort Sort -> ModuleConstruction .
-    ------------------------------------------------
-    eq covariant(S, S') = forall ( sorts S . )
-                          exists ( sorts S' . )
-                        ; forall ( sorts S        ; S'
-                                       ; prime(S) ; prime(S') .
-                                 )
-                                 ( subsort S  < prime(S) . )
-                          exists ( subsort S' < prime(S') . ) .
+    op FUNCTOR : Sort Sort -> ModuleConstruction .
+    ----------------------------------------------
+    eq FUNCTOR(S, S') = forall ( sorts S . )
+                        exists ( sorts S' . )
+                      ; forall ( sorts S        ; S'
+                                     ; prime(S) ; prime(S') .
+                               )
+                               ( subsort S  < prime(S) . )
+                        exists ( subsort S' < prime(S') . ) .
 
 
---- ; `covariant-data-up/down` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
-
---- ; **TODO**: Rename to `FUNCTOR-ABOVE` and `FUNCTOR-BELOW`.
+--- ; `FUNCTOR-ABOVE/BELOW` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
 
 
-    op covariant-data-up : Sort Sort -> ModuleConstruction .
-    --------------------------------------------------------
-    eq covariant-data-up(S, S') = covariant(S, S')
-                                ; forall ( sorts S ; S' . )
-                                  exists ( subsort S < S' . ) .
+    op FUNCTOR-ABOVE : Sort Sort -> ModuleConstruction .
+    ----------------------------------------------------
+    eq FUNCTOR-ABOVE(S, S') = FUNCTOR(S, S')
+                            ; forall ( sorts S ; S' . )
+                              exists ( subsort S < S' . ) .
 
-    op covariant-data-down : Sort Sort -> ModuleConstruction .
-    ----------------------------------------------------------
-    eq covariant-data-down(S, S') = covariant(S, S')
-                                  ; forall ( sorts S ; S' . )
-                                    exists ( subsort S < S' . ) .
+    op FUNCTOR-BELOW : Sort Sort -> ModuleConstruction .
+    ----------------------------------------------------
+    eq FUNCTOR-BELOW(S, S') = FUNCTOR(S, S')
+                            ; forall ( sorts S ; S' . )
+                              exists ( subsort S < S' . ) .
 
 
 --- ; A common idiom is to create the subsort-chain `X < NeF{X} < F{X}`, where `F` is some data-structure and `NeF` is the non-empty version.
 --- ; These data-structures are often over binary operators with given axioms.
---- ; Here, `covariant-data-binary` uses `covariant-data-up` to build the desired sort structure, then the appropriate binary operators with unit are declared.
-
---- ; **TODO**: Rename to `BINARY-DATA`.
+--- ; Here, `BINARY-DATA` uses `FUNCTOR-ABOVE` to build the desired sort structure, then the appropriate binary operators with unit are declared.
 
 
-    op covariant-data-binary : Sort Qid AttrSet -> ModuleConstruction .
-    -------------------------------------------------------------------
-   ceq covariant-data-binary(S, OP, AS) = covariant-data-up(X, NeS{X})
-                                        ; covariant-data-up(NeS{X}, S{X})
-                                        ; forall ( sorts    X ; NeS{X} ; S{X} . )
-                                                 ( subsorts X < NeS{X} < S{X} . )
-                                          exists ( op Nil : nil             ->   S{X} [ctor] .
-                                                   op OP  : (S{X})   (S{X}) ->   S{X} [ctor id(const(Nil, S{X})) AS] .
-                                                   op OP  : (S{X}) (NeS{X}) -> NeS{X} [ctor id(const(Nil, S{X})) AS] .
-                                                 )
-                                       if X   := var<Sort>('X)
-                                       /\ NeS := qid("Ne" + string(S))
-                                       /\ Nil := qid("."  + string(S)) .
+    op BINARY-DATA : Sort Qid AttrSet -> ModuleConstruction .
+    ---------------------------------------------------------
+   ceq BINARY-DATA(S, OP, AS) = FUNCTOR-ABOVE(X, NeS{X})
+                              ; FUNCTOR-ABOVE(NeS{X}, S{X})
+                              ; forall ( sorts    X ; NeS{X} ; S{X} . )
+                                       ( subsorts X < NeS{X} < S{X} . )
+                                exists ( op Nil : nil             ->   S{X} [ctor] .
+                                         op OP  : (S{X})   (S{X}) ->   S{X} [ctor id(const(Nil, S{X})) AS] .
+                                         op OP  : (S{X}) (NeS{X}) -> NeS{X} [ctor id(const(Nil, S{X})) AS] .
+                                       )
+                             if X   := var<Sort>('X)
+                             /\ NeS := qid("Ne" + string(S))
+                             /\ Nil := qid("."  + string(S)) .
 
 
 --- ; Here, some useful module constructions for the list and set data-types are provided:
@@ -213,11 +207,11 @@ fmod MODULE-CONSTRUCTION is
 
    ops LIST MSET SET : -> ModuleConstruction .
    -------------------------------------------
-    eq LIST = covariant-data-binary('List, '_`,_, assoc) .
-    eq MSET = covariant-data-binary('MSet, '_;_, assoc comm) .
-   ceq SET  =   covariant-data-binary('Set, '_;_, assoc comm)
-              ; forall ( sorts 'NeSet{var<Sort>('X)} . )
-                exists ( eq '_;_[NES, NES] = NES [none] . )
+    eq LIST = BINARY-DATA('List, '_`,_, assoc) .
+    eq MSET = BINARY-DATA('MSet, '_;_, assoc comm) .
+   ceq SET  = BINARY-DATA('Set, '_;_, assoc comm)
+            ; forall ( sorts 'NeSet{var<Sort>('X)} . )
+              exists ( eq '_;_[NES, NES] = NES [none] . )
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 
 
@@ -229,7 +223,7 @@ fmod MODULE-CONSTRUCTION is
 
     op signature-refinement : Qid -> ModuleConstruction .
     -----------------------------------------------------
-    eq signature-refinement(Q) = covariant-data-down(var<Sort>('X), var<Sort>('X){Q})
+    eq signature-refinement(Q) = FUNCTOR-BELOW(var<Sort>('X), var<Sort>('X){Q})
                                ; signature-refinement(0, Q)
                                ; signature-refinement(1, Q)
                                ; signature-refinement(2, Q) .
@@ -354,7 +348,7 @@ fmod MODULE-CONSTRUCTION is
    ceq DOWN-TERM < Q > =   exists ( pr 'META-LEVEL .
                                     pr Q .
                                   )
-                         ; covariant-data-up(X, X ?)
+                         ; FUNCTOR-ABOVE(X, X ?)
                          ; forall ( sorts X ; X ? . )
                                   ( subsort X < X ? . )
                            exists ( op 'downTermError < X > : nil   -> X ?   [ctor] .
@@ -374,8 +368,8 @@ fmod MODULE-CONSTRUCTION is
                                          ; forall ( sorts X ; X ? . ) exists ( sorts TH{X @ Q} . )
                                          ; forall top-sorts(X ?)      exists ( subsort TH{X @ Q} < TH{Q} . )
                                          )
-                         ; covariant(TH{Q}, TH{X @ Q})
-                         ; covariant(X, TH{X @ Q})
+                         ; FUNCTOR(TH{Q}, TH{X @ Q})
+                         ; FUNCTOR(X, TH{X @ Q})
                       if SDS SSDS := connected-component(asTemplate('META-TERM), ( sorts 'Term . ))
                       /\ X        := var<Sort>('X)
                       /\ Y        := var<Sort>('Y)
