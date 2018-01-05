@@ -11,7 +11,7 @@
 fmod STRUCTURED-NAME is
     extending META-LEVEL .
 
-    vars I I' : Import . vars IL IL' : ImportList . vars S S' : Sort . var SS : SortSet . var SSDS : SubsortDeclSet .
+    vars I I' : Import . vars IL IL' : ImportList . vars S S' S'' : Sort . var SS : SortSet . var SSDS : SubsortDeclSet .
     vars H H' : Header . vars Q Q' : Qid . vars A A' : Attr . var AS : AttrSet . var SU : Substitution .
     vars OP OP' : OpDecl . var OPDS : OpDeclSet . vars MB MB' : MembAx . var MAS : MembAxSet .
     vars EQ EQ' : Equation . var EQS : EquationSet . vars RL RL' : Rule . var RLS : RuleSet .
@@ -66,7 +66,7 @@ fmod STRUCTURED-NAME is
 
 --- ; It’s useful when building universal constructions to generate the same structure, but with incremented variable names.
 
---- ; -   `prime` will add a prime `'` to every variable in a given term.
+--- ; -   `prime` will add a prime `'` to every variable in a given term, the variant which takes an extra sort only primes that extra sort.
 --- ; -   `#prime` is the meta-level version, which does the same over a `Term`.
 
 
@@ -76,12 +76,25 @@ fmod STRUCTURED-NAME is
     eq prime(S)    = prime(1, S) .
    ceq prime(N, S) = S' if S' := downTerm(#prime(N, upTerm(S)), downSortsError?) .
 
+    op prime :     Sort Sort -> Sort .
+    op prime : Nat Sort Sort -> Sort .
+    ----------------------------------
+    eq prime(S, S')    = prime(1, S, S') .
+   ceq prime(N, S, S') = S'' if S'' := downTerm(#prime(N, upTerm(S), upTerm(S')), downSortsError?) .
+
     op #prime : Nat TermList -> TermList .
-    ------------------------------------------
+    --------------------------------------
     eq #prime(N, VAR)                  = qid(string(getName(VAR)) + #primes(N) + ":" + string(getType(VAR))) .
     eq #prime(N, CONST)                = CONST .
     eq #prime(N, Q[NeTERML])           = Q[#prime(N, NeTERML)] .
     eq #prime(N, (NeTERML , NeTERML')) = #prime(N, NeTERML) , #prime(N, NeTERML') .
+
+    op #prime : Nat Term TermList -> TermList .
+    -------------------------------------------
+    eq #prime(N, TERM, VAR)                  = if TERM == VAR then #prime(N, VAR) else VAR fi .
+    eq #prime(N, TERM, CONST)                = CONST .
+    eq #prime(N, TERM, Q[NeTERML])           = Q[#prime(N, TERM, NeTERML)] .
+    eq #prime(N, TERM, (NeTERML , NeTERML')) = #prime(N, TERM, NeTERML) , #prime(N, TERM, NeTERML') .
 
     op #primes : Nat -> String .
     ----------------------------
