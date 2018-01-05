@@ -110,6 +110,13 @@ fmod MODULE-DECLARATION is
     eq sortSet(none)       = none .
     eq sortSet(sorts SS .) = SS .
 
+
+--- ; The prelude only allows a single subsort declared at once, which becomes cumbersome.
+--- ; Here we add `SortPoset` and allow an entire poset to be declared at once.
+
+--- ; **TODO**: Rename `SortPoset` =&gt; `SortOrder`.
+
+
     op _<_ : SortPoset SortPoset -> SortPoset [assoc id: none prec 122] .
     op (subsorts_.) : SortPoset -> SubsortDeclSet .
     -----------------------------------------------
@@ -136,6 +143,9 @@ fmod MODULE-DECLARATION is
 --- ; -   `connected-component : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet` will complete the second module declaration set with all the sorts and subsorts in the intersection of the two connected components.
 --- ; -   `tag-sorts : Qid ModuleDeclSet -> [ModuleDeclSet]` will take a sort structure (a `ModuleDeclSet` which only consists of `SortDecl` and `SubsortDecl`) and produce a “tagged” version.
 --- ;     For each sort `X` in the original sort structure it will produce `X{Q}`, for `Q` the supplied `Qid`.
+
+--- ; **TODO**: Rework `connected-component` to first grab the subsort structure then flatten the sorts out.
+--- ; **TODO**: Think about how matching on the `(Ne)ModuleDeclSet` can make this more compact.
 
 
     op top-sort : ModuleDeclSet Sort -> [Sort] .
@@ -210,6 +220,9 @@ endfm
 
 --- ; Module Templates
 --- ; ----------------
+
+--- ; **TODO**: Are module templates actually used/useful?
+--- ; They seem to add a lot of complication for (perhaps) little gain.
 
 --- ; Module templates serve as more flexible module data-structures than what the prelude provides for modules.
 --- ; Every `ModuleDeclSet` is a `ModuleTemplateSet`.
