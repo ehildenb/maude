@@ -1,0 +1,9 @@
+fmod EX-CONF is
+  protecting INT .
+  sorts Msg Channel Configuration .
+  subsort Msg < Channel .
+  op <_> : Int -> Msg [ctor] .
+  op none : -> Channel [ctor] .
+  op __ : Channel Channel -> Channel [ctor comm assoc id: none] .
+  op _|_ : Channel Channel -> Configuration [ctor] .
+endfm

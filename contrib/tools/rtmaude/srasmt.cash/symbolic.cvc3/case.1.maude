@@ -1,0 +1,24 @@
+mod TEST-STATES is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op init1   : -> Sys .
+  op global1  : -> Object .
+  op server1 : -> Object .
+  op server2 : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'TEST-STATES .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> c(2), period |-> c(5), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> c(3), period |-> c(5), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq init1
+   = { global1 server1 server2 } .
+endm

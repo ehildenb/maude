@@ -1,0 +1,301 @@
+% !TEX root = main.tex
+
+\section{A Case Study}
+\label{sec.cash}
+
+This section shows how the number of symbolic states can be
+dramatically reduced by slightly introducing guarded terms in the
+existing symbolic specification of CASH
+in~\cite{rocha-rewsmtjlamp-2017}. 
+%
+The CASH algorithm was first formally specified and analyzed in
+Real-Time Maude using explicit-state methods
+\cite{olveczky2006formal}, and symbolically analyzed using
+rewriting modulo SMT to deal with an infinite number of states
+\cite{rocha-rewsmtjlamp-2017}. 
+%
+Due to the symbolic state space explosion problem and the
+complexity of the accumulated constraints,
+some reachability
+properties of interest were previously beyond the reach of rewriting modulo
+SMT in \cite{rocha-rewsmtjlamp-2017},
+but can now be analyzed using guarded terms.
+
+
+\subsection{Symbolic States Using Guarded Terms}
+
+
+In CASH, each task has a given period and a given worst-case execution
+time.  When an instance of a task is completed before its worst-case
+execution time, the unused processor time is added to a global queue
+of unused budgets.  Another task can then use these unused execution
+times as well as its own execution budget, instead of just wasting
+them.  In addition to capacity sharing, tasks are scheduled according
+to standard preemptive EDF scheduling: the task with the shortest time
+remaining until its deadline has the priority and can preempt the
+currently executing task.  The reader is referred
+to~\cite{caccamo2000capacity,olveczky2006formal} for details about the
+CASH algorithm.
+
+
+
+In rewriting logic specification, an object of class $C$ is
+represented as a term \texttt{<~O : C |
+  $\mathit{att}_1$\;:\;$v_1$,\;\ldots,\;$\mathit{att}_n$\;:\;$v_n$~>}
+of sort \sort{Object}, where $O$ is the identifier, and $v_1, \ldots,
+v_n$ are the values of the attributes $\mathit{att}_1, \ldots,
+\mathit{att}_n$ \cite{clavel-maudebook-2007}.  A system state, called
+a \emph{configuration}, is declared as a multiset of these objects.
+Multiset union for configurations is given by a juxtaposition operator
+that is associative and commutative and having the \texttt{none}
+multiset as its identity element.  
+
+In the CASH specification, the
+configuration consists of a number of servers (i.e., tasks) and a
+global queue. % of unused budgets.  
+A server state consists of six
+attributes: the maximum budget, period, internal state (\texttt{idle},
+\texttt{waiting}, or \texttt{executing}), time executed, budget time
+used, and time to deadline.  These variables are modeled as
+nonnegative integers. Specifically, for internal states, $0$ denotes
+\texttt{idle}, $1$ denotes \texttt{waiting}, and $2$ denotes
+\texttt{executing}.  A server object with name $O$ is modeled as a
+term of sort \sort{Object} and has the form
+
+\begin{lstlisting}[mathescape,basicstyle=\ttfamily\footnotesize,columns=flexible]
+< $O$ : server | maxBudget : $m$,          period : $p$,          state : $s$, 
+                 timeExecuted : $e$, usedOfBudget : $u$, timeToDeadline : $d$ >
+\end{lstlisting}
+
+
+A global object contains the global queue of unused budgets, the
+availability of the processor, and a flag to denote whether any
+deadline has been missed.  Both availability and deadline missed flags
+are modeled as Boolean values.  A global object with name $G$ is
+modeled as a term of sort \sort{Object} and has the form
+
+\begin{lstlisting}[mathescape,basicstyle=\ttfamily\footnotesize,columns=flexible]
+< $G$ : global | cq : $\mathit{queue}$,  available : $a$, deadline-miss : $b$ >
+\end{lstlisting}
+
+
+A global queue is a priority queue of unused budgets.  Each item in a
+queue is a pair \texttt{(deadline: $i$ budget: $i'$)} of deadline $i$
+and budget $i'$.  An item with the smallest deadline has the highest
+priority.  In \cite{olveczky2006formal,rocha-rewsmtjlamp-2017}, a
+global queue is specified as a sorted list.  Instead, in this work the
+queue is modeled as a \emph{multiset} of items in order to
+symbolically define queue operations using only SMT constraints.  For
+example, consider a queue \[\mathit{cq} \;\equiv\;
+(\texttt{deadline:}\; i_1 \texttt{ budget:}\; i_1') \;\ldots\;
+(\texttt{deadline:}\; i_n \texttt{ budget:}\; i_n')\] with $n$ items.
+The operation to peek the highest-priority element is defined by:
+\[
+\mathit{peek}(\mathit{cq}) = (\texttt{deadline:}\; i_k \texttt{ budget:}\; i_k')
+\;\iff\;
+\textstyle
+\bigwedge_{j =1}^n i_k \leq i_j.
+\]
+
+Guarded terms are used in the new symbolic specification in a number
+of ways. First, each variable in a server state or a global object can
+be guarded by constraints.  For example, the guarded term $0_{\phi}
+\vee 1_{\neg \phi}$ denotes an internal state of a server which is
+either $0$, if the condition $\phi$ holds, or $1$, otherwise.  Second,
+each item in a server state can be guarded by constraints.  In a
+similar way to the example in Section~\ref{sec.rewsmt}, the guarded
+term $(\texttt{deadline:}\; i \texttt{ budget:}\; i') |_\phi \vee
+\mathit{emptyQueue} |_{\neg \phi}$ denotes an item which is either
+present if the condition $\phi$ is satisfiable, or absent otherwise.
+
+Some syntactic sugar is defined to succinctly write these guarded
+terms as follows: $\phi\ ?\ i : j$ denotes the guarded term $i_{\phi}
+\vee j_{\neg \phi}$, for $i, j \in \mathbb{Z}$, and $(e \texttt{
+  const:}\; \phi)$ denotes the guarded term $e |_\phi \vee e |_{\neg
+  \phi}$, for each item $e$ in the priority queue.  For example, the
+following expression includes both types of guarded terms:
+
+\begin{maude}
+(deadline: I3 >= 1 ? I3 - 1 : 0  budget: I2 >= 1 ? 1 : 0  const: I2 > 1).
+\end{maude}
+
+\subsection{Symbolic Transitions Using Guarded Rewrite Rules}
+
+
+The symbolic transitions of the CASH algorithm are
+specified by $13$ conditional rewrite rules in
+\cite{rocha-rewsmtjlamp-2017}, which are adapted from the Real-Time
+Maude specification in \cite{olveczky2006formal}.  The rule conditions
+specify constraints solvable by the SMT decision procedure, together
+with some extra conditions to generate constraints by rewriting.
+% to reduce the size of the specification.
+%This section explains how to remove symbolic branching using guarded terms. 
+This section highlights some of the rules to explain how to remove
+symbolic branching using guarded terms.  The reader is referred
+to  \cite{bae-noteguardedterms-2017} for the full
+description of all (guarded) rewrite rules.
+
+
+\paragraph{Rule \texttt{stopExecuting1}.}
+
+This rule specifies when one server completes execution while another
+server is waiting.  The waiting server with the least time remaining
+until its deadline starts executing, and any budget left is added to
+the global queue.  Previously, this behavior was specified by two
+rewrite rules in \cite{rocha-rewsmtjlamp-2017}, depending on whether
+any budget remains.  However, with guarded terms only one rewrite rule
+is needed:
+
+
+\begin{maude}
+   {< G  : global | cq : CQ, AtSG >
+    < O  : server | state : St, 		usedOfBudget : T, 
+                    maxBudget : NZT,		timeToDeadline : T1, 
+                    timeExecuted : NZT1, 	period : NZT2, AtS >
+    < O' : server | state : St', timeToDeadline : T2, AtS' > REST}
+=> {< G  : global | cq : (deadline: T1  budget: (NZT monus T)  
+                          const: (NZT > T)) CQ, AtSG >
+    < O  : server | state : idle, 		usedOfBudget : NZT, 
+                    maxBudget : NZT, 		timeToDeadline : T1, 
+                    timeExecuted : NZT1, 	period : NZT2, AtS >
+    < O' : server | state : executing, timeToDeadline : T2, AtS' > REST}
+if ALLß\footnote{The specification of \texttt{ALL} has been omitted in the rule. \texttt{ALL}  represents
+the entire configuration in the left hand side.}ß := ...  /\  (St === executing) /\  (St' === waiting)  /\  (NZT > 0)
+/\ (NZT1 > 0)  /\  (NZT2 > 0)  /\  (T >= 0)  /\  ((NZT monus T) <= T1)ß\footnote{The \texttt{monus} operator is defined by: $a \texttt{ monus } b = \max(a-b, 0)$.}ß
+/\ (T1 >= 0)  /\  (T2 >= 0)  /\  nextDeadlineWaiting(ALL,O,T2)ß\footnote{The function \texttt{nextDeadlineWaiting(ALL,O,T2)} returns a constraint stating that the \texttt{timeToDeadline}
+of all servers, except \texttt{O}, is at least \texttt{T2}.}ß
+\end{maude}
+
+The guarded term
+%
+\lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible]{(deadline: T1 budget: (NZT monus T) const: (NZT > T))},
+%
+which is only present
+in the priority queue if the condition
+%
+\lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible]{NZT > T}
+%
+is satisfiable, is written in the \texttt{global} object in the right
+hand side of the rewrite rule.  Unlike~\cite{rocha-rewsmtjlamp-2017},
+no constraints are yet added regarding the ``position'' of the newly
+added item in the queue, because:
+\begin{inparaenum}[(i)]
+	\item the item may be absent if its constraint is not satisfiable, and
+	\item the priority queue is specified as a multiset with symbolic
+    constraints.
+\end{inparaenum}
+
+\paragraph{Rule \texttt{tickExecutingSpareCapacity}.}
+
+This rule models time elapse when a server is executing a spare
+capacity, specified as one guarded rewrite rule below.%
+\footnote{The functions \texttt{delta-global} and \texttt{delta-servers} model the time lapse;
+that is, variables in servers and the queue are accordingly increased or decreased (by $1$)
+based on the current state.}
+The left hand side of the rule contains the guarded term 
+\lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible]{(deadline: I1 budget: I2 const: iB)}.
+The condition \texttt{iB} in the rule condition specifies that the item is present in the queue.
+The condition \lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible]{aboveOrEqualDeadline(I1,CQ)}
+states that all deadlines in \texttt{CQ} are at least \texttt{I1},
+that is, that the item is indeed the one with the highest priority.
+
+
+\begin{maude}
+   {< G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >
+    < O : server | state : St, 
+                   timeExecuted : T1, 	timeToDeadline : T2, AtS > REST}
+=> { delta-global( < G : global | cq : (deadline: I1 budget: (I2 + (- 1)) 
+                     const: (iB and (I2 > 1))) CQ, AtSG >, 1)
+     delta-servers(< O : server | state : executing, 	timeExecuted : T1,
+                     timeToDeadline : T2, AtS > REST, 1, false)}
+if ALL := ...  /\  (St === executing)  /\  (T1 >= 0) /\  (T2 >= 0) 
+/\ iB  /\  (I1 >= 1)  /\  (I2 >= 1)  /\  (T2 >= 1)  /\  (I1 <= T2)
+/\ mte-server(ALL,O,1)  /\  noDeadlineMiss(ALL)
+/\ aboveOrEqualDeadline(I1,CQ)
+\end{maude}
+
+
+\subsection{Symbolic Reachability Analysis}
+
+The goal is to symbolically analyze if missed deadlines exist for %(a
+variant of) the CASH algorithm from an infinite set of initial
+configurations containing two servers $s_1$ and $s_2$.  Suppose that
+server $s_i$ (for $i = 1, 2$) has maximum budget $b_i$ and period
+$p_i$ such that $0 \leq b_i < p_i$.  No deadline misses are guaranteed
+only when the processor utilization is less than or equal to 100\%
+(i.e., $b_1 / p_1 + b_2 / p_2 \leq 1$) \cite{caccamo2000capacity}.  A
+counterexample exists if there is no constraint on the initial
+configurations.  Indeed, the previous work
+\cite{rocha-rewsmtjlamp-2017} can find a symbolic counterexample that
+violates this constraint using rewriting module SMT.
+
+A more interesting problem is to check the existence of missed
+deadlines of the \emph{variant} of the CASH algorithm
+\cite{olveczky2006formal}, that uses a different scheduling strategy,
+when $b_1 / p_1 + b_2 / p_2 \leq 1$ is satisfied.  Using
+explicit-state model checking, it is shown
+in~\cite{olveczky2006formal} that the variant can have a
+counterexample, even though $b_1 / p_1 + b_2 / p_2 \leq 1$ is
+satisfied.  Since this constraint is non-linear, it is beyond the
+capabilities of state-of-the-art SMT solvers.  But by fixing $p_1$ and
+$p_2$, say $p_1 = 5$ and $p_2 = 7$, the constraint becomes linear and
+symbolic analysis can be performed using existing SMT solvers.
+
+Here an infinite set of initial configurations with two servers $s_1$
+and $s_2$ is considered.  Server $s_i$ (for $i = 1, 2$) has maximum
+budget $b_i$ and period $p_i$ such that $0 \leq b_i < p_i$, and has
+the constraint $b_1 / p_1 + b_2 / p_2 \leq 1$.  A symbolic state can
+be modeled as term
+\lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible,mathescape]{init($b_1$,$p_1$,$b_2$,$p_2$)}.
+%
+The previous work in~\cite{rocha-rewsmtjlamp-2017} cannot deal with
+this problem due to the symbolic state space explosion; it generates
+nearly one billion symbolic states and does not terminate for a few
+days.  On the other hand, the new specification using guarded terms
+can successfully find a counterexample from
+\lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible,mathescape]{init($b_1$,$5$,$b_2$,$7$)}:
+
+\begin{maude}
+search [1] init(I0,5,I2,7) 
+       =>* {B:Bool , < g : global | deadline-miss : true, AtS > Cnf} .
+Solution 1 (state 590751)
+states: 590752  rewrites: 1910935222 in 5513748ms cpu (5513848ms real) 
+B --> not I0 < 0 and not I2 + -5 < 0 and not 1 + - I0 < 0 and not 7 + - 
+ I2 < 0 and not 35 + - (I2 * 5) + - (I0 * 7) < 0 and (not 7 + - I2 < 0 or 
+ I2 + -1 < 0) and (not 12 + - I2 < 0 or I2 < 0) and (not 17 + - I2 < 0 or 
+ I2 < 0) and - I0 < 0 and I2 + -7 < 0 and I0 + -5 < 0 and 4 + - I2 < 0
+Cnf --> < s1 : server | maxBudget : I0, period : 5, state : 2,
+              usedOfBudget : 0, timeToDeadline : 0, timeExecuted : 5 > 
+        < s2 : server | maxBudget : I2, period : 7, state : 0,
+              usedOfBudget : I2, timeToDeadline : 7, timeExecuted : 2 >
+AtS --> cq : deadline: 7 budget: not I2 < 0 ? I2 + -5 : -5 
+             const: (not I2 < 0 and 5 + - I2 < 0), available : false
+\end{maude}
+
+\noindent The counterexample is found at search depth $23$, which
+could not be reached without guarded terms.  A sequence of symbolic
+rewrites to reach this counterexample can be obtained by Maude's
+\texttt{show path} command.
+%
+In the counterexample, \texttt{B} represents the accumulated constraint
+whose satisfiable assignment gives a concrete counterexample. 
+The queue \texttt{cq} has the single item 
+if the constraint \lstinline[basicstyle=\ttfamily\footnotesize,columns=flexible]{(not I2 < 0 and 5 + - I2 < 0)} is satisfied; otherwise, \texttt{cq} is empty.
+%
+For example, \texttt{B} has the satisfiable assignment $\texttt{I0}
+=1$ and $\texttt{I2} =5$, which is found by an SMT solver, and in this
+case the queue \texttt{cq} is empty.  An explicit search with these
+concrete values in the \textit{ground} rewriting logic semantics of
+CASH gives an expected result as follows:
+
+\begin{maude}
+search [1] init(1,5,5,7) 
+       =>* {true, < g : global | deadline-miss : true, AtS > Cnf} .
+Solution 1 (state 107393)
+states: 107394  rewrites: 36507422 in 29543ms cpu (29699ms real) 
+Cnf --> < s1 : server | maxBudget : 1, period : 5, state : 2, 
+              usedOfBudget : 0, timeToDeadline : 0, timeExecuted : 5 > 
+        < s2 : server | maxBudget : 5, period : 7, state : 0, 
+              usedOfBudget : 5, timeToDeadline : 7, timeExecuted : 2 >
+AtS --> cq : emptyQueue, available : false
+\end{maude}

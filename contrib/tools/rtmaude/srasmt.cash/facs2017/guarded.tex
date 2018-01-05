@@ -1,0 +1,671 @@
+% !TEX root = main.tex
+
+\section{Guarded Terms}
+\label{sec.guarded}
+
+\emph{Guarded terms} generalize constrained terms with heterogeneous
+patterns and nested structures. % for subterms.  
+Guarded terms %can
+succinctly represent various terms by choices of subterms that are
+guarded by a constraint.
+These subterms represent possible realizations, namely,
+those instances in which the constraints are true. The proofs of
+lemmas and theorems presented in this section can be found
+in~\cite{bae-noteguardedterms-2017}.
+
+
+\subsection{Syntax}
+
+Consider the constrained terms
+$\pair{t_1}{\phi_1},\ldots,\pair{t_n}{\phi_n}$ with the terms
+$t_1,\ldots,t_n$ of the same sort.  First, a guarded term can be built
+by combining these constrained terms in parallel as
+$\pair{t_1}{\phi_1} \lor \cdots \lor \pair{t_n}{\phi_n}$, semantically
+representing the union of the sets
+$\den{t_1}{\phi_1},\ldots,\den{t_n}{\phi_n}$ of ground terms. 
+%
+ Second, guarded terms
+can be \emph{nested} so that the terms $t_i$ may include guarded terms
+as subterms. For example, if $f$ and $g$ are unary and
+binary function symbols, respectively, then the term 
+$f(\pair{t_1}{\phi_1} \lor
+\pair{f(g(\pair{t_3}{\phi_3}, t_4))}{\phi_2})$ is a guarded term.  The
+guarded subterm $g(\pair{t_3}{\phi_3}, t_4)$ encodes the ground
+instances $\theta g(t_3,t_4)$ in which $\theta\phi_3$ is true, for any
+ground substitution $\theta$.
+
+In order to avoid confusion between the syntax of constrained terms
+and guarded terms, %a guarded term 
+$\pair{t}{\phi}$ will be written as
+$t |_\phi$. With this convention, the above-mentioned guarded terms
+can be written as $t_1 |_{\phi_1} \lor \cdots \lor t_n |_{\phi_n}$ and
+$f(t_1 |_{\phi_1} \lor f(g(t_3 |_{\phi_3}, t_4)) |_{\phi_2})$.
+%
+The syntax of guarded terms is formally presented in
+Definition~\ref{def.guarded.guarded}.
+
+\begin{definition}\label{def.guarded.guarded}
+Given a signature $\Sigma$, the set of \emph{guarded terms of sort
+\sort{s}} is the smallest set $\overline{T}_{\Sigma}(X)_{\sort{s}}$
+satisfying the following conditions:
+
+\begin{itemize}
+	\item ${T}_{\Sigma}(X)_{\sort{s}} \subseteq \overline{T}_{\Sigma}(X)_{\sort{s}}$;
+		
+	\item $f(t_1,\ldots,t_n) \in \overline{T}_{\Sigma}(X)_{\sort{s}}$,
+    if $f\in \Sigma_{\sort{s}_1\ldots \sort{s}_n, \sort{s}}$ and $t_i
+    \in \overline{T}_{\Sigma}(X)_{\sort{s}_i}$ for $1 \leq i \leq n$;
+	
+	\item $t |_{\phi} \in \overline{T}_{\Sigma}(X)_{\sort{s}}$, if $t
+    \in \overline{T}_{\Sigma}(X)_{\sort{s}}$ and $\phi$ is a
+    constraint; and
+	
+	\item $t _1 \lor t_2 \in \overline{T}_{\Sigma}(X)_{\sort{s}}$ for
+    guarded terms $t_1, t_2 \in \overline{T}_{\Sigma}(X)_{\sort{s}}$
+    of sort~$\sort{s}$.
+\end{itemize}
+\end{definition}
+
+A signature $G(\Sigma)$ for guarded terms can be built by adding
+new sorts and function symbols to the underlying signature $\Sigma$ as
+follows:
+
+
+\begin{itemize}
+	\item a new sort $g(\sort{s})$ with a subsort relation $\sort{s} <
+    g(\sort{s})$ for each sort \sort{s};
+	
+	\item an operator $\func{f}{g(\sort{s}_1) \cdots
+    g(\sort{s}_m)}{g(\sort{s})}$ for each operator
+    $\func{f}{\sort{s}_1 \cdots \sort{s}_m}{\sort{s}}$;
+
+	\item a guard operator $\func{\_|\_}{g(\sort{s}) \times
+    \sort{Bool}}{g(\sort{s})}$ for each sort \sort{s}; and
+
+	\item an union operator $\func{\_\!\!\vee\!\!\_}{g(\sort{s}) \times
+    g(\sort{s})}{g(\sort{s})}$ for each sort \sort{s},
+
+\end{itemize}
+
+\noindent
+where constraints have sort \sort{Bool} (in the built-in subsignature
+$\Sigma_0 \subseteq \Sigma$) and sort $g(\sort{s}_1)$ is a subsort of
+$g(\sort{s}_2)$ whenever $s_1$ is a subsort of $s_2$.
+%
+By construction, a guarded term $u \in
+\overline{T}_{\Sigma}(X)_{\sort{s}}$ of sort \sort{s} is a
+$G(\Sigma)$-term of sort $g(\sort{s})$.
+
+
+\begin{restatable}{lemma}{exsig}
+\label{lemma:exsig}
+Given an order-sorted signature $\Sigma$, a guarded term $u$ of sort
+\sort{s} in $\overline{T}_{\Sigma}(X)$ is a term of sort $g(\sort{s})$
+in $T_{G(\Sigma)}(X)$, and vice versa.
+\end{restatable}
+
+
+\begin{example}\label{ex:syntax}
+In the example in Section~\ref{sec.rewsmt}, a term $I + J
++ 1$ is added to the right-hand side of the first rule if the
+condition $I + J \,\stackrel{\scriptscriptstyle 3}{=}\, 0$ holds. A
+one-step symbolic rewrite step with this rule involves two cases:
+either $I + J \,\stackrel{\scriptscriptstyle 3}{=}\, 0$ holds or
+not. Thus, $n$-rewrite steps with this rule can yield $2^n$ different
+symbolic states.
+%
+For example,
+from the term $A\;B\;C\parallel \mathit{none}$,
+where $A$, $B$, $C$ are integer variables,
+symbolic rewriting up to three steps generates:
+%
+\begin{align*}
+&
+A\;B\;C\parallel \mathit{none}
+&&
+A\;B\;C\parallel (A + B + 1)\;(B + C + 1)
+\\
+&
+A\;B\;C\parallel (A + B + 1)
+&&
+A\;B\;C\parallel (A + B + 1)\;(C + A + 1)
+\\
+&
+A\;B\;C\parallel (B + C + 1)
+&&
+A\;B\;C\parallel (B + C + 1)\;(C + A + 1)
+\\
+&
+A\;B\;C\parallel (C + A + 1)
+&&
+A\;B\;C\parallel (A + B + 1)\;(B + C + 1)\;(C + A + 1).
+\end{align*}
+
+A set of terms can be succinctly encoded as a guarded term.
+Consider guarded terms of the form $\mathit{elm}(I,J)$ defined as
+$\mathit{elm}(I,J) \;=\; I + J + 1 |\usub{I + J \,\stackrel{3}{=}\, 0}
+\;\vee\; \emptyset |\usub{I + J \,\stackrel{3}{\not=}\, 0}$.  
+The
+guarded term
+$\mathit{elm}(I_1,J_1)\ \mathit{elm}(I_2,J_2)\ \cdots\ \mathit{elm}(I_N,
+J_N)$ can encode the $2^n$ symbolic states that can be reached in
+$n$-rewrite steps with respect to the satisfaction of the $n$
+conditions $I_i + J_i \,\stackrel{\scriptscriptstyle 3}{=}\, 0$, for
+$1 \leq i \leq N$.
+%
+For example, the set of terms reachable from $A\;B\;C\parallel
+\mathit{none}$ in three steps can be encoded as:
+$A\;B\;C\parallel
+\mathit{elm}(A,B)\;\mathit{elm}(B,C)\;\mathit{elm}(C,A)$.
+\end{example}
+
+
+\subsection{Semantics}
+
+A guarded term $u$ represents a (possibly infinite) set of ground
+terms, denoted by $\llbracket u \rrbracket$.  Intuitively, $\llbracket
+u |_\phi \rrbracket$ is the set of all ground instances of $u$ that
+satisfy the constraint $\phi$, and $\llbracket u_1 \vee u_2 \rrbracket$ is the union
+of the sets $\llbracket u_1 \rrbracket \cup \llbracket u_2
+\rrbracket$.
+
+To formally define the semantics of guarded terms, \emph{ground}
+guarded terms are first considered.  The ground semantics in
+Definition~\ref{def:ground-semantics} is straightforward, because the
+constraints in ground guarded terms can be determined as either
+$\mathit{true}$ or $\mathit{false}$ in the underlying built-in algebra
+$\model$.  Specifically, a ground guarded term $u |_\phi$ represents
+either $\llbracket u \rrbracket$ if $\phi$ is satisfiable in $\model$
+or the empty set if $\phi$ is not satisfiable in $\model$.
+
+\begin{definition}\label{def:ground-semantics}
+Given a ground guarded term $u \in \overline{T}_{\Sigma}$,
+the set $\llbracket u \rrbracket \subseteq T_\Sigma$ of  ground terms represented by $u$ 
+is inductively defined as follows:
+\[
+\begin{aligned}
+\llbracket t \rrbracket &= \{t' \in T_\Sigma \mid t' =_E t\}\;\;\mbox{if $t \in {T}_{\Sigma}$},
+\\
+\llbracket f(u_1,\ldots,u_n) \rrbracket &=  \{t \in \llbracket f(t_1,\ldots,t_n)\rrbracket \mid  t_i \in \llbracket u_i\rrbracket, 1 \leq i \leq n  \},
+\\
+\llbracket u |_\phi \rrbracket &=
+    \begin{cases}
+    \llbracket u \rrbracket &\mbox{if}\ \model \models \phi 
+    \\
+    \emptyset &\mbox{if}\ \model \not \models \phi,
+    \end{cases}
+\\
+\llbracket u_1  \vee u_2  \rrbracket &= \llbracket u_1 \rrbracket \cup \llbracket u_2 \rrbracket.
+\end{aligned}
+\]
+\end{definition}
+
+
+\begin{example}\label{ex:semantics-ground}
+Recall the guarded terms in Example~\ref{ex:syntax}. The ground
+guarded term
+\[
+u \;=\; (3 + 1 + 1 |_{3 + 1 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{3 + 1 \,\stackrel{3}{\not=}\, 0})\ (5 + 4 + 1 |_{5 + 4 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{5 + 4 \,\stackrel{3}{\not=}\, 0})
+\]
+represents the set $\llbracket u \rrbracket = \{t' \mid t' =_E
+\emptyset\ (5 + 4 + 1)\}$, because $ 3 + 1
+\,\stackrel{\scriptscriptstyle 3}{\not=}\, 0$ and $5 + 4
+\,\stackrel{\scriptscriptstyle 3}{=}\, 0$.  Note that $5 + 4 + 1 \in
+\llbracket u \rrbracket$, since $5 + 4 + 1 =_E \emptyset\ (5 + 4 +
+1)$.
+\end{example}
+
+The semantics of guarded terms in general, introduced by
+Definition~\ref{def:semantics}, is based on the semantics of ground
+guarded terms.  Each ground instance $\theta u$ of a guarded term $u$
+under a ground substitution $\theta$ defines the set $\llbracket
+\theta u \rrbracket$ of ground terms.  The set $\llbracket u
+\rrbracket$ is the union of all the sets given by the ground instances
+of the guarded term $u$.
+
+\begin{definition}\label{def:semantics}
+Given a guarded term $u \in \overline{T}_{\Sigma}(X)$, the set of all
+ground terms represented by $u$ is defined as $\llbracket u \rrbracket
+= \{t \in T_\Sigma \mid (\exists \func{\theta}{X}{T_\Sigma})\; t \in
+\llbracket \theta u \rrbracket \}$.
+\end{definition}
+
+
+It is worth noting that the semantics of non-ground guarded terms
+cannot be defined in the same way as the case of ground guarded terms.
+Specifically, the second condition $\llbracket f(u_1,\ldots,u_n) \rrbracket = \{t \in
+\llbracket f(t_1,\ldots,t_n)\rrbracket \mid t_i \in \llbracket
+u_i\rrbracket, 1 \leq i \leq n \}$ in
+Definition~\ref{def:ground-semantics} for ground guarded terms is
+generally \emph{not} applicable to non-ground guarded terms.
+For example, 
+consider an unsorted signature $\Sigma$ with two
+different constants $c$ and $d$.  
+%
+Notice that $\llbracket f(x |_{x \neq y}, y |_{x = y})\rrbracket =
+\emptyset$, but $\llbracket x |_{x \neq y} \rrbracket = \{c,d\}$ and
+$\llbracket y |_{x = y} \rrbracket = \{c, d\}$.
+
+
+\begin{example}\label{ex:semantics}
+Consider the nested guarded terms in Example~\ref{ex:syntax}. The guarded term
+\[(I_1 + J_1 + 1 |_{I_1 + J_1 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{I_1 + J_1 \,\stackrel{3}{\not=}\, 0})\ (I_2 + J_2 + 1 |_{I_2 + J_2 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{I_2 + J_2 \,\stackrel{3}{\not=}\, 0})\]
+represents the set of terms for ground substitution $\{I_i \mapsto
+x_i, J_i \mapsto y_i \mid i = 1, 2\}$ as follows:
+%
+\begin{align*}
+\llbracket (x_1 + y_1 +1)\ (x_2 + y_2 + 1) \rrbracket &\qquad\mbox{if}\;\; x_1 + y_1 \,\stackrel{3}{=}\, 0 \;\wedge\; x_2 + y_2 \,\stackrel{3}{=}\, 0,\\
+\llbracket \emptyset\ (x_2 + y_2 + 1) \rrbracket &\qquad\mbox{if}\;\; x_1 + y_1 \,\stackrel{3}{\not=}\, 0 \;\wedge\; x_2 + y_2 \,\stackrel{3}{=}\, 0,\\
+\llbracket (x_1 + y_1 +1)\ \emptyset \rrbracket &\qquad\mbox{if}\;\; x_1 + y_1 \,\stackrel{3}{=}\, 0 \;\wedge\; x_2 + y_2 \,\stackrel{3}{\not=}\, 0,\\
+\llbracket \emptyset\ \emptyset \rrbracket &\qquad\mbox{if}\;\; x_1 + y_1 \,\stackrel{3}{\not=}\, 0 \;\wedge\; x_2 + y_2 \,\stackrel{3}{\not =}\, 0.
+\end{align*}
+%
+Each one of these cases includes an infinite number of ground terms
+because there are an infinite number of ground substitutions that
+satisfy each guard. It can be easily seen that the number of cases
+increases exponentially: if the number of elements is $n$, the number
+of different cases is $2^n$.
+\end{example}
+
+
+The notion of constrained terms in Section~\ref{sec.rewsmt} can be
+seen as a special case of guarded terms since the denotation
+$\dens{t}{\phi}$ of $\pair{t}{\phi}$ coincides with the semantics of
+$t |_\phi$.
+
+\begin{restatable}{lemma}{specialcase}
+Given a $\Sigma$-term $t \in T_\Sigma(X)$ and a constraint $\phi$,
+$\llbracket t \rrbracket_\phi = \llbracket t |_\phi \rrbracket$ holds.
+\end{restatable}
+
+
+
+
+\subsection{Equivalence}
+
+Guarded terms $u_1$ and $u_2$ are called \emph{equivalent}, written
+$u_1 \equiv u_2$, if they represent the same set of ground terms, that
+is, $\llbracket u_1 \rrbracket = \llbracket u_2 \rrbracket$.  For
+example, guarded terms that are identical up to variable renaming
+are
+equivalent, since they have the same set of ground instances.  Guarded
+terms are called \emph{ground equivalent}, written $u_1 \equiv_g u_2$,
+if their ground instances by the same substitution are equivalent.
+The ground equivalence $u_1 \equiv_g u_2$ implies $u_1 \equiv u_2$,
+but the converse may not hold.%
+\footnote{
+As an example, $0 |_{x = 0} \equiv 0|_{x
+  = 1}$, because $\llbracket 0 |_{x = 0} \rrbracket = \llbracket 0
+|_{x = 1} \rrbracket = \{0\}$.  But $0 |_{x = 0} \not\equiv_g 0_{x =
+  1}$, because $\llbracket \theta(0 |_{x = 0}) \rrbracket = \{0\}$ and
+$\llbracket \theta(0 |_{x = 1}) \rrbracket = \emptyset$ for $\theta =
+\{x \mapsto 0\}$, provided that $0 \neq 1$.}
+
+
+\begin{definition}
+  Let $u_1, u_2 \in \overline{T}_{\Sigma}(X)$:
+  \begin{enumerate}
+  \item $u_1 \equiv u_2$ iff $\llbracket u_1 \rrbracket = \llbracket u_2 \rrbracket$.
+  \item $u_1 \equiv_g u_2$ iff $\llbracket \theta u_1 \rrbracket =
+    \llbracket \theta u_2 \rrbracket$, for every ground substitution
+    $\func{\theta}{X}{T_\Sigma}$.
+  \end{enumerate}
+\end{definition}
+
+
+The semantics of $\vee$ is associative and commutative with respect to
+ground equivalence, because its is defined as a set union operation.
+From now on, the expression $u_1 \vee \cdots \vee u_n$ will be written
+without parentheses using this fact.
+
+
+\begin{restatable}[Associativity and Commutativity of $\vee$]{corollary}{acdisj}
+  If $u_1, u_2, u_3 \in \overline{T}_{\Sigma}(X)$, then 
+  \begin{enumerate}
+	\item $u_1 \vee u_2 \equiv_g u_2 \vee u_1$.
+  	\item $(u_1 \vee u_2) \vee u_3 \equiv_g u_1\vee (u_2 \vee u_3)$.
+  \end{enumerate}
+
+\end{restatable}
+
+
+The ground equivalence $\equiv_g$ between guarded terms  is a \emph{congruence} as shown in
+Lemma~\ref{lemma:congruence}. On the contrary, the equivalence
+$\equiv$ violates the congruence rules.  Specifically, $u$ and its
+variable renaming $\sigma u$ satisfy $u \equiv \sigma u$, but $u
+|_\phi$ and $(\sigma u) |_\phi$ are not equivalent.%
+\footnote{For example, $0 |_{x = 0}
+\equiv 0_{y = 0}$ but $(0 |_{x = 0}) |_{x = 1} \not\equiv (0 |_{y =
+  0}) |_{x = 1}$, because $\llbracket (0 |_{x = 0}) |_{x = 1}
+\rrbracket = \emptyset$ and $\llbracket (0 |_{y = 0}) |_{x = 1}
+\rrbracket = \{0\}$, provided that $0$ and $1$ are different.}
+
+\begin{restatable}[Congruence of Ground Equivalence]{lemma}{congruence}\label{lemma:congruence}
+If $u,v \in \overline{T}_{\Sigma}(X)$ and $u \equiv_g v$, then:
+\begin{itemize}
+	\item $\sigma u \,\equiv_g\, \sigma v$ for a substitution $\func{\sigma}{X}{T_\Sigma(X)}$.		
+	\item $f(u_1, \ldots, u, \ldots, u_n) \,\equiv_g\, f(u_1, \ldots, v, \ldots, u_n)$.
+	\item $u |_\phi \,\equiv_g\, v |_\phi$.
+	\item $u_1 \vee \cdots \vee u \vee \cdots \vee u_n \,\equiv_g\, u_1 \vee \cdots \vee v \vee \cdots \vee u_n$.
+\end{itemize}
+\end{restatable}
+
+
+Guarded terms with different syntactic structures can be ground equivalent (and
+thus they are also equivalent by definition).  Lemma~\ref{lemma:geq}
+identifies some properties of ground equivalence between guarded
+terms.
+
+
+\begin{restatable}[Ground Equivalence Rules]{lemma}{geq}
+\label{lemma:geq}
+\begin{itemize}
+	\item $\big(\bigvee_{i=1}^n u_i \big) |_\phi \,\equiv_g\, \bigvee_{i=1}^n (u_i  |_\phi)$
+	
+	\item $ f(u_1,\ldots \big(\bigvee_{i=1}^n u_j^i\big) \ldots,u_n) \,\equiv_g\, \bigvee_{i=1}^n f(u_1,\ldots u_j^i \ldots,u_n)$
+
+	\item $\big(u |_\varphi\big) |_\phi \,\equiv_g\, u |_{\varphi \wedge \phi}$
+	
+	\item $f(u_1,\ldots u_j |_\phi \ldots,u_n) \,\equiv_g\, f(u_1,\ldots u_j \ldots,u_n) |_\phi$ 
+
+\end{itemize}
+\end{restatable}
+
+\noindent Guarded terms can be simplified using these equivalence
+rules.  For example, 
+\begin{align*}
+f(u_1 \vee u_2, v_1 \vee v_2) \,\equiv_g\,
+f(u_1, v_1 \vee v_2) \vee f(u_2, v_1 \vee v_2) &\,\equiv_g\,
+\textstyle
+\bigvee_{i,j \in \{1,2\}} f(u_i,v_j),
+\\
+f(u |_{\phi}, v |_{\psi})
+\,\equiv_g\, f(u, v) |_{\phi} |_{\psi} &\,\equiv_g\, f(u, v) |_{\phi
+  \wedge \psi}.
+\end{align*}
+By repeatedly applying the equivalences in
+Lemma~\ref{lemma:geq}, a (ground) equivalent guarded term that is a
+combination of normal constrained terms can be obtained.
+
+\begin{restatable}[Standard Form]{theorem}{standard}
+\label{thm:standard}
+Every $u \in \overline{T}_{\Sigma}(X)$ is ground equivalent to a
+guarded term in \emph{standard form} $t_1 |_{\phi_1} \lor t_2
+|_{\phi_2} \lor \cdots \lor t_n |_{\phi_n}$, with terms $t_1, \ldots,
+t_n \in T_\Sigma(X)$.
+\end{restatable}
+
+\noindent A guarded term in standard form has a flat structure in
+which parallel combinations $\vee$ and constraints $\phi$ appear only
+at the top.  However, a \emph{nested} guarded term can be exponentially
+smaller than an equivalent one in the standard form.  For example, a
+nested guarded term $f(u_1 \vee v_1, \ldots, u_n \vee v_n)$ of size
+$O(n)$ is equivalent to its standard form $\bigvee_{w_i \in \{u_i,
+  v_i\}} f(w_1, \ldots, w_n)$ of size $O(2^n)$.
+ %
+This explains why guarded terms are very useful 
+for succinctly representing the symbolic state space.
+  
+
+\begin{example}
+Consider the nested guarded term in Example~\ref{ex:semantics}. The guarded term
+\[
+(I_1 + J_1 + 1 |_{I_1 + J_1 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{I_1 + J_1 \,\stackrel{3}{\not=}\, 0})\ (I_2 + J_2 + 1 |_{I_2 + J_2 \,\stackrel{3}{=}\, 0} \vee \emptyset |_{I_2 + J_2 \,\stackrel{3}{\not=}\, 0})
+\]
+is equivalent to the following guarded term in the standard form:
+\begin{align*}
+  (I_1 + J_1 + 1)\ (I_2 + J_2 + 1) |_{I_1 + J_1 \,\stackrel{3}{=}\, 0 \;\wedge\; I_2 + J_2 \,\stackrel{3}{=}\, 0} &\;\;\vee\;\; \emptyset\ (I_2 + J_2 + 1) |_{I_1 + J_1 \,\stackrel{3}{\not=}\, 0 \;\wedge\; I_2 + J_2 \,\stackrel{3}{=}\, 0}
+  \;\;\vee \\
+   (I_1 + J_1 + 1)\ \emptyset |_{I_1 + J_1 \,\stackrel{3}{=}\, 0 \;\wedge\; I_2 + J_2 \,\stackrel{3}{\not=}\, 0}  &\;\;\vee\;\; \emptyset\ \emptyset |_{I_1 + J_1 \,\stackrel{3}{\not =}\, 0 \;\wedge\; I_2 + J_2 \,\stackrel{3}{\not =}\, 0},
+\end{align*}
+where each case is expressed as a single disjunct.  As explained in
+Example~\ref{ex:semantics}, since the number of cases increases
+exponentially, the size of the standard form also increases
+exponentially with respect to the size of the original one.
+\end{example}
+
+\subsection{Rewriting with Guarded Terms}
+\label{sec:guarded-rew}
+
+In principle, one-step rewrite $u \rews u'$ between guarded terms $u$
+and $u'$ represents a one-step rewrite $t \to t'$ between the
+corresponding terms $t \in \llbracket u \rrbracket$ and $t' \in
+\llbracket u' \rrbracket$.
+%
+The next task is to consider \emph{guarded rewrite rules} of the form
+$\ccrl{l}{r}{\phi}$, where $l$ and $r$ are guarded terms, in order to
+define rewriting between guarded terms.
+%
+Using Lemma~\ref{lemma:exsig}, it can be assumed that $l$ and $r$ are
+$G(\Sigma)$-terms in the extended signature $G(\Sigma)$.
+%
+Also, following the ideas of rewriting modulo SMT, rewriting with
+guarded terms is topmost.
+%
+
+\begin{definition}
+A guarded rewrite rule is a triple $\ccrl{l}{r}{\phi}$ with two guarded
+terms $l, r \in T_{G(\Sigma)}(X)_{g(\states)}$ of top sort
+\sort{State} and a constraint $\phi$.
+\end{definition}
+
+As usual, rewriting by guarded rules happens modulo a set of equations
+$E$.  To be semantically correct regarding guarded terms, a set of
+equations $E$ should preserve the semantics of guarded terms (i.e., if
+$u =_E \theta l$, then $u \equiv \theta l$), which is generally not
+true.%
+\footnote{Consider a set of equations $E$ that replace any constraint in a guarded term by its negation.
+Then, $0 |_{\mathit{false}} \equiv_E 0 |_{\neg \mathit{false}}$,
+but clearly $\llbracket 0 |_{\mathit{false}} \rrbracket \neq  \llbracket 0 |_{\neg \mathit{false}} \rrbracket$.}
+But structural axioms meet this condition as stated in
+Lemma~\ref{lemma:aci-guard}. 
+%
+These structural axioms are very useful to specify component-based systems \cite{clavel-maudebook-2007};
+e.g., the formal specification of the case study in Section~\ref{sec.cash} frequently uses these axioms.
+%
+From this point on it is assumed that $E$
+only includes structural axioms.
+
+
+\begin{restatable}{lemma}{aciguard}
+\label{lemma:aci-guard}
+Given a set of equations $B$ that only includes identity,
+associativity, and commutativity, $u =_B v$ implies $u \equiv_g v$ for
+guarded terms $u, v, \in T_{G(\Sigma)}(X)$.
+\end{restatable}
+\noindent 
+
+
+Definition~\ref{sec.guarded.ground} introduces the ground rewrite
+relation $\to_\rcal$ for guarded rewrite rules.  A ground rewrite
+relation $u \to_\rcal u'$ holds by a guarded rule $\ccrl{l}{r}{\phi}$,
+whenever $u$ is an instance of $l$, $u'$ is an instance of $r
+|_{\phi}$, and both $\llbracket u \rrbracket$ and $\llbracket u'
+\rrbracket$ are not empty.
+
+\begin{definition}\label{sec.guarded.ground}
+For ground guarded terms $u, u' \in T_{G(\Sigma),g(\states)}$,
+a ground rewrite relation $u \to_\rcal u'$ holds  if and only if for a guarded rule
+$\ccrl{l}{r}{\phi}$ and a ground substitution
+$\func{\theta}{X}{T_{G(\Sigma)}}$,
+it holds that: $u =_E \theta l$, $u' =_E \theta r
+|_{\theta \phi}$, $\llbracket u \rrbracket \neq \emptyset$, and
+$\llbracket u' \rrbracket \neq \emptyset$.
+\end{definition}
+
+The symbolic rewrite relation $\crel_\rcal$ by guarded rules %$\ccrl{l}{r}{\phi}$ 
+is introduced in
+Definition~\ref{def:sym-guarded-rew}.  The last condition in this
+definition states that there is at least one ground instance $\theta u
+\to_\rcal \theta u'$ and also implies that $\model \models \sigma \phi$
+holds (because $u' =_E \sigma r |_{\sigma \phi}$ includes $\sigma
+\phi$).
+
+\begin{definition}
+\label{def:sym-guarded-rew}
+A symbolic rewrite relation $u \crel_\rcal u'$ holds for $u, u' \in
+T_{G(\Sigma)}(X)$ if and only if for a guarded rule
+$\ccrl{l}{r}{\phi}$ and a substitution
+$\func{\sigma}{X}{T_{G(\Sigma)}(X)}$: $u =_E \sigma l$, $u' =_E \sigma
+r |_{\sigma \phi}$, and $(\exists \theta : X \to T_{G(\Sigma)})\;
+\llbracket \theta u \rrbracket \neq \emptyset \,\wedge\, \llbracket
+\theta u' \rrbracket \neq \emptyset$.
+\end{definition}
+
+
+Consider a ground rewrite $u \to_\rcal u'$, which is ground equivalent to
+its standard expansion $u_1 \vee \cdots \vee u_n \to_\rcal u_1' \vee
+\cdots \vee u_m'$, where $u$'s standard form is $u_1 \vee \cdots \vee
+u_n$ and $u'$'s standard form is $u_1' \vee \cdots \vee u_m'$.  This
+intuitively represents a set of ground rewrite relations $\{u_i \to
+u_j' \mid 1 \leq i \leq n, 1 \leq j \leq m\}$.
+%
+This idea can be used to define a standard expansion of a guarded
+rewrite rule.
+
+\begin{definition}[Standard Expansion]
+Consider 
+a guarded rule $\ccrl{l}{r}{\phi}$
+such that $l$'s standard form is $\bigvee_{i=1}^n l_i |_{\psi_i^l}$ and 
+$r$'s standard form is $\bigvee_{j=1}^m r_j |_{\psi_j^r}$.
+%
+A \emph{standard expansion} of $\ccrl{l}{r}{\phi}$
+is
+a collection of ordinary rewrite rules
+\[
+S(\ccrl{l}{r}{\phi}) = \{ \ccrl{l_i}{r_j}{\phi \,\wedge\, \psi_i^l \,\wedge\, \psi_j^r} \mid 1 \leq i \leq n, 1 \leq j \leq m\}.
+\]
+\end{definition}
+
+
+A guarded rewrite rule $\ccrl{l}{r}{\phi}$ 
+is related to  its standard expansion (in terms of simulation).
+%
+For each ground rewrite by a guarded rewrite rule, there exists a
+corresponding ground rewrite by its standard expansion.  This means
+that reachability analysis can be effectively performed using guarded
+rewrite rules.
+
+\begin{restatable}[Simulation of Standard Expansion]{theorem}{sim}
+\label{thm:sim}
+Consider a set $R$ of guarded rewrite rules and its standard expansion
+$\hat{R} = \bigcup_{\ccrl{l}{r}{\phi} \in R} S(\ccrl{l}{r}{\phi})$.
+For ground guarded terms $u, u' \in T_{G(\Sigma)}$, 
+$u \to_\rcal u' \implies t \to_{\hat{R}} t'$ holds
+for any %ground terms
+$t \in \llbracket u \rrbracket$ and $t' \in \llbracket u' \rrbracket$.
+\end{restatable}
+
+However, ground rewriting by a guarded rule may not capture all of
+ground rewriting by its standard expansion.
+%
+Consider a guarded term $f(0) \vee g(0)$ and a guarded rewrite rule
+$\ccrl{f(x) \vee g(s(x))}{f(x)}{x < 1}$.  Clearly, $f(0) \vee g(0)$
+cannot be rewritten since it is not equal to any ground instance of
+$f(x) \vee g(s(x))$.  But a ground instance of the rule $\ccrl{f(0)
+  \vee g(s(0))}{f(0)}{0 < 1}$ suggests that $f(0) \to_\rcal f(0)$ holds.
+The notion of \emph{admissible guarded terms} with respect to a
+guarded rewrite rule is introduced.
+
+\begin{definition}
+A guarded term $u \in T_{G(\Sigma)}(X)$ is admissible for a rule
+$\ccrl{l}{r}{\phi}$ if and only if $\llbracket u \rrbracket \cap
+\llbracket l \rrbracket \neq \emptyset \iff u =_E \sigma l$ for a
+substitution $\func{\sigma}{X}{T_\Sigma(X)}$.
+%\footnote{For rewriting modulo SMT, this condition was a consequence
+%  of the left-linearity of rules and other constraints on equations
+%  \cite{rocha-rewsmtjlamp-2017}, which is not the case in this paper.}
+\end{definition}
+
+The admissibility requirements can be checked by using the standard
+form of guarded terms.  In order to check $\llbracket u \rrbracket
+\cap \llbracket l \rrbracket \neq \emptyset$, $u$'s standard form
+$\bigvee_i u_i |_{\phi_i}$ and $l$'s standard form $\bigvee_j l_j
+|_{\psi_j}$ can be both computed, and then check if $\theta u_i =_E
+\theta l_j$ for a ground substitution $\theta$ such that $\model
+\models \theta \phi_i \wedge \theta \psi_j$.  If no such substitution
+exists, then clearly $\llbracket u \rrbracket \cap \llbracket l
+\rrbracket = \emptyset$.  This problem can be determined by
+$E$-unification.  If $\llbracket u \rrbracket \cap \llbracket l
+\rrbracket \neq \emptyset$, it suffices to check if $u =_E \sigma l$
+for a substitution $\sigma$, which can be determined by $E$-matching.
+
+For admissible guarded terms, a symbolic rewrite relation exactly
+captures a ground rewrite relation as stated in
+Theorem~\ref{thm:grew}.  First, the notion of admissible terms is
+extended to guarded rewrite rules.  A guarded rewrite rule
+$\ccrl{l}{r}{\phi}$ is admissible for a set $R$ of guarded rewrite
+rules if and only if the right side $r$ is admissible for every rule
+in $R$.  A set $R$ of guarded rewrite rules is admissible if and only
+if every guarded rewrite rule in $R$ is admissible for every rule in
+$R$.
+
+
+
+\begin{restatable}[Symbolic Guarded Rewriting]{theorem}{grew}
+\label{thm:grew}
+Let  $R$ be a set of admissible guarded rules, 
+$\func{\theta}{X}{T_{G(\Sigma)}}$ be a ground substitution, 
+and 
+$u, u' \in  T_{G(\Sigma)}(X)$ be admissible guarded terms. Then:
+\begin{inparaenum}[(i)]
+	\item If $u \crel_\rcal u'$, then $\theta u \to_\rcal \theta u'$
+    whenever $\llbracket \theta u \rrbracket \neq \emptyset$ and
+    $\llbracket \theta u' \rrbracket \neq \emptyset$.
+	\item If $\theta u \to_\rcal w'$ for $w' \in T_{G(\Sigma)}$, then $u
+    \crel_\rcal u'$ and $\llbracket w' \rrbracket \subseteq \llbracket
+    u' \rrbracket$ for some $u'$.
+\end{inparaenum}
+\end{restatable}
+
+\begin{example}
+Consider the following guarded rewrite rules:
+%
+\small
+\begin{align*}
+  &\ccrl{I_1\;I_2\;C_1 \parallel C_2}{I_1 \; C_1 \parallel (I_1 + I_2 + 1 |_{(I_1 + I_2) \stackrel{3}{=} 0} \vee \emptyset |_{(I_1 + I_2) \stackrel{3}{\not =} 0} )\;C_2}{0 < I_1 \land 0< I_2} 
+\\
+  &\ccrl{I_1 \parallel (I_2 |_B \vee C_1 |_{\neg B}) \;C_2}{\emptyset \parallel (I_2 |_B \vee C_1 |_{\neg B}) \;C_2}{B \land 0 < I_1 \land 0< I_2 \land I_1 + I_2 \stackrel{17}{=} 0}.
+\end{align*}
+\normalsize
+%
+These rules are admissible, because each state is a pair $D_1
+\parallel D_2$, constraints only appear in $D_2$, and the left-hand
+side of each rule defines the most general pattern for $D_2$.  By
+Theorem~\ref{thm:sim}, these rules are related to the standard
+expansion:
+%
+\small
+\begin{align*}
+  &\ccrl{I_1\;I_2\;C_1 \parallel C_2}{I_1 \; C_1 \parallel I_1 + I_2 + 1\;C_2\;\;}{0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{3}{=} 0} 
+\\
+  &\ccrl{I_1\;I_2\;C_1 \parallel C_2}{I_1 \; C_1 \parallel \emptyset \;C_2\;\;}{0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{3}{\not =} 0} 
+\\
+  &\ccrl{I_1 \parallel I_2 \;C_2}{\emptyset \parallel I_2  \;C_2}{B \land 0 < I_1 \land 0< I_2 \land I_1 + I_2 \stackrel{17}{=} 0 \land B} 
+\\
+  &\ccrl{I_1 \parallel C_1 \;C_2}{\emptyset \parallel C_1  \;C_2}{B \land 0 < I_1 \land 0< I_2 \land I_1 + I_2 \stackrel{17}{=} 0 \land \neg B}
+\end{align*}
+\normalsize
+%
+The last rule can be discarded because its condition is always
+unsatisfiable (containing both $B$ and $\neg B$).  Thanks to
+theorems~\ref{thm:sim} and~\ref{thm:grew}, the above guarded rewrite rules can be used to
+perform reachability analysis from an admissible symbolic state.
+\end{example}
+
+The use of guarded terms for the symbolic specification 
+%of the system presented 
+in Section~\ref{sec:rw-smt} results in the search command
+proving the deadlock-freedom property that had previously timed-out:
+
+\begin{maude}
+search [1]  { I  I+1 I+2 I+3 || none, I > 0 } 
+       =>!  { C1 | C2, Phi } such that C1 =/= none = true .
+No solution.
+states: 265  rewrites: 37516 in 702ms cpu (704ms real) 
+\end{maude}
+%(53430 rewrites/second)
+
+\noindent This means that for \emph{any} collection of 4 consecutive
+positive integers in the left channel, the system will eventually
+reach a state without numbers in this channel.

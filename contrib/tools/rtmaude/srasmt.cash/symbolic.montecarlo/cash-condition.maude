@@ -1,0 +1,191 @@
+
+fmod COND-ATOMS is
+  pr INT .
+
+  vars B B' : [Bool] . vars I I' : [Int] .
+
+  --- slightly modified version of EXT-BOOL, that finally removes andThen
+  op _andThen_ : Bool Bool -> Bool [strat (1 0) gather (e E) prec 55] .
+  eq true andThen B = B .
+  eq false andThen B = false .
+  eq B andThen B' = B and B' [owise] .
+
+  --- ite operator
+  op _?_:_ : Bool Bool Bool -> Bool [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? B : B' = B .
+  eq false ? B : B' = B' .
+
+  op _?_:_ : Bool Int Int -> Int [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? I : I' = I .
+  eq false ? I : I' = I' .
+
+  --- equality-disequality operators
+  op _===_ : Int Int -> Bool [comm] .
+  eq I === I = true .
+
+  op _=/==_ : Int Int -> Bool [comm] .
+  eq I =/== I = false .
+
+  --- monus operator
+  op _monus_ : Int Int -> Int .
+  eq I monus I' = I >= I' ? I - I' : 0 .
+
+endfm
+
+--- formulas for cash with some simplification 
+fmod CASH-CONDITION is
+  inc COND-ATOMS .
+
+  var B B1 B2 : Bool . var I I1 I2 : Int .
+
+  --- short-circut for server states
+  eq 0 ===  1 = false .  eq 0 ===  2 = false .  eq 1 === 2  = false .
+  eq 0 =/== 1 = true  .  eq 0 =/== 2 = true  .  eq 1 =/== 2 = true  .
+
+
+  eq I + 0 = I .
+  eq I - 0 = I .
+  eq (I - I1 >= I2) = (I >= I2 + I1) .
+  eq (I - I1 >  I2) = (I >  I2 + I1) .
+
+ ceq I >= I1 and I >= I2 = I >= I1  if I1 >= I2 .
+ ceq I >  I1 and I >  I2 = I >  I1  if I1 >= I2 .
+ ceq I <= I1 and I <= I2 = I <= I1  if I1 <= I2 .
+ ceq I <  I1 and I <  I2 = I <  I1  if I1 <=  I2 .
+
+ ceq I >  I1 and I >= I2 = I >  I1  if I1 >= I2 .
+ ceq I >= I1 and I >  I2 = I >= I1  if I1 >  I2 .
+ ceq I <  I1 and I <= I2 = I <  I1  if I1 <= I2 .
+ ceq I <= I1 and I <  I2 = I <= I1  if I1 <  I2 .
+
+
+  eq (B ? B1 : false) = B and B1 .
+  eq (B ? false : B2) = not B and B2 .
+
+--- The following rules make it worse, since the or operator 
+--- is reduced to xor terms by BOOL
+---(
+  eq (B ? B1 : true)  = not B or B1 .
+  eq (B ? true  : B2) = B or B2 .
+---)
+
+  eq (B ? I1 : I2) + I = B ? I1 + I : I2 + I .
+  eq (B ? I1 : I2) - I = B ? I1 - I : I2 - I .
+ 
+  eq (B ? I1 : I2) >  I = B ? (I1 >  I) : (I2 >  I) .
+  eq (B ? I1 : I2) >= I = B ? (I1 >= I) : (I2 >= I) .
+  eq (B ? I1 : I2) <  I = B ? (I1 <  I) : (I2 <  I) .
+  eq (B ? I1 : I2) <= I = B ? (I1 <= I) : (I2 <= I) .
+
+  eq I >  (B ? I1 : I2) = B ? (I >  I1) : (I >  I2) .
+  eq I >= (B ? I1 : I2) = B ? (I >= I1) : (I >= I2) .
+  eq I <  (B ? I1 : I2) = B ? (I <  I1) : (I <  I2) .
+  eq I <= (B ? I1 : I2) = B ? (I <= I1) : (I <= I2) .
+
+---  eq (B ? B1 : B2) = (B and B1) or (not B and B2) [owise] .
+endfm
+
+
+--- Aux functions to generate conditoins
+--- For efficiency reasons, here we use Int, instead of Integer
+mod CASH-AUX is
+  pr CASH-STATE .
+  pr CASH-CONDITION .
+
+  var  AtS        : AttributeSet .
+  vars B B'       : Bool .
+  vars Cnf Cnf'   : Configuration .
+  var  St         : Int .
+  vars I I1 I2 I3 : Int .
+  vars NQN NQN' : Oid .
+  vars CQ CQ1 CQ2 : CapacityQueue .
+  
+  --- evaluation helpers
+  sort Helper .
+  op next-deadline-waiting : Int -> Helper [ctor] .
+  op no-server-waiting : -> Helper [ctor] .
+  op mte-server : Int -> Helper [ctor] .
+  op no-deadline-miss : -> Helper [ctor] .
+
+  --- helper evaluation
+  op eval : Configuration Helper -> Bool .
+
+  --- next-deadline-waiting evaluation
+  eq eval(Cnf, next-deadline-waiting(I))
+   = ndw-wout(Cnf, I) .
+  op ndw-wout : Configuration Int -> Bool .
+  eq ndw-wout(none, I)
+   = true .
+  eq ndw-wout(< NQN : global | AtS > Cnf, I)
+   = ndw-wout(Cnf, I) .
+  eq ndw-wout(< NQN : server | state : St, timeToDeadline : I1, AtS > Cnf, I)
+   = (St === waiting ? (I <= I1) : true) andThen ndw-wout(Cnf, I).
+
+  --- no-server-waiting evaluation
+  eq eval(Cnf, no-server-waiting)
+   = nsw(Cnf) .
+  op nsw : Configuration -> Bool .
+  eq nsw(none)
+   = true .
+  eq nsw(< NQN : global | AtS > Cnf)
+   = nsw(Cnf) .
+  eq nsw(< NQN : server | state : St, AtS > Cnf)
+   = (St =/== waiting) andThen nsw(Cnf) .
+
+  --- mte-server evaluation
+  eq eval(Cnf, mte-server(I))
+   = mtes(Cnf, I) .  
+  op mtes : Configuration Int -> Bool .
+  eq mtes(none, I)
+   = true .
+  eq mtes(< NQN' : global | AtS > Cnf, I)
+   = mtes(Cnf, I) .
+  eq mtes(< NQN : server | timeToDeadline : I1, usedOfBudget : I2, maxBudget : I3, state : St, AtS > Cnf, I)
+   = St === idle ? mtes(Cnf,I) : ((St === waiting ? I1 >= I : (I3 monus I2) >= I) andThen mtes(Cnf, I)) .
+
+  --- no-deadline-miss evaluation
+  eq eval(Cnf, no-deadline-miss)
+   = ndm(Cnf) .  
+  op ndm : Configuration -> Bool .
+  eq ndm(none)
+   = true .
+  eq ndm(< NQN : global | AtS > Cnf)
+   = ndm(Cnf) .
+  eq ndm(< NQN : server | maxBudget : I1, usedOfBudget : I2, timeToDeadline : I3, state : St, AtS > Cnf)
+   = (St === idle ? true : I1 <= I2 + I3) andThen ndm(Cnf) .
+
+  --- auxiliary functions
+  op below-deadline : Int CapacityQueue -> Bool .
+  eq below-deadline(I, emptyQueue)
+   = true .
+  eq below-deadline(I, (deadline: I2 budget: I3 const: B) CQ1)
+   = (I2 < I) andThen below-deadline(I, CQ1) .
+
+  op above-or-equal-deadline : Int CapacityQueue -> Bool .
+  eq above-or-equal-deadline(I, emptyQueue)
+   = true .
+  eq above-or-equal-deadline(I, (deadline: I2 budget: I3 const: B) CQ1)
+   = (I2 >= I) andThen above-or-equal-deadline(I, CQ1) .
+
+  op delta-global : Object Int -> Configuration .
+  op delta-global : AttributeSet Int -> AttributeSet .
+  eq delta-global(< NQN : global | AtS >, I) 
+   = < NQN : global | delta-global(AtS, I) > .
+  eq delta-global((time : I1, AtS), I) = (time : I1 + I), delta-global(AtS, I) .
+  eq delta-global((cq : CQ, AtS), I) = (cq : delta(CQ, I)), delta-global(AtS, I) .
+  eq delta-global(AtS, I) = AtS [owise] .
+
+  --- the last argument indicates the use of its own budget
+  op delta-servers : Configuration Int Bool -> Configuration .
+  eq delta-servers(none, I, B)
+   = none .
+  eq delta-servers(< NQN : global | AtS > Cnf, I, B)
+   = < NQN : global | AtS > delta-servers(Cnf, I, B) .
+  eq delta-servers(< NQN : server | state : St, leftOfJob : I1, timeToDeadline : I2, usedOfBudget : I3, AtS > Cnf, I, B)
+   = < NQN : server | state : St, 
+                      leftOfJob : (St === executing) ? (I1 monus I) : I1, 
+                      timeToDeadline : I2 monus I, 
+                      usedOfBudget : (B andThen St === executing) ? I3 + I : I3, AtS >
+     delta-servers(Cnf, I, B) .
+endm
+

@@ -1,0 +1,76 @@
+
+fmod SMT-TRANS is
+  pr META-LEVEL .
+  pr CONVERSION .
+
+  var A   : TermQid .
+  var C   : Constant .
+  var V   : Variable .
+  var F Q : Qid .
+  var T   : Term .
+  var TL  : TermList .
+  var NL  : NeTermList .
+
+  --- transform to SMT formulas for Maude/CVC4
+  op tr : Term -> Term .
+  eq tr('`[_`][T])    = tr(T) .
+  eq tr('_and_[TL])   = trGather('_and_, 'true.Boolean, TL) .
+  eq tr('_or_[TL])    = trGather('_or_,  'false.Boolean, TL) .
+  eq tr('_xor_[TL])   = trGather('_xor_, 'error.Boolean, TL) . --- shoule have no *empty* xor
+  eq tr('_+_[TL])     = trGather('_+_, '0.Integer, TL) .
+  eq tr('_*_[TL])     = trGather('_*_, '1.Integer, TL) .
+  eq tr('0.Zero )     = '0.Integer .
+  eq tr(F['0.Zero])   = trNum(F['0.Zero]) .
+  eq tr(A)            = trAtom(A) [owise] .
+  eq tr(F[TL])        = F[trList(TL)] [owise] .
+
+  op trList : TermList -> TermList .
+  eq trList((T,TL)) = tr(T), trList(TL) .
+  eq trList(empty)  = empty .
+
+  op trGather : Qid Constant TermList -> Term .
+  eq trGather(F, C, (T,NL)) = F[tr(T),trGather(F,C,NL)] .
+  eq trGather(F, C, T)      = tr(T) .
+  eq trGather(F, C, empty)  = C .
+
+  op trAtom : TermQid -> TermQid [memo] .
+  eq trAtom(A) 
+   = if sortLeq(['SMT-INTERFACE],getType(A),'Int) then
+        qid(string(getName(A)) + sep(A) + "Integer")
+     else if sortLeq(['SMT-INTERFACE],getType(A),'Bool) then
+        qid(string(getName(A)) + sep(A) + "Boolean")
+     else
+        A
+     fi fi .
+
+  op sep : TermQid -> String .
+  eq sep(C) = "." .
+  eq sep(V) = ":" .
+
+  op trNum : GroundTerm -> GroundTerm [memo] .
+  eq trNum('s_['0.Zero]) = '1.Integer .
+  eq trNum(F['0.Zero])
+   = if substr(string(F), 0, 3) == "s_^" 
+     then qid(string(trunc(rat(substr(string(F),3,2),10)),10) + "." + "Integer")
+     else F['0.Integer] fi .
+endfm
+
+
+--- SMT interface for checking (un)satisfiability of Boolean expressions
+fmod SMT-INTERFACE is
+  pr SMT-TRANS .
+
+  var B  : Bool .
+
+  --- checks if the given Boolean expression is satisfiable
+  op check-sat : Bool -> Bool .
+  eq check-sat(B)
+   = if B == false then
+       false
+     else if B == true then
+       true
+     else
+       metaCheck(['REAL-INTEGER], tr(upTerm(B))) 
+     fi fi .
+endfm
+

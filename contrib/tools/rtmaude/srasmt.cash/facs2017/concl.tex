@@ -1,0 +1,65 @@
+% !TEX root = main.tex
+
+\section{Related Work and Concluding Remarks}
+\label{sec.concl}
+
+SMT-based reachability analysis has been used in software component
+testing and verification of infinite-state
+systems~\cite{cadar-seswtesting2013}.
+SMT-CBMC~\cite{armando2009bounded} and Corral~\cite{corral} use
+bounded model checking, with unbounded types represented by built-in
+variables. KLEE~\cite{klee} is used for symbolic execution and
+constraint solving, finding possible inputs that will cause a
+programming artifact to crash.  The {IC3} SMT-based model
+checker~\cite{cimatti-ic32012} uses over- and under-approximation
+techniques to efficiently handle symbolic transitions on infinite sets
+of states. What all these approaches have in common is the effort in
+developing advanced techniques and tools to speed up the reachability
+analysis process based on SMT-solving. Guarded terms are a technique
+to speed up and often attain convergence of the reachability analysis
+process for rewriting modulo SMT.
+%
+It complements
+narrowing-based reachability
+analysis~\cite{abstract-lmc-bae,meseguer-narrowing-2007}, another
+symbolic technique combining narrowing modulo theories and model
+checking.
+
+This paper presented \textit{guarded terms}, a technique with the
+potential to reduce the symbolic state space and the complexity of
+constraints in the rewriting modulo SMT approach. Rewriting modulo
+SMT~\cite{rocha-rewsmtjlamp-2017} is a novel symbolic technique to
+model and analyze reachability properties of infinite-state
+systems. This is a technique in the realm of rewriting logic that can
+greatly improve the specification and verification of reachability
+properties of open systems such as real-time and cyber-physical
+systems. Guarded terms generalize the constrained terms of rewriting
+modulo SMT by allowing a term in a symbolic state to have constrained
+subterms: these subterms can be seen as a choice operator that is part
+of the term structure. They can be composed in parallel and be nested,
+thus enabling the succinct encoding of several constrained terms into
+one guarded term.  The potential of guarded terms for reducing the
+symbolic state-space, and the complexity and size of constraints has
+been illustrated by a running example and a case study. The latter is
+an improvement of a previously developed case study where guarded
+terms enable the analysis of reachability properties of the CASH
+scheduling algorithm~\cite{caccamo2000capacity}.
+
+As future work, the plan is to explore the use of guarded terms in
+improving the symbolic rewriting logic semantics of
+PLEXIL~\cite{rocha-thesis-2012,rocha-rewsmtjlamp-2017}, and in
+specifying the symbolic rewriting logic semantics of other real-time
+and cyber-physical systems. Other SMT techniques, including state
+subsumption, backwards reachability, $k$-induction, and interpolants,
+should certainly be studied for rewriting modulo SMT. Another
+perspective is to use guarded terms for improving narrowing-based
+reachability analysis.
+
+{\small \paragraph*{\bf Acknowledgments.}
+
+The first author was supported by the Basic Science Research Program
+through the National Research Foundation of Korea (NRF) funded by the
+Ministry of Education (2016R1D1A1B03935275). The second author has
+been supported in part by the EPIC project funded by the
+Administrative Department of Science, Technology and Innovation of
+Colombia (Colciencias) under contract 233-2017.}

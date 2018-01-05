@@ -1,0 +1,322 @@
+***(
+
+    This file is part of SRAPlexil, a rewriting logic semantics of
+    the Plan Execution Interchange Language -PLEXIL- with symbolic
+    reachability analysis support modulo SMT theories
+
+    Copyright (C) 2008-2012 Camilo Rocha, camilo.rocha@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                       Synchronous reduction implementation
+****                                                       Author: Camilo Rocha
+
+--- constants used by the symbolic reachability engine
+fmod SRA-CONSTANTS is
+  pr META-LEVEL .
+  
+  --- Constant for identifying the module under execution
+  op USER-MODULE-NAME   : -> Qid .
+  --- Constant for identifying the module specifying the atomic relation
+  op ATOMIC-MODULE-NAME : -> Qid .
+endfm
+
+--- utilities for patching modules
+fmod PATCH-MODULE is
+  pr META-LEVEL .
+
+  --- adds an equation for equating the constant #STATE# to the
+  --- term represented by the given term metarepresentation
+  op add-state : Module Term -> Module [memo] .
+  eq add-state(
+       mod H:Header is IL:ImportList sorts SS:SortSet .
+           SDS:SubsortDeclSet ODS:OpDeclSet MAX:MembAxSet ES:EquationSet RS:RuleSet
+       endm, T:Term)
+   =   mod H:Header is IL:ImportList sorts SS:SortSet .
+           SDS:SubsortDeclSet ODS:OpDeclSet MAX:MembAxSet 
+           (ES:EquationSet (eq '#STATE#.Sys = T:Term [none].)) 
+           RS:RuleSet
+       endm .
+endfm
+
+--- collects the one-step atomic action for a given
+--- module and a given state
+fmod COLLECT-ACTIONS is
+  pr PATCH-MODULE .
+  pr SYS .
+
+  vars Cnf Cnf'      : Configuration .
+  vars GAS GAS'      : GuardedActionSet .
+  vars M M'          : Module .
+  vars N N'          : Nat .
+  vars RTr RTr'      : ResultTriple .
+  vars Rl Rl'        : Rule .
+  vars RlS RlS'      : RuleSet .
+  vars T T'          : Term .
+
+  --- brings a given metarepresentation of a configuration to 
+  --- the object level
+  op down-config  : Term -> [Configuration] .
+  op error-config : -> [Configuration] [ctor] .
+  eq down-config(T)
+   = downTerm(T,error-config) .
+
+  --- collects the actions resulting from the atomic
+  --- transitions specified in the given module on the
+  --- given state metarepresentation
+  op collect-actions  : Module Term -> Configuration .
+  eq collect-actions(M,T) 
+   = 1-step-search(M,T) .
+
+  --- collects all 1-step reachable states form the given term
+  --- representing a configuration of objects using the given module
+  op 1-step-search  : Module Term -> Configuration .
+  op $1-step-search : Module Term Nat Configuration ResultTriple? -> Configuration .
+  eq 1-step-search(M,T) 
+   = $1-step-search(M,T,0,(none).Configuration,$meta-search(M,T,0)) .
+  eq $1-step-search(M,T,N,Cnf,failure)
+   = Cnf .
+  eq $1-step-search(M,T,N,Cnf,RTr)
+   = $1-step-search(M,T,s(N),
+       (Cnf collect-actions(down-config(getTerm(RTr)))),
+       $meta-search(M,T,s(N))) .
+
+  --- computes the one-step metaSearch solution for the given
+  --- module and term, using no matching contraints, no condition
+  op $meta-search : Module Term Nat -> ResultTriple? .
+  eq $meta-search(M,T,N)
+   = metaSearch(M,T,'X:Configuration,nil,'+,1,N) .
+
+  --- collects the guarded actions in the given configuration; the given
+  --- configuration may contain other objects that are not guarded actions
+  op collect-actions  : Configuration -> Configuration .
+  op $collect-actions : Configuration Configuration -> Configuration .
+  eq collect-actions(Cnf)
+   = $collect-actions(Cnf,none) .
+  eq $collect-actions((Cnf GAS),Cnf')
+   = $collect-actions(Cnf,(Cnf' GAS )) .
+  eq $collect-actions(Cnf,Cnf')
+   = Cnf' [owise] .
+endfm
+
+
+--- simplifies the guards in actions in a configuration relative
+--- to a state; the evaluation performed here does NOT make any
+--- call to the SMT solver so that symbolic expressions are left
+--- explicit as indicated by the state but may be simplified because
+--- of combinations with the ground expressions
+fmod SIMPLIFY-GUARDS is
+  pr SYS .
+
+  vars ActS ActS'    : ActionSet .
+  vars Cnf Cnf'      : Configuration .
+  vars iB iB'        : iBool .
+  vars N N'          : Nat .
+  vars St St'        : Sys .
+  vars Str Str'      : String .
+
+  --- evaluates the guards of the actions in the given action set
+  --- relative to the given state
+  op simplify-guards  : Sys Configuration -> Configuration .
+  op $simplify-guards : Sys Configuration Configuration -> Configuration .
+  eq simplify-guards(St,Cnf)
+   = $simplify-guards(St,Cnf,(none).Configuration) .
+  eq $simplify-guards(St,(none).Configuration,Cnf')
+   = Cnf' .
+  eq $simplify-guards(St,(Cnf (Str,N,iB,ActS)),Cnf')
+   = $simplify-guards(St,Cnf,(Cnf' (Str,N,eval(St,iB),ActS))) .
+  eq $simplify-guards(St,(Cnf (Str,N,iB,ActS,ActS')),Cnf')
+   = $simplify-guards(St,Cnf,(Cnf' (Str,N,eval(St,iB),ActS,ActS'))) .
+  eq $simplify-guards(St,(Cnf (Str,N,iB,ActS,iB',ActS')),Cnf')
+   = $simplify-guards(St,Cnf,(Cnf' (Str,N,eval(St,iB),ActS,eval(St,iB'),ActS'))) .
+endfm
+
+--- utilities for flattening guarded actions into
+--- simpler forms of guarded actions
+fmod FLATTEN-ACTIONS is
+  pr SYS .
+
+  vars AS AS'     : ActionSet .
+  vars Cnf Cnf'   : Configuration .
+  vars iB iB'     : iBool .
+  var  N          : Nat .
+  var  Str        : String .
+
+  --- it converts guarded action sets in the given configuration
+  --- to simpler guarded actions; tipically, it converts 5tuples
+  --- and 6tuples to equivalent configurations of 4tuples
+  op flatten-actions  : Configuration -> Configuration .
+  op $flatten-actions : Configuration Configuration -> Configuration .
+  eq flatten-actions(Cnf)
+   = $flatten-actions(Cnf,(none).Configuration) .
+  eq $flatten-actions((none).Configuration,Cnf')
+   = Cnf' .
+  eq $flatten-actions((Cnf (Str,N,iB,AS)),Cnf')
+   = $flatten-actions(Cnf,(Cnf' (Str,N,iB,AS))) .
+  eq $flatten-actions((Cnf (Str,N,iB,AS,AS')),Cnf')
+   = $flatten-actions(Cnf,(Cnf' (Str,N,iB,AS) (Str,N,~ iB,AS'))) .
+  eq $flatten-actions((Cnf (Str,N,iB,AS,iB',AS')),Cnf')
+   = $flatten-actions(Cnf,(Cnf' (Str,N,iB,AS) (Str,N,iB',AS'))) .
+endfm
+
+--- filters/removes the actions whose guards are unsatisfiable;
+--- intuitively, the guarded actions that are removed
+--- after the filtering correspond to those actions that
+--- can never take place in any instance of a state satisfying
+--- the guard of a state; the remaining ones correspond to
+--- actions that may take place in at least an instance of
+--- a state satisfying the guard
+fmod FILTER-UNSAT-ACTIONS is
+  pr SYS .
+  pr SMT-INTERFACE .
+
+  vars AS AS'      : ActionSet .
+  vars Cnf Cnf'    : Configuration .
+  vars iB iB'      : iBool .
+  var  N           : Nat .
+  var  Str         : String .
+
+  --- removes the actions whose guard it trivially unsatisfiable, i.e.,
+  --- those actions whose guard is the Boolean expression c(false);
+  --- it assumes that the actions are of the 4tuple form
+  op remove-false  : Configuration -> Configuration .
+  op $remove-false : Configuration Configuration -> Configuration .
+  eq remove-false(Cnf)
+   = $remove-false(Cnf,(none).Configuration) .
+  eq $remove-false((none).Configuration,Cnf')
+   = Cnf' .
+  eq $remove-false((Cnf (Str,N,iB,AS)),Cnf')
+   = if iB == c(false)
+     then $remove-false(Cnf,Cnf')
+     else $remove-false(Cnf,(Cnf' (Str,N,iB,AS)))
+     fi .
+
+  --- removes the actions whose guard is unsatisfiable in conjunction
+  --- with the state guard, i.e.,
+  --- those actions whose guard is an unsatisfiable Boolean expression
+  --- under the assumption that the guard of state holds;
+  --- it first removes as many actions as possible whose guard is
+  --- trivially unsatisfiable and then uses the SMT solver on
+  --- the remaining guarded actions in conjunction with the state's guard;
+  --- it assumes that the actions are of the 4tuple form
+  op remove-unsat  : iBool Configuration -> Configuration .
+  op $remove-unsat : iBool Configuration Configuration -> Configuration .
+  eq remove-unsat(iB,Cnf)
+   = $remove-unsat(iB,remove-false(Cnf),(none).Configuration) .
+  eq $remove-unsat(iB,(none).Configuration,Cnf')
+   = Cnf' .
+  eq $remove-unsat(iB,(Cnf (Str,N,iB',AS)),Cnf')
+   = if check-unsat(iB ^ iB') == true
+     then $remove-unsat(iB,Cnf,Cnf')
+     else $remove-unsat(iB,Cnf,(Cnf' (Str,N,iB',AS)))
+     fi .
+endfm
+
+fmod BUILD-PRE-SYS-SET is
+  pr SYS .
+
+  vars 4GAS      : 4GuardedActionSet .
+  var  Cnf       : Configuration .
+  vars iB iB'    : iBool .
+  vars SS        : SysSet .
+
+  op  build-pre-sys-set : iBool Configuration -> SysSet .
+  op $build-pre-sys-set : iBool Configuration SysSet -> SysSet .
+
+  eq build-pre-sys-set(iB,Cnf)
+   = $build-pre-sys-set(iB,Cnf,mtstset) .
+  eq $build-pre-sys-set(iB,none,SS)
+   = SS .
+  eq $build-pre-sys-set(iB,(4GAS Cnf),SS)
+   = $build-pre-sys-set(iB,Cnf,(({ iB, (4p3(4GAS),4p4(4GAS)) }) SS)) .
+endfm
+
+fmod BUILD-SYS-SET is
+  pr SYS .
+
+  vars 2GAS      : 2GuardedActionSet .
+  var  Cnf       : Configuration .
+  vars iB iB'    : iBool .
+  vars SS SS'    : SysSet .
+
+  op  build-sys-set : iBool Configuration SysSet -> SysSet .
+  op $build-sys-set : iBool Configuration SysSet SysSet -> SysSet .
+
+  eq build-sys-set(iB,Cnf,SS)
+   = $build-sys-set(iB,Cnf,SS,mtstset) .
+  eq $build-sys-set(iB,Cnf,mtstset,SS')
+   = SS' .
+  eq $build-sys-set(iB,Cnf,(( { iB', 2GAS }) SS),SS')
+   = $build-sys-set(iB,Cnf,SS,({ iB ^ 2p1(2GAS), apply-actions(Cnf,2p2(2GAS)) }) SS') .
+endfm
+
+fmod SRA is
+  pr SRA-CONSTANTS .
+  pr PATCH-MODULE .
+  pr COLLECT-ACTIONS .
+  pr SIMPLIFY-GUARDS .
+  pr FLATTEN-ACTIONS .
+  pr FILTER-UNSAT-ACTIONS .
+  pr BUILD-PRE-SYS-SET .
+  pr BUILD-SYS-SET .
+
+  vars Cnf Cnf'       : Configuration .
+  vars M M'           : Module .
+  vars St St'         : Sys .
+  vars T T'           : Term .
+
+  ---------------------------
+  --- temporary functions ---
+  ---------------------------
+
+  --- collect actions
+  op ca : Sys -> Sys [memo] .
+  eq ca(St) 
+   = { guard(St),
+       collect-actions(
+         add-state(upModule(USER-MODULE-NAME,true), upTerm(St)),
+         upTerm(conf(St))) } .
+
+  --- guards evaluated
+  op sg : Sys -> Sys [memo] .
+  eq sg(St) 
+   = { guard(St),
+       simplify-guards(St,conf(ca(St))) } .
+
+  --- flatten actions
+  op fa : Sys -> Sys [memo] .
+  eq fa(St) 
+   = { guard(St),
+       flatten-actions(conf(sg(St))) } .
+
+  --- remove unsat
+  op ru : Sys -> Sys [memo] .
+  eq ru(St) 
+   = { guard(St),
+       remove-unsat(guard(St),conf(fa(St))) } .
+
+  --- build pre states
+  op bps : Sys -> SysSet .
+  eq bps(St)
+   = if conf(ru(St)) == none
+     then mtstset
+     else build-pre-sys-set(guard(St),conf(ru(St)))
+     fi .
+
+  --- build states
+  op bss : Sys -> SysSet .
+  eq bss(St)
+   = build-sys-set(guard(St),conf(St),bps(St)) .
+endfm

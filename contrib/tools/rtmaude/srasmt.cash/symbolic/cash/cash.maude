@@ -1,0 +1,413 @@
+
+load smt.maude
+load ../smt/smt-interface.maude .
+load ../smt/smt-condition.maude .
+load cash-base.maude .
+
+mod CASH-STATE-SYMBOLIC is
+  pr CASH-STATE .
+  sort Sys .
+  op {_,_} : Bool Configuration -> Sys [prec 126] .
+
+  sort SysCases .
+  subsort Sys < SysCases .
+  op none : -> SysCases [ctor] .
+  op _|_ : SysCases SysCases -> SysCases [ctor comm assoc id: none prec 127] .
+endm
+
+
+mod CASH-SYMBOLIC-BASE is
+  pr CASH-AUX .
+  pr CASH-STATE-SYMBOLIC .
+  pr SMT-INTERFACE .
+  pr COND-SIMPLIFICATION .
+
+  vars SYSS           : SysCases .
+  vars O O' G         : Oid .
+  vars AtSG AtS AtS'  : AttributeSet .
+  vars B B'           : Bool .
+  vars CQ CQ' CQ1 CQ2 : CapacityQueue .
+  vars REST CONF      : Configuration .
+  vars St St'         : Int .
+  vars I I1 I2        : Int .
+  vars NZT NZT1 NZT2  : Int .
+  vars T T1 T2 T3     : Int .
+  vars Phi Phi'       : Bool .
+  vars iB iB'         : Bool .
+  
+---(
+--- Idle to executing when the processor is available:
+  rl [idleToExecuting1] :
+      GT | CQ | true |
+      < O : Server | period : NZT, state : idle, timeToDeadline : T > REST
+   =>
+      GT | CQ | false |
+      < O : Server | state : executing, timeToDeadline : T + NZT, timeExecuted : 0, usedOfBudget : 0 > REST .
+---)
+ crl [idleToExecuting1] :
+     {Phi, 
+      < G : global | available : true, AtSG >
+      < O : server | period : NZT,  state : St, timeToDeadline : T, timeExecuted : T1, usedOfBudget : T2, AtS > REST}
+  => {Phi', 
+      < G : global | available : false, AtSG >
+      < O : server | period : NZT,  state : executing, timeToDeadline : T + NZT, timeExecuted : 0, usedOfBudget : 0, AtS > REST}
+  if Phi' := (St === idle) andThen (Phi and (T >= 0) and (T1 >= 0) and (T2 >= 0) and (NZT > 0))
+  /\ check-sat(Phi') .
+
+---(
+--- A server becomes active and another server is executing.
+--- This server will either preempt or not according to usual EDF:
+  rl [idleToActive] :
+      GT | CQ | AP |
+      < O  : Server | period : NZT, state : idle, timeToDeadline : T >
+      < O' : Server | state : executing, timeToDeadline : T1 > REST
+   =>
+    if T + NZT < T1 then
+      GT | CQ | AP |
+      < O  : Server | state :  executing, timeToDeadline : T + NZT, timeExecuted : 0, usedOfBudget : 0 >
+      < O' : Server | state :  waiting > REST
+    else
+      GT | CQ | AP |
+      < O  : Server | state : waiting, timeToDeadline : T + NZT, timeExecuted : 0, usedOfBudget : 0 >
+      < O' : Server | > REST
+    fi .
+---)
+ crl [idleToActive] :
+     {Phi, 
+      < O  : server | period : NZT, state : St, timeToDeadline : T, timeExecuted : T2, usedOfBudget : T3, AtS >
+      < O' : server | state : St', timeToDeadline : T1, AtS' > REST}
+  => {Phi', 
+      < O  : server | period : NZT, state : (T + NZT < T1) ? executing : waiting, timeToDeadline : T + NZT, timeExecuted : 0, usedOfBudget : 0, AtS >
+      < O' : server | state : (T + NZT < T1) ? waiting : executing, timeToDeadline : T1, AtS' > REST}
+  if Phi' := ((St === idle) and (St' === executing)) andThen (Phi and (NZT > 0) and (T >= 0) and (T1 >= 0) and (T2 >= 0) and (T3 >= 0))
+  /\ check-sat(Phi') .
+
+
+---(
+--- Finish executing. If more budget, add to CASH.  There are two main cases: wake up the first waiting server, 
+--- or nobody is waiting. First case: someone else is waiting: We have also added an additional check that the 
+--- current job has actually executed more than zero time.
+ crl [stopExecuting1] :
+      GT | CQ | AP |
+      < O  : Server | state : executing, usedOfBudget : T, maxBudget : NZT, timeToDeadline : T1, timeExecuted : NZT1, period : NZT2 >
+      < O' : Server | state : waiting, timeToDeadline : T2 > REST
+  =>
+    if NZT monus T > 0 then
+      GT | addCapacity(deadline: T1 budget: NZT monus T, CQ) | AP |
+      < O : Server | state : idle,  usedOfBudget : NZT >
+      < O' : Server | state : executing > REST
+    else
+      GT | CQ | AP |
+      < O : Server | state : idle,  usedOfBudget : NZT >
+      < O' : Server | state : executing > REST
+    fi
+   if NZT monus T <= T1           /\   --- overflow check
+      T2 == nextDeadlineWaiting(< O' : Server | >  REST) .
+---)
+ crl [stopExecuting1] :
+     {Phi, 
+      < G  : global | cq : CQ, AtSG >
+      < O  : server | state : St, usedOfBudget : T, maxBudget : NZT, timeToDeadline : T1, timeExecuted : NZT1, period : NZT2, AtS >
+      < O' : server | state : St', timeToDeadline : T2, AtS' > REST}
+  => {Phi', 
+      < G  : global | cq : (CQ (deadline: T1 budget: (NZT monus T) const: (NZT > T))), AtSG >
+      < O  : server | state : idle, usedOfBudget : NZT, maxBudget : NZT, timeToDeadline : T1, timeExecuted : NZT1, period : NZT2, AtS >
+      < O' : server | state : executing, timeToDeadline : T2, AtS' > REST}
+  if Phi' := ((St === executing) and (St' === waiting)) 
+     andThen (Phi and (NZT > 0) and (NZT1 > 0) and (NZT2 > 0) and (T >= 0) and (T1 >= 0) and (T2 >= 0) and ((NZT monus T) <= T1) and 
+              eval(< G  : global | cq : CQ, AtSG > < O' : server | state : waiting, timeToDeadline : T2, AtS' > REST, next-deadline-waiting(T2)))
+  /\ check-sat(Phi') .
+
+---(
+--- Finish executing when no other server is waiting. Just release the 
+--- processor:
+ crl [stopExecuting2A] :
+      GT | CQ | AP |
+      < O : Server | state : executing, usedOfBudget : T, timeToDeadline : T1, maxBudget : NZT, timeExecuted : NZT1, period : NZT2 > REST
+   =>
+    if NZT monus T > 0 then
+      GT | addCapacity(deadline: T1 budget: NZT monus T, CQ) | true |
+      < O : Server | state : idle, usedOfBudget : NZT > REST
+    else
+      GT | CQ | true |
+      < O : Server | state : idle, usedOfBudget : NZT > REST
+    fi
+   if NZT monus T <= T1           /\   --- overflow check
+      nooneWaiting(REST) .
+---)
+ crl [stopExecuting2] :
+     { Phi, 
+       < G  : global | cq : CQ, available : B, AtSG >
+       < O  : server | state : St, usedOfBudget : T, maxBudget : NZT, timeToDeadline : T1, timeExecuted : NZT1, period : NZT2, AtS > REST}
+  => { Phi', 
+       < G  : global | cq : (CQ (deadline: T1 budget: (NZT monus T) const: (NZT > T))), available : true, AtSG >
+       < O  : server | state : idle, usedOfBudget : NZT, maxBudget : NZT, timeToDeadline : T1, timeExecuted : NZT1, period : NZT2, AtS > REST}
+  if Phi' := (St === executing) 
+     andThen (Phi and (T >= 0) and (T1 >= 0) and (NZT > 0) and (NZT1 > 0) and (NZT2 > 0) and ((NZT monus T) <= T1) and eval(REST,no-server-waiting))
+  /\ check-sat(Phi') .
+
+
+---(
+  --- The following rule can be applied when we have reached an overflow 
+  --- situation:
+ crl [deadlineMiss] :
+      GT | CQ | AP |
+      < O : Server | state : STATE, usedOfBudget : T, timeToDeadline : T1, maxBudget : NZT >
+      REST
+   =>
+      GT | CQ | AP |
+      DEADLINE-MISS REST
+   if (NZT monus T) > T1 /\ STATE == waiting or STATE == executing .
+---)
+ crl [deadlineMiss] :
+     { Phi, 
+       < G : global | deadline-miss : B', AtSG >
+       < O  : server | state : St, usedOfBudget : T, timeToDeadline : T1, maxBudget : NZT, AtS > REST}
+  => { Phi', 
+       < G : global | deadline-miss : true, AtSG >
+       < O  : server | state : St, usedOfBudget : T, timeToDeadline : T1, maxBudget : NZT, AtS > REST}
+  if Phi' := (St === waiting or St === executing) andThen (Phi and (T >= 0) and (T1 >= 0) and (NZT > 0) and ((NZT monus T) > T1))
+  /\ check-sat(Phi') .
+
+--- We add the following rules for modeling a job which is longer than the execution time in one round of the server.
+--- This setting is included in the rest of the rules, where an idle server may be immediately activated again. However,
+--- to completely reflect the informal specification, we include the rules below. 
+
+--- A server has executed all it can in the current round, but wish to continue executing in the "next" round. Corresponds
+--- to case 8. Since its deadline is increased, it cannot just continue executing, but must check if some waiting
+--- server suddenly gets a shorter deadline.
+
+--- Case 1: no other server is waiting:
+---(
+ crl [continueExInNextRound] :
+      GT | CQ | AP |
+      < O : Server | state : executing, maxBudget : NZT, usedOfBudget : NZT, period : NZT1, timeToDeadline : T >
+      REST
+   =>
+      GT | CQ | AP |
+      < O : Server | usedOfBudget : 0, timeToDeadline : T + NZT1, timeExecuted : 0 >
+      REST
+   if nooneWaiting(REST) .               
+---)
+ crl [continueExInNextRound] :
+     { Phi, 
+       < O  : server | state : St, maxBudget : NZT, usedOfBudget : NZT2, period : NZT1, timeToDeadline : T, timeExecuted : T1, AtS > REST}
+  => { Phi', 
+       < O  : server | state : executing, maxBudget : NZT, usedOfBudget : 0, period : NZT1, timeToDeadline : T + NZT1, timeExecuted : 0, AtS > REST}
+  if Phi' := (St === executing) andThen (Phi and (NZT === NZT2) and (T >= 0) and (T1 >= 0) and (NZT > 0) and (NZT1 > 0) and eval(REST,no-server-waiting))
+  /\ check-sat(Phi') .
+
+--- Case 2: someone else is waiting, so maybe our server becomes preempted:
+---(
+ crl [continueActInNextRound] :
+      GT | CQ | AP |
+      < O : Server | state : executing, maxBudget : NZT, usedOfBudget : NZT, period : NZT1, timeToDeadline : T >
+      < O' : Server | state : waiting, timeToDeadline : T1 > REST
+   =>
+    if T1 < T + NZT1 then    --- we become preempted 
+      GT | CQ | AP |
+      < O : Server | state : waiting, usedOfBudget : 0, timeExecuted : 0, timeToDeadline : T + NZT1 >
+      < O' : Server | state : executing > REST
+    else  --- can continue executing
+      GT | CQ | AP |
+      < O : Server | usedOfBudget : 0, timeExecuted : 0, timeToDeadline : T + NZT1 >
+      < O' : Server | > REST
+    fi
+   if T1 == nextDeadlineWaiting(< O' : Server | >  REST) /\
+      T1 < T + NZT1 .
+---)
+ crl [continueActInNextRound] :
+     { Phi, 
+       < O  : server | state : St, maxBudget : NZT, usedOfBudget : NZT2, period : NZT1, timeExecuted : T2, timeToDeadline : T, AtS >
+       < O' : server | state : St', timeToDeadline : T1, AtS' > REST}
+  => { Phi', 
+       < O  : server | state : (T1 < T + NZT1) ? waiting : executing, maxBudget : NZT, usedOfBudget : 0, period : NZT1, timeExecuted : 0, timeToDeadline : T + NZT1, AtS >
+       < O' : server | state : (T1 < T + NZT1) ? executing : waiting, timeToDeadline : T1, AtS' > REST}
+  if Phi' := ((St === executing) and (St' === waiting)) 
+     andThen (Phi and (NZT === NZT2) and (NZT > 0) and (NZT1 > 0) and (T >= 0) and (T1 >= 0) and (T2 >= 0) and 
+              eval(< O' : server | state : St', timeToDeadline : T1, AtS' > REST, next-deadline-waiting(T1)))
+  /\ check-sat(Phi') .
+
+
+--- Timed behavior.
+--- ---------------
+--- There are three cases:
+---   1. Time elapses when a server is executing a spare capacity.
+---   2. Time elapses when a server is executing its own budget.
+---   3. Time elapses when no server is executing; i.e., when the system is idle.
+--- The first two cases are treated below. The third case must be treated
+--- in two different ways, depending on whether we model the original
+--- protocol or its suggested modification. Therefore, that case
+--- will be modeled in two separate ways in later modules.
+--- Notice that time cannot advance when we have detected an overflow,
+--- which must therefore be treated at the same time it is discovered.  
+
+--- NOTE: time increased by 1.
+
+--- Case 1: tick when a server is executing a spare capacity:
+---(
+ crl [tickExecutingSpareCapacity] :
+      GT | CQ | AP |
+      < O : Server | state : executing, timeExecuted : T1, timeToDeadline : T2 >
+      REST
+   =>
+      GT + 1 | delta(useSpareCapacity(CQ,1,0), 1) | AP |
+      < O : Server | timeExecuted : T1 + 1, timeToDeadline : T2 monus 1 >
+      delta(REST, 1)
+   if 1 <= min(min(mte(REST), mte(CQ)), mteCashUse(< O : Server | >)) /\ 
+      firstDeadline(CQ) <= T2 .
+---)
+ crl [tickExecutingSpareCapacity] :
+     {Phi,
+      < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >
+      < O : server | state : St, timeExecuted : T1, timeToDeadline : T2, AtS > REST}
+  => {Phi',
+      delta-global(< G : global | cq : (deadline: I1 budget: (I2 + (- 1)) const: (iB and (I2 > 1))) CQ, AtSG >, 1)  --- spare capacity condition
+      delta-servers(< O : server | state : executing, timeExecuted : T1, timeToDeadline : T2, AtS > REST, 1, false)}
+  if Phi' := (St === executing) 
+     andThen (Phi and (T1 >= 0) and (T2 >= 0) 
+              and iB and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+              and I1 >= 1 and I2 >= 1                     --- mte(CQ) >= 1 (also default constraint for element in queue)
+              and eval(REST,mte-server(1))                --- mte(REST) >= 1
+              and (T2 >= 1)                               --- mteCashUse(O) >= 1
+              and eval(< O : server | state : St, timeExecuted : T1, timeToDeadline : T2, AtS > REST, no-deadline-miss)
+              and (I1 <= T2))                             --- firstDeadline; the queue cannot be empty here
+  /\ check-sat(Phi') .
+
+--- Case 2: tick when a server is executing its own budget:
+---(
+ crl [tickExecutingOwnBudget] :
+      GT | CQ | AP |
+      < O : Server | state : executing, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3 >
+      REST
+   =>
+      GT + 1 | delta(CQ, 1) | AP |
+      < O : Server | usedOfBudget : T2 + 1, timeExecuted : T1 + 1, timeToDeadline : T3 monus 1 >
+      delta(REST, 1)
+   if 1 <= min(mte(< O : Server | >  REST), mte(CQ)) /\
+      T3 <  firstDeadline(CQ) .
+---)
+  crl [tickExecutingOwnBudget] :
+     {Phi, 
+      < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >
+      < O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST}
+  => {Phi',
+      delta-global(< G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >, 1)
+      delta-servers(< O : server | state : executing, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, 1, true)}
+  if Phi' := (St === executing) 
+     andThen (Phi and (T1 >= 0) and (T2 >= 0) and (T3 >= 0) 
+              and iB and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+              and I1 >= 1 and I2 >= 1                     --- mte(CQ) >= 1 (also default constraint for element in queue)
+              and T3 < I1                                 --- T3 <  firstDeadline(CQ) .
+              and eval(< O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, mte-server(1))
+              and eval(< O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, no-deadline-miss))
+  /\ check-sat(Phi') .
+
+  crl [tickExecutingOwnBudgetEmpty] :
+     {Phi, 
+      < G : global | cq : emptyQueue, AtSG >
+      < O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST}
+  => {Phi',
+      delta-global(< G : global | cq : emptyQueue, AtSG >, 1)
+      delta-servers(< O : server | state : executing, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, 1, true)}
+  if Phi' := (St === executing) 
+     andThen (Phi and (T1 >= 0) and (T2 >= 0) and (T3 >= 0) 
+              and eval(< O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, mte-server(1))
+              and eval(< O : server | state : St, timeExecuted : T1, usedOfBudget : T2, timeToDeadline : T3, AtS > REST, no-deadline-miss))
+  /\ check-sat(Phi') .
+endm
+
+
+---(
+---VER1: correct version.
+ crl [tickIdle] :
+      GT | CQ | true | REST
+   =>
+      GT + 1 | delta(useSpareCapacity(CQ,1,0), 1) | true | delta(REST, 1)
+   if 1 <= mte(REST) .   
+---)
+mod CASH-SYMBOLIC is
+  inc CASH-SYMBOLIC-BASE .
+
+  vars O G         : Oid .
+  vars I1 I2       : Int .
+  vars CQ CQ1 CQ2  : CapacityQueue .
+  var  AtSG        : AttributeSet .
+  vars Phi Phi' iB : Bool .
+  vars REST        : Configuration .
+
+ crl [tickIdle] :
+     { Phi, 
+       REST 
+       < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, available : true, AtSG > }
+  => { Phi',
+       delta-servers(REST,1,false)
+       delta-global(< G : global | cq : (deadline: I1 budget: (I2 + (- 1)) const: (iB and (I2 > 1))) CQ, available : true, AtSG >, 1) } --- spare capacity 
+  if Phi' := Phi 
+             and iB and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+             and I1 >= 1 and I2 >= 1                     --- default constraint for element to be included 
+             and eval(REST, mte-server(1))
+             and eval(REST, no-deadline-miss)
+  /\ check-sat(Phi') .
+
+ crl [tickIdleEmpty] :
+     { Phi, 
+       REST 
+       < G : global | cq : emptyQueue, available : true, AtSG > }
+  => { Phi',
+       delta-servers(REST,1,false)
+       delta-global(< G : global | cq : emptyQueue, available : true, AtSG >, 1) }
+  if Phi' := Phi 
+             and eval(REST, mte-server(1))
+             and eval(REST, no-deadline-miss)
+  /\ check-sat(Phi') .
+endm
+
+
+---(
+---VER2: when idling, steal time from "backwards" ...
+--- instead of from the front ... only change that useSpareCapacity 
+--- is replaced by useLatestSpareCapacity:
+ crl [tickIdle] :
+      GT | CQ | true | REST
+   =>
+      GT + 1 | delta(useLatestSpareCapacity(CQ,1,0), 1) | true | delta(REST, 1)
+   if 1 <= mte(REST) .   
+---)
+mod CASH-SYMBOLIC2 is
+  inc CASH-SYMBOLIC-BASE .
+
+  vars O G         : Oid .
+  vars CQ CQ1 CQ2  : CapacityQueue .
+  var  AtSG        : AttributeSet .
+  var  I1 I2     : Int .
+  vars Phi Phi' iB : Bool .
+  vars REST        : Configuration .
+
+ crl [tickIdle] :
+     { Phi, 
+       REST 
+       < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, available : true, AtSG > }
+  => { Phi',
+       delta-servers(REST,1,false)
+       delta-global(< G : global | cq : (deadline: I1 budget: (I2 + (- 1)) const: (iB and (I2 > 1))) CQ,   --- spare capacity condition
+                                   available : true, AtSG >, 1) }
+  if Phi' := Phi 
+             and iB and below-deadline(I1,CQ)   --- latest item chosen
+             and I1 >= 1 and I2 >= 1            --- default constraint for element to be included 
+             and eval(REST, mte-server(1))
+             and eval(REST, no-deadline-miss)
+  /\ check-sat(Phi') .
+
+ crl [tickIdleEmpty] :
+     { Phi, 
+       REST 
+       < G : global | cq : emptyQueue, available : true, AtSG > }
+  => { Phi',
+       delta-servers(REST,1,false)
+       delta-global(< G : global | cq : emptyQueue, available : true, AtSG >, 1) }
+  if Phi' := Phi 
+             and eval(REST, mte-server(1))
+             and eval(REST, no-deadline-miss)
+  /\ check-sat(Phi') .
+endm

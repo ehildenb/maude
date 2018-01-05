@@ -1,0 +1,65 @@
+
+--- Server state
+fmod SERVER-STATE is
+  pr INT .
+  ops idle waiting executing : -> Int .
+  eq idle = 0 .
+  eq waiting = 1 .
+  eq executing = 2 .
+endfm
+
+--- Capacity queue is now represented as a set.  Each 
+--- item can contain constraints. The item can be added 
+--- at the first place, only if the constraints hold. 
+--- The "pop" operation should remove the minimal element
+--- whose constraints are satisfiable.
+fmod CAPACITY-QUEUE is
+  pr INT .
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_const:_ : Int Int Bool -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue [ctor comm assoc id: emptyQueue] .
+
+  vars CQ1 CQ2 : CapacityQueue .
+  vars I I1 I2 : Int . var B : Bool .
+
+  --- false constraint item is removed
+  eq (deadline: I1 budget: I2 const: false) = emptyQueue .
+  eq (deadline: 0  budget: I2 const: B)     = emptyQueue .
+  eq (deadline: I1 budget: 0  const: B)     = emptyQueue .
+
+  op delta : CapacityQueue Int -> CapacityQueue .
+  eq delta(emptyQueue, I) = emptyQueue .
+  eq delta((deadline: I1 budget: I2 const: B) CQ1, I)
+   = (deadline: I1 - I budget: I2 const: B) delta(CQ1, I) .
+endfm
+
+
+--- Configuration
+mod CASH-STATE is
+  inc CONFIGURATION .
+  pr CAPACITY-QUEUE .
+  pr SERVER-STATE .
+  
+  --- classes
+  ops server global : -> Cid [ctor format(! o)] .
+
+  --- server attribute names
+  op maxBudget :_      : Int -> Attribute [ctor gather(&)] .
+  op period :_         : Int -> Attribute [ctor gather(&)] .
+  op state :_          : Int -> Attribute [ctor gather(&) format (d d c! o)] .
+  op usedOfBudget :_   : Int -> Attribute [ctor gather(&)] .
+  op timeToDeadline :_ : Int -> Attribute [ctor gather(&)] .
+  op timeExecuted :_   : Int -> Attribute [ctor gather(&)] .
+  op timeToJob :_      : Int -> Attribute [ctor gather(&)] .   --- NEW! time to start of next job
+  op leftOfJob :_      : Int -> Attribute [ctor gather(&)] .   --- NEW! Left to execute of current/next job
+
+  --- global attribute names
+  op time :_          : Int -> Attribute [ctor gather(&)] .
+  op cq :_            : CapacityQueue -> Attribute [ctor gather(&)] .
+  op available :_     : Bool -> Attribute [ctor gather(&)] .
+  op deadline-miss :_ : Bool -> Attribute [ctor gather(&)] .
+endm
+

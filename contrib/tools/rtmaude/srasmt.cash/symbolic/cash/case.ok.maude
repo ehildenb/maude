@@ -1,0 +1,120 @@
+load cash.maude
+
+mod TEST-STATES-OK is
+  inc CASH-SYMBOLIC .
+
+  ops g s1 s2 : -> Oid [ctor] .
+
+  op global1    : -> Object .
+  op server1    : Int Int -> Object .
+  op server2    : Int Int -> Object .
+
+  vars I0 I1 I2 I3 : Int . var B : Bool .
+
+  eq global1
+   = < g : global | time : 0, cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server1(I0,I1)
+   = < s1 : server | maxBudget : I0, period : I1, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq server2(I2,I3)
+   = < s2 : server | maxBudget : I2, period : I3, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+
+  op init   : Int Int Int Int Bool -> Sys .
+  eq init(I0,I1,I2,I3,B)
+   = { (I0 < I1) and (I2 < I3) and (I0 > 0) and (I2 > 0) and B, global1 server1(I0,I1) server2(I2,I3) } .
+endm
+
+************************************************
+--- 2/5 + 3/5 <= 1.
+--- Not terminating
+---(
+search [1] init(2,5,3,5,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+
+************************************************
+--- 2/5 + 5/7 > 1
+--- deadline miss found (at depth 17)
+search [1] init(2,5,5,7,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+---(
+Solution 1 (state 38968)
+states: 38969  rewrites: 11046957 in 5580ms cpu (5578ms real) (1979741 rewrites/second)
+B --> (true).Bool
+Cnf:Configuration --> < s1 : server | maxBudget : 2,period : 5,state : 2,usedOfBudget : 2,timeToDeadline : 4,
+    timeExecuted : 2 > < s2 : server | maxBudget : 5,period : 7,state : 1,usedOfBudget : 0,timeToDeadline : 4,
+    timeExecuted : 0 >
+AtS:AttributeSet --> time : 11,cq : emptyQueue,available : false
+---)
+
+
+************************************************
+--- deadline miss found
+search [1] init(I0,I1,I2,I3,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+---(
+Solution 1 (state 92)
+states: 93  rewrites: 157914 in 376ms cpu (374ms real) (419984 rewrites/second)
+B --> not I1 < 0 and not I1 + - I0 < 0 and not I3 + - I1 < 0 and not I3 + - I2 < 0 and not I0 + -2 < 0 and - I1 < 0
+    and - I2 < 0 and - I3 < 0 and - I0 < 0 and I2 + - I3 < 0 and I0 + - I1 < 0 and (not I1 + -1 < 0 ? not I1 + - I0
+    < 0 : not 1 + - I0 < 0) and (not I3 + - I1 < 0 ? not I3 + -1 < 0 : not I2 + -1 < 0) and (not I3 + - I1 < 0 ?
+    not I3 + -2 < 0 : (I3 + - I1 < 0 ? not I2 + -1 < 0 : not I2 < 0) and (I3 + - I1 < 0 ? not I2 + -2 < 0 : not I2
+    + -1 < 0)) and (not I3 + -1 < 0 ? (I3 + - I1 < 0 ? not I3 + - I2 < 0 : not I3 + - I2 + -1 < 0) : (I3 + - I1 < 0
+    ? not 1 + - I2 < 0 : not - I2 < 0)) and (not I3 + -2 < 0 ? (not I3 + -1 < 0 ? ((I3 + - I1 < 0 ? not I2 + -2 < 0
+    : not I2 < 0) ? (I3 + - I1 < 0 ? I3 + - I2 < 0 : I3 + - I2 + -2 < 0) : I3 + -2 < 0) : ((I3 + - I1 < 0 ? not I2
+    + -2 < 0 : not I2 < 0) ? (I3 + - I1 < 0 ? 1 + - I2 < 0 : - I2 + -1 < 0) : (true).Bool)) : (I3 + - I1 < 0 ? not
+    I2 + -2 < 0 : not I2 < 0) and (I3 + - I1 < 0 ? 2 + - I2 < 0 : - I2 < 0)) and (I3 + - I1 < 0 ? not I1 + -1 < 0 :
+    not I0 + -1 < 0)
+Cnf:Configuration --> < s1 : server | maxBudget : I0,period : I1,state : 2,usedOfBudget : 2,timeToDeadline : not I1
+    + -2 < 0 ? (not I1 + -1 < 0 ? I1 + -2 : -1) : 0,timeExecuted : 2 > < s2 : server | maxBudget : I2,period : I3,
+    state : (I3 + - I1 < 0) ? 2 : 1,usedOfBudget : (I3 + - I1 < 0) ? 2 : 0,timeToDeadline : not I3 + -2 < 0 ? (not
+    I3 + -1 < 0 ? I3 + -2 : -1) : 0,timeExecuted : (I3 + - I1 < 0) ? 2 : 0 >
+AtS:AttributeSet --> time : 2,cq : emptyQueue,available : false
+---)
+
+
+************************************************
+--- deadlinemiss found in this case.
+search [1] init(I0,I1,I2,I1,I0 + I2 > I1) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+---(
+Solution 1 (state 64)
+states: 65  rewrites: 100329 in 252ms cpu (251ms real) (398130 rewrites/second)
+B --> not I1 + - I2 < 0 and not I1 + - I0 < 0 and not I1 + -2 < 0 and not I0 + -2 < 0 and - I1 < 0 and - I2 < 0 and
+    - I0 < 0 and I2 + - I1 < 0 and I0 + - I1 < 0 and I1 + - I2 + - I0 < 0 and (not I2 < 0 ? (not I1 + -2 < 0 ? (not
+    I1 + -1 < 0 ? I1 + - I2 + -2 < 0 : - I2 + -1 < 0) : - I2 < 0) : not I1 + -2 < 0 and (not I1 + -1 < 0 ? I1 + -2
+    < 0 : (true).Bool)) and (not I1 + -1 < 0 ? not I1 + - I0 < 0 : not 1 + - I0 < 0) and (not I1 + -1 < 0 ? not I1
+    + - I2 + -1 < 0 : not - I2 < 0)
+Cnf:Configuration --> < s1 : server | maxBudget : I0,period : I1,state : 2,usedOfBudget : 2,timeToDeadline : not I1
+    + -2 < 0 ? (not I1 + -1 < 0 ? I1 + -2 : -1) : 0,timeExecuted : 2 > < s2 : server | maxBudget : I2,period : I1,
+    state : 1,usedOfBudget : 0,timeToDeadline : not I1 + -2 < 0 ? (not I1 + -1 < 0 ? I1 + -2 : -1) : 0,timeExecuted
+    : 0 >
+AtS:AttributeSet --> time : 2,cq : emptyQueue,available : false
+---)
+
+
+************************************************
+--- Non-linear theories not supported
+--- Abort trap: 6
+search [1] init(I0,I1,I2,I3,(I0 * I3 + I2 * I1 <= I1 * I3)) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+---(
+terminate called after throwing an instance of 'CVC4::LogicException'
+  what():  A non-linear fact was asserted to arithmetic in a linear logic.
+The fact in question: (GEQ (PLUS (MULT I1 I2) (MULT I3 I0) (MULT (CONST_RATIONAL -1) (MULT I1 I3))) (CONST_RATIONAL 1))
+
+Aborted (core dumped)
+---)
+
+
+************************************************
+--- No deadlinemiss found until killed
+search [1,17] init(I0,5,I2,7,(I0 * 7 + I2 * 5 <= 35)) =>*  { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+
+************************************************
+--- No deadlinemiss found until killed
+--- Killed
+search [1] init(I0,I1,I2,I1,(I0 + I2 <= I1)) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+

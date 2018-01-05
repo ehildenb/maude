@@ -1,0 +1,61 @@
+
+load cash-sra2.maude .
+
+mod TEST-STATES is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op initbad   : -> Sys .
+  op global1  : -> Object .
+  op server1 : -> Object .
+  op server2 : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'TEST-STATES .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> c(2), period |-> c(5), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> c(5), period |-> c(7), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq initbad
+   = { global1 server1 server2 } .
+endm
+
+---(
+search [1] initbad =>* { iB:iBool , < g : global | deadline-miss |-> true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+mod SYMBOLIC-FAILURE is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op symbinit   : -> Sys .
+  op global1    : -> Object .
+  op server1    : -> Object .
+  op server2    : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'SYMBOLIC-FAILURE .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> i(0), period |-> c(5), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> i(2), period |-> c(7), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq symbinit
+   = { i(0) < c(5) ^ i(2) < c(7) ^ i(0) > c(0) ^ i(2) > c(0) ^
+       i(0) * c(7) + i(2) * c(5) <= c(5) * c(7),
+       global1 server1 server2 } .
+endm
+
+search [1] symbinit =>* { iB:iBool , < g : global | deadline-miss |-> true, AtS:AttributeSet > Cnf:Configuration } .
+

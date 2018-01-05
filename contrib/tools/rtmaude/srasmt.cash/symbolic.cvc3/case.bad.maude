@@ -1,0 +1,173 @@
+mod TEST-STATES is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op initbad   : -> Sys .
+  op global1  : -> Object .
+  op server1 : -> Object .
+  op server2 : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'TEST-STATES .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> c(2), period |-> c(5), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> c(5), period |-> c(7), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq initbad
+   = { global1 server1 server2 } .
+endm
+
+---(
+search [1] initbad =>* { iB:iBool , < g : global | deadline-miss |-> true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+mod SYMBOLIC-FAILURE is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op symbinit   : -> Sys .
+  op global1    : -> Object .
+  op server1    : -> Object .
+  op server2    : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'SYMBOLIC-FAILURE .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> i(0), period |-> i(1), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> i(2), period |-> i(3), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq symbinit
+   = { i(0) < i(1) ^ i(2) < i(3) ^ i(0) > c(0) ^ i(2) > c(0), 
+       global1 server1 server2 } .
+endm
+
+---(
+search [1] symbinit =>* { iB:iBool , < g : global | deadline-miss |-> true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+---(
+Maude> load ../sra.cash/case.bad.maude
+==========================================
+search in TEST-STATES : initbad =>* {iB:iBool,Cnf:Configuration
+< g : global | AtS:AttributeSet, deadline-miss |-> true >} .
+
+Solution 1 (state 50395)
+states: 50396  rewrites: 21900956 in 815496ms cpu (815642ms real) (26855 rewrites/second)
+iB:iBool --> c(true)
+Cnf:Configuration -->
+< s1 : server | maxBudget |-> c(2), period |-> c(5), state |-> executing, usedOfBudget |-> c(2), timeToDeadline |-> c(4), timeExecuted
+    |-> c(2) >
+< s2 : server | maxBudget |-> c(5), period |-> c(7), state |-> waiting, usedOfBudget |-> c(0), timeToDeadline |-> c(4), timeExecuted
+    |-> c(0) >
+AtS:AttributeSet --> time |-> c(11), cq |-> emptyQueue, available |-> false
+==========================================
+search in SYMBOLIC-FAILURE : symbinit =>* {iB:iBool,Cnf:Configuration
+< g : global | AtS:AttributeSet, deadline-miss |-> true >} .
+
+Solution 1 (state 233)
+states: 234  rewrites: 60517 in 2865ms cpu (2865ms real) (21118 rewrites/second)
+iB:iBool --> ((i(0) <= c(0) ^ i(1) <= c(0)) v i(0) <= c(0) + i(1) ^ i(1) > c(0)) ^ ((i(0) <= c(0) ^ (i(1) -- c(1)) <= c(0)) v i(0) <=
+    c(0) + (i(1) -- c(1)) ^ (i(1) -- c(1)) > c(0)) ^ ((i(2) <= c(0) ^ i(3) <= c(0)) v i(2) <= c(0) + i(3) ^ i(3) > c(0)) ^ ((i(2) <= c(
+    1) ^ (i(3) -- c(1)) <= c(0)) v i(2) <= c(1) + (i(3) -- c(1)) ^ (i(3) -- c(1)) > c(0)) ^ i(0) < i(1) ^ i(2) < i(3) ^ i(3) < i(1) ^
+    i(1) >= c(1) ^ (i(1) -- c(1)) >= c(1) ^ (i(2) -- c(0)) >= c(1) ^ (i(2) -- c(1)) >= c(1) ^ i(0) > c(0) ^ i(0) > c(0) ^ i(0) > c(0) +
+    ((i(1) -- c(1)) -- c(1)) ^ i(1) > c(0) ^ i(1) > c(0) ^ i(2) > c(0) ^ i(3) > c(0) ^ ((i(1) -- c(1)) -- c(1)) > c(0)
+Cnf:Configuration -->
+< s1 : server | maxBudget |-> i(0), period |-> i(1), state |-> waiting, usedOfBudget |-> c(0), timeToDeadline |-> ((i(1) -- c(1)) -- c(
+    1)), timeExecuted |-> c(0) >
+< s2 : server | maxBudget |-> i(2), period |-> i(3), state |-> executing, usedOfBudget |-> c(2), timeToDeadline |-> ((i(3) -- c(1)) --
+    c(1)), timeExecuted |-> c(2) >
+AtS:AttributeSet --> time |-> c(2), cq |-> emptyQueue, available |-> false
+---)
+
+---(
+Maude> red translate(((i(0) <= c(0) ^ i(1) <= c(0)) v i(0) <= c(0) + i(1) ^ i(1) > c(0)) ^ ((i(0) <= c(0) ^ (i(1) -- c(1)) <= c(0)) v i(0) <=
+>     c(0) + (i(1) -- c(1)) ^ (i(1) -- c(1)) > c(0)) ^ ((i(2) <= c(0) ^ i(3) <= c(0)) v i(2) <= c(0) + i(3) ^ i(3) > c(0)) ^ ((i(2) <= c(
+>     1) ^ (i(3) -- c(1)) <= c(0)) v i(2) <= c(1) + (i(3) -- c(1)) ^ (i(3) -- c(1)) > c(0)) ^ i(0) < i(1) ^ i(2) < i(3) ^ i(3) < i(1) ^
+>     i(1) >= c(1) ^ (i(1) -- c(1)) >= c(1) ^ (i(2) -- c(0)) >= c(1) ^ (i(2) -- c(1)) >= c(1) ^ i(0) > c(0) ^ i(0) > c(0) ^ i(0) > c(0) +
+>     ((i(1) -- c(1)) -- c(1)) ^ i(1) > c(0) ^ i(1) > c(0) ^ i(2) > c(0) ^ i(3) > c(0) ^ ((i(1) -- c(1)) -- c(1)) > c(0)) .
+reduce in SYMBOLIC-FAILURE : translate((((((((((((((((((i(3) > c(0) ^ ((i(1) -- c(1)) -- c(1)) > c(0)) ^ i(2) > c(0)) ^ i(1) > c(0)) ^
+    i(1) > c(0)) ^ i(0) > c(0) + ((i(1) -- c(1)) -- c(1))) ^ i(0) > c(0)) ^ i(0) > c(0)) ^ (i(2) -- c(1)) >= c(1)) ^ (i(2) -- c(0)) >=
+    c(1)) ^ (i(1) -- c(1)) >= c(1)) ^ i(1) >= c(1)) ^ i(3) < i(1)) ^ i(2) < i(3)) ^ i(0) < i(1)) ^ (i(2) <= c(1) ^ (i(3) -- c(1)) <= c(
+    0)) v i(2) <= c(1) + (i(3) -- c(1)) ^ (i(3) -- c(1)) > c(0)) ^ (i(2) <= c(0) ^ i(3) <= c(0)) v i(2) <= c(0) + i(3) ^ i(3) > c(0)) ^
+    (i(0) <= c(0) ^ (i(1) -- c(1)) <= c(0)) v i(0) <= c(0) + (i(1) -- c(1)) ^ (i(1) -- c(1)) > c(0)) ^ (i(0) <= c(0) ^ i(1) <= c(0)) v
+    i(0) <= c(0) + i(1) ^ i(1) > c(0)) .
+rewrites: 485 in 1ms cpu (0ms real) (485000 rewrites/second)
+result String: "(set-logic QF_NIA) (declare-fun i0 () Int) (declare-fun i1 () Int) (declare-fun i2 () Int) (declare-fun i3 () Int) (assert (and (or (and (<= i0 0) (<= i1 0)) (and (<= i0 (+ 0 i1)) (> i1 0))) (and (or (and (<= i0 0) (<= (- i1 1) 0)) (and (<= i0 (+ 0 (- i1 1))) (> (- i1 1) 0))) (and (or (and (<= i2 0) (<= i3 0)) (and (<= i2 (+ 0 i3)) (> i3 0))) (and (or (and (<= i2 1) (<= (- i3 1) 0)) (and (<= i2 (+ 1 (- i3 1))) (> (- i3 1) 0))) (and (< i0 i1) (and (< i2 i3) (and (< i3 i1) (and (>= i1 1) (and (>= (- i1 1) 1) (and (>= (- i2 0) 1) (and (>= (- i2 1) 1) (and (> i0 0) (and (> i0 0) (and (> i0 (+ 0 (- (- i1 1) 1))) (and (> i1 0) (and (> i1 0) (and (> i2 0) (and (> i3 0) (> (- (- i1 1) 1) 0))))))))))))))))))))"
+---)
+
+---(
+(set-logic QF_NIA) 
+(declare-fun i0 () Int) 
+(declare-fun i1 () Int) 
+(declare-fun i2 () Int) 
+(declare-fun i3 () Int) 
+(assert (and (or (and (<= i0 0) (<= i1 0)) (and (<= i0 (+ 0 i1)) (> i1 0))) (and (or (and (<= i0 0) (<= (- i1 1) 0)) (and (<= i0 (+ 0 (- i1 1))) (> (- i1 1) 0))) (and (or (and (<= i2 0) (<= i3 0)) (and (<= i2 (+ 0 i3)) (> i3 0))) (and (or (and (<= i2 1) (<= (- i3 1) 0)) (and (<= i2 (+ 1 (- i3 1))) (> (- i3 1) 0))) (and (< i0 i1) (and (< i2 i3) (and (< i3 i1) (and (>= i1 1) (and (>= (- i1 1) 1) (and (>= (- i2 0) 1) (and (>= (- i2 1) 1) (and (> i0 0) (and (> i0 0) (and (> i0 (+ 0 (- (- i1 1) 1))) (and (> i1 0) (and (> i1 0) (and (> i2 0) (and (> i3 0) (> (- (- i1 1) 1) 0))))))))))))))))))))
+(check-sat)
+(get-value (i0 i1 i2 i3))
+(exit)
+
+  [~] cvc3 -lang smt2 < cash.smt
+ sat
+ (3
+ 4
+ 2
+ 3)
+---)
+
+mod SYMBOLIC-WITNESS is
+  pr CASH-SRA .
+
+  ops g s1 s2 s3 s4 : -> Name [ctor] .
+
+  op witinit   : -> Sys .
+  op global1    : -> Object .
+  op server1    : -> Object .
+  op server2    : -> Object .
+
+  eq USER-MODULE-NAME
+   = 'SYMBOLIC-WITNESS .
+
+  eq global1
+   = < g : global | time |-> c(0), cq |-> emptyQueue, available |-> true, deadline-miss |-> false > . 
+  eq server1
+   = < s1 : server | maxBudget |-> c(3), period |-> c(4), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq server2
+   = < s2 : server | maxBudget |-> c(2), period |-> c(3), state |-> idle,
+                     timeExecuted |-> c(0), usedOfBudget |-> c(0), timeToDeadline |-> c(0) > .
+  eq witinit
+   = { c(true),
+   ---a c(3) < c(4) ^ c(2) < c(3) ^ c(3) > c(0) ^ c(2) > c(0), 
+       global1 server1 server2 } .
+endm
+
+---(
+search [1] witinit =>* { iB:iBool , < g : global | deadline-miss |-> true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+---(
+search in SYMBOLIC-WITNESS : witinit =>* {iB:iBool,Cnf:Configuration 
+< g : global | AtS:AttributeSet, deadline-miss |-> true >} .
+
+Solution 1 (state 54)
+states: 55  rewrites: 11011 in 583ms cpu (583ms real) (18857 rewrites/second)
+iB:iBool --> c(true)
+Cnf:Configuration --> 
+< s1 : server | maxBudget |-> c(3), period |-> c(4), state |-> waiting, usedOfBudget |-> c(0), timeToDeadline |-> c(2), timeExecuted
+    |-> c(0) > 
+< s2 : server | maxBudget |-> c(2), period |-> c(3), state |-> executing, usedOfBudget |-> c(2), timeToDeadline |-> c(1), timeExecuted
+    |-> c(2) >
+AtS:AttributeSet --> time |-> c(2), cq |-> emptyQueue, available |-> false
+---)

@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>
+      A Note on Symbolic Reachability Analysis Modulo Integer
+      Constraints for the CASH Scheduling Algorithm
+    </title>
+  </head>
+  <body alink="#FFFF00" bgcolor="#FFFFFF" link="#0000FF" text="#000000" vlink="#AA00FF">
+    
+    &nbsp;
+    <br>
+    
+    <table width="100%" border="0">
+      <tbody>
+        <tr>
+          <td align="LEFT" bgcolor="#0000FF">
+            <b>
+              <font color="#FFFFFF" size="+2">
+                A Note on Symbolic Reachability Analysis Modulo Integer Constraints for the CASH Algorithm 
+              </font>
+            </b>
+            <br>
+            <font color="#FFFFFF">
+              By Kyungmin Bae and Camilo Rocha ({kbae4,hrochan2} at illinois.edu)
+            </font>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p>
+      This page reports on the application of rewriting modulo SMT by
+      Kyungmin Bae and Camilo Rocha, at the University of Illinois at
+      Urbana-Champaign, to specify and analyze <i>symbolically</i> the
+      CASH scheduling algorithm, a sophisticated state-of-the-art
+      scheduling algorithm with advanced capacity sharing features for
+      reusing unused execution budgets. The CASH algorithm had been
+      developed by Caccamo, Buttazzo, and Sha at the University of
+      Illinois at Urbana-Champaign. Because the number of elements in the
+      queue of unused resources can grow beyond any bound, the CASH
+      algorithm poses challenges to its formal specification and analysis.
+      This scheduling algorithm had been subject of <i>ground</i> formal
+      analysis in Real-time Maude by Ölveczky and Caccamo (more
+      information
+      available <a href="http://heim.ifi.uio.no/peterol/RealTimeMaude/CASH/">here</a>).
+    </p>
+    <p>
+      The reason for the analysis was that Bae and Rocha wanted to
+      experiment with the effectiveness of rewriting modulo SMT for
+      finding minimal counter-examples, a laborious task when using the
+      ground specification of the CASH algorithm in Real-time Maude.  A
+      symbolic state in the symbolic CASH specification is a
+      pair <i>(&#966;,conf)</i> where <i>&#966</i> is a linear integer
+      constraint and <i>conf</i> is an configuration (or multiset) of
+      objects that can mention the variables in the
+      constraint <i>&#966;</i>. Symbolic states have initial model
+      semantics, i.e., a state <i>(&#966;,conf)</i> denotes the set of
+      ground states <i>&#952;(conf)</i> such that <i>&#952;(&#966)</i> is
+      valid in the standard model of the theory of integer numbers. Then,
+      the rewriting modulo SMT relation is a binary relation on symbolic
+      states that have initial model semantics.
+    </p>
+    <p>
+      It is particularly interesting that by using the techniques for
+      rewriting modulo SMT developed by Rocha in his
+      <a href="http://camilorocha.info/thesis">Ph.D. thesis</a> and an
+      extension of Maude with CVC3 for solving the linear integer
+      constraints, one could use directly Maude's <i>search</i> and <i>LTL
+      model checking</i> commands to perform <i>symbolic reachability
+      analysis</i> for the CASH algorithm.  In the experiment we could
+      detect, by using Maude's <i>search</i> command, a
+      minimal <i>symbolic</i> counter-example for a symbolic initial
+      configuration comprising infinitely many ground states in less than
+      2 seconds after only visiting 234 symbolic states.
+    </p>
+    
+    
+    <p>
+      <table width="100%" border="0">
+        <tbody>
+          <tr>
+            <td align="LEFT" bgcolor="0000FF">
+              <font color="FFFFFF" size="+2">
+                <b>
+                  Related Documents
+                </b>
+              </font>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <ol> 
+      <li> 
+        <a href="http://camilorocha.info/thesis">
+          Symbolic Reachability Analysis for Rewrite Theories.
+        </a> 
+        <br>By Camilo Rocha.
+        <br>Ph.D. Dissertation, University of Illinois at Urbana-Champaign, October 2012.
+        <br><i>Chapter 7 describes the foundations for rewriting modulo SMT.</i>
+      </li>
+      <li> 
+        <a href="http://heim.ifi.uio.no/peterol/RealTimeMaude/CASH/springer-fase06-final-version.pdf">
+          Formal Simulation and Analysis of the CASH Scheduling Algorithm
+          in Real-Time Maude.
+        </a>
+        <br>By Peter Ölveczky and Marco Caccamo.
+        <br>In L. Baresi and R. Heckel (Eds.), Fundamental Approaches to
+        Software Engineering 2006 (FASE '06), volume 3922 of Springer Lecture
+        Notes in Computer Science, pp. 357-372, 2006.
+        <br><i>Describes the ground formal analysis in Real-time Maude for the CASH algorithm.</i>
+      </li>
+      <li>
+        <a href="http://pertsserver.cs.uiuc.edu/%7Emcaccamo/papers/rtss00h.ps">
+          Capacity Sharing for Overrun Control.
+        </a>
+        <br>By Marco Caccamo, Giorgio Buttazzo, and Lui Sha.
+        <br>Proceedings of the IEEE Real-Time Systems Symposium, 
+        Orlando, Florida, December 2000.
+        <br><i>Describes the CASH algorithm.</i>
+      </li>
+    </ol>
+    
+    <p>
+      <table width="100%" border="0">
+        <tbody>
+          <tr>
+            <td align="LEFT" bgcolor="0000FF">
+              <font color="FFFFFF" size="+2">
+                <b>
+                  The Executable Symbolic Specification of the CASH Algorithm
+                </b>
+              </font>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    
+    <ul>
+      <li>
+        Maude 2.6 + CVC3 binaries for Linux (32 and 64 bits) and Mac OS X: 
+        <tt><a href="TODO">maude-2.6+cvc3.tar.bz2</a></tt>
+      </li>
+      <li>
+        The Symbolic CASH algorithm specification and analysis commands
+        file for the symbolic search:
+        <tt><a href="TODO">scash.tar.gz</a></tt>
+      </li>
+      <li> How to execute/analyze this specification?
+        <ol>
+          <li> 
+            Start Maude + CVC3
+          </li>
+          <li> 
+            Load the file <tt>cash-sra.maude</tt>
+          </li>
+          <li> 
+            The various analysis commands are
+            in <tt>case.bad.maude</tt>, but are commented away.  Just
+            remove the comments or cut-and-paste the desired command onto
+            the Maude command line.
+          </li>
+        </ol>
+      </li>
+    </ul>
+    
+    <table width="100%" border="0">
+      <tbody>
+        <tr>
+          <td align="LEFT" bgcolor="0000FF">
+            <font color="FFFFFF" size="+1">
+              <b>&nbsp;</b>
+            </font>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <address>
+      <a href="http://maude.cs.uiuc.edu/">
+        Kyungmin Bae and Camilo Rocha
+      </a>
+    </address>  
+    
+  </body>
+</html>

@@ -1,0 +1,411 @@
+Section 1:
+
+Paragraph 3: Introduce the following example explaining: simple system
+with numerical constraints. How to check if it is deadlock free for a
+given set of initial states? Explain what is deadlock freedom in this
+example (i.e., those states in there are no numbers in the first
+component). This simple system is outside the scope of tree automata
+and narrowing.
+
+{\small\begin{align*}
+  &\ccrl{I_1\;I_2\;C_1 \parallel C_2 \;}{\;I_1 \; C_1 \parallel (I_1 + I_2 + 1)\;C_2 \;}{\;0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{3}{=} 0} \\
+  &\ccrl{I_1\;I_2\;C_1 \parallel C_2 \;}{\;I_1\;C_1 \parallel C_2\;}{\;0 < I_1 \land 0< I_2 \land \neg((I_1 + I_2) \stackrel{3}{=} 0)} \\
+  &\ccrl{I_1 \parallel I_2\;C_2 \;}{\;\textit{none} \parallel I_2 \;C_2 \;}{\;0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{17}{=} 0} \\
+\end{align*}}
+
+Paragraph 4: Introduce the symbolic version of the above example and
+highlighting how symbolic constraints can help in making symbolic
+computation, both for simulation and verification. However, given the
+``complexity'' of the constraints (reasoning with reminders is quite
+expensive when compared to other basic operations such as addition and
+multiplication) accumulated during simulation despite the fact that
+the number of states is not significant, render rewriting modulo SMT
+unusable. (introduce matching conditions)
+
+{\small\begin{align*}
+  &\ccrl{\pair{I_1\;I_2\;C_1 \parallel C_2}{\phi_1}}{\pair{I_1 \; C_1 \parallel (I_1 + I_2 + 1)\;C_2}{\phi_2}}{\phi_2 {:=} (\phi_1 \land 0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{3}{=} 0) \; \land \; \textit{sat}(\phi_2)} \\
+  &\ccrl{\pair{I_1\;I_2\;C_1 \parallel C_2}{\phi_1}}{\pair{I_1\;C_1 \parallel C_2}{\phi_2}}{\phi_2 {:=} (\phi_1 \land 0 < I_1 \land 0< I_2 \land \neg((I_1 + I_2) \stackrel{3}{=} 0)) \land \textit{sat}(\phi_2)} \\
+  &\ccrl{\pair{I_1 \parallel I_2\;C_2}{\phi_1}}{\pair{\textit{none} \parallel I_2 \;C_2}{\phi_2}}{\phi_2 {:=} (\phi_1 \land 0 < I_1 \land 0< I_2 \land (I_1 + I_2) \stackrel{17}{=} 0) \land \textit{sat}(\phi_2)} \\
+\end{align*}}
+
+Paragraph 5: Explain the main contribution of this paper: guarded
+terms. They can be use to control branching in symbolic simulation and
+thus can reduced the state-space in rewriting modulo SMT. Give an idea
+of what guarded terms are and how they can be used. They can use to
+prove symbolic reachability properties in the above example in matter
+of seconds.
+
+Paragraph 6: Guarded terms have been used to encode a symbolic
+priority queue. More precisely, they have been successfully used in
+the symbolic rewriting semantics of the CASH algorithm, a real-time
+system designed for ...
+
+Paragraph 7: Paper outline.
+
+
+Section 4:
+
+
+%% Suppose that a constrained term $\pair{t}{\phi}$ is alternatively
+%% written as $t |_{\phi}$.  First, a number of constrained terms (of the
+%% same sort) can be combined in parallel into one term.  For example, a
+%% guarded term that combines $n$ constrained terms $t_1 |_{\phi_1},
+%% \ldots, t_n |_{\phi_n}$ is
+%% \[
+%% t_1 |_{\phi_1}
+%% \;\vee\;
+%% t_2 |_{\phi_2}
+%% \;\vee\;
+%% \cdots 
+%% \;\vee\;
+%% t_N |_{\phi_N}
+%% \]
+%% %
+%% which semantically represents the union of the sets
+%% $\den{t_1}{\phi_1},\ldots,\den{t_n}{\phi_n}$.
+%% %% that are given by $t_1 |_{\phi_1}, \ldots, t_N |_{\phi_N}$.
+%
+%% Second, guarded terms can be \emph{nested} so that the patterns $t_i$
+%% may include guarded terms as subterms. For example:
+%% \[
+%% f(t_1 |_{\phi_1} \vee f(g(t_3 |_{\phi_3}, t_4)) |_{\phi_2}).
+%% \]
+
+%and a ``ordinary'' term $t$
+%can also be written as a guarded term $t |_{\mathit{true}}$.
+
+
+
+\subsection{Built-in Subsignatures}
+
+The signature of a built-in subtheory defines the sorts and the
+function symbols that the SMT solver can handle.
+
+\begin{definition}\label{def.rewsmt.subsig}
+  An order-sorted signature $\Sigma = (S,\leq,F)$ is a signature with
+  {\em built-in subsignature} $\Sigma_\lang \subseteq \Sigma$ if and
+  only if $\Sigma_\lang = (S_\lang,F_\lang)$ is many-sorted, for each
+  $s \in S_\lang$ its connected component $[s]$ in $(S,\leq)$ is the
+  singleton set $[s] = \{s\}$, and, for $F_\nlang = F{\setminus}
+  F_\lang$, if $\func{f}{w}{s} \in F_\nlang$, then $s \notin S_\lang$
+  and $f$ has no other (subsort-overloaded) typing in $F_\lang$.
+\end{definition}
+
+The notion of built-in subsignature in an order-sorted signature
+$\Sigma$ is modeled by a many-sorted signature $\Sigma_\lang$ defining
+the built-in terms $T_{\Sigma_\lang}(X_\lang)$. The restriction
+imposed on the sorts and the function symbols in $\Sigma$
+w.r.t. $\Sigma_\lang$ provides a clear syntactic distinction between
+built-in terms (the only ones with built-in sorts) and all other
+terms.
+
+\begin{example}
+  Use the running example to illustrate
+  Definition~\ref{def.rewsmt.subsig}.
+\end{example}
+
+Since the goal of rewriting modulo SMT is to achieve conditional
+symbolic rewriting with decidable built-in constraints by delegating
+to an SMT solver the handling of such constraints on built-in terms,
+it is important to have a mechanism for completely `hiding' the
+syntactic details of built-in terms from the rewrite relation. In this
+paper, this idea of hiding the structure of built-in terms from a term
+is captured by the notion of abstraction of built-ins, a mechanism for
+replacing each one of the maximal built-in subterms of a term by
+distinct fresh new variables.
+
+
+\begin{definition}
+If $\Sigma \supseteq \Sigma_\lang$ is a signature with built-ins, then
+an {\em abstraction of built-ins} for a $\Sigma$-term $t$ is a pair
+$\pair{\lambda x_1 \cdots x_n.\lish{t}}{\lish{\theta}}$ consisting of
+context $\lambda x_1\cdots x_n.\lish{t}$ and a substitution
+$\func{\lish{\theta}}{X_\lang}{T_{\Sigma_\lang}(X_\lang)}$ such that:
+(i) $\lish{t} \in T_{\Sigma_\nlang}(X)$ is an $S_\lang$-linear term,
+(ii) $t = \lish{t}\lish{\theta}$; and (iii) $\dom{\lish{\theta}} =
+\{x_1,\ldots,x_n\}$ are pairwise distinct variables disjoint from
+$\vars{t}$, and $\{x_1,\ldots,x_n\} = \vars{\lish{t}}\cap X_\lang$,
+where $\Sigma_\nlang = (S,\leq, F_\nlang)$ and $X_\lang = \{X_s\}_{s
+  \in S_\lang}$.
+\end{definition}
+
+Lemma~\ref{lem.abstract} shows that such an abstraction can always be
+chosen so as to provide a canonical decomposition of $t$ enjoying
+useful properties.
+
+\begin{lemma}\label{lem.abstract}
+  Let $\Sigma$ be a signature with built-in subsignature
+  $\Sigma_\lang=(S_\lang,F_\lang)$. For each $t\in T_{\Sigma}(X)$,
+  there exists an abstraction of built-ins $(\lambda x_1\cdots
+  x_n.\lish{t};\lish{\theta})$.  Furthermore, $\{x_1,\ldots,x_n\}$ can
+  always be chosen to be disjoint from an arbitrarily chosen finite
+  subset $Y$ of $X_\lang$.
+\end{lemma}
+
+\subsection{Rewrite Theories modulo Built-ins}
+
+A rewrite theory modulo a built-in subtheory is a topmost rewrite
+theory with a signature of built-ins and where structural axioms can
+be given for both built-in and non-built-in terms, but equations are
+only allowed at the built-in level. In these rewrite theories, rules
+are given at a top sort, built-in extra variables are allowed in their
+right-hand side, and constraints are quantifier-free formulas over
+built-in terms.
+
+
+\begin{definition}\label{def.crt}
+  A {\em rewrite theory modulo the built-in subtheory $\ecal_\lang$}
+  is a topmost rewrite theory $\rcal=(\Sigma, E, R)$ with:
+%
+  \begin{enumerate}[(a) ]
+    \item $\Sigma {=} (S,\leq,F)$ a signature with built-in
+      subsignature $\Sigma_\lang {=} (S_\lang,F_\lang)$ and a top sort
+      $\states$ in $S\setminus S_\lang$;
+
+    \item $E = E_\lang \uplus B_\lang \uplus B_\nlang$, where
+      $E_\lang$ is a finite set of $\Sigma_\lang$-equations, $B_\lang$
+      (resp., $B_\nlang$) are regular, linear, collapse-free for any
+      sort in $S_\lang$, and sort-preserving $\Sigma_\lang$-axioms
+      (resp., $\Sigma_\nlang$-axioms), $\ecal_\lang =
+      (\Sigma_\lang,E_\lang\uplus B_\lang)$ and $\ecal = (\Sigma,E)$
+      are admissible, and the theory inclusion $\ecal_\lang \subseteq
+      \ecal$ is protecting;
+
+    \item $R$ a finite set of {\em rewrite rules} of the form
+      $\ccrl{l(\,\olist{x_1},\olist{y})}{r(\,\olist{x_2},\olist{y})}{\phi(\,\olist{x_3})}$
+      such that $l,r \in T_\Sigma(X)_\states$, $l$ is $(S\setminus
+      S_\lang)$-linear, $\olist{x_i}$ is of the form
+      $\olist{x_i}{:}\olist{s_i}$ with $\olist{s_i} \in S^{*}_\lang$,
+      for $i \in \{1,2,3\}$, $\olist{y}{:}\olist{s}$ with $\olist{s}
+      \in (S\setminus S_\lang)^*$, and $\phi \in
+      \oqff{\Sigma_\lang}{X_\lang}$, where
+      $\oqff{\Sigma_\lang}{X_\lang}$ denotes the set of
+      quantifier-free $\Sigma_\lang$-formulas with variables in
+      $X_\lang$.
+  \end{enumerate}
+\end{definition}
+%
+In Definition~\ref{def.crt}, a quantifier-free $\Sigma_\lang$-formula
+in $\oqff{\Sigma_\lang}{X_\lang}$ is a Boolean combination of atoms,
+where an atom is a $\Sigma_\lang$-equation with variables in
+$X_\lang$. Note that no assumption is made on the relationship between
+the built-in variables $\olist{x_1}$ in the left-hand side,
+$\olist{x_2}$ in the right-hand side, and $\olist{x_3}$ in the
+condition $\phi$ of a rewrite rule.  This freedom is key for
+specifying open systems with a rewrite theory because, for instance,
+$\olist{x_2}$ can have new variables not appearing in $\olist{x_1}$.
+
+\subsection{Ground Rewrite Relation}
+
+The next task is to define what \textit{ground} computation means for
+a rewrite theory modulo a built-in subtheory.
+
+\begin{definition}\label{def.ground}
+  Let $\rcal = (\Sigma, E, R)$ be a rewrite theory modulo
+  $\ecal_\lang$.  The \emph{ground rewrite relation} $\rews_{\rcal}$
+  induced by $\rcal$ on $T_{\Sigma,\states}$ is defined for $t,u \in
+  T_{\Sigma,\states}$ by $t \rews_{\rcal} u$ if and only if there is a
+  rule $\ccrl{l}{r}{\phi}$ in $R$ and a ground substitution
+  $\func{\sigma}{X}{T_\Sigma}$ such that (a) $t =_E l\sigma$, $u =_E
+  r\sigma$, and \label{def.ground.a} (b) $\model \models
+  \phi\sigma$. \label{def.ground.b}
+%
+\end{definition}
+%
+The ground rewrite relation $\rel_\rcal$ is the topmost rewrite
+relation induced by $R$ modulo $E$ on $T_{\Sigma,\states}$. This
+relation is defined even when a rule in $R$ has extra variables in its
+right-hand side: the rule is then nondeterministic and such extra
+variables can be arbitrarily instantiated, provided that the
+corresponding instantiation of $\phi$ holds. Also, note that
+non-built-in variables can occur in $l$, but $\phi\sigma$ is a {\em
+  ground} (i.e., variable-free) formula in
+$\oqff{\Sigma_\lang}{\emptyset}$, so that either
+$\model\models\phi\sigma$ or $\model\not\models\phi\sigma$.
+
+For technical reasons, it is very useful to shift the focus to a class
+of rewrite theories modulo built-ins in which the rewrite rules are
+left-linear. For any rewrite theory modulo built-ins such a simpler
+rewrite theory can always be obtained by means of the
+semantics-preserving theory transformation $\rcal \mapsto
+\lish{\rcal}$ presented in Definition~\ref{def.trans}.  As shown by
+Lemma~\ref{lem.equality}, this transformation preserves ground
+rewriting.  The specific reason for this transformation is towards
+achieving the ultimate goal of having an SMT solver exclusively
+handling \textit{all} constraints over built-in terms, including those
+used for expressing equality.  If a left-hand side of a rule were
+allowed to be non-linear for built-in sorts, then equality over
+built-in terms could be wrongfully delegated to the matching algorithm
+used for rewriting.
+
+\begin{definition}\label{def.trans}
+  Let $\rcal = (\Sigma, E, R)$ be a rewrite theory modulo
+  $\ecal_\lang$. Its {\em normal form} $\lish{\rcal} = (\Sigma, E,
+  \lish{R})$ has rules:
+%
+  {\small
+  \begin{align*}
+    \lish{R} & = \left\{ \ccrl{\lish{l}}{r}{\phi \land [\lish{\theta}]} \mid
+    (\ccrl{l}{r}{\phi} \in R) \, \wedge \,  \pair{\lambda
+      \olist{x}.\lish{l}}{\lish{\theta}} =
+    \purify_\Sigma(l, \vars{\{l,r,\phi\}})\right\}.
+  \end{align*}}
+\end{definition}
+%
+Note that the rewrite theory in Example~\ref{ex.ctrrew.builtinth} is
+already in normal form, since its set of rules is
+left-linear. Lemma~\ref{lem.equality} formalizes the previous claim
+about the fact that the rewrite relation induced by a rewrite theory
+modulo built-ins is preserved under the transformation $\rcal \mapsto
+\lish{\rcal}$ in Definition~\ref{def.trans}, specifically meaning that
+both theories satisfy the same reachability properties.
+
+\begin{lemma}\label{lem.equality}
+  Let $\rcal = (\Sigma, E, R)$ be a rewrite theory modulo
+  $\ecal_\lang$. Then ${\rews_{\rcal}} = {\rews_{\lish{\rcal}}}$.
+\end{lemma}
+
+\subsection{Symbolic Rewrite Relation}
+
+The symbolic rewrite relation induced by a rewrite theory with
+built-ins $\rcal$ operates over pairs $\pair{t}{\varphi}$, called
+\emph{constrained terms}, where $t$ is a term and $\varphi$ a
+constraint of built-ins. Intuitively, in a constrained term
+$\pair{t}{\varphi}$, the term $t$ can contain built-in variables and
+thus can serve the purpose of a template for all its ground instances
+that are constrained by $\varphi$. Definition~\ref{dec.consterm}
+spells out the precise semantics of a constrained term.
+
+\begin{definition}\label{dec.consterm}
+  Let $\rcal = (\Sigma, E, R)$ be a rewrite theory modulo
+  $\ecal_\lang$. A {\em constrained term} is a pair
+  $\pair{t}{\varphi}$ in $T_{\Sigma}(X)_\states \times
+  \oqff{\Sigma_\lang}{X_\lang}$. Its {\em denotation}
+  $\den{t}{\varphi}$ is defined as $\den{t}{\varphi} = \{t' {\in}
+  T_{\Sigma,\states} \mid (\exists \sigma: X {\longrightarrow}
+  T_{\Sigma}) \; t' {=_{E}} t\sigma \land \model \models
+  \varphi\sigma \}$.
+\end{definition}
+%
+The domain of $\sigma$ in Definition~\ref{dec.consterm} ranges over
+all variables $X$ and consequently $\den{t}{\varphi} \subseteq
+T_{\Sigma,\states}$ for any $t \in T_{\Sigma}(X)_\states$, even if
+$\vars{t} \not\supseteq \vars{\varphi}$. Note, then, that
+$\den{t}{\varphi}$ semantically represents the set of all ground
+states that are $E$-equal to instances of $t$ and satisfy $\varphi$.
+
+\begin{definition}\label{def.symbolic}
+  Let $\rcal = (\Sigma, E, R)$ be a rewrite theory modulo built-ins
+  $\ecal_\lang$.  The {\em symbolic rewrite relation} $\srews_{\rcal}$
+  induced by $\rcal$ on $T_{\Sigma}(X)_\states \times
+  \oqff{\Sigma_\lang}{X_\lang}$ is defined for $t,u \in
+  T_{\Sigma}(X)_\states$ and $\varphi,\varphi' \in
+  \oqff{\Sigma_\lang}{X_\lang}$ by $\pair{t}{\varphi} \srews_{\rcal}
+  \pair{u}{\varphi'}$ if and only if there is a rule
+  $\ccrl{l}{r}{\phi}$ in $R$ and a substitution
+  $\func{\theta}{X}{T_{\Sigma}(X)}$ such that: (a) $t =_E
+  l\zeta\theta$ and $u = r\zeta\theta$, (b) $\tcal_{\ecal_\lang}
+  \models (\varphi' \Leftrightarrow \varphi \land \phi\zeta\theta)$,
+  and (c) $\varphi'$ is
+  $\tcal_{\ecal_\lang}$-satisfiable, \label{def.symbolic.c} where
+  $\zeta = \newvars(\vars{t,\varphi})$.
+\end{definition}
+%
+The symbolic relation $\crel_\rcal$ on constrained terms is defined as
+a topmost rewrite relation induced by $R$ modulo $E$ on
+$T_\Sigma(X)$ with extra bookkeeping of constraints.  Note that
+$\varphi'$ in $\pair{t}{\varphi} \crel_\rcal \pair{u}{\varphi'}$, when
+witnessed by $\ccrl{l}{r}{\phi}$ and $\theta$, is {\em semantically
+  equivalent} to $\varphi \land \phi\zeta\theta$, in contrast to being
+{\em syntactically} equal.  This extra freedom allows for
+simplification of constraints if desired.  Also, such a constraint
+$\varphi'$ is satisfiable in $\model$, implying that $\varphi$ and
+$\phi\theta$ are both satisfiable in $\model$, and therefore
+$\den{t}{\varphi} \!\neq \emptyset\! \neq\!  \den{u}{\varphi'}$. Note
+that, up to the choice of the semantically equivalent $\varphi'$ for
+which a fixed strategy is assumed, the symbolic relation $\crel_\rcal$
+is deterministic, in the sense of being determined by the rule and the
+substitution $\zeta\theta$, because the renaming of variables in the
+rules is fixed by $\newvars$.
+
+\begin{theorem}\label{thm.sound}
+  Let $\rcal = (\Sigma,E,R)$ be a rewrite theory modulo built-ins
+  $\ecal_\lang$, $t,u\in T_\Sigma(X)_\states$, and
+  $\varphi,\varphi'\in\oqff{\Sigma_\lang}{X_\lang}$. If
+  $\pair{t}{\varphi} \crel_{\lish{\rcal}} \pair{u}{\varphi'}$, then
+  $t\rho\rel_{\lish{\rcal}} u\rho$ for all
+  $\func{\rho}{X}{T_{\Sigma}}$ satisfying
+  $\model\models\varphi'\rho$.
+\end{theorem}
+
+\begin{theorem}
+  \label{thm.comp}
+  Let $\rcal = (\Sigma,E,R)$ be a rewrite theory modulo built-ins
+  $\ecal_\lang$, $t \in T_\Sigma(X)_\states$, $u' \in
+  T_{\Sigma,\states}$, and $\varphi\in\oqff{\Sigma_\lang}{X_\lang}$.
+  For any $\func{\rho}{X}{T_{\Sigma}}$ such that
+  $t\rho\in\den{t}{\varphi}$ and $t\rho\rel_{\lish{\rcal}} u'$, there
+  exist $u\in T_\Sigma(X)_\states$ and
+  $\varphi'\in\oqff{\Sigma_\lang}{X_\lang}$ such that
+  $\pair{t}{\varphi}\crel_{\lish{\rcal}}\pair{u}{\varphi'}$ and
+  $u'\in\den{u}{\varphi'}$.
+\end{theorem}
+
+\subsection{Symbolic Reachability Analysis}
+
+The question, of course, is how to use symbolic rewriting to find
+answers to existential reachability queries of this kind.  Since in
+rewriting modulo SMT there is a useful division of labor between
+\emph{matching} pattern terms modulo $B_{1}$ and \emph{SMT solving} of
+built-in constraints, the above existential formula needs to be
+slightly modified into an equivalent one, more suitable for technical
+reasons.  Note that the set $\olist{z}$ of parameter variables
+decomposes as a disjoint union $\olist{z}= \olist{z_{0}} \uplus
+\olist{z_{1}}$, where $\olist{z_{0}} \subset X_{0}$, and
+$\olist{z_{1}} \subset (X \setminus X_{0})$.  To be able to use
+matching modulo $B_{1}$, the idea is to have: (i) the built-in
+parameter variables $\olist{z_{0}}$ \emph{not} to appear in $u$, but
+only in its condition $\varphi'$, and (ii) $u$ to be a
+$\Sigma_{1}$-term.  This can easily be accomplished by an abstraction
+of built-ins for the original $u$ in $\pair{u}{\varphi'}$.  That is,
+the $\Sigma_\lang$-subterms of $u$ can be abstracted with fresh
+abstraction variables $\olist{y'}\subseteq X_\lang$, where $\lish{u}$
+is $S_\lang$-linear, and if $\olist{y'} = y_1,\ldots,y_n$ then
+$[\gamma]$ is the conjunction $y_1=v_1 \land \cdots \land y_n=v_n$
+associated to the substitution $\gamma = \{y'_1 \mapsto
+v_1,\ldots,y'_n\mapsto v_n\}$ such that $u = \lish{u}\gamma$.  This
+yields a reformulation of the above existential formula as the
+semantically equivalent one:
+%
+\begin{align}\label{eq.search}
+  \tcal_\rcal \models \left(\exists \olist{x} \cup \olist{y} \cup
+  \olist{y'}\right) \; t \rews_\rcal^* \lish{u} \,\land \,\varphi \,\land \,\varphi' \land [\gamma],
+\end{align}
+%
+where two essential points are: (i) $\den{u}{\varphi'} =
+\den{\lish{u}}{\varphi' \land [\gamma]}$, and (ii)
+the built-in parameter variables $\olist{z_{0}}$ no longer appear in
+$\lish{u}$ but appear instead in $\varphi'  \land  [\gamma]$.
+
+\begin{theorem}\label{thm.search}
+  Let $\rcal = (\Sigma,E,R)$ be a rewrite theory modulo built-ins
+  $\ecal_\lang$. The model-theoretic satisfaction relation
+  (\ref{eq.search}) holds if and only if there exist a term $v \in
+  T_{\Sigma}(X)_\states$, a constraint $\psi \in
+  \oqff{\Sigma_\lang}{X_\lang}$, and a $B_{1}$-unifier
+  $\theta$ of the equation $\lish{v} = \lish{u}$ such that: (a)
+  $\pair{t}{\varphi} \crel_{\lish{\rcal}}^*
+  \pair{v}{\psi}$,\label{thm.search.a} and (b) $(\psi \wedge [\eta]
+  \wedge \varphi' \land [\gamma])\theta$ is
+  $\tcal_{\ecal_\lang}$-satisfiable, \label{thm.search.c} where
+  $(\lish{v} ; \eta)$ is an abstraction of built-ins for $v$.
+\end{theorem}
+
+Note that in Theorem~\ref{thm.search} it is assumed that, in addition
+to a $B_{1}$-matching algorithm, there is also a finitary
+$B_{1}$-unification algorithm, so that a finite number of most general
+such unifiers can be effectively computed. However,
+theorem~\ref{thm.search} can be reformulated in a way in which only
+$B_{1}$-matching, as opposed to $B_{1}$-unification, is required to
+solve existential reachability queries
+(see~\cite{rocha-rewsmtjlamp-2017} for details).

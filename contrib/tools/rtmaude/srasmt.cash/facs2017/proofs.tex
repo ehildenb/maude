@@ -1,0 +1,342 @@
+% !TEX root = main.tex
+
+\numberwithin{equation}{section}
+
+\section{Proofs of Lemmas and Theorems}
+\label{sec.proofs}
+
+\exsig*
+\begin{proof}
+By induction on the structure of $u$.
+%
+\begin{inparaenum}[(1)]
+	\item If $u \in {T}_{\Sigma}(X)_{\sort{s}}$,  $u \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$ because $\sort{s} < \sort{g(s)}$ by construction.
+%
+	\item If $u$ is $f(u_1,\ldots,u_n)$,
+	 $u_i \in {T}_{G(\Sigma)}(X)_{g(\sort{s}_i)}$ for $1 \leq i \leq n$
+	 by induction hypothesis.
+	We have 
+	$u \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$, because $f : g(\sort{s}_1) \ldots g(\sort{s}_n) \to g(\sort{s}) \in G(\Sigma)$.
+%
+	\item If $u$ is $v |_{\phi}$, $v \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$ by induction hypothesis.
+	We have $u \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$
+	because $\_|\_ : g(\sort{s}) \times \sort{Bool} \to g(\sort{s}) \in G(\Sigma)$.	
+%
+	\item If $u$ is $u_1 \vee u_2$, $u_1, u_2 \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$ for $1 \leq i \leq n$  
+	by induction hypothesis.
+	We have
+	$u \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$,
+	since $\_\!\!\vee\!\!\_ : g(\sort{s}) \times g(\sort{s}) \to g(\sort{s}) \in G(\Sigma)$.
+%
+\end{inparaenum}
+Hence, $u \in \overline{T}_{\Sigma}(X)_{\sort{s}}$ implies $u \in {T}_{G(\Sigma)}(X)_{\sort{g(s)}}$.
+%
+The other direction is similar. 
+\qed
+\end{proof}
+
+
+\specialcase*
+\begin{proof}
+\begin{inparaenum}[(1)]
+	\item Suppose that $t' \in \llbracket t \rrbracket_\phi$.
+By \cite[Definition 6]{rocha-rewsmtjlamp-2017}, 
+$t' =_{E} \theta t$ and $\model \models \theta\phi$ hold
+for some ground substitution  $\theta: X \to T_{\Sigma}$.
+By Def.~\ref{def:ground-semantics}, $t' \in \llbracket \theta t |_{\theta\phi} \rrbracket$,
+and by Def.~\ref{def:semantics},
+we have $t' \in \llbracket t |_\phi \rrbracket$.
+Therefore, $\llbracket t \rrbracket_\phi \subseteq \llbracket t |_\phi \rrbracket$.
+%
+	\item Suppose that $t' \in \llbracket t |_\phi \rrbracket$.
+	By Def.~\ref{def:semantics}, $t' \in \llbracket \theta t |_{\theta \phi} \rrbracket$ for a ground substitution $\theta: X \to T_{\Sigma}$.
+	By Def.~\ref{def:ground-semantics}, $\model \models \theta\phi$,
+	and $t' \in \llbracket \theta t  \rrbracket$, i.e., $t' =_E \theta t$ because $t$ is a $\Sigma$-term. 
+	Therefore, $t' \in \llbracket t \rrbracket_\phi$.
+\end{inparaenum}
+\qed
+\end{proof}
+
+\acdisj*
+\begin{proof}
+Let $\theta : X \to T_\Sigma$ be a  ground substitution.
+$\llbracket \theta (u_1 \vee  u_2)\rrbracket  = \llbracket \theta u_1 \rrbracket \cup \llbracket \theta u_2 \rrbracket$
+and 
+$\llbracket\theta(u_2 \vee u_1)\rrbracket = \llbracket \theta u_2 \rrbracket \cup \llbracket \theta u_1 \rrbracket$.
+Since $\cup$ is commutative,  $\llbracket \theta (u_1 \vee  u_2)\rrbracket = \llbracket\theta(u_2 \vee u_1)\rrbracket$.
+%
+Similarly,
+$\llbracket \theta (u_1 \vee  u_2) \vee u_3 \rrbracket =  \llbracket\theta(u_1 \vee (u_2 \vee u_3))\rrbracket = \llbracket \theta u_1 \rrbracket \cup \llbracket \theta u_2 \rrbracket \cup \llbracket \theta u_3 \rrbracket$.
+\qed
+\end{proof}
+
+\congruence*
+\begin{proof}
+%
+Let $\theta : X \to T_\Sigma$ be any ground substitution. 
+$\llbracket \theta u \rrbracket = \llbracket \theta v\rrbracket$ by assumption.
+\begin{inparaenum}[(1)]
+	\item Since $\theta \sigma$ is a ground substitution, 
+		 $\llbracket \theta (\sigma u) \rrbracket = \llbracket (\theta \sigma) u \rrbracket = \llbracket (\theta \sigma) v \rrbracket = \llbracket \theta (\sigma v) \rrbracket$.
+	\item 
+	$\llbracket  \theta f( u_1, \ldots, u, \ldots, u_n) \rrbracket$ is by Def.~\ref{def:ground-semantics}:
+	\begin{align*}
+	& \{t' \in \llbracket f(t_1,\ldots, t, \ldots, t_n)\rrbracket \mid  t_1 \in \llbracket \theta u_1\rrbracket, \ldots, t \in \llbracket \theta u\rrbracket, \ldots, t_n \in \llbracket \theta u_n\rrbracket  \}
+	\\
+	=\;& \{t' \in \llbracket f(t_1,\ldots, t, \ldots,t_n)\rrbracket \mid  t_1 \in \llbracket \theta u_1\rrbracket, \ldots, t \in \llbracket \theta v\rrbracket, \ldots, t_n \in \llbracket \theta u_n\rrbracket  \}
+	\end{align*}
+	that is $\llbracket  \theta f( u_1, \ldots, v, \ldots, u_n) \rrbracket$. 
+	\item If $\model \models \theta\phi$, $\llbracket \theta u |_{\theta\phi}\rrbracket = \llbracket \theta u \rrbracket = \llbracket \theta v \rrbracket = \llbracket \theta v |_{\theta\phi}\rrbracket$,
+	and if $\model \not\models \theta\phi$, $\llbracket \theta u |_{\theta\phi}\rrbracket  = \llbracket \theta v |_{\theta\phi}\rrbracket = \emptyset$.
+	\item $\llbracket \theta u_1 \vee \cdots \vee \theta u \vee \cdots \vee \theta u_n\rrbracket$ is
+	$\llbracket \theta u_1\rrbracket \cup \cdots \cup \llbracket \theta u \rrbracket \cup \cdots \cup \llbracket \theta u_n\rrbracket$,
+	which is equal to
+	$\llbracket \theta u_1\rrbracket \cup \cdots \cup \llbracket \theta v \rrbracket \cup \cdots \cup \llbracket \theta u_n\rrbracket $,
+	which is $\llbracket \theta u_1 \vee \cdots \vee \theta v \vee \cdots \vee \theta u_n\rrbracket$ by definition.
+\end{inparaenum}
+\qed
+\end{proof}
+
+
+\geq*
+\begin{proof}
+%It suffices to show that they hold for any ground substitution $\theta : X \to T_\Sigma$.
+Let $\theta : X \to T_\Sigma$ be a ground substitution. 
+\begin{inparaenum}[(1)]
+	 \item %For a ground substitution~$\theta$, 
+	 If $\model \models \theta\phi$, 
+	 both $\llbracket \big(\bigvee_{i=1}^n \theta u_i \big) |_{\theta\phi} \rrbracket$ and $\llbracket \bigvee_{i=1}^n (\theta u_i  |_{\theta\phi}) \rrbracket$
+	 are $\bigcup_{i=1}^n  \llbracket\theta u_i \rrbracket$.
+	 If $\model \not\models \theta\phi$, both are $\emptyset$.
+	 %
+	\item  %For a ground substitution~$\theta$, 
+	$\llbracket f(\theta u_1,\ldots, \big(\bigvee_{i=1}^n \theta u_j^i\big), \ldots,\theta u_n) \rrbracket$
+	is by Def.~\ref{def:ground-semantics}:
+	\[
+	\begin{aligned}
+	&\textstyle
+	\{t \in \llbracket f(t_1,\ldots,t_n)\rrbracket \mid  t_1 \in \llbracket \theta u_1\rrbracket, \ldots, t_j \in \llbracket \bigvee_{i=1}^n \theta u_j^i\rrbracket, \ldots, t_n \in \llbracket \theta u_n\rrbracket \}
+	\\
+	=\;&\textstyle
+	\{t \in \llbracket f(t_1,\ldots,t_n)\rrbracket \mid  t_1 \in \llbracket \theta u_1\rrbracket, \ldots, t_j \in \bigcup_{i=1}^n  \llbracket \theta u_j^i\rrbracket, \ldots, t_n \in \llbracket \theta u_n\rrbracket \}
+	\\
+	=\;&\textstyle
+	\bigcup_{i=1}^n  \{t \in \llbracket f(t_1,\ldots,t_n)\rrbracket \mid  t_1 \in \llbracket \theta u_1\rrbracket, \ldots, t_j \in  \llbracket \theta u_j^i\rrbracket, \ldots, t_n \in \llbracket \theta u_n\rrbracket \}
+	\end{aligned}
+	\]
+	that is $\llbracket \bigvee_{i=1}^n f(\theta u_1,\ldots, \theta u_j^i, \ldots,\theta u_n) \rrbracket$
+	by Def.~\ref{def:ground-semantics}.
+	%
+	\item %For a ground substitution~$\theta$, 
+	If $\model \models \theta\phi$ and $\model \models \theta\varphi$,
+	 both $\llbracket \big(\theta u |_{\theta\varphi}\big) |_{\theta\phi}\rrbracket$ and $\llbracket \theta u |_{\theta\varphi \wedge \theta\phi} \rrbracket$
+	 are $\llbracket \theta u \rrbracket$,
+	 and otherwise, both are $\emptyset$. 
+	 %
+	 \item
+	 If $\model \models \theta\phi$,
+	 both $\llbracket f(\theta u_1,\ldots \theta u_j |_{\theta\phi} \ldots,\theta u_n)\rrbracket $
+	 and $\llbracket f(\theta u_1,\ldots \theta u_j \ldots,\theta u_n) |_{\theta\phi} \rrbracket$
+	 are  $\llbracket f(\theta u_1,\ldots \theta u_j \ldots,\theta u_n) \rrbracket$,
+	 and if $\model \not\models \theta\phi$, both are $\emptyset$.
+	 %
+\end{inparaenum}
+\qed
+\end{proof}
+
+
+\standard*
+\begin{proof}
+By induction on the depth of guarded term $u\in \overline{T}_{\Sigma}(X)$.
+If the depth is $0$ (i.e., $u$ is a constant or a variable), $u$ is clearly in the standard form. 
+%
+Suppose that the theorem holds for all guarded terms whose depth is less than $k$,
+and $u$ has depth $k$. %There are three cases:
+%
+\begin{inparaenum}[(1)]	
+	\item $u$ is $v |_\phi$. By induction hypothesis, $v \equiv_g \bigvee_{j} t_{j} |_{\phi_{j}}$.
+	By Lemma~\ref{lemma:congruence}, $u \equiv_g (\bigvee_{j} t_{j} |_{\phi_{j}}) |_\phi$.
+	By Lemma~\ref{lemma:geq}, $(\bigvee_{j} t_{j} |_{\phi_{j}}) |_\phi \equiv_g \bigvee_{j} t_{j} |_{\phi_{j} \wedge \phi}$,
+	which is in the standard form.
+	%
+	\item $u$ is $u_1 \vee \cdots \vee u_n$.
+	By induction hypothesis, $v_i \equiv_g \bigvee_{j_i} t_{i,j_i} |_{\phi_{i,j_i}}$.
+	By Lemma~\ref{lemma:congruence}, $u \equiv_g \bigvee_{i=1}^n \bigvee_{j_i} t_{i,j_i} |_{\phi_{i,j_i}}$,
+	which is in the standard form, since $\vee$ is associative. 
+	%
+	\item $u$ is $f(v_1, \ldots, v_n)$.
+	By induction hypothesis, $v_i \equiv_g \bigvee_{j_i} t_{i,j_i} |_{\phi_{i,j_i}}$.
+	%
+	By Lemma~\ref{lemma:congruence},
+	we have $u \equiv_g f(\bigvee_{j_1} t_{1,j_1} |_{\phi_{1,j_1}}, \ldots, \bigvee_{j_n} t_{n,j_n} |_{\phi_{n,j_n}})$.
+	%
+	By Lemma~\ref{lemma:geq},
+	$f(\bigvee_{j_1} t_{1,j_1} |_{\phi_{1,j_1}}, \ldots, \bigvee_{j_n} t_{n,j_n} |_{\phi_{n,j_n}})
+	\,\equiv_g\,
+	\bigvee_{j_1} \ldots \bigvee_{j_n} f( t_{1,j_1} |_{\phi_{1,j_1}}, \ldots,  t_{n,j_n} |_{\phi_{n,j_n}}) \allowbreak
+	\,\equiv_g\,
+	\bigvee_{j_1,\ldots,j_n} f( t_{1,j_1} , \ldots,  t_{n,j_n} )|_{\bigwedge_{i=1}^n \phi_{i,j_i}}$.
+	which is in the standard form.
+\end{inparaenum}
+\qed
+\end{proof}
+
+
+\aciguard*
+\begin{proof}
+It suffices to show that a single application of the equations $B$ preserves the semantics.
+%since $\equiv_g$ is congruence by Lemma~\ref{lemma:congruence}.
+Consider $f(X, f(Y,Z)) = f(f(X,Y),Z)$. Suppose that
+$u = \sigma (f(X, f(Y,Z)))$ and $u' = \sigma (f(f(X,Y),Z))$
+for a substitution $\sigma$,
+i.e., one-step application of associativity. 
+%
+For any ground substitution $\theta$,
+if $f(t_1, f(t_2,t_3)) \in \llbracket \theta u \rrbracket$,
+then $f(f(t_1, t_2),t_3)) \in \llbracket \theta u' \rrbracket$
+by Def.~\ref{def:ground-semantics}, and vice versa.
+%
+Therefore, $\llbracket \theta u \rrbracket = \llbracket \theta u' \rrbracket$ modulo $B$, and thus $u \equiv_g u'$.
+The other cases ($f(X, Y) = f(Y, X)$, $f(X, \mathit{id}) = X$, $f(\mathit{id}, X) = X$) are similar. 
+\qed
+\end{proof}
+
+
+%\begin{corollary}\label{cor:admissible}
+%If $u \in T_{G(\Sigma)}(X)$ is admissible for $\ccrl{l}{r}{\phi}$,
+%for a substitution $\rho : X \to T_\Sigma(X)$, $\rho u$ is also admissible for $\ccrl{l}{r}{\phi}$.
+%\end{corollary}
+%
+%\begin{proof}
+%Suppose that $\llbracket \rho u \rrbracket \cap \llbracket l \rrbracket \neq \emptyset$.
+%Then, $\llbracket u \rrbracket \cap \llbracket l \rrbracket \neq \emptyset$, since an instance of $\rho u$ is an instance of $u$.
+%By definition, $u =_E \sigma l$, % for $\sigma : X \to T_\Sigma(X)$,
+%and therefore $\rho u =_E \rho \sigma l$.
+%\qed
+%\end{proof}
+
+
+\sim*
+\begin{proof}
+Suppose that $u \to_R u'$ by a guarded rewrite rule $\ccrl{l}{r}{\phi}$,
+where $l$'s standard form is $\bigvee_{i=1}^n l_i |_{\psi_i^l}$
+and $r$'s standard form is $\bigvee_{j=1}^m r_j |_{\psi_j^r}$.
+By definition,
+for a ground substitution 
+$\theta : X \to T_{G(\Sigma)}$,
+$u =_E \theta l$, $u' =_E \theta r |_{\theta \phi}$,
+$\llbracket  u \rrbracket \neq \emptyset$, and 
+$\llbracket u' \rrbracket \neq \emptyset$
+%
+By Lemma~\ref{lemma:aci-guard} and Theorem~\ref{thm:standard}:
+\[
+\textstyle
+u \;\equiv_g\; \theta l \;\equiv_g\; \bigvee_{i=1}^n \theta l_i |_{\theta \psi_i^l},
+\qquad
+u' \;\equiv_g\; \theta r \;\equiv_g\; \bigvee_{j=1}^m \theta r_j |_{\theta \psi_j^r}.
+\]
+Therefore,  
+if $t \in \llbracket u \rrbracket$, then $t \in \llbracket \theta l_i \rrbracket$---which means $t =_E \theta l_i$ since $\theta l_i \in T_\Sigma$---such that $\model \models \theta \psi_i^l$ for some $1 \leq i \leq n$.
+Similarly,
+if $t' \in \llbracket u' \rrbracket$, then $t' =_E \theta r_j$ such that $\model \models \theta \psi_j^r$ for some $1 \leq j \leq m$.
+Therefore, $t =_E \theta l_i$, $t' =_E \theta r_j$, and $\model \models \theta (\phi \wedge \psi_i^l \wedge \psi_j^r)$,
+that is, $t \to_{\hat{R}} t' $ by the rewrite rule $\ccrl{l_i}{r_j}{\phi \wedge \psi_i^l \wedge \psi_j^r}$
+in the standard expansion $S(\ccrl{l}{r}{\phi})$.
+\qed
+\end{proof}
+
+
+
+%%%Converse seems to be quite nontrivial.
+%%%
+%%Conversely, 
+%%suppose that $t \to_{\hat{R}} t' $ for $t \in \llbracket u \rrbracket$
+%%by a rule $\ccrl{l_i}{r_j}{\phi \wedge \psi_i^l \wedge \psi_j^r}$ in the standard expansion $S(\ccrl{l}{r}{\phi})$.
+%%Then, $t =_E \theta l_i$, $t' =_E \theta r_j$, and $\model \models \theta (\phi \wedge \psi_i^l \wedge \psi_j^r)$  
+%%for a ground substitution $\theta : X \to T_{G(\Sigma)}$.
+%%%
+%%Also, $\llbracket u \rrbracket \cap \llbracket l \rrbracket \neq \emptyset$,
+%%because $t \in \llbracket \theta l_i \rrbracket \subseteq \llbracket \theta l \rrbracket \subseteq \llbracket l \rrbracket$,
+%%Since $u$ is admissible, $u =_E \sigma l$ 
+%%and $t \in \llbracket \sigma l_i |_{\sigma \psi_i^l} \rrbracket$,
+%%for some substitution $\sigma : X \to T_\Sigma(X)$.
+%%Because $u$ is ground, $\sigma l_i |_{\sigma \psi_i^l}$ is also ground, 
+%%and thus $t =_E \sigma l_i$ and $\model \models \sigma \psi_i^l$.
+%%
+%%
+%%
+%%We assume that equations $E$ contains only structural axioms,
+%%as discussed in Sec.~\ref{sec:guarded-rew}.
+%%Therefore, $u \equiv_g  \sigma' l \;\equiv_g\; \bigvee_{i=1}^n \sigma' l_i |_{\sigma' \psi_i^l}$,
+%%
+%%%
+%%Let $\sigma : X \to T_\Sigma(X)$ be a substitution defined as:
+%%$\sigma(x) = \theta(x)$ if $x \in \vars{l_i,r_j,\phi \wedge \psi_i^l \wedge \psi_j^r}$,
+%%and
+%%$\sigma(x) = \sigma'(x)$  otherwise.
+%%%
+%%Clearly, 
+%%$t =_E \sigma l_i$, $t' =_E \sigma r_j$, and $\model \models \sigma (\phi \wedge \psi_i^l \wedge \psi_j^r)$.
+%%%%%
+%%%%%
+%%Also, $u =_E \sigma  l$ \marginpar{Not sure}
+%%%%%
+%%%%%
+%%%
+%%Let $u' = \sigma r |_{\sigma \phi}$. 
+%%By assumption, $r$ is admissible, % for the set $R$, 
+%%and thus $u'$ is admissible (by Corollary~\ref{cor:admissible}). 
+%%Notice that $t' \in \llbracket u' \rrbracket$.
+%%%
+%%Therefore, $u \to_R u'$ by $\ccrl{l}{r}{\phi}$.
+%%%
+
+
+\grew*
+\begin{proof}
+Suppose that $u \crel_R u'$, i.e.,
+for $\ccrl{l}{r}{\phi}$,
+$u =_E \sigma l$, $u' =_E \sigma r |_{\sigma \phi}$, and $\llbracket \theta u \rrbracket \neq \emptyset  \,\wedge\,  \llbracket \theta u' \rrbracket \neq \emptyset$.
+Since $\llbracket \theta (\sigma r |_{\sigma \phi}) \rrbracket \neq \emptyset$, $\model \models \theta \sigma \phi$. Hence, $\theta u \to_R \theta u'$.
+
+Conversely, 
+suppose that $\theta u \to_R w'$.
+Without loss of generality, 
+we assume that $\vars{u} \cap \vars{l, r, \phi} = \emptyset$,
+since we can rename the variables in the rule. 
+Also, we assume that $E$ contains only structural axioms,
+as discussed in Sec.~\ref{sec:guarded-rew}.
+For a ground substitution $\rho : X \to T_{G(\Sigma)}$
+such that $\rho\restriction_{\vars{u}} = \theta\restriction_{\vars{u}}$:
+%we have 
+\begin{equation}
+\rho u =_E \rho l,\qquad 
+w' =_E \rho r |_{\rho \phi},\qquad 
+\llbracket \rho u \rrbracket \neq \emptyset,\qquad
+\llbracket w' \rrbracket \neq \emptyset
+\end{equation}
+%
+Since $\llbracket u \rrbracket \cap \llbracket l \rrbracket \neq \emptyset$ and $u$ is admissible, 
+there is a substitution $\sigma' : X \to T_\Sigma(X)$
+such that $u =_E \sigma' l$ holds.
+%
+Let $\sigma : X \to T_\Sigma(X)$ be defined as:
+$\sigma(x) = \sigma'(x)$ if $x \in \vars{l}$,
+and
+$\sigma(x) = \rho(x)$  otherwise.
+%
+Clearly, $u =_E \sigma' l = \sigma  l$.
+Let $u' = \sigma r |_{\sigma \phi}$.
+%
+Since $\rho u =_E \rho l$
+and
+$\rho u =_E \rho (\sigma \!\restriction_{\vars{l}} l)$,
+we have
+$\rho \!\restriction_{\vars{l}} = \rho (\sigma \!\restriction_{\vars{l}})$.
+%
+If $x \in \vars{l}$, $\rho \sigma (x) = \rho(x)$,
+and if $x \not\in \vars{l}$, $\rho \sigma (x) = \rho \rho (x) = \rho x$.
+Therefore, $\rho \sigma = \rho$.
+Notice that $\emptyset \neq \llbracket w' \rrbracket = \llbracket \rho (r |_{\phi}) \rrbracket = \llbracket \rho \sigma (r |_{\phi})\rrbracket = \llbracket \rho u'\rrbracket \subseteq \llbracket u'\rrbracket$.
+\qed
+\end{proof}

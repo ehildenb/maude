@@ -1,0 +1,285 @@
+***(
+
+    This file is part of SRAPlexil, a rewriting logic semantics of
+    the Plan Execution Interchange Language -PLEXIL- with symbolic
+    reachability analysis support modulo SMT theories
+
+    Copyright (C) 2008-2012 Camilo Rocha, camilo.rocha@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                       SMT interface for Plexil expressions
+****                                                 using the SMT 2.0 standard
+****                                                       Author: Camilo Rocha
+
+--- constants used by the SMT solver interface
+fmod SMT-CONSTANTS is
+  pr STRING .
+  --- variable prefixes
+  ops bmem-prefix imem-prefix : -> String .
+  eq bmem-prefix = "b" .
+  eq imem-prefix = "i" .
+
+  --- smt types
+  ops bool-type int-type : -> String .
+  op smt-logic : -> String .
+  eq bool-type = "Bool" .
+  eq int-type = "Int" .
+
+  --- smt logic
+  op smt-logic : -> String .
+  eq smt-logic = "QF_NIA" .
+endfm
+
+fmod NAT-SET is
+  pr SET{Nat} *(sort NeSet{Nat} to NeNatSet,
+                sort Set{Nat} to NatSet,
+                op empty to mtnatset) .
+endfm
+
+view NatSet from TRIV to NAT-SET is
+  sort Elt to NatSet .
+endv
+
+--- translation facilities for iBool-expressions to the
+--- SMTLIB standard
+fmod SMT-TRANSLATE is
+  pr 3TUPLE{String,NatSet,NatSet}
+     * (sort Tuple{String,NatSet,NatSet} to Translation) .
+  pr EXPR .
+  pr SMT-CONSTANTS .
+  pr CONVERSION .
+
+  var  B          : Bool .
+  vars iB iB'     : iBool .
+  vars iE iE'     : iExpr .
+  vars iI iI'     : iInt .
+  vars I I'       : Int .
+  vars N N'       : Nat .
+  vars NS NS'     : NatSet .
+  vars NS2 NS3    : NatSet .
+  vars Str Str'   : String .
+  vars Str2 Str3  : String .
+
+  --- translates a given Boolean expression into the
+  --- SMTLIB syntax
+  op translate : iBool -> String [memo] .
+  --- translates a given expression into the SMTLIB syntax
+  --- accumulating the Boolean and integer symbolic variables in it
+  op $trans : iExpr -> Translation [memo] .
+ ceq translate(iE)
+   = add-smt-metadata(Str' + Str2)
+  if (Str,NS,NS') := $trans(iE) 
+  /\ Str' := declare-bool-vars(NS) + declare-int-vars(NS') 
+  /\ Str2 := "(assert " + Str + ")" .
+
+  ---------------------------
+  --- Boolean expressions ---
+  ---------------------------
+
+  --- constants
+  eq $trans(c(B))
+   = (if B == true then "true" else "false" fi,mtnatset,mtnatset) .
+
+  --- symbolic variables
+  eq $trans(b(N))
+   = (bmem-prefix + string(N,10),N,mtnatset) .
+
+  --- negation
+ ceq $trans(~ iB)
+   = ("(not " + Str + ")",NS,NS')
+  if (Str,NS,NS') := $trans(iB) .
+
+  --- conjunction
+ ceq $trans(iB ^ iB')
+   = ("(and " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iB)
+  /\ (Str',NS2,NS3) := $trans(iB') .
+
+  --- disjunction
+ ceq $trans(iB v iB')
+   = ("(or " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iB)
+  /\ (Str',NS2,NS3) := $trans(iB') .
+
+  --- implication
+ ceq $trans(iB -> iB')
+   = ("(=> " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iB)
+  /\ (Str',NS2,NS3) := $trans(iB') .
+
+  --- equal
+ ceq $trans(iB === iB')
+   = ("(= " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iB)
+  /\ (Str',NS2,NS3) := $trans(iB') .
+
+  --- distinct
+ ceq $trans(iB =//= iB')
+   = ("(distinct " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iB)
+  /\ (Str',NS2,NS3) := $trans(iB') .
+
+
+  ---------------------------
+  --- Integer expressions ---
+  ---------------------------
+
+  --- constants
+  eq $trans(c(I))
+   = if I >= 0 == true
+     then (string(I,10),mtnatset,mtnatset)
+     else ("(- " + string(I * (- 1),10) + " )",mtnatset,mtnatset)
+     fi .
+  --- symbolic variabes
+  eq $trans(i(N))
+   = (imem-prefix + string(N,10),mtnatset,N) .
+
+  --- unary minus
+ ceq $trans(- iI)
+   = ("(- " + Str + ")",NS,NS')
+  if (Str,NS,NS') := $trans(iI) .
+
+  --- addition
+ ceq $trans(iI + iI')
+   = ("(+ " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- multiplication
+ ceq $trans(iI * iI')
+   = ("(* " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- binary minus
+ ceq $trans(iI -- iI')
+   = ("(- " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+
+  ------------------------------------------
+  --- Relational expressions on integers ---
+  ------------------------------------------
+
+  --- at most
+ ceq $trans(iI <= iI')
+   = ("(<= " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- less than
+ ceq $trans(iI < iI')
+   = ("(< " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- at least
+ ceq $trans(iI >= iI')
+   = ("(>= " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- more than
+ ceq $trans(iI > iI')
+   = ("(> " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- equal
+ ceq $trans(iI === iI')
+   = ("(= " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+  --- distinct
+ ceq $trans(iI =//= iI')
+   = ("(distinct " + Str + " " + Str' + ")",(NS,NS2),(NS',NS3))
+  if (Str,NS,NS') := $trans(iI)
+  /\ (Str',NS2,NS3) := $trans(iI') .
+
+
+  ----------------------------
+  --- variable declaration ---
+  ----------------------------
+
+  --- declaration of Boolean and integer variables
+  ops declare-bool-vars declare-int-vars : NatSet -> String [memo] .
+  op declare-vars  : NatSet String String -> String [memo] .
+  op $declare-vars : NatSet String String String -> String .
+  eq declare-bool-vars(NS)
+   = declare-vars(NS,bmem-prefix,bool-type) .
+  eq declare-int-vars(NS)
+   = declare-vars(NS,imem-prefix,int-type) .
+  eq declare-vars(NS,Str,Str')
+   = $declare-vars(NS,Str,Str',"") .
+  eq $declare-vars(mtnatset,Str,Str',Str2)
+   = Str2 .
+  eq $declare-vars((NS,N),Str,Str',Str2)
+   = $declare-vars(NS,Str,Str',
+       Str2 + "(declare-fun " + Str + string(N,10) + " () " + Str' + ") ") .
+
+
+  ----------------------------
+  --- metadata declaration ---
+  ----------------------------
+
+  --- adds smt metadata, such as a header setting the logic
+  op add-smt-metadata : String -> String .
+  eq add-smt-metadata(Str)
+   = "(set-logic " + smt-logic + ") " + Str .
+endfm
+
+--- SMT interface for checking (un)satisfiability of PLEXIL's Boolean expressions
+fmod SMT-INTERFACE is
+  pr SMT-HOOK .
+  pr SMT-TRANSLATE .
+
+  var  iB      : iBool .
+
+  --- checks if the given Boolean expression is satisfiable
+  op check-sat : iBool -> Bool [memo] .
+  eq check-sat(iB)
+   = if iB == c(true)
+     then true
+     else
+       if iB == c(false)
+       then false
+       else
+         if check-sat(translate(iB)) == "sat"
+         then true
+         else false
+         fi
+       fi
+     fi .
+
+  --- checks if the given Boolean expression is unsatisfiable
+  op check-unsat : iBool -> Bool [memo] .
+  eq check-unsat(iB)
+   = if iB == c(false)
+     then true
+     else
+       if iB == c(true)
+       then false
+       else
+         if check-sat(translate(iB)) == "unsat"
+         then true
+         else false
+         fi
+       fi
+     fi .
+endfm
+

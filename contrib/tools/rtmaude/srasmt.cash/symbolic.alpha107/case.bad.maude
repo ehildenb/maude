@@ -1,0 +1,64 @@
+mod TEST-STATES is
+  inc CASH-SYMBOLIC .
+
+  ops g s1 s2 : -> Oid [ctor] .
+  eq g = 'g .
+  eq s1 = 's1 .
+  eq s2 = 's2 .
+
+  op initbad   : -> Sys .
+  op global1  : -> Object .
+  op server1 : -> Object .
+  op server2 : -> Object .
+
+  eq global1
+   = < g : global | time : 0, cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server1
+   = < s1 : server | maxBudget : 2, period : 5, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq server2
+   = < s2 : server | maxBudget : 5, period : 7, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq initbad
+   = { global1 server1 server2 } .
+endm
+
+--- this search command is not working as of 05/08/15
+---(
+search [1] initbad =>* { iB:Boolean , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+mod SYMBOLIC-FAILURE is
+  inc CASH-SYMBOLIC .
+
+  ops g s1 s2 : -> Oid [ctor] .
+  eq g = 'g .
+  eq s1 = 's1 .
+  eq s2 = 's2 .
+
+  op symbinit   : Integer Integer Integer Integer -> Sys .
+  op global1    : -> Object .
+  op server1    : Integer Integer -> Object .
+  op server2    : Integer Integer -> Object .
+
+  vars iI0 iI1 iI2 iI3 : Integer .
+
+  eq global1
+   = < g : global | time : 0, cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server1(iI0,iI1)
+   = < s1 : server | maxBudget : iI0, period : iI1, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq server2(iI2,iI3)
+   = < s2 : server | maxBudget : iI2, period : iI3, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq symbinit(iI0,iI1,iI2,iI3)
+   = { iI0 < iI1 and iI2 < iI3 and iI0 > 0 and iI2 > 0, 
+       global1 server1(iI0,iI1) server2(iI2,iI3) } .
+endm
+
+--- this search command is not working as of 05/08/15
+---(
+search [1] symbinit(iI0:Integer,iI1:Integer,iI2:Integer,iI3:Integer) =>* { iB:Boolean , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+eof

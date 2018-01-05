@@ -1,0 +1,546 @@
+\documentclass[11pt]{beamer}
+
+\input{packages}
+\input{macros}
+
+
+\setbeamercolor{block title}{use=structure,fg=structure.fg,bg=structure.fg!20!bg}
+\setbeamercolor{block body}{use=block title,bg=block title.bg!50!bg}
+
+
+\title{Guarded Terms for Rewriting Modulo {SMT}}
+
+\date{}
+
+\author{\textbf{Kyungmin Bae} \and Camilo Rocha}
+
+%\titlegraphic{\hfill\includegraphics[height=1.2cm]{icarous}}
+\institute{
+  14th International Conference on Formal Aspects of Component Software \\
+  October 11, 2017 \\
+  Braga, Portugal
+}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Context: Rewriting Modulo SMT}
+\begin{outeritemize}
+    \item \alert{Rewriting} Logic
+    
+    \begin{inneritemize}
+        \item formalism to naturally specify concurrent/component systems
+        \item actors, process calculi, AADL, Ptolemy~II, C, Java, \ldots
+    \end{inneritemize}
+    
+    \pause
+    \item \alert{Satisfiability Modulo Theories} (SMT)
+    
+    \begin{inneritemize}
+        \item satisfiability of logic formulas with respect to decidable theories
+        \item widely used for \cyan{symbolic analysis} of computer systems
+    \end{inneritemize}
+    
+    \pause
+    \item \colorbox{yellow}{Rewriting Modulo SMT}
+    
+    \begin{inneritemize}
+        \item enable the \cyan{symbolic analysis} of many component systems
+        \item e.g., PLEXIL by NASA for autonomous spacecraft operations
+    \end{inneritemize}
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Rewriting Modulo SMT in a Nutshell (1)}
+\begin{outeritemize}
+    \item \alert{Symbolic state}: a term \blue{$t$} constrained by a logic formula \red{$\phi$}
+    
+    \begin{inneritemize}
+        \item variables in \blue{$t$} ranging over the \alert{SMT built-ins}
+        \item written as a pair $\pair{\blue{t}}{\red{\phi}}$
+    \end{inneritemize}
+    
+    \pause
+    \item Examples
+    
+    \begin{inneritemize}
+        \item $(\blue{f(x, y)}; \red{x + y = 0})$
+        \item $(\blue{x :: y :: z :: \mathit{nil}}; \red{x < y \,\wedge\, y < z})$ 
+    \end{inneritemize}
+    
+    \pause
+    \item Expresses a set of (potentially infinitely many) concrete
+      states \hfill\purple{(written $\den{t}{\phi}$)}
+
+    \begin{inneritemize}
+        \item $f(0,0)$, $f(-1,1)$, $f(1,-1)$, $f(-2, 2)$, \ldots \hfill$\in \den{\blue{f(x, y)}}{\red{x + y = 0}}$
+        \pause
+        \item $0 :: 1 :: 2 :: \mathit{nil}$\;, $3 :: 5 :: 7 :: \mathit{nil}$, \ldots \hfill$\in \den{\blue{x :: y :: z :: \mathit{nil}}}{\red{x < y \wedge y < z}}$
+    \end{inneritemize}
+    
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Rewriting Modulo SMT in a Nutshell (2)}
+\begin{outeritemize}
+    \item \cyan{Conditional rewrite rules}: $\blue{t} \to \blue{t'} \;\;\mbox{\textbf{if}}\; \red{\varphi}$
+    
+    \begin{inneritemize}
+        \item patterns $t_1$ and $t_2$, and SMT formula $\varphi$
+        \item structural axioms (associativity, commutativity, identity)
+    \end{inneritemize}
+    
+    \pause
+    \item Rule $\blue{t} \to \blue{t'} \;\;\mbox{\textbf{if}}\; \red{\varphi}$ defines \alert{symbolic transition} 
+    
+    \begin{inneritemize}
+        \item from symbolic state $\pair{t_1}{\phi_1}$ to $\pair{t_2}{\phi_2}$
+        \item (infinitely many) instances of $t_1$ rewritten to instances of $t_2$
+    \end{inneritemize}
+
+    \pause
+    \item Example:  $f(u,v) \to g(u) \;\;\mbox{\textbf{if}}\; {u > 0}$
+    
+    \begin{inneritemize}
+        \pause
+        \item $(\blue{f(x, y)}; \red{x + y = 0}) \longrightarrow (\blue{g(x)}; \red{x + y = 0 \,\wedge\, x > 0}) $
+        \pause
+        \item $(\blue{f(x - 1, 0)}; \red{x \leq 0}) \longrightarrow (\blue{g(x - 1)}; \red{x \leq 0 \,\wedge\, x - 1 > 0}) $
+    \end{inneritemize}
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{A Simple Example (1)}
+\begin{outeritemize}
+    \item Two components
+    
+    \begin{figure}
+    \tikzstyle{comp}=[draw,text width=1.5cm, minimum height=1cm, rounded corners=0.1cm]
+    \begin{tikzpicture}
+    \node [comp] (c1) {$I_1, I_2, \ldots$};
+    \path (c1) + (2.4cm,0) node [comp]  {$J_1, J_2, \ldots$};
+    \path (c1) + (1.2cm,0) node {$\parallel$};
+    \end{tikzpicture}
+    \end{figure}
+    
+    \begin{inneritemize}
+        \item each component has a collection of integers
+        \item the left component sends each integer to the right
+        \item the right component updates its state 
+    \end{inneritemize}
+    
+    \pause
+    \item Rules
+    \[
+    \scalebox{0.95}{
+    \boxed{
+    \begin{aligned}
+    I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1,\mathit{C}_1 \parallel I_1 + I_2 + 1, \mathit{C}_2  && \textbf{if} \;\;   I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \\
+    I_1,I_2,\mathit{C}_1 \parallel \mathit{C}_2 &\;\rews\;\;I_1,\mathit{C}_1 \parallel \mathit{C}_2 \quad && \textbf{if} \;\;  I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0 \\
+    I_1 \parallel I_2,\mathit{C}_2 &\;\;\rews\;\;\textit{none} \parallel I_2,\mathit{C}_2 \quad && \textbf{if}\;\; I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{17}{\equiv}}}\; 0
+    \end{aligned}
+    }
+    }
+    \]
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{A Simple Example (1)}
+\[
+\scalebox{0.95}{
+\boxed{
+\begin{aligned}
+I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1,\mathit{C}_1 \parallel I_1 + I_2 + 1, \mathit{C}_2  && \textbf{if} \;\;   I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \\
+I_1,I_2,\mathit{C}_1 \parallel \mathit{C}_2 &\;\rews\;\;I_1,\mathit{C}_1 \parallel \mathit{C}_2 \quad && \textbf{if} \;\;  I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0 \\
+I_1 \parallel I_2,\mathit{C}_2 &\;\;\rews\;\;\textit{none} \parallel I_2,\mathit{C}_2 \quad && \textbf{if}\;\; I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{17}{\equiv}}}\; 0
+\end{aligned}
+}
+}
+\]
+    
+\begin{outeritemize}
+    \item \alert{Concrete} execution
+    \[
+    \begin{aligned}
+    1,2,3 \parallel \textit{none}
+    \pause
+    \;\longrightarrow\;
+    1,3 \parallel 4
+    \pause
+    \;\longrightarrow\;
+    1 \parallel 4
+    \end{aligned}
+    \]
+    
+    \pause
+    \item \alert{Symbolic} execution \onslide<7->{\hfill\purple{(representing infinitely many paths)}}
+    \[
+    \begin{aligned}
+    &
+    ({\blue{I_1,I_2,I_3 \parallel \textit{none}}}; {\mathit{true}})
+    \\
+    \pause
+    \longrightarrow\;&
+    ({\blue{I_1,I_3 \parallel I_1 + I_2 + 1}}; {I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0})
+    \\
+    \pause
+    \longrightarrow\;&
+    ({\blue{I_1 \parallel I_1 + I_2 + 1}}; {I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \,\wedge\, I_1 + I_3 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0})
+    \end{aligned}
+    \]
+
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{A Simple Example (2)}
+\[
+\scalebox{0.95}{
+\boxed{
+\begin{aligned}
+I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1,\mathit{C}_1 \parallel I_1 + I_2 + 1, \mathit{C}_2  && \textbf{if} \;\;   I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \\
+I_1,I_2,\mathit{C}_1 \parallel \mathit{C}_2 &\;\rews\;\;I_1,\mathit{C}_1 \parallel \mathit{C}_2 \quad && \textbf{if} \;\;  I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0 \\
+I_1 \parallel I_2,\mathit{C}_2 &\;\;\rews\;\;\textit{none} \parallel I_2,\mathit{C}_2 \quad && \textbf{if}\;\; I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{17}{\equiv}}}\; 0
+\end{aligned}
+}
+}
+\]
+    
+\begin{outeritemize}
+    \item \alert{Reachability property}: are there $I, \mathit{C}_1 \parallel \mathit{C}_2$ such that:
+    
+    \vspace{1ex}
+    \begin{description}[initial pattern:]\small\addtolength{\itemsep}{0.2\baselineskip}
+        \item[initial pattern:] \blue{$I, I+1, I+2, I+3 \parallel \textit{none}$}
+        \item[goal:] \blue{$\mathit{C}_1 \parallel \mathit{C}_2$}, where $\mathit{C}_1$ is not empty
+        $\begin{aligned}[t]
+        \mbox{(i.e., the goal is a deadlock)}
+        \end{aligned}$
+    \end{description}
+
+    \pause
+    \item This query cannot be solved directly by rewriting
+    
+    \begin{inneritemize}
+        \item because there are infinitely many initial states!!!
+    \end{inneritemize}
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{A Simple Example (3)}
+\begin{outeritemize}
+    \item Such a query could be answered by rewriting modulo SMT 
+    
+    \item E.g., rewriting modulo SMT implementation in Maude:
+    
+    \begin{maude}
+      search [1] { I, I+1, I+2, I+3 || none , I > 0 }
+      =>! { C1 || C2, Phi } such that C1 =/= none .
+    \end{maude}
+
+    \pause
+    \item However ...
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{The Problem}
+\begin{outeritemize}
+    \item \ldots  \alert{scalability} is still a problem in
+      rewriting modulo SMT, 
+      
+    \begin{inneritemize}
+        \item some properties are beyond reach of rewriting modulo SMT
+        \pause
+        \item  as it is the case with most symbolic techniques
+    \end{inneritemize}
+
+    \pause
+    \item Major reasons 
+    
+    \begin{inneritemize}
+        \item the \alert{symbolic state space explosion problem}
+        \item the \alert{complexity of the accumulated constraints}
+    \end{inneritemize}
+
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Example: The Problem}
+\[
+\scalebox{0.95}{
+\boxed{
+\begin{aligned}
+I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1,\mathit{C}_1 \parallel I_1 + I_2 + 1, \mathit{C}_2  && \textbf{if} \;\;   I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \\
+I_1,I_2,\mathit{C}_1 \parallel \mathit{C}_2 &\;\rews\;\;I_1,\mathit{C}_1 \parallel \mathit{C}_2 \quad && \textbf{if} \;\;  I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0 \\
+I_1 \parallel I_2,\mathit{C}_2 &\;\;\rews\;\;\textit{none} \parallel I_2,\mathit{C}_2 \quad && \textbf{if}\;\; I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{17}{\equiv}}}\; 0
+\end{aligned}
+}
+}
+\]
+
+\begin{outeritemize}
+    \item For the initial pattern $I, (I+1), \ldots, (I+9) \parallel \textit{none}$
+    \item How many reachable symbolic states?
+    \item What are the SMT constraints?
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Main Contribution and Approach}
+\begin{center}\textbf{Guarded Terms for Rewriting Modulo SMT}\end{center}
+\begin{outeritemize}
+    \item Goal
+    
+    \begin{inneritemize}
+        \item reduce the symbolic state space 
+        \item decrease the complexity of constraints
+    \end{inneritemize}
+    
+    \item Guarded term 
+    
+    \begin{inneritemize}
+        \item generalizes a constrained term in rewriting modulo SMT 
+        \item encode branching by nondeterminism as part of term structure
+    \end{inneritemize}
+
+%      \item Intuitively, they can be seen as a choice operator that is
+%        part of the term structure in a constrained term.
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Guarded Terms: Parallel Composition}
+\begin{outeritemize}
+    \item Combining constrained terms $\pair{t_1}{\phi_1},\ldots,\pair{t_n}{\phi_n}$ in \alert{parallel}
+    \[\pair{t_1}{\phi_1} \lor \cdots \lor \pair{t_n}{\phi_n}\]
+    
+    \item Semantically representing the \cyan{union} of their instance sets
+    \[\den{t_1}{\phi_1} \cup \cdots \cup \den{t_n}{\phi_n}\]
+\end{outeritemize}
+
+%  \[\den{t}{\phi} = \left\{t' \in T_{\Sigma,\sort{Conf}} \mid \;
+%(\exists \func{\sigma}{X}{T_\Sigma})\, t' = \sigma t \land
+%  \tcal_{\Sigma/E\uplus B} \models \sigma\phi \right\}.\]
+\end{frame}
+
+
+
+\begin{frame}{Guarded Terms: Nested Composition}
+\begin{outeritemize}
+    \item Guarded terms can be \alert{nested} as subterms, e.g., 
+    \[f(\pair{t_1}{\phi_1} \lor \pair{f(g(\pair{t_3}{\phi_3},t_4))}{\phi_2})\]
+    
+    \item Semantically representing all corresponding instances
+    \[\den{f(\pair{u_1}{\phi_1},\ldots,\pair{u_n}{\phi_n})}{} = \bigcup_{t_i \in \den{u_i}{\phi_i}}\{f(t_1,\ldots,t_n)\} \]
+    
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Power of Guarded Terms (1)}
+\begin{outeritemize}
+    \item A guarded term can express \alert{exponentially many}
+      symbolic states
+    
+    \begin{inneritemize}
+        \item that is, symbolic state space can be exponentially
+          smaller
+    \end{inneritemize}
+    
+    \pause
+    \item Example: $\pair{f(u_1 \vee v_1, u_2 \vee v_2, u_3 \vee v_3)}{\phi}$
+    
+    \begin{inneritemize}
+        \item $\pair{f(u_1, u_2, u_3)}{\phi}$, $\pair{f(u_1, u_2, v_3)}{\phi}$, $\pair{f(u_1, v_2, u_3)}{\phi}$, $\pair{f(u_1, v_2, v_3)}{\phi}$, $\pair{f(v_1, u_2, u_3)}{\phi}$, $\pair{f(v_1, u_2, v_3)}{\phi}$, $\pair{f(v_1, v_2, u_3)}{\phi}$, $\pair{f(v_1, v_2, v_3)}{\phi}$
+    \end{inneritemize}
+
+\pause
+\vspace{1em}
+\begin{theorem}\small
+\label{thm:standard}
+Every guarded term is equivalent to guarded term in \alert{standard form} 
+\[
+\pair{t_1}{\phi_1} \lor \pair{t_2}{\phi_2} \lor \cdots \lor \pair{t_n}{\phi_n}\]
+\end{theorem}
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Power of Guarded Terms (2)}
+\begin{outeritemize}
+    \item A set of rewrite rules can be combined using guarded terms
+    
+    \begin{inneritemize}
+        \item so that \alert{branching by nondeterminism is removed}
+    \end{inneritemize}
+    
+    \pause
+    \item Example
+    \[
+    \scalebox{0.9}{\ensuremath{
+    \begin{gathered}
+    \boxed{
+    \begin{aligned}
+    I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1,\mathit{C}_1 \parallel I_1 + I_2 + 1, \mathit{C}_2  && \textbf{if} \;\;   I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0 \\
+    I_1,I_2,\mathit{C}_1 \parallel \mathit{C}_2 &\;\rews\;\;I_1,\mathit{C}_1 \parallel \mathit{C}_2 \quad && \textbf{if} \;\;  I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0 
+    %\\
+    %I_1 \parallel I_2,\mathit{C}_2 &\;\;\rews\;\;\textit{none} \parallel I_2,\mathit{C}_2 \quad && \textbf{if}\;\; I_1 + I_2 \;\raisebox{-0.5ex}{\ensuremath{\stackrel{17}{\equiv}}}\; 0
+    \end{aligned}
+    }
+    \\[-0.5ex]
+    \Downarrow
+    \\[-0.5ex]
+    \boxed{
+    \begin{aligned}
+    I_1, I_2, \mathit{C}_1 \parallel \mathit{C}_2 &\;\rews \;\;I_1, \mathit{C}_1 \parallel \begin{multlined}[t](I_1 + I_2 + 1; (I_1 + I_2) \;\raisebox{-0.5ex}{\ensuremath{\stackrel{3}{\equiv}}}\; 0)\\ \vee (\mathit{none}; (I_1 + I_2) \;\raisebox{-0.5ex}{\ensuremath{\not\stackrel{3}{\equiv}}}\; 0)\;\mathit{C}_2\end{multlined} 
+    \end{aligned}
+    }
+    \end{gathered}
+    }}
+    \]
+\end{outeritemize}
+
+\pause
+\begin{theorem}\small
+\label{thm:sim}
+A set $R$ of guarded rewrite rules is equivalent to its \alert{standard expansion}
+(in terms of a simulation relation).
+\end{theorem}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{The Running Example with Guarded Terms}
+\begin{outeritemize}
+    \item \alert{Previously timed-out}, but now proven using guarded terms
+    
+\begin{maude}
+search [1] { I, I+1, I+2, I+3 || none , I > 0 }
+       =>! { C1 || C2, Phi } such that C1 =/= none .
+No solution.
+states: 265  rewrites: 37516 in 702ms cpu (704ms real) 
+\end{maude}
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{The CASH Algorithm: a More Interesting Case Study (1)}
+\begin{outeritemize}
+    \item A real-time scheduling algorithm with capacity sharing
+    
+    \begin{inneritemize}
+        \item for reusing unused execution budgets
+        \item make use of \cyan{unbounded priority queue}
+    \end{inneritemize}
+
+    \item It has been formally specified and analyzed in:
+    
+    \begin{inneritemize}
+        \item Real-Time Maude using explicit-state methods %(ground rewriting)
+        \item Rewriting modulo SMT to deal with infinite number of states
+    \end{inneritemize}
+    
+    \pause
+    \item Reachability property 
+    
+    \begin{inneritemize}
+        \item the existence of missed deadlines in the variant of CASH
+        \item when the processor utilization $\leq 100 \%$
+    \end{inneritemize}
+    
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{The CASH Algorithm: a More Interesting Case Study (2)}
+\begin{outeritemize}
+
+    \item The property could not be analyzed by rewriting modulo SMT
+    
+    \begin{inneritemize}
+        \item due to the \alert{symbolic state space explosion problem}
+        \item generated more than one billion \cyan{symbolic states}
+    \end{inneritemize}
+    
+    \pause
+    \item Coping with the symbolic state space explosion
+    
+    \begin{inneritemize}
+        \item remove symbolic branching using \alert{guarded terms}
+        \item ``combine'' different rewrite rules using guarded terms
+    \end{inneritemize}
+
+    \pause
+    \item The same property can be automatically proved
+    
+    \begin{inneritemize}
+        \item counterexample found (at search depth 23)
+        \item after 600,000 symbolic states explored (about 90 min)
+    \end{inneritemize}    
+\end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}{Concluding Remarks}
+\begin{outeritemize}
+    \item \blue{Rewriting modulo SMT}
+    
+    \begin{inneritemize}
+        \item enable the symbolic analysis of many component systems
+        \item the \alert{symbolic state space explosion problem}
+    \end{inneritemize}   
+    
+    \item \colorbox{yellow}{Guarded terms}
+      
+    \begin{inneritemize}
+        \item generalize the constrained terms of rewriting modulo SMT 
+        \item reduce symbolic state space and complexity of constraints
+    \end{inneritemize}
+
+    \item The CASH case study
+    
+    \begin{inneritemize}
+        \item nontrivial property was beyond  reach of rewriting modulo SMT        
+        \item but can now be proved using guarded terms 
+    \end{inneritemize}
+
+    \item Future work 
+    
+    \begin{inneritemize}
+        \item explore new uses of guarded terms on more case studies
+        \item combination with other state reduction techniques
+    \end{inneritemize}
+  \end{outeritemize}
+\end{frame}
+
+
+
+\begin{frame}[standout]
+  Questions?
+\end{frame}
+
+\end{document}

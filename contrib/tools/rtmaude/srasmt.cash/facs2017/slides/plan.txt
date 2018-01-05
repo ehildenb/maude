@@ -1,0 +1,58 @@
+Ideas for FACS 2017:
+
+Context:
+
+  Symbolic simulation and reachability analysis
+
+  - Component software: symbolic analysis can be useful
+
+    As part of the motivation
+
+    Introduce the case study from the beginning
+
+  - Rewriting modulo SMT is a choice
+
+    One slide for introducing rewriting as a model of computation?
+
+    Ground analysis
+
+Case study
+
+  - CASH (unbounded queue)
+
+Problem:
+
+  Rewriting modulo SMT can have the state-explotion problem
+
+Contribution
+
+  Guarded terms for rewriting modulo SMT
+
+  For CASH
+
+  - Previously: some properties could not be verified due to the SEP
+
+  - With guarded terms they can and can be done fast!!!
+
+Approach
+
+  Encode branching due to concurrecy as part of the term structure
+
+  Benefits:
+
+  - Of course, less branching
+
+  - Also, fewer states terms to reach
+
+How?
+
+  - Symbolic terms are generalized to allow constraints as part of their
+    internal term structure
+
+  - Several guarded terms can be enconded as one guarded term
+
+  - Show an interesting example
+
+Demo?
+
+  - Screenshots are more likely

@@ -1,0 +1,232 @@
+fmod SMT-TRANS is
+  pr META-LEVEL .
+  pr CONVERSION .
+
+  var A   : TermQid .
+  var C   : Constant .
+  var V   : Variable .
+  var F Q : Qid .
+  var T   : Term .
+  var TL  : TermList .
+  var NL  : NeTermList .
+
+  --- transform to SMT formulas for Maude/CVC4
+  op tr : Term -> Term .
+  eq tr('`[_`][T])    = tr(T) .
+  eq tr('_and_[TL])   = trGather('_and_, 'true.Boolean, TL) .
+  eq tr('_or_[TL])    = trGather('_or_,  'false.Boolean, TL) .
+  eq tr('_xor_[TL])   = trGather('_xor_, 'error.Boolean, TL) . --- shoule have no *empty* xor
+  eq tr('_+_[TL])     = trGather('_+_, '0.Integer, TL) .
+  eq tr('_*_[TL])     = trGather('_*_, '1.Integer, TL) .
+  eq tr('0.Zero )     = '0.Integer .
+  eq tr(F['0.Zero])   = trNum(F['0.Zero]) .
+  eq tr(A)            = trAtom(A) [owise] .
+  eq tr(F[TL])        = F[trList(TL)] [owise] .
+
+  op trList : TermList -> TermList .
+  eq trList((T,TL)) = tr(T), trList(TL) .
+  eq trList(empty)  = empty .
+
+  op trGather : Qid Constant TermList -> Term .
+  eq trGather(F, C, (T,NL)) = F[tr(T),trGather(F,C,NL)] .
+  eq trGather(F, C, T)      = tr(T) .
+  eq trGather(F, C, empty)  = C .
+
+  op trAtom : TermQid -> TermQid [memo] .
+  eq trAtom(A) 
+   = if sortLeq(['SMT-INTERFACE-EX],getType(A),'Int) then
+        qid(string(getName(A)) + sep(A) + "Integer")
+     else if sortLeq(['SMT-INTERFACE-EX],getType(A),'Bool) then
+        qid(string(getName(A)) + sep(A) + "Boolean")
+     else
+        A
+     fi fi .
+
+  op sep : TermQid -> String .
+  eq sep(C) = "." .
+  eq sep(V) = ":" .
+
+  op trNum : GroundTerm -> GroundTerm [memo] .
+  eq trNum('s_['0.Zero]) = '1.Integer .
+  eq trNum(F['0.Zero])
+   = if substr(string(F), 0, 3) == "s_^" 
+     then qid(string(trunc(rat(substr(string(F),3,2),10)),10) + "." + "Integer")
+     else F['0.Integer] fi .
+endfm
+
+
+fmod SMT-INTERFACE-EX is
+  pr SMT-TRANS .
+
+  var M   : Module .
+  var Q   : Qid .
+  var B   : Bool .
+  var TS  : Term .
+  var TC  : Term .
+  var T   : Term .
+  var T'  : Term .
+  var AtS : AttrSet .
+  var Cd  : Condition .
+  var R   : Rule .
+  var RS  : RuleSet .
+
+  --- checks if the given Boolean expression is satisfiable
+  op check-sat : Bool -> Bool .
+  eq check-sat(B)
+   = if B == false then
+       false
+     else if B == true then
+       true
+     else
+       metaCheck(['REAL-INTEGER], tr(upTerm(B))) 
+     fi fi .
+
+  --- checks if the given Boolean expression is satisfiable
+  op check-sat : Term -> Bool .
+  eq check-sat('_if_[TS,TC])
+   = if TC == 'false.Bool then
+       false
+     else if TC == 'true.Bool then
+       true
+     else
+       metaCheck(['REAL-INTEGER], tr(TC))
+     fi fi .
+
+  --- remove equations from the module
+  op removeEqs : Module ~> Module [memo] .
+  eq removeEqs(M) = mod getName(M) is getImports(M) sorts getSorts(M) . getSubsorts(M) getOps(M) none none getRls(M) endm .
+
+  --- get rule name
+  op ruleName : Rule -> Qid .
+  eq ruleName((rl T => T' [label(Q) AtS] .)) = Q .
+  eq ruleName((crl T => T' if Cd [label(Q) AtS] .)) = Q .
+
+  --- get rule names
+  op getRlsLabels : RuleSet -> QidSet .
+  eq getRlsLabels(R RS) = ruleName(R) ; getRlsLabels(RS) .
+  eq getRlsLabels(none) = none .
+endfm
+
+
+fmod SMT-META-SEARCH is
+  pr SMT-INTERFACE-EX .
+
+  var M   : Module .
+  var N   : Nat .
+  var MS  : MetaState .
+  var MSS : MetaStateSet .
+  var MFS : MetaStateSet .
+  var NFS : MetaStateSet .
+
+--- operators and sorts to be defined
+  sort MetaState .
+  op smtOneStep : Module MetaStateSet -> MetaStateSet .
+  op getStateTerm : MetaState -> Term .
+
+---
+  sort MetaStateSet .
+  subsort MetaState < MetaStateSet .
+  op emptyMetaStateSet : -> MetaStateSet [ctor] .
+  op _|_ : MetaStateSet MetaStateSet -> MetaStateSet [ctor assoc comm id: emptyMetaStateSet format (d n d d)] .
+
+--- k-step rewriting modulo SMT
+  op smtManyStep : Module MetaStateSet Nat -> MetaStateSet .
+  eq smtManyStep(M, MSS, N) = smtManyStep(M, MSS, MSS, N) .
+
+  --- module, explored states, frontier states
+  op smtManyStep : Module MetaStateSet MetaStateSet Nat -> MetaStateSet .
+ ceq smtManyStep(M, MSS, MFS, s(N)) = smtManyStep(M, reduceSet(MSS | NFS), NFS, N) 
+   if NFS := smtOneStep(M, MFS) .
+  eq smtManyStep(M, MSS, MFS, 0)    = MSS .
+
+--- 
+  op reduceSet : MetaStateSet -> MetaStateSet .
+  eq reduceSet(MS | MS | MSS) = reduceSet(MS | MSS) .
+  eq reduceSet(MSS) = MSS [owise] .
+endfm
+
+
+fmod SMT-INTERFACE-NOVAR is
+  ex SMT-META-SEARCH .
+
+  var M   : Module .
+  var N   : Nat .
+  var SB  : Substitution .
+  var MSS : MetaStateSet .
+  var Q   : Qid .
+  var QS  : QidSet .
+  var T   : Term .
+  var TS  : Term .
+  var TC  : Term .
+  var TN  : Term .
+  var TL  : TermList .
+
+  subsort Term < MetaState .
+  eq getStateTerm(T) = T .
+
+--- One-step rewriting modulo SMT
+  op smtOneStep : Module MetaStateSet -> MetaStateSet .
+  eq smtOneStep(M, T | MSS)
+   = smtOneStep(M, T, getRlsLabels(getRls(M))) | smtOneStep(M, MSS) .
+  eq smtOneStep(M, emptyMetaStateSet) = emptyMetaStateSet .
+
+  op smtOneStep : Module Term QidSet -> MetaStateSet .
+  eq smtOneStep(M, T, Q ; QS) = smtOneStep(M, T, Q, 0) | smtOneStep(M, T, QS) .
+  eq smtOneStep(M, T, none)   = emptyMetaStateSet .
+
+  op smtOneStep : Module Term Qid Nat -> MetaStateSet .
+ ceq smtOneStep(M, T, Q, N)
+   = if check-sat(TN)
+     then TN
+     else emptyMetaStateSet --- {'unsat`[_`][TN]} 
+     fi
+   | smtOneStep(M, T, Q, s(N))
+  if '_if_[TS,TC] := T
+  /\ TN := getTerm(metaApply(M, T, Q, none, N)) .
+
+  eq smtOneStep(M, T, Q, N) = emptyMetaStateSet [owise] .
+
+endfm
+
+
+--- SMT interface for checking (un)satisfiability of Boolean expressions
+fmod SMT-INTERFACE is
+  ex SMT-META-SEARCH .
+
+  var B   : Bool .
+  var M   : Module .
+  var N   : Nat .
+  var TL  : TermList .
+  var SR  : SmtResult .
+  var MSS : MetaStateSet .
+
+  vars TS TS' : Term .
+  vars TC TC' : Term .
+  vars SB SB' : Substitution .
+  vars TN TP  : Term .
+  vars VN VN' : Nat .
+
+  subsort SmtResult < MetaState .
+  eq getStateTerm({TS,SB,TC,VN}) = TS .
+
+
+--- One-step rewriting modulo SMT
+  op smtOneStep : Module MetaStateSet -> MetaStateSet .
+  eq smtOneStep(M, {TS,SB,TC,VN} | MSS)
+   = smtOneStep(M, {TS,SB,TC,VN}, qid("#TARGET:" + string(getKind(M,leastSort(M,TS)))), 0) | smtOneStep(M, MSS) .
+  eq smtOneStep(M, emptyMetaStateSet) = emptyMetaStateSet .
+
+  op smtOneStep : Module SmtResult Term Nat -> MetaStateSet .
+ ceq smtOneStep(M, {TS,SB,TC,VN}, TP, N)
+   = if check-sat(TN)
+     then {TN, SB', TC', VN'}
+     else emptyMetaStateSet --- {'unsat`[_`][TN], SB', TC', VN'} 
+     fi
+   | smtOneStep(M, {TS,SB,TC,VN}, TP, s(N))
+  if '_if_[TL] := TS
+  /\ {TS',SB',TC',VN'} := metaSmtSearch(removeEqs(M), TS, TP, nil, '+, VN, 1, N) 
+  /\ TN := getTerm(metaReduce(M,TS')) .
+
+  eq smtOneStep(M, {TS,SB,TC,VN}, TP, N) = emptyMetaStateSet [owise] .
+endfm
+

@@ -1,0 +1,6 @@
+08/02
+
+  - Extend current symbolic version with extra-variable in the right
+    for covering the cases in which timing is added randomly on the
+    Monte Carlo simulation specification.
+

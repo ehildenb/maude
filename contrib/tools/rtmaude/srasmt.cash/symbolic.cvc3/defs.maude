@@ -1,0 +1,693 @@
+***(
+
+    This file is part of SRAPlexil, a rewriting logic semantics of
+    the Plan Execution Interchange Language -PLEXIL- with symbolic
+    reachability analysis support modulo SMT theories
+
+    Copyright (C) 2008-2012 Camilo Rocha, camilo.rocha@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                                           Main definitions
+****                                                       Author: Camilo Rocha
+
+set include BOOL off .
+
+--- Object attributes
+fmod ATTRIB is
+  sort AttribName .
+  sort AttribValue .
+endfm
+
+view AttribName from TRIV to ATTRIB is
+  sort Elt to AttribName .
+endv
+
+view AttribValue from TRIV to ATTRIB is
+  sort Elt to AttribValue .
+endv
+
+--- Unqualified names
+fmod NAME is
+  sort Name .
+endfm
+
+view Name from TRIV to NAME is
+  sort Elt to Name .
+endv
+
+--- Qualified names
+fmod QUALIFIED-NAME is
+  pr LIST{Name} * (sort NeList{Name} to NeQualName,
+                   sort List{Name} to QualName,
+                   op __ to _._) .
+endfm
+
+view NeQualName from TRIV to QUALIFIED-NAME is
+  sort Elt to NeQualName .
+endv
+
+
+--- External variable type
+fmod EXT-VAR-TYPE is
+  sort ExtVarType .
+  ops int boolean : -> ExtVarType .
+endfm
+
+--- Server state
+fmod SERVER-STATE is
+  sort ServerState .
+  op idle      : -> ServerState [ctor format(c! o)] .
+  op waiting   : -> ServerState [ctor format(y! o)] .
+  op executing : -> ServerState [ctor format(g! o)] .
+endfm
+
+fmod EXPR is
+  pr INT .
+  pr QUALIFIED-NAME .
+  pr TRUTH-VALUE .
+
+  sort iExpr .
+
+  --- Booleans and integers
+  sort iBool iBoolCns iBoolVar .
+  sort iInt iIntCns iIntVar .
+  subsort iBoolCns iBoolVar < iBool .
+  subsort iIntCns  iIntVar < iInt .
+  subsorts iBool iInt < iExpr .
+
+  --- Boolean and integer constants
+  op c : Bool -> iBoolCns [ctor] .
+  op c : Int -> iIntCns [ctor] .
+
+  --- Boolean and integer variables
+  op b : Nat -> iBoolVar [ctor] .
+  op i : Nat -> iIntVar [ctor] . 
+
+  --- Boolean expressions
+  op ~_ : iBool -> iBool [prec 41] .
+  ops _^_ _v_ : iBool iBool -> iBool [assoc comm prec 45] .
+  op _->_ : iBool iBool -> iBool [prec 47] .
+  ops _===_ _=//=_ : iBool iBool -> iBool [comm prec 50] .
+
+  --- Integer expressions
+  op -_ : iInt -> iInt [prec 31] .
+  ops _+_ _*_ : iInt iInt -> iInt [assoc comm prec 35] .
+  op _--_ : iInt iInt -> iInt .
+
+  --- Relational expressions on integers
+  ops _<=_ _<_ _>=_ _>_ : iInt iInt -> iBool [prec 37] .
+  ops _===_ _=//=_ : iInt iInt -> iBool [comm prec 50] .
+
+  --- Custom predicates
+  op next-deadline-waiting : NeQualName iInt -> iBool .
+  op no-server-waiting : NeQualName -> iBool .
+  op mte-server : NeQualName iInt -> iBool .
+  op no-deadline-miss : -> iBool .
+endfm
+
+--- Boolean expressions can instantiate parametric types
+view iBool from TRIV to EXPR is
+  sort Elt to iBool .
+endv
+
+--- expressions can instantiate parametric types
+view iExpr from TRIV to EXPR is
+  sort Elt to iExpr .
+endv
+
+--- lists of atomic Boolean and integer expressions, and expressions
+fmod EXPR-LIST is
+  pr EXPR .
+
+  --- list of Boolean expressions
+  sorts NeIExprList iExprList .
+  subsorts iExpr < NeIExprList < iExprList .
+  op nilel : -> iExprList [ctor] .
+  op _;_ : NeIExprList NeIExprList -> NeIExprList [ctor assoc id: nilel] .
+  op _;_ : iExprList iExprList -> iExprList [assoc id: nilel] .
+endfm
+
+--- Configuration of objects and messages, adapted and modified from
+--- Maude's prelude
+fmod CONFIG is
+  pr MAP{AttribName,AttribValue} * (sort Entry{AttribName,AttribValue} to Attribute,
+                                    sort Map{AttribName,AttribValue} to AttributeSet,
+                                    op empty to none) .
+
+  sorts Oid Cid Object Msg Configuration .
+  subsort Object Msg < Configuration .
+  op <_:_|_> : Oid Cid AttributeSet -> Object [ctor object prec 123 format(n d d d d d d d)] .
+  op none : -> Configuration [ctor] .
+  op __ : Configuration Configuration -> Configuration [ctor prec 125 assoc comm id: none] .
+endfm
+
+view Oid from TRIV to CONFIG is
+  sort Elt to Oid .
+endv
+
+view Configuration from TRIV to CONFIG is
+  sort Elt to Configuration .
+endv
+
+--- sets of object identifiers
+fmod OID-SET is
+  pr SET{Oid} * (sort NeSet{Oid} to NeOidSet,
+                 sort Set{Oid} to OidSet,
+                 op empty to mtoidset) .
+endfm
+
+view OidSet from TRIV to OID-SET is
+  sort Elt to OidSet .
+endv
+
+--- Capacity queue
+fmod CAPACITY-QUEUE is
+  pr EXPR .
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_ : iInt iInt -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue 
+            [ctor assoc id: emptyQueue] .
+
+  vars C1 C2    : Capacity .
+  vars CQ1 CQ2  : CapacityQueue .
+  vars iB iB1   : iBool .
+  vars iI iI1   : iInt .
+  vars iI2 iI3  : iInt .
+
+  op  below-deadline : iInt CapacityQueue -> iBool .
+  op $below-deadline : iInt CapacityQueue iBool -> iBool .
+  op  above-or-equal-deadline : iInt CapacityQueue -> iBool .
+  op $above-or-equal-deadline : iInt CapacityQueue iBool -> iBool .
+
+  eq below-deadline(iI, CQ1)
+   = $below-deadline(iI, CQ1, c(true)) .
+  eq $below-deadline(iI, emptyQueue, iB)
+   = iB .
+  eq $below-deadline(iI, ((deadline: iI2 budget: iI3) CQ1), iB)
+   = $below-deadline(iI, CQ1, iB ^ (iI2 < iI v (iI <= c(0) ^ iI2 <= c(0))) ) .
+
+  eq above-or-equal-deadline(iI, CQ1)
+   = $above-or-equal-deadline(iI, CQ1, c(true)) .
+  eq $above-or-equal-deadline(iI, emptyQueue, iB)
+   = iB .
+  eq $above-or-equal-deadline(iI, ((deadline: iI2 budget: iI3) CQ1), iB)
+   = $above-or-equal-deadline(iI, CQ1, 
+                              iB ^ (iI2 >= iI v (iI2 <= c(0) ^ iI <= c(0))) ) .
+
+  op  delta : CapacityQueue iInt -> CapacityQueue .
+  op $delta : CapacityQueue iInt CapacityQueue -> CapacityQueue .
+  eq delta(CQ1,iI)
+   = $delta(CQ1, iI, emptyQueue) .
+  eq $delta(emptyQueue, iI, CQ2)
+   = CQ2 .
+  eq $delta((deadline: iI1 budget: iI2) CQ1, iI, CQ2)
+   = $delta(CQ1, iI, CQ2 (deadline: iI1 -- iI budget: iI2)) .
+endfm
+
+--- Atributes of nodes
+fmod CASH-CONFIG is
+  inc CONFIG .
+  pr CAPACITY-QUEUE .
+  pr SERVER-STATE .
+  pr EXT-BOOL .
+  pr OID-SET .
+  pr EXPR-LIST .
+  pr EXT-VAR-TYPE .
+
+  var  AtS        : AttributeSet .
+  vars Cnf Cnf'   : Configuration .
+  vars C C'       : Cid .
+  var  iE         : iExpr .
+  var  Nm         : Name .
+  vars NeQN NeQN' : NeQualName .
+  var  O          : Oid .
+  var  OS         : OidSet .
+  var  QN         : QualName .
+  var  St         : ServerState .
+
+  subsort QualName < Oid .
+  --- classes
+ ops server global : -> Cid [ctor format(! o)] .
+
+  --- server attribute names
+  op maxBudget      : -> AttribName [ctor] .
+  op period         : -> AttribName [ctor] .
+  op state          : -> AttribName [ctor] .
+  op usedOfBudget   : -> AttribName [ctor] .
+  op timeToDeadline : -> AttribName [ctor] .
+  op timeExecuted   : -> AttribName [ctor] .
+
+  --- global attribute names
+  op time          : -> AttribName [ctor] .
+  op cq            : -> AttribName [ctor] .
+  op available     : -> AttribName [ctor] .
+  op deadline-miss : -> AttribName [ctor] .
+
+  --- attribute values
+  subsorts QualName ServerState CapacityQueue iExprList Bool < AttribValue .
+endfm
+
+--- Evaluation of expressions in Plexil configurations
+fmod EVALUATION is
+  pr CASH-CONFIG .
+
+  var  AtS         : AttributeSet .
+  vars B B'        : Bool .
+  var  Cls         : Cid .
+  var  Cnf Cnf'    : Configuration .
+  vars iB iB'      : iBool .
+  var  iEL         : iExprList .
+  vars iI iI'      : iInt .
+  vars iI1 iI2 iI3 :  iInt .
+  var  I I'        : Int .
+  vars Nm Nm'      : Name .
+  vars N N'        : Nat .
+  vars NeQN NeQN'  : NeQualName .
+  vars QN QN'      : QualName .
+  vars St St'      : ServerState .
+
+  --- Equational simplification of Boolean expressions
+  eq ~ c(true) 
+   = c(false) .
+  eq ~ c(false) 
+   = c(true) .
+  eq c(true) ^ iB 
+   = iB .
+  eq c(false) ^ iB 
+   = c(false) .
+  eq c(false) v iB 
+   = iB .
+  eq c(true) v iB 
+   = c(true) .
+  eq c(false) -> iB 
+   = c(true) .
+  eq c(true) -> iB 
+   = iB .
+  eq c(B) === c(B')
+   = c(B == B') .
+  eq iB =//= iB' 
+   = ~ (iB === iB') .
+
+  --- Equational simplification of integer expressions
+  eq c(I) === c(I') 
+   = c(I == I') .
+  eq iI =//= iI' 
+   = ~ (iI === iI') .
+  eq c(I) + c(I')
+   = c(I + I') .
+  eq c(I) -- c(I')
+   = c(I - I') .
+  eq c(I) * c(I')
+   = c(I * I') .
+  eq - c(I)
+   = c(- I) .
+  eq c(I) > c(I')
+   = c(I > I') .
+  eq c(I) >= c(I')
+   = c(I >= I') .
+  eq c(I) < c(I')
+   = c(I < I') .
+  eq c(I) <= c(I')
+   = c(I <= I') .
+
+  --- Evaluation of Boolean and integer expressions
+  op eval : Configuration iExpr -> iExpr .
+
+  -----------------------------
+  ---- Boolean expressions ----
+  -----------------------------
+
+  --- Boolean constants
+  eq eval(Cnf,c(B)) 
+   = c(B) .
+
+  --- Boolean variables
+  eq eval(Cnf,b(N))
+   = b(N) .
+
+  --- Negation
+  eq eval(Cnf,~ iB) 
+   = ~ eval(Cnf,iB) .
+
+  --- Conjunction
+  eq eval(Cnf,iB ^ iB')
+   = (eval(Cnf,iB) ^ eval(Cnf,iB')) .
+
+  --- Disjunction
+  eq eval(Cnf,iB v iB')
+   = eval(Cnf,iB) v eval(Cnf,iB') .
+
+  --- Implication
+  eq eval(Cnf,iB -> iB')
+   = eval(Cnf,~ iB) v eval(Cnf,iB') .
+
+  --- Equality
+  eq eval(Cnf,iB === iB')
+   = eval(Cnf, iB) === eval(Cnf,iB') .
+
+  --- Inequality
+  eq eval(Cnf,iB =//= iB')
+   = eval(Cnf, iB) =//= eval(Cnf,iB') .
+
+  -----------------------------
+  ---- Integer expressions ----
+  -----------------------------
+
+  --- Integer constants
+  eq eval(Cnf,c(I)) 
+   = (c(I)) .
+
+  --- Integer variables
+  eq eval(Cnf,i(N))
+   = i(N) .
+
+  --- Unary minus
+  eq eval(Cnf,- iI)
+   = - eval(Cnf,iI) .
+
+  --- Addition
+  eq eval(Cnf,iI + iI')
+   = eval(Cnf,iI) + eval(Cnf,iI') .
+
+  --- Substraction
+  eq eval(Cnf,iI -- iI')
+   = eval(Cnf,iI) -- eval(Cnf,iI') .
+
+  --- Product
+  eq eval(Cnf,iI * iI')
+   = eval(Cnf,iI) * eval(Cnf,iI') .
+
+  --------------------------------
+  ---- Relational expressions ----
+  --------------------------------
+
+  --- At most
+  eq eval(Cnf, iI <= iI')
+   = eval(Cnf,iI) <= eval(Cnf,iI') .
+
+  --- Less than
+  eq eval(Cnf, iI < iI')
+   = eval(Cnf,iI) < eval(Cnf,iI') .
+
+  --- At least
+  eq eval(Cnf, iI >= iI')
+   = eval(Cnf,iI) >= eval(Cnf,iI') .
+
+  --- Greater than
+  eq eval(Cnf, iI > iI')
+   = eval(Cnf,iI) > eval(Cnf,iI') .
+
+  --- Equality
+  eq eval(Cnf, iI === iI')
+   = eval(Cnf,iI) === eval(Cnf,iI') .
+
+  --- Innequality
+  eq eval(Cnf, iI =//= iI')
+   = eval(Cnf,iI) =//= eval(Cnf,iI') .
+
+  --- Custom predicates
+  eq eval(Cnf, next-deadline-waiting(NeQN, iI))
+   = ndw-wout(Cnf, NeQN, iI) .
+
+  op  ndw-wout : Configuration NeQualName iInt -> iBool .
+  op $ndw-wout : Configuration NeQualName iInt iBool -> iBool .
+  eq ndw-wout(Cnf, NeQN, iI)
+   = $ndw-wout(Cnf, NeQN, iI, c(true)) .
+  eq $ndw-wout(none, NeQN, iI, iB)
+   = iB .
+  eq $ndw-wout( (< NeQN' : global | deadline-miss |-> B, AtS > Cnf), 
+                NeQN, iI, iB)
+   = if B == true
+     then c(false)
+     else $ndw-wout(Cnf, NeQN, iI, iB)
+     fi .
+  eq $ndw-wout( (< NeQN' : server | state |-> St, 
+                                    timeToDeadline |-> iI', AtS > Cnf), 
+                NeQN, iI, iB)
+   = if NeQN' =/= NeQN and-then St == waiting
+     then $ndw-wout(Cnf, NeQN, iI, 
+                    iB ^ (iI <= iI' v (iI' <= c(0) ^ iI <= c(0))))
+     else $ndw-wout(Cnf, NeQN, iI, iB)
+     fi .
+
+  eq eval(Cnf, no-server-waiting(NeQN))
+   = nsw(Cnf, NeQN) .
+
+  op nsw : Configuration NeQualName -> iBool .
+  eq nsw(none, NeQN)
+   = c(true) .
+  eq nsw((< NeQN' : global | AtS > Cnf), NeQN)
+   = nsw(Cnf, NeQN) .
+  eq nsw((< NeQN' : server | state |-> St, AtS > Cnf), NeQN)
+   = if NeQN' == NeQN or-else St =/= waiting
+     then nsw(Cnf, NeQN)
+     else c(false)
+     fi .
+
+  eq eval(Cnf, mte-server(NeQN, iI))
+   = mtes(Cnf, NeQN, iI) .  
+  op  mtes : Configuration NeQualName iInt -> iBool .
+  op $mtes : Configuration NeQualName iInt iBool -> iBool .
+
+  eq mtes(Cnf, NeQN, iI)
+   = $mtes(Cnf, NeQN, iI, c(true)) .
+  eq $mtes(none, NeQN, iI, iB)
+   = iB .
+  eq $mtes( (< NeQN' : global | AtS > Cnf), NeQN, iI, iB)
+   = $mtes(Cnf, NeQN, iI, iB) .
+
+  eq $mtes( (< NeQN' : server | timeToDeadline |-> iI1, 
+                                usedOfBudget |-> iI2, 
+                                maxBudget |-> iI3,
+                                state |-> St, AtS > Cnf), NeQN, iI, iB)
+   = if NeQN == NeQN' or-else St == idle
+     then $mtes(Cnf, NeQN, iI, iB)
+     else if St == waiting 
+          then $mtes(Cnf, NeQN, iI, 
+                     iB ^ ((iI1 >= iI) v (iI1 <= c(0) ^ (iI <= c(0)))) )
+          else $mtes(Cnf, NeQN, iI, 
+                     iB ^ (((iI3 <= iI2) ^ (iI === c(0))) v (iI3 -- iI2) >= iI) )
+          fi
+     fi .
+
+  eq eval(Cnf, no-deadline-miss)
+   = ndm(Cnf ) .  
+  op  ndm : Configuration -> iBool .
+  op $ndm : Configuration iBool -> iBool .
+
+  eq ndm(Cnf)
+   = $ndm(Cnf, c(true)) .
+  eq $ndm(none, iB)
+   = iB .
+
+  eq $ndm( (< NeQN : global | deadline-miss |-> B, AtS > Cnf), iB)
+   = $ndm(Cnf, iB ^ c(B == false)) .
+
+  eq $ndm( (< NeQN' : server | maxBudget |-> iI1, usedOfBudget |-> iI2,
+                               timeToDeadline |-> iI3, state |-> St,
+                               AtS > Cnf), iB)
+   = if St == idle 
+     then $ndm(Cnf, iB)
+     else $ndm(Cnf, iB ^ ((iI3 > c(0) ^ iI1 <= iI2 + iI3) v 
+                          (iI3 <= c(0) ^ iI1 <= iI2))) 
+     fi .
+endfm
+
+--- Actions
+fmod ACTION is
+  pr ATTRIB .
+  pr QUALIFIED-NAME .
+  pr SERVER-STATE .
+  pr CAPACITY-QUEUE .
+  pr EXPR .
+
+  sort Action .
+  op set-state     : NeQualName ServerState -> Action [ctor] .
+  op set-available : NeQualName Bool -> Action [ctor] .
+  op set-time      : NeQualName AttribName iInt -> Action [ctor] .
+  op set-queue     : NeQualName CapacityQueue -> Action [ctor] .
+  op set-dead-miss : NeQualName Bool -> Action [ctor] .
+  op delta-servers : iInt -> Action [ctor] .
+endfm
+
+view Action from TRIV to ACTION is
+  sort Elt to Action .
+endv
+
+--- Sets of actions
+fmod ACTION-SET is
+  pr SET{Action} * (sort NeSet{Action} to NeActionSet,
+                    sort Set{Action} to ActionSet,
+                    op empty to mtas,
+                    op _,_ to _;_) .
+endfm
+
+view ActionSet from TRIV to ACTION-SET is
+  sort Elt to ActionSet .
+endv
+
+--- Guarded action sets
+fmod GUARDED-ACTION-SET is
+  pr 2TUPLE{iBool,ActionSet} 
+     * (sort Tuple{iBool,ActionSet} to 2GuardedActionSet) .
+
+  pr 4TUPLE{String,Nat,iBool,ActionSet} 
+     * (sort Tuple{String,Nat,iBool,ActionSet} to 4GuardedActionSet) .
+
+  pr 5TUPLE{String,Nat,iBool,ActionSet,ActionSet} 
+     * (sort Tuple{String,Nat,iBool,ActionSet,ActionSet} to 5GuardedActionSet) .
+
+  pr 6TUPLE{String,Nat,iBool,ActionSet,iBool,ActionSet} 
+     * (sort Tuple{String,Nat,iBool,ActionSet,iBool,ActionSet} to 6GuardedActionSet) .
+
+  sort GuardedActionSet .
+  subsorts 2GuardedActionSet 4GuardedActionSet 5GuardedActionSet 6GuardedActionSet < GuardedActionSet .
+endfm
+
+view 2GuardedActionSet from TRIV to GUARDED-ACTION-SET is
+  sort Elt to 2GuardedActionSet .
+endv
+
+view 4GuardedActionSet from TRIV to GUARDED-ACTION-SET is
+  sort Elt to 4GuardedActionSet .
+endv
+
+fmod ACTION-UTIL is
+  pr GUARDED-ACTION-SET .
+  pr CASH-CONFIG .
+  pr EXT-BOOL .
+
+  var  A          : Action .
+  var  AS         : ActionSet .
+  vars AtN        : AttribName .
+  var  AtS        : AttributeSet .
+  vars B B'       : Bool .
+  vars CQ CQ'     : CapacityQueue .
+  vars Cnf Cnf'   : Configuration .
+  vars C C'       : Cid .
+  vars iE iE'     : iExpr .
+  vars iI iI'     : iInt .
+  var  Nm         : Name .
+  vars NeQN NeQN' : NeQualName .
+  var  Obj        : Object .
+  var  QN         : QualName .
+  vars St St'     : ServerState .
+
+  --- returns the name of all target nodes affected
+  --- by the given action in the given configuration
+  op get-targets : Configuration Action -> OidSet .
+  eq get-targets(Cnf,set-state(NeQN,St))
+   = NeQN .
+  eq get-targets(Cnf,set-available(NeQN,B))
+   = NeQN .
+  eq get-targets(Cnf,set-time(NeQN,AtN,iI))
+   = NeQN .
+  eq get-targets(Cnf,set-queue(NeQN,CQ))
+   = NeQN .
+  eq get-targets(Cnf,set-dead-miss(NeQN,B))
+   = NeQN .
+  eq get-targets(Cnf,delta-servers(iI))
+   = mtoidset .
+
+  --- applies the given action to the given configuration of nodes
+  op apply-action   : Configuration Action -> Configuration .
+  eq apply-action((Cnf < NeQN : C | state |-> St, AtS >),set-state(NeQN,St'))
+   = Cnf < NeQN : C | state |-> St', AtS > .
+  eq apply-action((Cnf < NeQN : C | available |-> B, AtS >),set-available(NeQN,B'))
+   = Cnf < NeQN : C | available |-> B', AtS > .
+  eq apply-action((Cnf < NeQN : C | AtN |-> iI, AtS >),set-time(NeQN,AtN,iI'))
+   = Cnf < NeQN : C | AtN |-> iI', AtS > .
+  eq apply-action((Cnf < NeQN : C | cq |-> CQ, AtS >),set-queue(NeQN,CQ'))
+   = Cnf < NeQN : C | cq |-> CQ', AtS > .
+  eq apply-action((Cnf < NeQN : C | deadline-miss |-> B, AtS >),set-dead-miss(NeQN,B'))
+   = Cnf < NeQN : C | deadline-miss |-> B', AtS > .
+  eq apply-action(Cnf,delta-servers(iI))
+   = apply-aux-dec(Cnf,none,iI) .
+
+  op apply-aux-dec : Configuration Configuration iInt -> Configuration .
+  eq apply-aux-dec(none,Cnf',iI)
+   = Cnf' .
+  eq apply-aux-dec((< NeQN : global | AtS > Cnf ), Cnf', iI)
+   = apply-aux-dec(Cnf, (< NeQN : global | AtS > Cnf'), iI) .
+  eq apply-aux-dec((< NeQN : server | state |-> St, timeToDeadline |-> iI', AtS > Cnf), Cnf', iI)
+   = if St == executing
+     then apply-aux-dec(Cnf, (Cnf' < NeQN : server | state |-> St, timeToDeadline |-> iI', AtS >), iI)
+     else apply-aux-dec(Cnf, (Cnf' < NeQN : server | state |-> St, timeToDeadline |-> iI' -- iI, AtS >), iI)
+     fi .
+
+  --- applies the given actions to the given configuration of nodes
+  op apply-actions  : Configuration ActionSet -> Configuration .
+  eq apply-actions(Cnf,(AS ; A))
+   = apply-actions(apply-action(Cnf,A),AS) .
+  eq apply-actions(Cnf,mtas)
+   = Cnf .
+endfm
+
+--- Sys of execution
+fmod SYS is
+  pr ACTION-UTIL .
+  pr EVALUATION .
+  pr CAPACITY-QUEUE .
+
+  sort Sys .
+  subsort GuardedActionSet < Msg .
+  --- abbreviated state; an abbreviated state is automatically rewriten
+  --- into an equivalent full state; see equation below
+  op {_} : Configuration -> Sys [prec 126 frozen] .
+  --- full state
+  op {_,_} : iBool Configuration -> Sys [prec 126 frozen(2)] .
+  --- returns the guard of a state
+  op guard : Sys -> iBool .
+  --- returns the configuration in a state
+  op conf : Sys -> Configuration .
+
+  var  AtS        : AttributeSet .
+  vars Cnf Cnf'   : Configuration .
+  vars iB iB'     : iBool .
+  vars iE iE'     : iExpr .
+  vars iEL iEL'   : iExprList .
+  var  NeQN       : NeQualName .
+
+  --- abbreviated states are automatically rewriten into full states
+  eq { Cnf } 
+   = { c(true), Cnf } .
+
+  --- projection of a full state into its first component
+  eq guard(({ iB, Cnf })) 
+   = iB .
+  --- projection of a full state into its second component
+  eq conf(({ iB, Cnf })) 
+   = Cnf .
+
+  --- Constant used to identify the current state of execution
+  op #STATE# : -> Sys .
+
+  op eval : Sys iExpr -> iExpr .
+  --- Evaluation of expressions relative to the state dictated by constant #STATE#
+  op eval : iExpr -> iExpr .
+  eq eval(iE)
+   = eval(#STATE#,iE) .
+  eq eval(({ iB, Cnf }), iE) 
+   = eval((Cnf),iE) .
+
+  sort SysSet .
+  subsort Sys < SysSet .
+  op mtstset : -> SysSet [ctor] .
+  op __ : SysSet SysSet -> SysSet [assoc comm id: mtstset] .
+endfm

@@ -1,0 +1,28 @@
+mod TEST-STATES is
+  inc CASH-SYMBOLIC .
+
+  ops g s1 s2 : -> Oid [ctor] .
+  eq g = 'g .
+  eq s1 = 's1 .
+  eq s2 = 's2 .
+
+  op init1   : -> Sys .
+  op global1  : -> Object .
+  op server1 : -> Object .
+  op server2 : -> Object .
+
+  eq global1
+   = < g : global | time : 0, cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server1
+   = < s1 : server | maxBudget : 2, period : 5, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq server2
+   = < s2 : server | maxBudget : 3, period : 5, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq init1
+   = { global1 server1 server2 } .
+endm
+
+---(
+  search init1 =>! S:Sys .
+---)

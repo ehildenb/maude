@@ -1,0 +1,353 @@
+
+set include BOOLEAN off .
+
+load ~/usr/share/maude-alpha/prelude.maude
+load ~/usr/share/maude-alpha/smt.maude
+---load smt.maude
+
+load smt-interface.maude .
+load smt-cond.maude
+load cash-base.maude
+
+
+mod CASH-SYMBOLIC-BASE is
+  pr CASH-STATE .
+  pr CASH-CONDITION .
+  pr SMT-INTERFACE-NOVAR .
+
+  vars O O1 G         : Oid .
+  vars B B'           : Bool .
+  vars AtSG AtSG'     : AttributeSet .
+  vars AtS  AtS'      : AttributeSet .
+  vars AtS1 AtS1'     : AttributeSet .
+  vars CQ CQ' CQ1 CQ2 : CapacityQueue .
+  vars REST CONF      : Configuration .
+  vars St St'         : Int .
+  vars St1 St1'       : Int .
+  vars I I'           : Int .
+  vars I1 I1'         : Int .
+  vars I2 I2'         : Int .
+  vars I3 I3'         : Int .
+  vars NZT NZT1 NZT2  : Int .
+  vars T T1 T2 T3     : Int .
+  vars Phi Phi'       : Bool .
+  vars iB iB'         : Bool .
+  
+  var PER             : Int .
+  var TM  TM'         : Int .
+  var TD  TD'         : Int .
+  var TD1 TD1'        : Int .
+  var TD2 TD2'        : Int .
+  var TE  TE'         : Int .
+  var TU  TU'         : Int .
+
+--- Idle to executing when the processor is available:
+  rl [idleToExecuting1] :
+     < G : global | available : true,  AtSG > 
+     < O : server | period : PER,  state : St,  timeToDeadline : TD,  timeExecuted : TE,  usedOfBudget : TU,  AtS > REST
+   if Phi
+  => < G : global | available : false, AtSG > 
+     < O : server | period : PER,  state : executing, timeToDeadline : TD + PER, timeExecuted : 0, usedOfBudget : 0, AtS > REST
+   if Phi
+  and PER >   0
+  and St  === idle
+  and TD  >=  0
+  and TE  >=  0
+  and TU  >=  0 .
+
+
+--- A server becomes active and another server is executing.
+  rl [idleToActive] :
+     < O  : server | period : PER, state : St,  timeToDeadline : TD,  timeExecuted : TE,  usedOfBudget : TU,  AtS > 
+     < O1 : server | state : St1,  timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  => < O  : server | period : PER, state : ((TD + PER < TD1) ? executing : waiting), timeToDeadline : TD + PER, timeExecuted : 0, usedOfBudget : 0, AtS > 
+     < O1 : server | state : ((TD + PER < TD1) ? waiting : executing), timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  and PER  >   0
+  and St   === idle
+  and TD   >=  0
+  and TE   >=  0
+  and TU   >=  0
+  and St1  === executing
+  and TD1  >=  0 .
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+--- Finish executing. If more budget, add to CASH.  There are two main cases: wake up the first waiting server, or nobody is waiting. 
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+--- First case: someone else is waiting: We have also added an additional check that the current job has actually executed more than zero time.
+  rl [stopExecuting1] :
+     < G  : global | cq : CQ,  AtSG > 
+     < O  : server | state : St,   usedOfBudget : TU,  maxBudget : TM, timeToDeadline : TD, timeExecuted : TE, AtS > 
+     < O1 : server | state : St1,  timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  => < G  : global | cq : CQ (deadline: TD budget: (TM monus TU) const: TM > TU), AtSG > 
+     < O  : server | state : idle,  usedOfBudget : TM, maxBudget : TM, timeToDeadline : TD, timeExecuted : TE, AtS > 
+     < O1 : server | state : executing, timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  and St   === executing
+  and TU   >=  0
+  and TM   >   0
+  and TD   >=  0
+  and TE   >   0
+  and St1  === waiting
+  and TD1  >=  0
+  and (TM monus TU) <= TD
+  and nextDeadlineWaiting(REST, TD1) .
+
+
+--- Finish executing when no other server is waiting. Just release the processor:
+  rl [stopExecuting2] :
+     < G  : global | available : B,  cq : CQ,  AtSG > 
+     < O  : server | state : St,  usedOfBudget : TU, maxBudget : TM, timeToDeadline : TD, timeExecuted : TE, AtS > REST
+   if Phi
+  => < G  : global | available : true, cq : CQ (deadline: TD budget: (TM monus TU) const: TM > TU), AtSG > 
+     < O  : server | state : idle, usedOfBudget : TM, maxBudget : TM, timeToDeadline : TD, timeExecuted : TE, AtS > REST
+   if Phi
+  and St   === executing
+  and TU   >=  0
+  and TM   >   0
+  and TD   >=  0
+  and TE   >   0
+  and (TM monus TU) <= TD
+  and noServerWaiting(REST) .
+
+
+--- The following rule can be applied when we have reached an overflow situation:
+  rl [deadlineMiss] :
+     < G : global | deadline-miss : B,  AtSG > 
+     < O  : server | state : St, usedOfBudget : TU, timeToDeadline : TD, maxBudget : TM, AtS > REST
+   if Phi
+  => < G : global | deadline-miss : true, AtSG > 
+     < O  : server | state : St, usedOfBudget : TU, timeToDeadline : TD, maxBudget : TM, AtS > REST
+   if Phi
+  and TU   >= 0
+  and TD   >= 0
+  and TM   >  0
+  and (St === waiting or St === executing)
+  and (TM monus TU) > TD .
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+--- We add the following rules for modeling a job which is longer than the execution time in one round of the server. 
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+--- Case 1: no other server is waiting:
+  rl [continueExInNextRound] :
+     < O  : server | state : St, maxBudget : TM, usedOfBudget : TU,  period : PER, timeToDeadline : TD,  timeExecuted : TE,  AtS > REST
+   if Phi
+  => < O  : server | state : St, maxBudget : TM, usedOfBudget : 0, period : PER, timeToDeadline : TD + PER, timeExecuted : 0, AtS > REST
+   if Phi
+  and St  === executing
+  and TM  >   0
+  and TU  === TM
+  and PER >   0
+  and TD  === 0
+  and TE  >=  0
+  and noServerWaiting(REST) .
+
+
+--- Case 2: someone else is waiting, so maybe our server becomes preempted:
+  rl [continueActInNextRound] :
+     < O  : server | state : St,  maxBudget : TM, usedOfBudget : TU,  period : PER, timeExecuted : TE,  timeToDeadline : TD,  AtS > 
+     < O1 : server | state : St1, timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  => < O  : server | state : ((TD1 < TD + PER) ? waiting : executing), maxBudget : TM, usedOfBudget : 0, period : PER, timeExecuted : 0, timeToDeadline : TD + PER, AtS > 
+     < O1 : server | state : ((TD1 < TD + PER) ? executing : waiting),timeToDeadline : TD1, AtS1 > REST
+   if Phi
+  and St   === executing
+  and TM   >   0
+  and TU   === TM
+  and PER  >   0
+  and TE   >=  0
+  and TD   >=  0
+  and St1  === waiting
+  and TD1  >=  0
+  and nextDeadlineWaiting(REST, TD1) .
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+--- Timed behavior.  NOTE: time increased by 1.
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+--- Case 1: tick when a server is executing a spare capacity:
+  rl [tickExecutingSpareCapacity] :
+     < G : global | cq : (deadline: I1 budget: I2  const: iB)  CQ, AtSG >                    
+     < O : server | state : St,  timeExecuted : TE, timeToDeadline : TD, AtS > REST
+   if Phi
+  => delta(< G : global | cq : (deadline: I1 budget: I2 + (- 1) const: (iB and (I2 > 1))) CQ, AtSG >
+           < O : server | state : executing, timeExecuted : TE, timeToDeadline : TD, AtS > REST, 1, false)
+   if Phi
+  and St  === executing
+  and TE  >= 0 
+  and TD  >= 0
+  and iB  and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+  and I1  >= 1 and I2 >= 1                     --- mte(CQ) >= 1 (also default constraint for element in queue)
+  and mte-server(REST, 1)                      --- mte(REST) >= 1
+  and TD  >= 1                                 --- mteCashUse(O) >= 1
+  and I1  <= TD                                --- firstDeadline; the queue cannot be empty here
+  and no-deadline-miss(< O : server | state : St, timeExecuted : TE, timeToDeadline : TD, AtS > REST) .
+
+
+--- Case 2: tick when a server is executing its own budget:
+   rl [tickExecutingOwnBudget] :
+     < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >
+     < O : server | state : St,  timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST
+   if Phi
+  => delta(< G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, AtSG >
+           < O : server | state : executing, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST, 1, true)
+   if Phi
+  and St  === executing
+  and TE  >= 0
+  and TU  >= 0
+  and TD  >= 0
+  and iB  and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+  and I1  >= 1 and I2 >= 1                     --- mte(CQ) >= 1 (also default constraint for element in queue)
+  and TD  < I1                                 --- TD <  firstDeadline(CQ) .
+  and mte-server(< O : server | state : St, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST, 1)
+  and no-deadline-miss(< O : server | state : St, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST) .
+
+
+   rl [tickExecutingOwnBudgetEmpty] :
+     < G : global | cq : emptyQueue, AtSG >
+     < O : server | state : St,  timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST
+   if Phi
+  => delta(< G : global | cq : emptyQueue, AtSG >
+           < O : server | state : executing, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST, 1, true)
+   if Phi
+  and St  === executing
+  and TE  >= 0
+  and TU  >= 0
+  and TD  >= 0
+  and mte-server(< O : server | state : St, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST, 1)
+  and no-deadline-miss(< O : server | state : St, timeExecuted : TE, usedOfBudget : TU, timeToDeadline : TD, AtS > REST) .
+endm
+
+
+---VER1: correct version.
+mod CASH-SYMBOLIC is
+  inc CASH-SYMBOLIC-BASE .
+
+  vars O G         : Oid .
+  vars B B'        : Bool .
+  vars I1 I2       : Int .
+  vars I1' I2'     : Int .
+  vars CQ CQ1 CQ2  : CapacityQueue .
+  var  AtSG        : AttributeSet .
+  vars Phi iB iB'  : Bool .
+  vars REST        : Configuration .
+
+  rl [tickIdle] :
+       < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, available : B, AtSG > REST 
+   if Phi
+  =>   delta(< G : global | cq : (deadline: I1 budget: (I2 + (- 1)) const: (iB and (I2 > 1))) CQ, available : B, AtSG > REST,1,false)
+   if Phi 
+  and iB and above-or-equal-deadline(I1,CQ)   --- minimal item chosen
+  and I1 >= 1 and I2 >= 1                     --- default constraint for element to be included 
+  and B
+  and mte-server(REST, 1)
+  and no-deadline-miss(REST) .
+
+  rl [tickIdleEmpty] :
+       < G : global | cq : emptyQueue, available : B, AtSG > REST 
+   if Phi
+  =>   delta(< G : global | cq : emptyQueue, available : B, AtSG > REST,1,false)
+   if Phi 
+  and B
+  and mte-server(REST, 1) 
+  and no-deadline-miss(REST) .
+endm
+
+
+---VER2: when idling, steal time from "backwards", instead of from the front. 
+mod CASH-SYMBOLIC2 is
+  inc CASH-SYMBOLIC-BASE .
+
+  vars O G         : Oid .
+  vars B B'        : Bool .
+  vars CQ CQ1 CQ2  : CapacityQueue .
+  var  AtSG        : AttributeSet .
+  var  I1 I2       : Int .
+  vars I1' I2'     : Int .
+  vars Phi iB iB'  : Bool .
+  vars REST        : Configuration .
+
+  rl [tickIdle] :
+       < G : global | cq : (deadline: I1 budget: I2 const: iB) CQ, available : B, AtSG > REST 
+   if Phi
+  =>   delta(< G : global | cq : (deadline: I1 budget: (I2 + (- 1)) const: (iB and (I2 > 1))) CQ, available : B, AtSG > REST,1,false)
+   if Phi 
+      and B
+      and iB and below-deadline(I1,CQ)   --- latest item chosen
+      and I1 >= 1 and I2 >= 1            --- default constraint for element to be included 
+      and mte-server(REST, 1)
+      and no-deadline-miss(REST) .
+
+
+  rl [tickIdleEmpty] :
+       < G : global | cq : emptyQueue, available : B, AtSG > REST 
+   if Phi
+  =>   delta(< G : global | cq : emptyQueue, available : B, AtSG > REST,1,false)
+   if Phi 
+      and B
+      and mte-server(REST, 1) 
+      and no-deadline-miss(REST) .
+endm
+
+
+
+mod TEST is
+  inc CASH-SYMBOLIC2 .
+
+  ops g s1 s2 s3 : -> Oid [ctor] .
+
+  op global1 : -> Object .
+  op server  : Oid Int Int -> Object .
+
+  vars I0 I1 I2 I3 I4 I5 : Int . var B : Bool . var O : Oid .
+
+  eq global1
+   = < g : global | --- time : 0, 
+                    cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server(O,I0,I1)
+   = < O : server | maxBudget : I0, period : I1, state : idle,
+                    timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+
+  op init   : Int Int Int Int Bool -> Sys .
+  eq init(I0,I1,I2,I3,B)
+   = global1 server(s1,I0,I1) server(s2,I2,I3) if (I0 < I1) and (I2 < I3) and (I0 > 0) and (I2 > 0) and B .
+
+  op init2 : Int Int Int Int Int Int Bool ~> Sys .
+  eq init2(I0,I1,I2,I3,I4,I5,B)
+   = global1 server(s1,I0,I1) server(s2,I2,I3) server(s3,I4,I5) if (I0 < I1) and (I2 < I3) and (I4 < I5) and (I0 > 0) and (I2 > 0) and (I4 > 0) and B .
+
+
+  sort SysSet .
+  subsort Sys < SysSet .
+  op emptySysSet : -> SysSet [ctor] .
+  op _|_ : SysSet SysSet -> SysSet [ctor assoc comm id: emptySysSet format (d n d d)] .
+
+  op size : SysSet -> Nat .
+  eq size(S:Sys | SS:SysSet) = s(size(SS:SysSet)) .
+  eq size(emptySysSet) = 0 .
+
+
+  vars T TC : Term .
+  var  MS   : MetaState .
+  var  MRS  : MetaStateSet .
+  var  SUB  : Substitution .
+  var  VN   : Nat .
+
+  op [[_]] : MetaStateSet -> SysSet .
+  eq [[MS | MRS]]          = downTerm(getStateTerm(MS),emptySysSet) | [[MRS]] .
+  eq [[emptyMetaStateSet]] = emptySysSet .
+endm
+
+
+red size([[ smtManyStep(upModule('TEST,true), upTerm(init(I0,I1,I2,I1,(I0 + I2 > I1))), 6) ]]) .
+

@@ -1,0 +1,124 @@
+% !TEX root = main.tex
+
+\section{Introduction}
+\label{sec.intro}
+
+
+The specification and verification effort in component-based software
+engineering 
+%--~where components encapsulate a set of related functions
+%and data, and communicate with each other via interfaces~-- 
+can be
+improved using symbolic approaches.  They can make available symbolic analysis %model checking 
+techniques and tools with the promise of taming the
+many complexities involved in component-based systems, including real-time and cyber-physical
+systems. %In a compositional verification scenario, commonly found in component-based software engineering, 
+Symbolic techniques can be used
+to verify the functionality offered by software components for
+\emph{any} possible input and communication interleaving. Rewriting
+modulo SMT~\cite{rocha-rewsmtjlamp-2017} is a novel symbolic technique
+to model and analyze %reachability properties of 
+infinite-state systems
+that interact with a nondeterministic environment. 
+It is a symbolic
+specification and verification method for 
+rewriting logic \cite{meseguer-rltcs-1992},
+a general logical framework
+in which many component-based systems,
+such as AADL~\cite{mr-synch-aadl-fm14} and Ptolemy~II~\cite{ptolemy-journal}, %Orc~\cite{alturki2007real},
+can be naturally specified \cite{meseguer2012twenty}.
+
+Rewriting modulo SMT seamlessly combines rewriting modulo
+equational theories, SMT solving, and model checking.
+%
+In rewriting modulo SMT, states are represented as symbolic
+constrained terms $\pair{t}{\phi}$ with $t$ a term with variables
+ranging over the \emph{built-ins} (the sorts handled by the SMT
+solver) and $\phi$ a SMT-solvable formula. State transitions are %actually 
+symbolic rewrite steps between constrained terms.  In one
+rewrite step from $\pair{t_1}{\phi_1}$ to $\pair{t_2}{\phi_2}$,
+possibly infinitely many instances of $t_1$ can be rewritten to
+instances of $t_2$; namely, those ground instances of $t_1$ that
+satisfy the constraint $\phi_1$ %that 
+result in a ground instance of
+$t_2$ satisfying the constraint $\phi_2$. In general, a $n$-step
+symbolic rewrite from $\pair{t_1}{\phi_1}$ to $\pair{t_n}{\phi_n}$
+captures \emph{all} possible traces with $n$ %state 
+transitions from
+ground instances of $t_1$ satisfying $\phi_1$ to \emph{all} ground
+instances of $t_n$ satisfying $\phi_n$. By being complete, the
+symbolic rewrite relation will capture any ground trace satisfying
+these conditions, if any exists. This is one of the reasons why
+rewriting modulo SMT is %a 
+well-suited %mechanism
+ for symbolically
+proving (or disproving) safety properties of rewrite theories.
+
+Rewriting modulo SMT can be used to analyze existential reachability
+properties of infinite-state systems such as invariant and deadlock freedom
+properties.  Moreover, it can be efficiently implemented by performing
+matching (instead of the more costly unification) for the term $t$ and
+querying the SMT solver for the satisfiability of $\phi$, for a given
+symbolic state $\pair{t}{\phi}$ at each rewrite step. 
+%
+However, the
+effective application of this technique comes with new challenges in
+terms of scalability: namely, the symbolic state-space explosion
+problem. % and the size/complexity of the constraints. 
+For instance, the
+%rewriting logic 
+symbolic semantics of
+PLEXIL~\cite{rocha-thesis-2012,rocha-rewsmtjlamp-2017} -- a
+synchronous language developed by NASA to support autonomous
+spacecraft operations %with safety in mind 
+--, which uses rewriting modulo SMT, is nondeterministic despite the fact that its ground
+counterpart is deterministic~\cite{dowek-plexilsos-2010}. 
+Therefore,
+%This is one of the reasons why 
+in the symbolic rewriting logic semantics of
+PLEXIL, the state space can grow very large and the constraints become
+complex, making the formal analysis task time-consuming or unfeasible.
+
+This paper presents \emph{guarded terms}, a technique with the
+potential to reduce the symbolic state space and the complexity of
+constraints in the rewriting modulo SMT approach. A guarded term can
+be seen as a choice operator that is part of the term structure in a
+constrained term. Guarded terms generalize constrained terms by
+allowing $t$ in a symbolic state $\pair{t}{\phi}$ to have, e.g., a
+guarded term $u_1|_{\psi} \lor u_2|_{\neg\psi}$ as a subterm.  This
+means that when the constraint $\phi\land\psi$ is satisfiable,
+$\pair{t}{\phi}$ represents those ground instances of $t$ in which the
+subterm $u_1|_{\psi} \lor u_2|_{\neg\psi}$ is replaced by $u_1$.
+Analogously, when $\phi\land\neg\psi$ is satisfiable, $\pair{t}{\phi}$
+represents those ground instances of $t$ in which the subterm
+$u_1|_{\psi} \lor u_2|_{\neg\psi}$ is replaced by $u_2$.  
+%Since both $\phi\land\psi$ and $\phi\land\neg\psi$ may be satisfiable, $\pair{t}{\phi}$ 
+Therefore, the guarded term can actually encode both alternatives without the
+need for two constrained terms. The greater potential of guarded terms
+can better be seen when they are composed in parallel or nested, thus
+enabling the succinct encoding of several constrained terms into one
+guarded term. 
+
+Guarded terms are particularly useful in rewriting modulo SMT in
+many situations for reducing: (i) the symbolic state space by
+implicitly encoding branching in the term structure, and (ii) the
+complexity and size of constraints by distributing them in several
+parts of the term structure. The effectiveness of the approach is
+illustrated with a case study of an unbounded and symbolic priority
+queue that, with the help of guarded terms, enables automatic
+reachability analysis of the %real-time 
+CASH scheduling
+algorithm~\cite{caccamo2000capacity}.
+%which was previously not possible due to the symbolic state-space explosion problem.
+
+The rest of the paper is organized as
+follows. Section~\ref{sec.rewsmt} overviews rewriting logic and
+rewriting modulo SMT. Section~\ref{sec.guarded} presents guarded terms
+and %studies some of 
+their main properties. Section~\ref{sec.cash}
+introduces the case study on the CASH algorithm. Finally,
+Section~\ref{sec.concl} discusses related work and presents some
+concluding remarks. The examples %specifications and the formal verification experiments 
+used throughout the paper, and the proofs omitted in
+Section~\ref{sec.guarded} can be found
+in~\cite{bae-noteguardedterms-2017}.

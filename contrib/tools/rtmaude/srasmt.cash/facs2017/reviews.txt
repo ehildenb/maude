@@ -1,0 +1,576 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 20
+TITLE: Guarded Terms for Rewriting modulo SMT
+AUTHORS: Kyungmin Bae and Camilo Rocha
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+Overview.
+
+This paper extends rewriting modulo SMT by allowing also SUBterms to
+have guards/symbolic expressions. In rewriting modulo SMT, the "global
+state" has the form (t;\phi), where 't' is a term with variables, and
+\phi is a constraint whose satisfaction can be checked by an SMT
+solver. Such a state denotes all (ground) instances t\sigma where
+\sigma satisfies \phi.
+
+This paper extends this framework by allowing us to have such
+constraints also in subterms. For example: f(t;\phi1 \u;\phi2). The
+authors develop some of the basic theory about such "guarded
+(sub)terms".  Although the authors try to explain in Section 4.4 how
+such theories can be executed, it is somewhat unclear to this
+reviewer, but I guess that somehow they are transformed to topmost
+theories that can be directly subjected to rewriting modulo SMT.  The
+authors claim that their technique can reduce the symbolic state space
+as well as the complexity and size of constraints.
+
+The authors illustrate these gains/advantages on one trivial example
+and on one interesting and well-chosen advanced scheduling example
+(whose need for unbounded queues makes it beyond the scope of
+automaton-based analysis tools). Regarding the trivial example, they
+show that their technique can prove a desired property whereas
+standard rewriting modulo SMT fails. Regarding the complex scheduling
+algorithm, they can now find the missed deadline for a state with two
+servers, one with period 5 and one with deadline 7.  The point is that
+Real-Time Maude explicit-state reachability analysis uncovered this
+subtle deadline miss, but from a concrete state with periods 5 and 7,
+and given WCETs (2 and 4?).  What is desired is to find the missed
+deadline without knowing which concrete state to start from.  The
+authors are approaching that goal by starting from a state with
+concrete parameters (2 servers/tasks, with deadlines 5 and 7), but
+leaving other parameters open (the WCETs).  They show that their new
+technique can find the subtle error (in 23 steps!) in their
+partially-defined initial state, which they could not do before using
+standard rewriting modulo SMT.
+
+
+Evaluation.
+
+
+Positives.
+
+* Rewriting logic has been applied to a wide range of distributed
+  systems and languages, included tons of component-based
+  systems. Traditionally, their analysis started from concrete initial
+  states, which renders analysis quite incomplete. Lately, this
+  program has been extended to symbolic techniques, such as narrowing
+  and rewriting module SMT, so that the system may be analyzed for all
+  possible initial states satisfying certain criteria.  It seems like
+  this work advances some of that important work.
+
+* Quite interesting and substantial new contribution and the authors
+  develop some theory around it.
+
+* The paper is very well structured and quite decently written
+  (although it needs another round of polishing; see below).
+
+* The authors actually apply their new technique to serious
+  state-of-the-art systems and can show some benefit, both with
+  respect their own previous rewriting modulo SMT analysis and with
+  respect to previous Real-Time Maude analysis.
+
+* Excellent choice of interesting case study.
+
+
+Negatives.
+
+[TODO] Connection to FACS not (made) very explicit/strong. The authors
+  do not make the connection to the topics of FACS. However, these
+  techniques could directly be useful to analyze a bunch of
+  component-based systems that have been/can be modeled in Maude. For
+  example, the first author has developed Maude semantics and analysis
+  backend for explicitly component-based languages such as Ptolemy and
+  AADL; likewise, the second author has done the same for
+  PLEXIL. Their new techniques could then be used to analyzed
+  component-based systems defined in such modeling languages.  The
+  authors should probably add a few words about this in the
+  introduction to make the connection to FACS explicit.
+
+[TODO] Significant additional polishing is needed. It is not badly
+  written; it is reasonably self-contained, and it has a nontrivial
+  contribution, but another round of polishing is needed (see below).
+
+[DONE] Section 2 seems unnecessary long and technical, especially
+  considering the more informal treatment in the rest of the
+  paper. Only present here what is needed for this paper. (This part
+  was essentially taken as-is from the journal paper [14].)
+
+[DONE] We get this very long Section 2 on technical preliminaries, but
+  then nothing on Maude, and on how Maude executes rewriting modulo
+  SMT theories ...
+
+[TODO] A main problem is that the executable code for the case study
+  is not available anywhere. This is in principle unacceptable; how
+  can the reviewers vouch for the correctness of the model and how can
+  editors assume editorial responsibility when this is not available?
+
+[DONE] The description of the scheduling algorithm is
+  imprecise/incorrect, and the representation of the Real-Time Maude
+  analysis in [12] is wrong.
+
+[TODO] We need a clearer explanation of (i) how to execute these
+  specs, and (ii) more explicitly how/why the symbolic state spaces
+  are reduced.
+
+Altogether, however, the authors do propose a nontrivial contribution,
+structure their paper well, show the advantages of their technique on
+a nontrivial example. Therefore, provided that the comments above and
+below are addressed, this paper should be accepted and will make a
+nice paper.
+
+
+Detailed and semi-detailed comments.
+------------------------------
+
+Page 1.
+
+[DONE] Title: 'modulo' -> 'Modulo'
+
+[DONE]  Abstract: remove "(e.g., open systems)"
+  - 'state-space' -> 'state space'
+
+Introduction:
+
+[TODO] In general somewhat technical, but pretty decent. Should
+  mention the connection to FACS. Maybe could remove some of the
+  technicalities and focus on the big picture.
+
+Paragraph 1:
+
+[DONE] remove "(e.g., open systems)"
+
+[DONE] 'non-deterministic' -> 'nondeterministic'
+
+Page 2.
+
+Paragraph 2.
+
+[DONE] remove "natural to any symbolic approach"
+
+[DONE] remove "safety-critical" (a LANGUAGE is NOT safety-critical; maybe
+    its applications are)
+
+[DONE] 'on the rewriting modulo SMT method' -> 'on rewriting modulo SMT'
+
+[DONE] remove "inherently"
+
+[DONE] 'non-deterministic' -> 'nondeterministic'
+
+[DONE] ', even, unfeasible' -> 'unfeasible'
+
+Paragraph 3.
+
+[DONE] Sentence "Intuitively, ... term." is not very intuitive. The
+  paragraph reads better if you just remove this sentence.
+
+[TODO] just like in the conclusions, you discuss the (u1 ; u2 ; \phi)
+    construct.  However, this is never mentioned in the body of the
+    paper and should of course not be discussed here.
+
+Page 3.
+
+[DONE] (As mentioned, these preliminaries (borrowed from a longer
+  journal paper) seem somewhat too long and too technical for a
+  conference paper. Do you need all this stuff?)
+
+[DONE] use a different arrow above "x". This one leaves too much
+  whitespace on the left of the symbol (multiple occurrences)
+
+[DONE] "For the purpose of this paper, such inference rules ...": All
+  this discussion about inference rules are not needed; logics are not
+  discussed in this paper. Please look over this section carefully and
+  remove such unneeded parts. I don't even think that initial algebras
+  are discussed elsewhere, so a lot of this last paragraph should be
+  removed.
+
+Page 4.
+
+[TODO] I guess you got the "topmost theory" part wrong.  From what I
+  can see in your definitions, any theory can trivially be a topmost
+  theory by just adding a sort State that is a supersort of the
+  various sorts rewritten.  Your rules could involve terms of sort S,
+  with S < State, and we could still have operators f : S -> S,
+  leading to "non-topmost" rewrites f(l) -> f(r), even when your
+  system satisfies the topmost criteria written here. I notice that
+  your "initial reachability model" is not closed under function
+  application.  Again, is the "initial reachability model" used in the
+  body of the paper?
+
+[TODO] Ugly arrow over "E"; use different arrow
+
+[DONE] "A key goal of this paper ...algorithm.": do you mean this
+  paper, or the journal paper?  Sentence can safely be removed
+  anyways.
+
+
+Section 3.
+
+[DONE] A main comment: this section absolutely needs a brief overview
+  of how Maude, or a version of Maude, executes rewriting modulo SMT
+  modules.
+
+[DONE] 'sections 3-5' -> 'Sections 3-5'
+
+[DONE] "Many technicalities are, intentionally, kept away from the reader
+  who is referred to ...". Fine (maybe too many technicalities are
+  "intentionally" ignored), but then why is Section 2 so technical??
+
+[DONE] 'integer numbers' -> 'integers'   (also many places on Page 5)
+
+Page 5.
+
+[TODO] the "congruent modulo n" operator is usually written \equiv_n
+
+[DONE] remove "system state" before "operator ||"
+
+[DONE] The paragraph "As artificial as .... by SMT-solving" can/should be
+  removed. It is a mess and not very relevant for this paper. (The
+  constraints can very easily be written in Maude, using the built-in
+  function "rem": "I2 + I0 rem 3 == 0".)
+   * "is useful to illustrate" -> "illustrates"
+   * remove "note that"
+  Better just to remove whole paragraph.
+
+Next paragraph ...
+
+[DONE] 'integer data type' -> 'integers'
+
+[DONE] 'Boolean data type' -> 'Booleans'
+
+[DONE] 'non-built-ins the' -> 'non-built-ins ARE the'
+
+Page 6.
+
+[DONE] - some space needed in the formula in the middle of the page, between
+  "(\exists \sigma ... T_\Sigma)" and "t' "
+
+Page 7.
+
+[DONE] As mentioned, some introduction to Maude and analysis module SMT is
+  needed
+
+[DONE] 'counter-example' -> 'counterexample'
+
+[DONE] search command: why is the Maude operator '|' when it is '||'
+  elsewhere in the paper?   I guess Maude allows to define it '||'
+
+[DONE] 'As it will be seen at the end of next section' -> 'as shown in the
+  next section'
+
+[DONE] add commas around "without finding a witness"
+
+
+Section 4.
+
+[DONE] 'proofs ... available' -> ' proofs ... given'
+
+[DONE] 'Suppose (t1' -> 'Suppose THAT (t1'
+
+[DONE] remove "(on the sort of the ti)"
+
+[DONE] move the term itself to where "the following" now is
+
+[DONE] remove "In this case"
+
+[DONE] the last paragraph on Page 7 ("The syntax ... terms t1 and
+  t2.")  should be dropped. Definition 1 says the exact same thing
+  (better)
+
+Page 8.
+
+[DONE] Example 1: 'in Section 1' -> 'in Section 3'
+
+[DONE] 'can yield 2^n different': fine, it CAN do so, but DOES it yield 2^n
+different terms?
+
+In general, this state-space-saving thing seems to be a key
+contribution and should be explained more thoroughly, also with
+concrete examples. Why does the previous approach yield 2^n different
+symb-states, and why do we now get fewer
+
+(Section 4.2)
+
+[DONE] "Intuitively, |[t|\phi]| is the set ... of u ...": should be "of t"
+  (or change the first 't' to 'u')
+
+[DONE] remove "the corresponding instance"
+
+[DONE] Following sentence is badly written; please rephrase to good
+  English.
+
+Page 12.
+
+[DONE] 'implies T_... \models {sigma\phi hold' -> 'implies THAT ... holdS'
+
+Page 13.
+
+[DONE] last bunch of rules: the second rule has '\not 3 = 0' which should
+  probably be '3 \not= 0'
+
+Section 5.
+
+[DONE] As mentioned, this is pretty badly described and should be
+  improved.  - what are 'managing overruns' and 'different
+  criticalities and timing constraints'?
+
+  Why not describe CASH along the following lines:
+
+  "In CASH, each task has a given period and a given worst-case
+  execution time. Some instances of a task may not need all the
+  allocated budget (worst-case execution time). Instead of just
+  wasting the unused processor time in these cases, in CASH the unused
+  processor time is instead added to a global queue of such unused
+  budgets. Another task can then use these unused execution times
+  before using its own execution budget, for example to improve the
+  performance of the task.  Apart from this "capacity-sharing"
+  feature, tasks are scheduled according to standard preemptive EDF
+  scheduling: the task with the shortest time remaining until its
+  deadline has the priority and can preempt the currently executing
+  task."
+
+  or something like this.
+
+[DONE] do not emphasize "guarded terms"
+
+(Section 5.1)
+
+[DONE] First paragraph of 5.1: much of this is wrong:
+  * global scheduling queue is not really used, not even in your model
+  * a server is scheduled to run only based on the time remaining until
+    its next deadline, and not 'based on its maximum budget and period'
+  * a server cannot preempt another executing server "to meet its
+    deadline": the scheduling strategy is fixed and is as described above
+  * 'a global scheduling queue is a priority queue of unused execution
+    budgets' is wrong, and so on.  The queue is indeed of unused execution
+    budgets
+
+[DONE] Second paragraph ("In A rewriting logic specification ... element.")
+  should be part of some (currently non-existing) preliminaries on
+  Maude, and should be moved there.
+
+[DONE] 'six variables' -> 'six attributes'
+
+Page 15.
+
+[DONE] align the Maude code in the first two lines better
+
+[DONE] 'contains contains' -> 'contains'
+
+[DONE] as mentioned, the global object does not seem to contain the
+ "scheduling queue" but the queue of unused budgets
+
+[DONE] you now use multisets instead of lists for this queue. A list is the
+  natural data type for a queue; you should at least explain why you
+  use multisets instead of the more natural lists.
+
+[DONE] 'e|_\phi \vee e|_\neg\varphi':  where does the '\varphi' come from?
+  Should it be a \phi?
+
+Page 16.
+
+[DONE] "The first waiting server in the queue starts executing" is
+  incorrect. There is no queue of servers. What you probably want to
+  say here is "The waiting server (in this case \texttt{O'}) with the
+  least time remaining until its deadline (\texttt{T2} in case of
+  \texttt{O'}) starts executing" is probably what you mean.
+
+[DONE] 'no constraints are not yet': maybe drop 'not'?
+
+[DONE] 'time elapses' -> 'time elapse'
+
+Page 17.
+
+[DONE] The first paragraph of 5.3 (and the corresponding Maude command) must
+  be omitted. It is entirely obvious that scheduling is impossible
+  when the processor utilization is above 100%. So, this stuff is
+  pointless.
+
+[DONE] 'A really interesting problem': well, the only interesting problem.
+
+[DONE] "Using simulation with random values, [12] shows
+  ... counterexample.": This is exactly what [12] does NOT show. [12]
+  uses extensive randomized simulations, and still canNOT find the
+  deadline miss. The missed deadline ("counterexample") is found by
+  search in [12].
+
+Page 18.
+
+[DONE] Could you say something more about the "counterexample"?  The
+  constraints seem to indicate that I2 equals 6 and I0 must then be 0,
+  which might not even be allowed (?).  Is there a way to extract a
+  ("symbolic") path/behavior from the counterexample?  Otherwise it is
+  not very useful.
+
+Section 6.
+
+[TODO] again there is this discussion about "the constrained term (u1
+  ; u2 ; \varphi)" which never shows up in the body of the paper.
+
+[TODO] In addition to PLEXIL, I would also mention some of the languages
+  dealt with by the first author, such as component-based languages
+  AADL and Ptolemy.
+
+References:
+
+[DONE] 1: screwed up edition stuff; OCLC stuff not needed
+
+[TODO] 4: symposium name screwed up
+
+[DONE] 5: Clavel is NOT the editor of this, but one of the authors.
+
+[DONE] 5: not 'number 4350' but 'volume 4350'; also remove the OCLC stuff
+
+[TODO] 10: volume 1376 of WHAT??
+
+[DONE] 12: incorrect capitalization; use "CASH" and "Real-Time Maude"
+
+[DONE] 12: WHERE is this published? I guess some volume of LNCS ...
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 20
+TITLE: Guarded Terms for Rewriting modulo SMT
+AUTHORS: Kyungmin Bae and Camilo Rocha
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+SUMMARY
+
+The paper presents a symbolic approach based on rewriting logic to
+model and analyze reachability properties in possibly infinite state
+systems.  The idea is to extend the recently proposed technique of
+"rewriting modulo SMT" in order to further reduce the symbolic state
+space to be analysed and the complexity and size of the terms that are
+manipulated.  Rewriting modulo SMT is based on constrained terms: they
+are terms paired with an SMT-solvable formula. Rewriting modulo SMT
+has been used to solve existential reachability goals.  The extension
+proposed here is to consider terms with possibly nested constraints,
+called guarded terms. This way it is often possible to represent
+several constrained terms with a single guarded term.  Some
+experimentation suggests that the performance of reachability analysis
+can be substantially improved to the point that some case studies
+which generated billions of symbolic states and required days of
+computation with constrained terms can be dealt with using guarded
+terms in less than one hour.
+
+EVALUATION
+
+The paper is generally well-written and self-contained.
+
+The problem and the proposed solution are well-explained and
+well-motivated.
+
+The proposed technique is novel and elegant.
+
+A simple running example serves to illustrate the main definitions and
+all the steps of the approach.
+
+The underlying theory that proves the correctness of the analysis is
+discussed at a good level of detail. All proofs are included in a
+clearly nmarked technical appendix.
+
+Only the case study in Section 5 is hard to follow without previous
+knowledge about the CASH algorithm problem.
+
+There is also a minor discrepancy between the definition of guarded
+terms (Def. 1) and the syntax used in the introduction and conclusion:
+this issue needs to be solved in the paper gets accepted.
+
+OTHER COMMENTS
+
+[TODO] P2, mid page: you say that a guarded term has the form of a
+  triple (u_1,u_2,\phi), but this is not the case in the main body of
+  the paper, where a notation like (u_1|_\phi \vee u_2|_{\neg \phi})
+  should be used to encode the above expression.
+
+[DONE] P4,L2: t \theta -> \theta t
+
+[DONE] P4,L7: a a -> a
+
+[DONE] P6, mid page: "\psi is a logical consequence of \phi": I think
+  is the opposite (?)
+
+[DONE] P8,Ex.1: elm(i,J) -> elm(I,J)
+
+[DONE] Moreover, when you say that the term
+  elm(I_1,J_1)elm(I_2,J_2)...elm(I_N,J_N) can encode 2^n symbolic
+  states that can be reached in n-rewrite steps you refer to a very
+  specific situation, where the values represented by elm(I_i,J_i) can
+  no longer be rewritten themselves, otherwise the complexity of the
+  matching would be increased substantially (I fear)
+
+[DONE] P9,L-4/-1: the last occurrences of x_1 and y_1 in each line
+  should be x_2 and y_2 instead
+
+[DONE] P12,L3: "which is generally not true": can you give a
+  counterexample?
+
+[DONE] P12,Lemma 5: it is not clear what is so specific about
+  associativity, commutativity and identity axioms that the property
+  would not be satisfied for other kind of axioms. Can you point to
+  some counterexample using other laws?
+
+[TODO] P13: I do not understand exactly how much restrictive is the
+  notion of admissibility for rewrite rules. Can you comment on this?
+
+[DONE] P13,L-6: \not 3=0 -> 2 \not \stackrel{3}{=} 0
+
+[DONE] P15,L3: contains contains -> contains
+
+[DONE] P15,L10: smaller -> smallest (?)
+
+[DONE] P15,L11: higher -> highest (?)
+
+[DONE] P22,L2: definitoin -> definition
+
+[DONE] P22,L-12: what is \sigma?
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 20
+TITLE: Guarded Terms for Rewriting modulo SMT
+AUTHORS: Kyungmin Bae and Camilo Rocha
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+
+Extending on previous work by the same authors and others on rewriting
+modulo SMT analysis technique, this paper introduces an extension of
+"rewrite theories", that augment the expressiveness of rewriting
+relations by adding guards hierarchicaly into the structure of the
+terms and in the rewrite rules.  The effect is that 1) the
+specification of rewrite system becomes significantly smaller, and 2)
+the practical complexity of reachability analysis is much better.
+
+pros and cons:
+
+++ The paper is quite dense but very well written, and reading is pleasant. A small running-example is efficient to help understanding the numerous definitions and a bigger use-case provides a nice validation of the approach.
+
+++ The benefits from this extension is clearly advocate, and validated.
+
+[TODO] There is no related work comparison whatsoever !! Although
+  there have been a number of works, with different techniques, aiming
+  at the same goal, typically in the area of reachability analysis for
+  infinite systems, or with symbolic bisimulations, etc...
+
+[TODO] The page limit is 18 pages _including bibliography_ ...
+
+
+Very few typos or questions:
+
+[DONE] page 2, line 7 "the the"
+
+[DONE] page 4, line 2 $t\phi$ should not rather be "\phi t$ ?
+
+[DONE] page 4 line 7: "a a"
+
+[DONE] running example in pages 6 and 7: the query bottom of page 6
+  has a conditino "I > 0", while the Maude code next page has "I > 1"
+  (and the corresponding Maude code in page 14 has no corresponding
+  condition...)
+
+[DONE] Some formal notations sometimes would need a small english
+  translation... e.g. line 3 of Definition 6...

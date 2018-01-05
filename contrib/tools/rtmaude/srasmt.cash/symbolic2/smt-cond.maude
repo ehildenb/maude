@@ -1,0 +1,102 @@
+fmod COND is
+  pr INT .
+
+  vars B B' : [Bool] . vars I I' : [Int] .
+
+  --- slightly modified version of EXT-BOOL, that finally removes andThen
+  op _andThen_ : Bool Bool -> Bool [strat (1 0) gather (e E) prec 55] .
+  eq true andThen B = B .
+  eq false andThen B = false .
+  eq B andThen B' = B and B' [owise] .
+
+  --- ite operator
+  op _?_:_ : Bool Bool Bool -> Bool [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? B : B' = B .
+  eq false ? B : B' = B' .
+
+  op _?_:_ : Bool Int Int -> Int [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? I : I' = I .
+  eq false ? I : I' = I' .
+
+  --- equality-disequality operators
+  op _===_ : Universal Universal -> Bool [comm poly(1 2)] .
+  eq I === I = true .
+
+  op _=/==_ : Universal Universal -> Bool [comm poly(1 2)] .
+  eq I =/== I = false .
+
+  --- monus operator
+  op _monus_ : Int Int -> Int .
+  eq I monus I' = I >= I' ? I - I' : 0 .
+endfm
+
+
+fmod COND-SIMPLIFICATION is
+  inc COND .
+
+  var B B1 B2 : Bool . var I I1 I2 : Int .
+
+  --- short-circut for server states
+  eq 0 ===  1 = false .  eq 0 ===  2 = false .  eq 1 === 2  = false .
+  eq 0 =/== 1 = true  .  eq 0 =/== 2 = true  .  eq 1 =/== 2 = true  .
+
+
+  eq I + 0 = I .
+  eq I - 0 = I .
+  eq I1 + (I2 - I1) = I2 .
+
+  eq (I - I1 >= I2) = (I >= I2 + I1) .
+  eq (I - I1 >  I2) = (I >  I2 + I1) .
+
+ ceq I >= I1 and I >= I2 = I >= I1  if I1 >= I2 .
+ ceq I >  I1 and I >  I2 = I >  I1  if I1 >= I2 .
+ ceq I <= I1 and I <= I2 = I <= I1  if I1 <= I2 .
+ ceq I <  I1 and I <  I2 = I <  I1  if I1 <=  I2 .
+
+ ceq I >  I1 and I >= I2 = I >  I1  if I1 >= I2 .
+ ceq I >= I1 and I >  I2 = I >= I1  if I1 >  I2 .
+ ceq I <  I1 and I <= I2 = I <  I1  if I1 <= I2 .
+ ceq I <= I1 and I <  I2 = I <= I1  if I1 <  I2 .
+
+  eq (B ? true  : true)  = true .
+  eq (B ? false : false) = false .
+
+  eq (B ? B1 : false) = B and B1 .
+  eq (B ? false : B2) = not B and B2 .
+
+--- The following rules make it worse, since the or operator 
+--- is reduced to xor terms by BOOL
+---(
+  eq (B ? B1 : true)  = not B or B1 .
+  eq (B ? true  : B2) = B or B2 .
+---)
+
+  eq (B ? I1 : I2) + I = B ? I1 + I : I2 + I .
+  eq (B ? I1 : I2) - I = B ? I1 - I : I2 - I .
+ 
+  eq (B ? I1 : I2) >  I = B ? (I1 >  I) : (I2 >  I) .
+  eq (B ? I1 : I2) >= I = B ? (I1 >= I) : (I2 >= I) .
+  eq (B ? I1 : I2) <  I = B ? (I1 <  I) : (I2 <  I) .
+  eq (B ? I1 : I2) <= I = B ? (I1 <= I) : (I2 <= I) .
+
+  eq I >  (B ? I1 : I2) = B ? (I >  I1) : (I >  I2) .
+  eq I >= (B ? I1 : I2) = B ? (I >= I1) : (I >= I2) .
+  eq I <  (B ? I1 : I2) = B ? (I <  I1) : (I <  I2) .
+  eq I <= (B ? I1 : I2) = B ? (I <= I1) : (I <= I2) .
+
+---  eq (B ? B1 : B2) = (B and B1) or (not B and B2) [owise] .
+
+  --- other simplification
+  eq B ? B : true = true .
+  eq B ? true : B = B .
+
+  eq 0 === (B ? 1 : 2) = false .
+  eq 0 === (B ? 2 : 1) = false .
+  eq 2 === (B ? 2 : 1) = B .
+  eq 1 === (B ? 1 : 2) = B .
+
+  eq 2 === (I2 < I1 ? 1 : 2) = I2 >= I1 .
+  eq 1 === (I2 < I1 ? 2 : 1) = I2 >= I1 .
+endfm
+
+

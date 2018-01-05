@@ -1,0 +1,48 @@
+
+load smt.maude
+load ../smt/smt-interface.maude .
+load ../smt/smt-condition.maude .
+load ex-base.maude
+
+mod EX is
+  protecting EX-CONF .
+  pr SMT-INTERFACE .
+  pr COND-SIMPLIFICATION .
+
+  sort State .
+  op {_,_} : Bool Configuration -> State [prec 126] .
+
+  --- guard term
+  op <_,_> : Bool Int -> Msg [ctor] .
+
+  vars Phi Phi' : Bool .
+  vars B B'     : Bool .
+  vars I I'     : Int .
+  vars C C'     : Channel .
+
+  crl {Phi, < I > < I' > C | C'} => {Phi', < I > C | C' < (I + I') rem 3 === 0,  I + I' + 1 >}
+   if Phi' := Phi and I > 0 and I' > 0 
+   /\ check-sat(Phi') .
+
+  crl {Phi, < I > | < B', I' > C'} => {Phi', none | < B', I' >  C'}
+   if Phi' := Phi and I > 0 and I' > 0 and B' and (I + I') rem 17 === 0 
+   /\ check-sat(Phi') .
+endm
+
+search [1] {I > 1, < I > < I + 1 > < I + 2 > < I + 3 > | none} =>* {Phi', none | C'} .
+
+---(
+Solution 1 (state 113)
+states: 114  rewrites: 11733 in 220ms cpu (222ms real) (53331 rewrites/second)
+Phi' --> 1 + - I < 0 and - I + - I + -2 < 0 and (I + I + 1) rem 3 === 0 and (I + I + I + 2) rem 17 === 0
+C' --> < (I + I + 1) rem 3 === 0,I + I + 2 > < (I + I + 2) rem 3 === 0,I + I + 3 > < (I + I + 3) rem 3 === 0,I + I
+    + 4 >
+---)
+
+
+search [1] {I > 1, < I > < I + 1 > < I + 2 > < I + 3 > | none} =>! {Phi', C | C'} such that C =/= none .
+
+---(
+No solution.
+states: 265  rewrites: 37462 in 632ms cpu (632ms real) (59275 rewrites/second)
+---)

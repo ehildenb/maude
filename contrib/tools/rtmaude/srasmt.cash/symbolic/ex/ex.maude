@@ -1,0 +1,23 @@
+
+load ex-base.maude
+
+mod EX is
+  protecting EX-CONF .
+
+  vars I I' : Int .
+  vars C C' : Channel .
+
+  crl < I > < I' > C | C'  =>  < I > C | C' < I + I' + 1 >
+   if I > 0 and I' > 0 and (I + I') rem 3 ==  0 .
+
+  crl < I > < I' > C | C'  =>  < I > C | C'
+   if I > 0 and I' > 0 and (I + I') rem 3 =/= 0 .
+
+  crl < I > | < I' > C' => none | < I' >  C' 
+   if I > 0 and I' > 0 and (I + I') rem 17 == 0 .
+
+endm
+
+search < 1 > < 2 > < 3 > < 4 > < 5 > | none =>* none | C' .
+search < 2 > < 3 > < 4 > < 5 > < 6 > | none =>* none | C' .
+

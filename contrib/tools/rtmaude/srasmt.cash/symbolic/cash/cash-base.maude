@@ -1,0 +1,167 @@
+
+--- Server state
+fmod SERVER-STATE is
+  pr INT .
+  ops idle waiting executing : -> Int .
+  eq idle = 0 .
+  eq waiting = 1 .
+  eq executing = 2 .
+endfm
+
+--- Capacity queue is now represented as a set.  Each 
+--- item can contain constraints. The item can be added 
+--- at the first place, only if the constraints hold. 
+--- The "pop" operation should remove the minimal element
+--- whose constraints are satisfiable.
+fmod CAPACITY-QUEUE is
+  pr INT .
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_const:_ : Int Int Bool -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue [ctor comm assoc id: emptyQueue] .
+
+  vars CQ1 CQ2 : CapacityQueue .
+  vars I I1 I2 : Int . var B : Bool .
+
+  --- false constraint item is removed
+  eq (deadline: I1 budget: I2 const: false) = emptyQueue .
+  eq (deadline: 0  budget: I2 const: B)     = emptyQueue .
+  eq (deadline: I1 budget: 0  const: B)     = emptyQueue .
+
+  op delta : CapacityQueue Int -> CapacityQueue .
+  eq delta(emptyQueue, I) = emptyQueue .
+  eq delta((deadline: I1 budget: I2 const: B) CQ1, I)
+   = (deadline: I1 - I budget: I2 const: B) delta(CQ1, I) .
+endfm
+
+
+--- Configuration
+mod CASH-STATE is
+  inc CONFIGURATION .
+  pr CAPACITY-QUEUE .
+  pr SERVER-STATE .
+  
+  --- classes
+  ops server global : -> Cid [ctor format(! o)] .
+
+  --- server attribute names
+  op maxBudget :_      : Int -> Attribute [ctor gather(&)] .
+  op period :_         : Int -> Attribute [ctor gather(&)] .
+  op state :_          : Int -> Attribute [ctor gather(&) format (d d c! o)] .
+  op usedOfBudget :_   : Int -> Attribute [ctor gather(&)] .
+  op timeToDeadline :_ : Int -> Attribute [ctor gather(&)] .
+  op timeExecuted :_   : Int -> Attribute [ctor gather(&)] .
+
+  --- global attribute names
+  op time :_          : Int -> Attribute [ctor gather(&)] .
+  op cq :_            : CapacityQueue -> Attribute [ctor gather(&)] .
+  op available :_     : Bool -> Attribute [ctor gather(&)] .
+  op deadline-miss :_ : Bool -> Attribute [ctor gather(&)] .
+endm
+
+
+--- Aux functions to generate conditoins
+--- For efficiency reasons, here we use Int, instead of Integer
+mod CASH-AUX is
+  pr CASH-STATE .
+  pr COND-ATOMS .
+
+  var  AtS        : AttributeSet .
+  vars B B'       : Bool .
+  vars Cnf Cnf'   : Configuration .
+  var  St         : Int .
+  vars I I1 I2 I3 : Int .
+  vars NQN NQN' : Oid .
+  vars CQ CQ1 CQ2 : CapacityQueue .
+  
+  --- evaluation helpers
+  sort Helper .
+  op next-deadline-waiting : Int -> Helper [ctor] .
+  op no-server-waiting : -> Helper [ctor] .
+  op mte-server : Int -> Helper [ctor] .
+  op no-deadline-miss : -> Helper [ctor] .
+
+  --- helper evaluation
+  op eval : Configuration Helper -> Bool .
+
+  --- next-deadline-waiting evaluation
+  eq eval(Cnf, next-deadline-waiting(I))
+   = ndw-wout(Cnf, I) .
+  op ndw-wout : Configuration Int -> Bool .
+  eq ndw-wout(none, I)
+   = true .
+  eq ndw-wout(< NQN : global | AtS > Cnf, I)
+   = ndw-wout(Cnf, I) .
+  eq ndw-wout(< NQN : server | state : St, timeToDeadline : I1, AtS > Cnf, I)
+   = (St === waiting ? (I <= I1) : true) andThen ndw-wout(Cnf, I).
+
+  --- no-server-waiting evaluation
+  eq eval(Cnf, no-server-waiting)
+   = nsw(Cnf) .
+  op nsw : Configuration -> Bool .
+  eq nsw(none)
+   = true .
+  eq nsw(< NQN : global | AtS > Cnf)
+   = nsw(Cnf) .
+  eq nsw(< NQN : server | state : St, AtS > Cnf)
+   = (St =/== waiting) andThen nsw(Cnf) .
+
+  --- mte-server evaluation
+  eq eval(Cnf, mte-server(I))
+   = mtes(Cnf, I) .  
+  op mtes : Configuration Int -> Bool .
+  eq mtes(none, I)
+   = true .
+  eq mtes(< NQN' : global | AtS > Cnf, I)
+   = mtes(Cnf, I) .
+  eq mtes(< NQN : server | timeToDeadline : I1, usedOfBudget : I2, maxBudget : I3, state : St, AtS > Cnf, I)
+   = St === idle ? mtes(Cnf,I) : ((St === waiting ? I1 >= I : (I3 monus I2) >= I) andThen mtes(Cnf, I)) .
+
+  --- no-deadline-miss evaluation
+  eq eval(Cnf, no-deadline-miss)
+   = ndm(Cnf) .  
+  op ndm : Configuration -> Bool .
+  eq ndm(none)
+   = true .
+  eq ndm(< NQN : global | AtS > Cnf)
+   = ndm(Cnf) .
+  eq ndm(< NQN : server | maxBudget : I1, usedOfBudget : I2, timeToDeadline : I3, state : St, AtS > Cnf)
+   = (St === idle ? true : I1 <= I2 + I3) andThen ndm(Cnf) .
+
+  --- auxiliary functions
+  op below-deadline : Int CapacityQueue -> Bool .
+  eq below-deadline(I, emptyQueue)
+   = true .
+  eq below-deadline(I, (deadline: I2 budget: I3 const: B) CQ1)
+   = (I2 < I) andThen below-deadline(I, CQ1) .
+
+  op above-or-equal-deadline : Int CapacityQueue -> Bool .
+  eq above-or-equal-deadline(I, emptyQueue)
+   = true .
+  eq above-or-equal-deadline(I, (deadline: I2 budget: I3 const: B) CQ1)
+   = (I2 >= I) andThen above-or-equal-deadline(I, CQ1) .
+
+  op delta-global : Object Int -> Configuration .
+  op delta-global : AttributeSet Int -> AttributeSet .
+  eq delta-global(< NQN : global | AtS >, I) 
+   = < NQN : global | delta-global(AtS, I) > .
+  eq delta-global((time : I1, AtS), I) = (time : I1 + I), delta-global(AtS, I) .
+  eq delta-global((cq : CQ, AtS), I) = (cq : delta(CQ, I)), delta-global(AtS, I) .
+  eq delta-global(AtS, I) = AtS [owise] .
+
+  --- the last argument indicates the use of its own budget
+  op delta-servers : Configuration Int Bool -> Configuration .
+  eq delta-servers(none, I, B)
+   = none .
+  eq delta-servers(< NQN : global | AtS > Cnf, I, B)
+   = < NQN : global | AtS > delta-servers(Cnf, I, B) .
+  eq delta-servers(< NQN : server | state : St, timeExecuted : I1, timeToDeadline : I2, usedOfBudget : I3, AtS > Cnf, I, B)
+   = < NQN : server | state : St, 
+                      timeExecuted : (St === executing) ? (I1 + 1) : I1, 
+                      timeToDeadline : I2 monus I, 
+                      usedOfBudget : (B andThen St === executing) ? I3 + I : I3, AtS >
+     delta-servers(Cnf, I, B) .
+endm
+

@@ -1,0 +1,121 @@
+--- Server state
+fmod SERVER-STATE is
+  sort ServerState .
+  op idle      : -> ServerState [ctor format(c! o)] .
+  op waiting   : -> ServerState [ctor format(y! o)] .
+  op executing : -> ServerState [ctor format(g! o)] .
+endfm
+
+--- Capacity queue
+fmod CAPACITY-QUEUE is
+  pr REAL-INTEGER .
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_ : Integer Integer -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue
+                                         [ctor assoc id: emptyQueue] .
+
+  vars C1 C2    : Capacity .
+  vars CQ1 CQ2  : CapacityQueue .
+  vars iB iB1   : Boolean .
+  vars iI iI1   : Integer .
+  vars iI2 iI3  : Integer .
+
+  op  below-deadline : Integer CapacityQueue -> Boolean .
+  op $below-deadline : Integer CapacityQueue Boolean -> Boolean .
+  op  above-or-equal-deadline : Integer CapacityQueue -> Boolean .
+  op $above-or-equal-deadline : Integer CapacityQueue Boolean -> Boolean .
+
+  eq below-deadline(iI, CQ1)
+   = $below-deadline(iI, CQ1, true) .
+  eq $below-deadline(iI, emptyQueue, iB)
+   = iB .
+  eq $below-deadline(iI, ((deadline: iI2 budget: iI3) CQ1), iB)
+   = $below-deadline(iI, CQ1, iB and (iI2 < iI or (iI <= 0 and iI2 <= 0))) .
+
+  eq above-or-equal-deadline(iI, CQ1)
+   = $above-or-equal-deadline(iI, CQ1, true) .
+  eq $above-or-equal-deadline(iI, emptyQueue, iB)
+   = iB .
+  eq $above-or-equal-deadline(iI, ((deadline: iI2 budget: iI3) CQ1), iB)
+   = $above-or-equal-deadline(iI, CQ1, 
+                              iB and (iI2 >= iI or (iI2 <= 0 and iI <= 0))) .
+
+  op  delta : CapacityQueue Integer -> CapacityQueue .
+  op $delta : CapacityQueue Integer CapacityQueue -> CapacityQueue .
+  eq delta(CQ1,iI)
+   = $delta(CQ1, iI, emptyQueue) .
+  eq $delta(emptyQueue, iI, CQ2)
+   = CQ2 .
+  eq $delta((deadline: iI1 budget: iI2) CQ1, iI, CQ2)
+   = $delta(CQ1, iI, CQ2 (deadline: iI1 - iI budget: iI2)) .
+endfm
+
+fmod CASH-SORT is
+  pr CAPACITY-QUEUE .
+  pr SERVER-STATE .
+  pr REAL-INTEGER .
+  pr QID .
+  pr INT .
+endfm
+
+mod CASH-STATE is
+  inc CONFIGURATION .
+  pr CASH-SORT .
+  
+  subsort Qid < Oid .
+
+  --- classes
+  ops server global : -> Cid [ctor format(! o)] .
+
+  --- server attribute names
+  op maxBudget :_      : Integer -> Attribute [ctor gather(&)] .
+  op period :_         : Integer -> Attribute [ctor gather(&)] .
+  op state :_          : ServerState -> Attribute [ctor gather(&)] .
+  op usedOfBudget :_   : Integer -> Attribute [ctor gather(&)] .
+  op timeToDeadline :_ : Integer -> Attribute [ctor gather(&)] .
+  op timeExecuted :_   : Integer -> Attribute [ctor gather(&)] .
+
+  --- global attribute names
+  op time :_          : Integer -> Attribute [ctor gather(&)] .
+  op cq :_            : CapacityQueue -> Attribute [ctor gather(&)] .
+  op available :_     : Bool -> Attribute [ctor gather(&)] .
+  op deadline-miss :_ : Bool -> Attribute [ctor gather(&)] .
+endm
+
+mod CASH-STATE-SYMBOLIC is
+  pr CASH-STATE .
+  sort Sys .
+
+  --- abbreviated state; an abbreviated state is automatically rewriten
+  --- into an equivalent full state; see equation below
+  op {_} : Configuration -> Sys [prec 126] .
+  ---( removed 05/07/16
+  op {_} : Configuration -> Sys [prec 126 frozen] .
+  ---)
+  --- full state
+  op {_,_} : Boolean Configuration -> Sys [prec 126] .
+  ---( removed 05/07/16
+  op {_,_} : Boolean Configuration -> Sys [prec 126 frozen(2)] .
+  ---)
+  --- guard and configuration of a state
+  op guard : Sys -> Boolean .
+  op conf : Sys -> Configuration .
+
+  vars Cnf Cnf'   : Configuration .
+  vars iB iB'     : Boolean .
+
+  --- abbreviated states are automatically rewriten into full states
+  eq { Cnf } 
+   = { true, Cnf } .
+
+  --- projection of a full state into its first component
+  eq guard(({ iB, Cnf })) 
+   = iB .
+  --- projection of a full state into its second component
+  eq conf(({ iB, Cnf })) 
+   = Cnf .
+
+endm

@@ -1,0 +1,36 @@
+load smt.maude
+load ../smt/smt-interface.maude .
+load ../smt/smt-condition.maude .
+load ex-base.maude
+
+
+mod EX is
+  protecting EX-CONF .
+  pr SMT-INTERFACE .
+  pr COND-SIMPLIFICATION .
+
+  sort State .
+  op {_,_} : Bool Configuration -> State [prec 126] .
+
+  vars Phi Phi' : Bool .
+  vars I I'     : Int .
+  vars C C'     : Channel .
+
+  crl {Phi, < I > < I' > C | C'} => {Phi', < I > C | C' < I + I' + 1 >}
+   if Phi' := Phi and I > 0 and I' > 0 and (I + I') rem 3 ===  0 
+   /\ check-sat(Phi') .
+
+  crl {Phi, < I > < I' > C | C'} => {Phi', < I > C | C'}
+   if Phi' := Phi and I > 0 and I' > 0 and (I + I') rem 3 =/== 0 
+   /\ check-sat(Phi') .
+
+  crl {Phi, < I > | < I' > C'} => {Phi', none | < I' >  C'}
+   if Phi' := Phi and I > 0 and I' > 0 and (I + I') rem 17 === 0 
+   /\ check-sat(Phi') .
+endm
+
+--- not terminated for many hours
+search [1] {I > 1, < I > < I + 1 > < I + 2 > < I + 3 > | none} =>* {Phi', none | C'} .
+
+--- not terminated for many hours
+search [1] {I > 1, < I > < I + 1 > < I + 2 > < I + 3 > | none} =>! {Phi', C | C'} such that C =/= none .

@@ -1,0 +1,139 @@
+
+set include BOOLEAN off .
+
+fmod BOOL-OPS is
+  protecting TRUTH-VALUE .
+  op _and_ : Bool Bool -> Bool [assoc comm prec 55] .
+  op _or_ : Bool Bool -> Bool [assoc comm prec 59] .
+  op _xor_ : Bool Bool -> Bool [assoc comm prec 57] .
+  op not_ : Bool -> Bool [prec 53] .
+  op _implies_ : Bool Bool -> Bool [gather (e E) prec 61] .
+  vars A B C : Bool .
+  eq true and A = A .
+  eq false and A = false .
+  eq A and A = A .
+
+  eq true or A = true .
+  eq false or A = A .
+  eq A or A = A .
+
+  eq false xor A = A .
+  eq A xor A = false .
+  eq A and (B xor C) = A and B xor A and C .
+
+  eq not false = true .
+  eq not true  = false .
+  eq not (not A) = A .
+
+  eq A implies B = (not A) or B .
+
+--- need to avoid xor expansion for SMT
+---(
+  eq not A = A xor true .
+  eq A or B = A and B xor A xor B .
+  eq A implies B = not(A xor A and B) .
+---)
+endfm
+
+
+fmod COND-ATOMS is
+  pr INT .
+
+  vars B B' : [Bool] . vars I I' : [Int] .
+
+  --- slightly modified version of EXT-BOOL, that finally removes andThen
+  op _andThen_ : Bool Bool -> Bool [strat (1 0) gather (e E) prec 55] .
+  eq true andThen B = B .
+  eq false andThen B = false .
+  eq B andThen B' = B and B' [owise] .
+
+  --- ite operator
+  op _?_:_ : Bool Bool Bool -> Bool [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? B : B' = B .
+  eq false ? B : B' = B' .
+
+  op _?_:_ : Bool Int Int -> Int [strat (1 0 2 3 0) gather (e e e) prec 71] .
+  eq  true ? I : I' = I .
+  eq false ? I : I' = I' .
+
+  --- equality-disequality operators
+  op _===_ : Int Int -> Bool .
+  op _=/==_ : Int Int -> Bool .
+
+  --- monus operator
+  op _monus_ : Int Int -> Int .
+  eq I monus I' = I >= I' ? I - I' : 0 .
+
+  --- for integer matching
+  op _quo_ : Int Int -> Int [ditto] .
+  op _rem_ : Int Int -> Int [ditto] .
+endfm
+
+--- formulas for cash with some simplification 
+fmod COND-SIMPLIFICATION is
+  inc COND-ATOMS .
+
+  var B B1 B2       : Bool . 
+  var I I1 I2 I3 I4 : Int .
+  var NZ            : NzInt .
+
+--- relational operator simplification (only allow < and ===)
+  eq I1 <=   I2 = not (I1 >   I2) .
+  eq I1 >=   I2 = not (I1 <   I2) .
+  eq I1 >    I2 =      I2 <   I1  .
+  eq I1 =/== I2 = not (I1 === I2) .
+
+--- integer operator simplification (no binary -)
+  eq    I1 - I2  =    I1  + (- I2) .
+  eq - (I1 + I2) = (- I1) + (- I2) .
+  eq I1 + (- I1) =    0 .
+  eq I1 +     0  =    I1 .
+
+--- equality/inequality simplification
+  eq     0  === 0 = true  .
+  eq     0  <   0 = false  .
+  eq    NZ  === 0 = false .
+  eq    NZ  <   0 = false .
+  eq (- NZ) === 0 = false .  
+  eq (- NZ) <   0 = true  .  
+
+--- right-hand side simplification
+  eq I <   I1 + I2 = I + (- I2) <   I1 .
+  eq I === I1 + I2 = I + (- I2) === I1 .
+ ceq I <   I1      = I + (- I1) <   0  if I1 =/= 0 .
+ ceq I === I1      = I + (- I1) === 0  if I1 =/= 0 .
+
+ ceq      I1 < 0  and      I2 < 0  =      I2 < 0  if I1 <= I2 .
+ ceq not (I1 < 0) and not (I2 < 0) = not (I1 < 0) if I1 <= I2 .
+
+
+--- conditional simplification
+  eq I + (B ? I1 : I2) = B ? I + I1 : I + I2 .
+  eq   - (B ? I1 : I2) = B ?   - I1 :   - I2 .
+
+  eq (B ? I1 : I2) <   0 = B ? (I1 <   0) : (I2 <   0) .
+  eq (B ? I1 : I2) === 0 = B ? (I1 === 0) : (I2 === 0) .
+
+  eq B ? (B ? I1 : I2) : (B ? I3 : I4) = B ? I1 : I4 .
+
+--- negation simplification
+  eq (not B) or  B = true .
+  eq (not B) and B = false .
+
+  eq not (B1 and B2)   = (not B1) or  (not B2) .
+  eq not (B1 or  B2)   = (not B1) and (not B2) .
+
+  eq (B ? B1 : false) = B and B1 .
+  eq (B ? false : B2) = not B and B2 .
+
+  eq not (B ? B1 : B2) = B ? not B1 : not B2 .
+
+---(
+  eq (B ? B1 : true)  = not B or B1 .
+  eq (B ? true  : B2) = B or B2 .
+
+  eq B ? B1 : B2 = (B and B1) or (not B and B2) [owise] .
+---)
+endfm
+
+

@@ -1,0 +1,570 @@
+***(
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                                               Atomic rules
+****                                                       Author: Camilo Rocha
+
+mod CASH-ATOMIC-BASE is
+  inc SYS .
+
+  vars St St'      : ServerState .
+  vars C C'        : Cid .
+  vars O O' G      : Oid .
+
+  vars AtSG AtS AtS'      : AttributeSet .
+  vars ECS ECS' ECS''     : ECPairSet .
+  vars iB iB' iB'' iB'''  : iBool .
+  vars iNZT iNZT' iNZT''  : iInt .
+  vars CQ CQ' CQ1 CQ2     : CapacityQueue .
+  vars iI iI' iI1 iI2 iI3 : iInt .
+  vars iT iT' iT'' iT'''  : iInt .
+
+  sort ECPair .
+  op int:_const:_ : iInt iBool -> ECPair [ctor] .
+  op queue:_const:_ : CapacityQueue iBool -> ECPair [ctor] .
+
+  sort ECPairSet .
+  subsort ECPair < ECPairSet .
+  op none : -> ECPairSet [ctor] .
+  op _;_ : ECPairSet ECPairSet -> ECPairSet [ctor comm assoc id: none] .
+  
+---(
+--- Idle to executing when the processor is available:
+  rl [idleToExecuting1] :
+      GT | CQ | true |
+      < O : Server | period : NZT, state : idle, timeToDeadline : T > REST
+   =>
+      GT | CQ | false |
+      < O : Server | state : executing, timeToDeadline : T + NZT,
+                     timeExecuted : 0, usedOfBudget : 0 > REST .
+---)
+ crl [idleToExecuting1] :
+     < G : global | available |-> true, AtSG >
+     < O : server | period |-> iNZT,  
+                    state |-> idle, 
+                    timeToDeadline |-> iT, AtS >
+  => ("idleToExecuting1", 
+      0, 
+      iNZT > c(0) ^ iB, 
+      set-available(G,false)
+      ; set-state(O,executing) 
+      ; set-time(O,timeToDeadline, iI)
+      ; set-time(O,timeExecuted, c(0))
+      ; set-time(O,usedOfBudget, c(0)))
+  if (int: iI const: iB) ; ECS := (int: iT + iNZT const: iT > c(0)) ;
+                                  (int: iNZT const: iT <= c(0)) . 
+                
+---(
+--- A server becomes active and another server is executing.
+--- This server will either preempt or not according to usual EDF:
+
+ crl [idleToActiveP] :
+      GT | CQ | AP |
+      < O  : Server | period : NZT, state : idle, timeToDeadline : T >
+      < O' : Server | state : executing, timeToDeadline : T' > REST
+   =>
+      GT | CQ | AP |
+      < O  : Server | state :  executing, timeToDeadline : T + NZT,
+                      timeExecuted : 0, usedOfBudget : 0 >
+      < O' : Server | state :  waiting > REST
+   if T + NZT < T' .
+---)
+ crl [idleToActiveP] :
+     < O  : server | period |-> iNZT, state |-> idle, 
+                     timeToDeadline |-> iT, AtS >
+     < O' : server | state |-> executing, timeToDeadline |-> iT', AtS' >
+  => ("idleToActiveP",
+      0,
+      iNZT > c(0) ^ iB,
+      set-state(O,executing)
+      ; set-time(O,timeToDeadline,iI)
+      ; set-time(O,timeExecuted,c(0))
+      ; set-time(O,usedOfBudget,c(0))
+      ; set-state(O',waiting)) 
+  if (int: iI const: iB) ; ECS := 
+         (int: iT + iNZT const: (iT >  c(0) ^ iT' > c(0) ^ iT + iNZT < iT')) ;
+         (int:      iNZT const: (iT <= c(0) ^ iT' > c(0) ^      iNZT < iT')) .
+    --- vacuously falsified if iT' <= c(0)
+
+---(
+ crl [idleToActiveN] :
+      GT | CQ | AP |
+      < O  : Server | period : NZT, state : idle, timeToDeadline : T >
+      < O' : Server | state : executing, timeToDeadline : T' > REST
+  =>
+      GT | CQ | AP |
+      < O  : Server | state : waiting, timeToDeadline : T + NZT,
+                     timeExecuted : 0, usedOfBudget : 0 >
+      < O' : Server | > REST
+   if T + NZT >= T' .
+---)
+
+ crl [idleToActiveN] :
+     < O  : server | period |-> iNZT, state |-> idle, 
+                     timeToDeadline |-> iT, AtS >
+     < O' : server | state |-> executing, timeToDeadline |-> iT', AtS' >
+  => ("idleToActiveN",
+      0,
+      iNZT > c(0) ^ iB,
+      set-state(O,waiting)
+      ; set-time(O,timeToDeadline,iI)
+      ; set-time(O,timeExecuted,c(0))
+      ; set-time(O,usedOfBudget,c(0))) 
+  if (int: iI const: iB) ; ECS := 
+         (int: iT + iNZT const: (iT >  c(0) ^ iT + iNZT >= iT')) ;
+         (int:      iNZT const: (iT <= c(0) ^      iNZT >= iT')) .
+
+--- Finish executing. If more budget, add to CASH.
+--- There are two main cases: wake up the first waiting server, or nobody
+--- is waiting. First case: someone else is waiting:
+--- We have also added an additional check that the current job
+--- has actually executed more than zero time.
+---(
+ crl [stopExecuting1A] :
+      GT | CQ | AP |
+      < O  : Server | state : executing, usedOfBudget : T,
+                     maxBudget : NZT, timeToDeadline : T',
+                     timeExecuted : NZT', period : NZT'' >
+      < O' : Server | state : waiting, timeToDeadline : T'' > REST
+  =>
+      GT | addCapacity(deadline: T' budget: NZT monus T, CQ) | AP |
+      < O : Server | state : idle,  usedOfBudget : NZT >
+      < O' : Server | state : executing > REST
+   if NZT monus T > 0             /\
+      NZT monus T <= T'           /\   --- overflow check
+      T'' == nextDeadlineWaiting(< O' : Server | >  REST) .
+---)
+  rl [stopExecuting1A] :
+     < G  : global | cq |-> CQ CQ', AtSG >
+     < O  : server | state |-> executing, 
+                     usedOfBudget |-> iT,
+                     maxBudget |-> iNZT, 
+                     timeToDeadline |-> iT',
+                     timeExecuted |-> iNZT', 
+                     period |-> iNZT'', AtS >
+     < O' : server | state |-> waiting, 
+                     timeToDeadline |-> iT'', AtS' >
+  => ("stopExecuting1A",
+      0,
+      iT >= c(0) ^ iNZT > c(0) ^ iNZT' > c(0) ^ iNZT'' > c(0)
+      ^ iNZT > iT ^ (iT' >  c(0) ^ iNZT <= iT + iT')
+      ^ next-deadline-waiting(O,iT'')
+      ^ below-deadline(iT',CQ) ^ above-or-equal-deadline(iT',CQ'),
+      set-state(O,idle)
+      ; set-time(O,usedOfBudget,iNZT)
+      ; set-queue(G,(CQ (deadline: iT' budget: (iNZT -- iT)) CQ'))
+      ; set-state(O',executing)) .
+    --- vacuously falsified if iT' <= c(0)
+
+---(
+ crl [stopExecuting1B] :
+      GT | CQ | AP |
+      < O  : Server | state : executing, usedOfBudget : T,
+                     maxBudget : NZT, timeToDeadline : T',
+                     timeExecuted : NZT', period : NZT'' >
+      < O' : Server | state : waiting, timeToDeadline : T'' > REST
+  =>
+      GT | CQ | AP |
+      < O : Server | state : idle,  usedOfBudget : NZT >
+      < O' : Server | state : executing > REST
+   if NZT monus T == 0           /\
+      NZT monus T <= T'          /\   --- overflow check
+      T'' == nextDeadlineWaiting(< O' : Server | >  REST) .
+---)
+  rl [stopExecuting1B] :
+     < O  : server | state |-> executing, 
+                     usedOfBudget |-> iT,
+                     maxBudget |-> iNZT, 
+                     timeToDeadline |-> iT',
+                     timeExecuted |-> iNZT', 
+                     period |-> iNZT'', AtS >
+     < O' : server | state |-> waiting, 
+                     timeToDeadline |-> iT'', 
+                     AtS' >
+  => ("stopExecuting1B",
+      0,
+      iT >= c(0) ^ iNZT > c(0) ^ iNZT' > c(0) ^ iNZT'' > c(0) 
+      ^ iNZT <= iT          
+      ^ next-deadline-waiting(O,iT''),
+      set-state(O,idle)
+      ; set-time(O,usedOfBudget,iNZT)
+      ; set-state(O',executing)) .
+
+--- NZT monus T <= T' iff 0 <= T', which is vacuously satisfied.
+--- Although we allow a negative T', we consider the value is actually 0
+--- for such negative cases.
+
+---(
+--- Finish executing when no other server is waiting. Just release the 
+--- processor:
+ crl [stopExecuting2A] :
+      GT | CQ | AP |
+      < O : Server | state : executing, usedOfBudget : T, 
+                     timeToDeadline : T', maxBudget : NZT,
+                     timeExecuted : NZT', period : NZT'' > REST
+   =>
+      GT | addCapacity(deadline: T' budget: NZT monus T, CQ) | true |
+      < O : Server | state : idle, usedOfBudget : NZT > REST
+   if NZT monus T > 0             /\
+      NZT monus T <= T'           /\   --- overflow check
+      nooneWaiting(REST) .
+---)
+  rl [stopExecuting2A] :
+     < G  : global | cq |-> CQ CQ', AtSG >
+     < O  : server | state |-> executing, 
+                     usedOfBudget |-> iT,
+                     maxBudget |-> iNZT, 
+                     timeToDeadline |-> iT',
+                     timeExecuted |-> iNZT', 
+                     period |-> iNZT'', AtS >
+  => ("stopExecuting2A",
+      0,
+      iT >= c(0) ^ iNZT > c(0) ^ iNZT' > c(0) ^ iNZT'' > c(0)
+      ^ iNZT > iT ^ (iT' >  c(0) ^ iNZT <= iT + iT')
+      ^ below-deadline(iT',CQ) ^ above-or-equal-deadline(iT',CQ')
+      ^ no-server-waiting(O),
+      set-state(O,idle)
+      ; set-time(O,usedOfBudget,iNZT)
+      ; set-available(G, true)
+      ; set-queue(G,(CQ (deadline: iT' budget: (iNZT -- iT)) CQ'))) .
+    --- vacuously falsified if iT' <= c(0)
+
+---(
+ crl [stopExecuting2B] :
+      GT | CQ | AP |
+      < O : Server | state : executing, usedOfBudget : T, 
+                     timeToDeadline : T', maxBudget : NZT,
+                     timeExecuted : NZT', period : NZT'' > REST
+   =>
+      GT | CQ | true |
+      < O : Server | state : idle, usedOfBudget : NZT > REST
+   if NZT monus T == 0            /\
+      NZT monus T <= T'           /\   --- overflow check
+      nooneWaiting(REST) .
+---)
+  rl [stopExecuting2B] :
+     < G  : global | AtSG >
+     < O  : server | state |-> executing, 
+                     usedOfBudget |-> iT,
+                     timeToDeadline |-> iT',
+                     maxBudget |-> iNZT, 
+                     timeExecuted |-> iNZT', 
+                     period |-> iNZT'', AtS >
+  => ("stopExecuting2B",
+      0,
+      iT >= c(0) ^ iNZT > c(0) ^ iNZT' > c(0) ^ iNZT'' > c(0)
+      ^ iNZT <= iT
+      ^ no-server-waiting(O),
+      set-state(O,idle)
+      ; set-available(G,true)
+      ; set-time(O,usedOfBudget,iNZT)) .
+
+--- NZT monus T <= T' iff 0 <= T', which is vacuously satisfied.
+--- Although we allow a negative T', we consider the value is actually 0
+--- for such negative cases.
+
+---(
+  --- The following rule can be applied when we have reached an overflow 
+  --- situation:
+
+ crl [deadlineMiss] :
+      GT | CQ | AP |
+      < O : Server | state : STATE, usedOfBudget : T, timeToDeadline : T',
+                     maxBudget : NZT >
+      REST
+   =>
+      GT | CQ | AP |
+      DEADLINE-MISS REST
+   if (NZT monus T) > T' /\ STATE == waiting or STATE == executing .
+---)
+ crl [deadlineMiss] :
+     < G : global | AtSG >
+     < O  : server | state |-> St, 
+                     usedOfBudget |-> iT,
+                     timeToDeadline |-> iT',
+                     maxBudget |-> iNZT, AtS >
+  => ("deadlineMiss",
+      0,
+      iT >= c(0) ^ iNZT > c(0) ^ iB,
+      set-dead-miss(G,true))
+  if St =/= idle 
+  /\ (int: iI const: iB) ; ECS := 
+         (int: iT const: (iT' >  c(0) ^ iNZT > iT + iT')) ;
+         (int: iT const: (iT' <= c(0) ^ iNZT > iT      )) .
+
+--- We add the following rules for modeling a job which 
+--- is longer than the execution time in one round of the server.
+--- This setting is included in the rest of the rules, where 
+--- an idle server may be immediately activated again. However,
+--- to completely reflect the informal specification, we include the 
+--- rules below. 
+
+--- A server has executed all it can in the current round,
+--- but wish to continue executing in the "next" round. Corresponds
+--- to case 8. Since its deadline is increased, it cannot
+--- just continue executing, but must check if some waiting
+--- server suddenly gets a shorter deadline.
+
+--- Case 1: no other server is waiting:
+---(
+ crl [continueExInNextRound] :
+      GT | CQ | AP |
+      < O : Server | state : executing, maxBudget : NZT,
+                     usedOfBudget : NZT, period : NZT', 
+                     timeToDeadline : T >
+      REST
+   =>
+      GT | CQ | AP |
+      < O : Server | usedOfBudget : 0, timeToDeadline : T + NZT',
+                     timeExecuted : 0 >
+      REST
+   if nooneWaiting(REST) .               
+---)
+ crl [continueExInNextRound] :
+     < O  : server | state |-> executing, 
+                     maxBudget |-> iNZT, 
+                     usedOfBudget |-> iNZT,
+		     period |-> iNZT',
+                     timeToDeadline |-> iT, AtS >
+  => ("continueExInNextRound",
+      0,
+      iNZT > c(0) ^ iNZT' > c(0) ^ iB
+      ^ no-server-waiting(O),
+      set-time(O,usedOfBudget,c(0))
+      ; set-time(O,timeToDeadline, iI)
+      ; set-time(O,timeExecuted,c(0))) 
+  if (int: iI const: iB) ; ECS := 
+         (int: iT + iNZT' const: (iT >  c(0))) ;
+         (int:      iNZT' const: (iT <= c(0))) .
+
+--- Case 2: someone else is waiting, so maybe our server becomes preempted:
+---(
+ crl [continueActInNextRound1] :
+      GT | CQ | AP |
+      < O : Server | state : executing, maxBudget : NZT, 
+                     usedOfBudget : NZT, period : NZT',
+                     timeToDeadline : T >
+      < O' : Server | state : waiting, timeToDeadline : T' > REST
+   =>
+      GT | CQ | AP |
+      < O : Server | state : waiting, usedOfBudget : 0,
+                     timeExecuted : 0, timeToDeadline : T + NZT' >
+      < O' : Server | state : executing > REST
+   if T' == nextDeadlineWaiting(< O' : Server | >  REST) /\
+      T' < T + NZT' .    --- we become preempted 
+---)
+ crl [continueActInNextRound1] :
+     < O  : server | state |-> executing, 
+                     maxBudget |-> iNZT, 
+                     usedOfBudget |-> iNZT,
+                     period |-> iNZT',
+                     timeToDeadline |-> iT, AtS >
+     < O' : server | state |-> waiting, timeToDeadline |-> iT', AtS' >
+  => ("continueActInNextRound1",
+      0,
+      iNZT > c(0) ^ iNZT' > c(0) 
+      ^ next-deadline-waiting(O,iT') ^ iB,
+      set-state(O,waiting)
+      ; set-time(O,usedOfBudget,c(0))
+      ; set-time(O,timeExecuted,c(0))
+      ; set-time(O,timeToDeadline, iI)
+      ; set-state(O',executing)) 
+  if (int: iI const: iB) ; ECS := 
+         (int: iT + iNZT' const: (iT >  c(0) ^ iT' < iT + iNZT')) ;
+         (int:      iNZT' const: (iT <= c(0) ^ iT' <      iNZT')) .
+
+---(
+ crl [continueActInNextRound2] :
+      GT | CQ | AP |
+      < O : Server | state : executing, maxBudget : NZT,
+                     usedOfBudget : NZT, period : NZT',
+                     timeToDeadline : T >
+      < O' : Server | state : waiting, timeToDeadline : T' > REST
+   =>
+      GT | CQ | AP |
+      < O : Server | usedOfBudget : 0, timeExecuted : 0,
+                     timeToDeadline : T + NZT' >
+      < O' : Server | > REST
+   if T' == nextDeadlineWaiting(< O' : Server | >  REST) /\
+      T' >= T + NZT' .  --- can continue executing
+---)
+ crl [continueActInNextRound2] :
+     < O  : server | state |-> executing, 
+                     maxBudget |-> iNZT, 
+                     usedOfBudget |-> iNZT,
+                     period |-> iNZT',
+                     timeToDeadline |-> iT, AtS >
+     < O' : server | state |-> waiting, timeToDeadline |-> iT', AtS' >
+  => ("continueActInNextRound2",
+      0,
+      iNZT > c(0) ^ iNZT' > c(0) 
+      ^ next-deadline-waiting(O,iT') ^ iT' >= iT + iNZT',
+      set-time(O,usedOfBudget,c(0))
+      ; set-time(O,timeExecuted,c(0))
+      ; set-time(O,timeToDeadline, iT + iNZT')) 
+  if (int: iI const: iB) ; ECS := 
+         (int: iT + iNZT' const: (iT >  c(0) ^ iT' >= iT + iNZT')) ;
+         (int:      iNZT' const: (iT <= c(0) ^ iT' >=      iNZT')) .
+    --- vacuously falsified if iT' <= c(0)
+
+--- Timed behavior.
+--- ---------------
+--- There are three cases:
+---   1. Time elapses when a server is executing a spare capacity.
+---   2. Time elapses when a server is executing its own budget.
+---   3. Time elapses when no server is executing; i.e., when the system is 
+---      idle.
+--- The first two cases are treated below. The third case must be treated
+--- in two different ways, depending on whether we model the original
+--- protocol or its suggested modification. Therefore, that case
+--- will be modeled in two separate ways in later modules.
+--- Notice that time cannot advance when we have detected an overflow,
+--- which must therefore be treated at the same time it is discovered.  
+
+--- NOTE: time increased by 1.
+
+--- Case 1: tick when a server is executing a spare capacity:
+---(
+ crl [tickExecutingSpareCapacity] :
+      GT | CQ | AP |
+      < O : Server | state : executing, timeExecuted : T',
+                     timeToDeadline : T'' >
+      REST
+   =>
+      GT + 1 | delta(useSpareCapacity(CQ,1,0), 1) | AP |
+      < O : Server | timeExecuted : T' + 1, timeToDeadline : T'' monus 1 >
+      delta(REST, 1)
+   if 1 <= min(min(mte(REST), mte(CQ)), mteCashUse(< O : Server | >)) /\ 
+      firstDeadline(CQ) <= T'' .
+---)
+ crl [tickExecutingSpareCapacity1] :
+     < G : global | time |-> iT, cq |-> (deadline: iI1 budget: iI2) CQ, AtSG >
+     < O : server | state |-> executing, 
+                    timeExecuted |-> iT', timeToDeadline |-> iT'', AtS >
+  => ("tickExecutingSpareCapacity1",
+      0,
+      iT >= c(0) ^ iT' >= c(0) ^ iB
+      ^ mte-server(O, c(1)) 
+      ^ mte-queue((deadline: iI1 budget: iI2) CQ, c(1)) 
+      ^ iT'' >= c(1)    --- mteCashUse(O) >= 1
+      ^ no-deadline-miss
+      ^ iI1 <= iT''     --- firstDeadline; the queue cannot be empty here
+      ^ below-deadline(c(2),CQ1) ^ above-or-equal-deadline(c(2),CQ2),
+      set-time(G, time, iT + c(1))
+      ; set-queue(G, delta(CQ2, c(1)))
+      ; set-time(O, timeExecuted, iT' + c(1))
+      ; set-time(O, timeToDeadline, iT'' -- c(1))
+      ; delta-servers(c(1))) 
+  if (queue: CQ1 CQ2 const: iB) ; ECS' := usc1((deadline: iI1 budget: iI2) CQ) .
+--- we allow negative timeToDeadline's.. 
+--- we assume that the constraints for a linear order are already given.
+
+--- Case 2: tick when a server is executing its own budget:
+---(
+ crl [tickExecutingOwnBudget] :
+      GT | CQ | AP |
+      < O : Server | state : executing, timeExecuted : T',
+                     usedOfBudget : T'', timeToDeadline : T''' >
+      REST
+   =>
+      GT + 1 | delta(CQ, 1) | AP |
+      < O : Server | usedOfBudget : T'' + 1, timeExecuted : T' + 1,
+                     timeToDeadline : T''' monus 1 >
+      delta(REST, 1)
+   if 1 <= min(mte(< O : Server | >  REST), mte(CQ)) /\
+      T''' <  firstDeadline(CQ) .
+---)
+  rl [tickExecutingOwnBudget] :
+     < G : global | time |-> iT, cq |-> CQ CQ', AtSG >
+     < O : server | state |-> executing, timeExecuted |-> iT', 
+                    usedOfBudget |-> iT'', timeToDeadline |-> iT''', AtS >
+  => ("tickExecutingOwnBudget",
+      0,
+      iT >= c(0) ^ iT' >= c(0) ^ iT'' >= c(0) 
+      ^ mte-server(G, c(1)) 
+      ^ mte-queue(CQ CQ', c(1)) 
+      ^ no-deadline-miss
+      ^ less-than-first-deadline(iT''', CQ CQ')
+      ^ below-deadline(c(2),CQ) ^ above-or-equal-deadline(c(2),CQ'),
+      set-time(G, time, iT + c(1))
+      ; set-queue(G, delta(CQ', c(1)))
+      ; set-time(O, usedOfBudget, iT'' + c(1))
+      ; set-time(O, timeExecuted, iT' + c(1))
+      ; set-time(O, timeToDeadline, iT''' -- c(1))
+      ; delta-servers(c(1))) .
+
+  op mte-queue : CapacityQueue iInt -> iBool .
+  eq mte-queue(emptyQueue, iI) = c(true) .
+  eq mte-queue((deadline: iI1 budget: iI2) CQ, iI) = iI1 >= iI ^ iI2 >= iI .
+
+  op less-than-first-deadline : iInt CapacityQueue -> iBool .
+  eq less-than-first-deadline(iI, emptyQueue) = c(true) .
+  eq less-than-first-deadline(iI, (deadline: iI1 budget: iI2) CQ) = iI < iI1 .
+
+  op usc1 : CapacityQueue -> ECPairSet .
+  eq usc1(emptyQueue)
+   = queue: emptyQueue const: c(true) .
+  eq usc1((deadline: iI budget: iI') CQ)
+   = (queue: CQ const: (iI' <= c(1))) ; 
+     (queue: (deadline: iI budget: (iI' -- c(1))) CQ const: iI' > c(1)) .
+endm
+
+mod CASH-ATOMIC is
+  pr CASH-ATOMIC-BASE .
+
+  vars St St'      : ServerState .
+  vars C C'        : Cid .
+  vars O O' G      : Oid .
+
+  vars AtSG AtS AtS'      : AttributeSet .
+  vars ECS ECS' ECS''     : ECPairSet .
+  vars iB iB' iB'' iB'''  : iBool .
+  vars iNZT iNZT' iNZT''  : iInt .
+  vars CQ CQ' CQ1 CQ2     : CapacityQueue .
+  vars iI iI' iI1 iI2 iI3 : iInt .
+  vars iT iT' iT'' iT'''  : iInt .
+
+---(
+---VER1: correct version.
+omod CASH-USE-EARLIEST-BUDGET-WHEN-IDLING is
+  including CASH-COMMON-RULES .
+
+  var REST : Configuration .  var CQ : CapacityQueue .  vars GT T : Time .
+
+ crl [tickIdle] :
+      GT | CQ | true | REST
+   =>
+      GT + 1 | delta(useSpareCapacity(CQ,1,0), 1) | true | delta(REST, 1)
+   if 1 <= mte(REST) .   
+endom
+---)
+ crl [tickIdle] :
+     < G : global | time |-> iT, 
+                    cq |-> CQ, 
+                    available |-> true,
+                    AtSG >
+  => ("tickIdle",
+      0,
+      iT >= c(0) ^ iB
+      ^ mte-server(G, c(1)) 
+      ^ no-deadline-miss
+      ^ below-deadline(c(2),CQ1) ^ above-or-equal-deadline(c(2),CQ2),
+      set-time(G, time, iT + c(1))
+      ; set-queue(G, delta(CQ2, c(1)))
+      ; delta-servers(c(1))) 
+  if (queue: CQ1 CQ2 const: iB) ; ECS' := usc1(CQ) .
+
+---  ceq c(I:Int) = c(0) if I:Int < 0 .
+endm

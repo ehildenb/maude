@@ -1,0 +1,12 @@
+--- SMT interface for checking (un)satisfiability of Boolean expressions
+fmod SMT-INTERFACE is
+  pr META-LEVEL .
+  pr REAL-INTEGER .
+
+  var  iB      : Boolean .
+
+  --- checks if the given Boolean expression is satisfiable
+  op check-sat : Boolean -> Bool .
+  eq check-sat(iB)
+   = metaCheck(['SMT-INTERFACE], upTerm(iB)) .
+endfm

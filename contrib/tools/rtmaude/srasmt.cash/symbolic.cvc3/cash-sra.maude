@@ -1,0 +1,56 @@
+***(
+
+    This file is part of SRAPlexil, a rewriting logic semantics of
+    the Plan Execution Interchange Language -PLEXIL- with symbolic
+    reachability analysis support modulo SMT theories
+
+    Copyright (C) 2008-2012 Camilo Rocha, camilo.rocha@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                                      Main file and modules
+****                                                       Author: Camilo Rocha
+
+load tuples.maude
+load defs.maude
+load smt-hook.maude
+load smt-interface.maude
+load cash-atomic.maude
+load sra.maude
+
+--- module that implements the symbolic rewrite relation by computing the
+--- symbolic atomic ones at the metalevel
+mod CASH-SRA-RELS is
+  pr SRA .
+  pr CASH-ATOMIC .
+
+  var  Cnf    : Configuration .
+  var  iB     : iBool .
+  var  St     : Sys .
+  var  SS     : SysSet .
+
+  eq ATOMIC-MODULE-NAME = 'CASH-ATOMIC .
+
+ crl [step] :
+     St => { iB, Cnf }
+  if (({ iB, Cnf }) SS) := bss(St) .
+endm
+
+--- module that puts together the symbolic reachability algorithm
+--- and the verification facilities offered, such as model-checking
+--- and race condition detection
+mod CASH-SRA is
+  pr CASH-SRA-RELS .
+endm

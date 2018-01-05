@@ -1,0 +1,232 @@
+%\newcommand{\pair}[2]{\left( #1 \,; #2 \right)}
+\newenvironment{customitemize}[1][0]
+               { \begin{itemize}
+                   % set spacing between items
+                   \addtolength{\itemsep}{#1\baselineskip} }
+               { \end{itemize} }
+\newenvironment{customenumerate}[1][0]
+               { \begin{enumerate}
+                   % set spacing between items
+                   \addtolength{\itemsep}{#1\baselineskip} }
+               { \end{enumerate} }
+\newenvironment{outeritemize}
+               { \begin{customitemize}[0.5] }
+               { \end{customitemize} }
+\newenvironment{inneritemize}
+               { \begin{customitemize}[0.2] }
+               { \end{customitemize} }
+\newenvironment{outerenumerate}
+               { \begin{customenumerate}[0.5] }
+               { \end{customenumerate} }
+\newenvironment{innerenumerate}
+               { \begin{customenumerate}[0.2] }
+               { \end{customenumerate} }
+
+
+% misc
+\newcommand{\ign}[1]{}
+
+% sub
+\newcommand{\usub}[1]{\raisebox{-0.5ex}{\ensuremath{\scriptstyle #1}}}
+
+% sets
+\newcommand{\nats}{\mathbb{N}}
+
+% auxiliary notation and functions for equations and rules
+\newcommand{\EQ}{=}
+\newcommand{\IFS}{\mathbf{if}}
+\newcommand{\REW}{\rightarrow}
+\newcommand{\eq}[2]{#1 \EQ #2}
+\newcommand{\ceq}[3]{#1 \EQ #2 \; \IFS\; #3}
+\newcommand{\rl}[2]{#1 \REW #2}
+\newcommand{\crl}[3]{#1 \REW #2 \; \IFS\; #3}
+\newcommand{\lbl}[1]{[\textit{#1}]}
+\newcommand{\cond}{\gamma}
+\newcommand{\codd}[1]{\textit{#1}}
+\newcommand{\RL}[1]{\ensuremath{[\mathit{#1}]}}
+
+% symbolic relation and transitions
+\newcommand{\cntr}[1]{\left\llbracket #1 \right\rrbracket}
+\newcommand{\crel}{\rightsquigarrow}
+\newcommand{\ecrel}{\rightrightarrows}
+\newcommand{\lccrl}[4]{#1 : #2 \rel #3 \left\llbracket #4 \right\rrbracket}
+\newcommand{\ccrl}[3]{#1 \REW #2\;\textnormal{\bf if}\; {#3}}
+\newcommand{\uccrl}[2]{#1 \REW #2}
+\newcommand{\ecrl}[4]{#1 \Rel #2 \cntr{#3} \;\textnormal{\bf if}\; {#4}}
+\newcommand{\sccrl}[4]{#1 \rel^{#4} #2 \left\llbracket #3 \right\rrbracket}
+\newcommand{\nlccrl}[4]{#1 : #2 \not\rel #3 \left\llbracket #4 \right\rrbracket}
+\newcommand{\nccrl}[3]{#1 \not\rel #2 \left\llbracket #3 \right\rrbracket}
+\newcommand{\srews}{\rightsquigarrow}
+\newcommand{\can}[2]{{#1}\!\downarrow_{#2}}
+\newcommand{\cans}[1]{{#1}\!\downarrow}
+
+\newcommand{\Univ}{\mathcal{U}}
+\newcommand{\rel}{\rightarrow}
+\newcommand{\erel}{\twoheadrightarrow}
+\newcommand{\Rel}{\Rightarrow}
+\newcommand{\pair}[2]{\left( #1 \,; #2 \right)}
+\newcommand{\triple}[3]{\left( #1 \,; #2 \,; #3 \right)}
+\newcommand{\ppair}[2]{\langle #1 ; #2 \rangle}
+\newcommand{\normrel}{\rel^\downarrow}
+\newcommand{\arel}{\rel^\diamond}
+\newcommand{\prel}{\rel^\Vert}
+\newcommand{\abst}{T}
+\newcommand{\paref}[1]{\stackrel{#1}{\rel_{\flat}}}
+\newcommand{\parel}[1]{\stackrel{#1}{\rel_{\lcal}}}
+\newcommand{\Parel}[1]{\stackrel{#1}{\rel}}
+
+% FOL
+%\newcommand{\lang}{\Lambda}
+\newcommand{\lang}{{0}}
+\newcommand{\nlang}{{1}}
+\newcommand{\modeln}{M}
+\newcommand{\model}{\tcal_{\ecal_\lang}}
+\newcommand{\domain}{\modeln}
+\newcommand{\inter}{\__\model}
+\newcommand{\fvars}[1]{\textit{fvars}(#1)}
+\newcommand{\strue}{\top}
+\newcommand{\sfalse}{\bot}
+
+% calligraphic 
+\newcommand{\acal}{\mathcal{A}}
+\newcommand{\bcal}{\mathcal{B}}
+\newcommand{\ccal}{\mathcal{C}}
+\newcommand{\dcal}{\mathcal{D}}
+\newcommand{\ecal}{\mathcal{E}}
+\newcommand{\fcal}{\mathcal{F}}
+\newcommand{\gcal}{\mathcal{G}}
+\newcommand{\hcal}{\mathcal{H}}
+\newcommand{\ical}{\mathcal{I}}
+\newcommand{\jcal}{\mathcal{J}}
+\newcommand{\kcal}{\mathcal{K}}
+\newcommand{\lcal}{\mathcal{L}}
+\newcommand{\mcal}{\mathcal{M}}
+\newcommand{\ncal}{\mathcal{N}}
+\newcommand{\ocal}{\mathcal{O}}
+\newcommand{\pcal}{\mathcal{P}}
+\newcommand{\qcal}{\mathcal{Q}}
+\newcommand{\rcal}{\mathcal{R}}
+\newcommand{\scal}{\mathcal{S}}
+\newcommand{\tcal}{\mathcal{T}}
+\newcommand{\ucal}{\mathcal{U}}
+\newcommand{\vcal}{\mathcal{V}}
+\newcommand{\wcal}{\mathcal{W}}
+\newcommand{\xcal}{\mathcal{X}}
+\newcommand{\ycal}{\mathcal{Y}}
+\newcommand{\zcal}{\mathcal{Z}}
+
+% auxiliary notation and functions for sorts and terms
+\newcommand{\sort}[1]{\textit{#1}}
+\newcommand{\func}[3]{#1 : #2 \longrightarrow #3}
+\newcommand{\tops}[1]{\left[#1\right]}
+\newcommand{\dom}[1]{{\it dom}(#1)}
+\newcommand{\ran}[1]{{\it ran}(#1)}
+\newcommand{\vars}[1]{\textit{vars}(#1)}
+\newcommand{\ids}{\textit{id}}
+\newcommand{\CSU}{\textit{CSU}}
+\newcommand{\GU}{\textit{GU}}
+\newcommand{\csu}[3]{\CSU_{#1}(#2 \EQ #3)}
+\newcommand{\gsu}[3]{\GU_{#1}(#2 \EQ #3)}
+\newcommand{\ls}[1]{\mathit{ls}(#1)}
+\newcommand{\sord}[1]{\ll_{#1}}
+\newcommand{\posrm}{{\it pos}}
+\newcommand{\bool}{\sort{Bool}}
+\newcommand{\boolq}{[\bool]}
+\newcommand{\true}{\top}
+\newcommand{\false}{\bot}
+\newcommand{\states}{\sort{State}}
+%\newcommand{\states}{\mathfrak{s}}
+\newcommand{\rews}{\rightarrow}
+\newcommand{\rewsn}[1]{\rew^{#1}}
+\newcommand{\Pip}{\Pi_{s_1,\ldots,s_n}}
+%% \newcommand{\vpredp}{\vec{x}}
+%% \newcommand{\vpredi}{\vec{y}}
+\newcommand{\always}{\square}
+\newcommand{\onext}{\bigcirc}
+\newcommand{\imps}{\Rightarrow}
+\newcommand{\cons}{\Longleftarrow}
+\newcommand{\dens}[2]{\llbracket #1 \rrbracket_{#2}}
+\newcommand{\den}[2]{\left\llbracket #1 \right\rrbracket_{#2}}
+\newcommand{\olist}[1]{\mathbf{#1}}
+\newcommand{\meta}[1]{\overline{#1}}
+\newcommand{\unc}[1]{\textbf{u}(#1)}
+\newcommand{\LISH}{{\circ}}
+\newcommand{\lish}[1]{{#1}^{\LISH}}
+\newcommand{\LOSH}{{\bullet}}
+\newcommand{\losh}[1]{{#1}^{\LOSH}}
+
+\newcommand{\todot}[1]{\todo[color=yellow!40, linecolor=orange!70!white]{\scriptsize #1}}
+\newcommand{\todotp}[1]{\todo[prepend, color=yellow!40, linecolor=orange!70!white]{\scriptsize #1}}
+\newcommand{\oqff}[2]{\textit{\textit{QF}}_{#1}({#2})}
+
+\newcommand{\plx}{\textnormal{PLEXIL}}
+\newcommand{\const}[1]{\mathit{#1}}
+
+\newcommand{\lrcal}{\lish{\rcal}}
+\newcommand{\purify}{\textit{abstract}}
+\newcommand{\newvars}{\textit{fresh-vars}}
+
+\newcommand{\id}[1]{\cde{#1}}
+\newcommand{\cde}[1]{\ensuremath{\textit{#1}}}
+\newcommand{\ded}{\vdash}
+
+%% \newtheorem{definition}{Definition}
+%% \newtheorem{lemma}{Lemma}
+%% \newtheorem{theorem}{Theorem}
+%% \newtheorem{corollary}{Corollary}
+%% \newtheorem{remark}{Remark}
+
+\lstdefinelanguage{Maude}{%
+   keywords={
+    , mod, fmod, endm, endfm
+    , pr , protecting 
+    , ex , extending 
+    , inc, including
+    , sort, sorts, subsort, subsorts
+    , var, vars
+    , op, ops
+    , eq, ceq
+    , rl, crl
+    , if
+    , search
+    }
+}
+\lstnewenvironment{maude}
+{\lstset{language=Maude ,
+    keywordstyle=\color{blue}
+  , basicstyle=\ttfamily\footnotesize %\singlespacing
+  , commentstyle={}
+  , columns=flexible
+  , numbers=none
+  , showstringspaces=false
+  , keepspaces=true
+  , escapechar=ß
+%  , aboveskip=-3pt
+%  , belowskip=-3pt
+  } 
+}
+{}
+
+\DefineVerbatimEnvironment{maude2}{Verbatim}{fontsize=\scriptsize}
+\newcommand{\rlname}[1]{\cde{[#1]}}
+
+%% \theoremstyle{definition} \newtheorem{example}{Example}
+
+\newcommand{\cesar}[2]{\sout{#1} {\textcolor{orange}{#2}}}%% CAM
+
+\newcommand{\ccesar}[1]{\textbf{CÃ©sar:} {\textcolor{orange}{#1}}}%% CAM
+\newcommand{\cjose}[1]{{\textcolor{blue}{#1}}} 
+\newcommand{\ccamilo}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\cesarign}[2]{#2}
+\newcommand{\joseign}[2]{#2}
+\newcommand{\camiloign}[2]{#2}
+
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\cyan}[1]{\textcolor{cyan}{#1}}
+\newcommand{\violet}[1]{\textcolor{violet}{#1}}
+
+               

@@ -1,0 +1,94 @@
+***(
+
+    This file is part of SRAPlexil, a rewriting logic semantics of
+    the Plan Execution Interchange Language -PLEXIL- with symbolic
+    reachability analysis support modulo SMT theories
+
+    Copyright (C) 2008-2012 Camilo Rocha, camilo.rocha@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+)
+
+****                                                                     Tuples
+****                                       (taken and modified from Full Maude)
+****                                                       Author: Camilo Rocha
+
+fmod 2TUPLE{X :: TRIV, Y :: TRIV} is
+  sorts Tuple{X, Y} .
+  op ((_,_)) : X$Elt Y$Elt -> Tuple{X, Y} .
+  op 2p1_ : Tuple{X, Y} -> X$Elt .
+  op 2p2_ : Tuple{X, Y} -> Y$Elt .
+  eq 2p1(V1:[X$Elt],V2:[Y$Elt]) = V1:[X$Elt] .
+  eq 2p2(V1:[X$Elt],V2:[Y$Elt]) = V2:[Y$Elt] .
+endfm
+
+
+fmod 3TUPLE{X :: TRIV, Y :: TRIV, Z :: TRIV} is
+  sort Tuple{X, Y, Z} .
+  op ((_,_,_)) : X$Elt Y$Elt Z$Elt -> Tuple{X, Y, Z} .
+  op 3p1_ : Tuple{X, Y, Z} -> X$Elt .
+  op 3p2_ : Tuple{X, Y, Z} -> Y$Elt .
+  op 3p3_ : Tuple{X, Y, Z} -> Z$Elt .
+  eq 3p1((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = A:[X$Elt] .
+  eq 3p2((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = B:[Y$Elt] .
+  eq 3p3((A:[X$Elt], B:[Y$Elt], C:[Z$Elt])) = C:[Z$Elt] .
+endfm
+
+fmod 4TUPLE{W :: TRIV, X :: TRIV, Y :: TRIV, Z :: TRIV} is
+  sort Tuple{W, X, Y, Z} .
+  op ((_,_,_,_)) : W$Elt X$Elt Y$Elt Z$Elt -> Tuple{W, X, Y, Z} 
+      [format (n d d d d d d d d d)] .
+  op 4p1_ : Tuple{W, X, Y, Z} -> W$Elt .
+  op 4p2_ : Tuple{W, X, Y, Z} -> X$Elt .
+  op 4p3_ : Tuple{W, X, Y, Z} -> Y$Elt .
+  op 4p4_ : Tuple{W, X, Y, Z} -> Z$Elt .
+  eq 4p1((A:[W$Elt], B:[X$Elt], C:[Y$Elt], D:[Z$Elt])) = A:[W$Elt] .
+  eq 4p2((A:[W$Elt], B:[X$Elt], C:[Y$Elt], D:[Z$Elt])) = B:[X$Elt] .
+  eq 4p3((A:[W$Elt], B:[X$Elt], C:[Y$Elt], D:[Z$Elt])) = C:[Y$Elt] .
+  eq 4p4((A:[W$Elt], B:[X$Elt], C:[Y$Elt], D:[Z$Elt])) = D:[Z$Elt] .
+endfm
+
+fmod 5TUPLE{V :: TRIV, W :: TRIV, X :: TRIV, Y :: TRIV, Z :: TRIV} is
+  sort Tuple{V, W, X, Y, Z} .
+  op ((_,_,_,_,_)) : V$Elt W$Elt X$Elt Y$Elt Z$Elt -> Tuple{V, W, X, Y, Z} 
+       [format (n d d d d d d d d d d d)] .
+  op 5p1_ : Tuple{V, W, X, Y, Z} -> V$Elt .
+  op 5p2_ : Tuple{V, W, X, Y, Z} -> W$Elt .
+  op 5p3_ : Tuple{V, W, X, Y, Z} -> X$Elt .
+  op 5p4_ : Tuple{V, W, X, Y, Z} -> Y$Elt .
+  op 5p5_ : Tuple{V, W, X, Y, Z} -> Z$Elt .
+  eq 5p1((A:[V$Elt], B:[W$Elt], C:[X$Elt], D:[Y$Elt], E:[Z$Elt])) = A:[V$Elt] .
+  eq 5p2((A:[V$Elt], B:[W$Elt], C:[X$Elt], D:[Y$Elt], E:[Z$Elt])) = B:[W$Elt] .
+  eq 5p3((A:[V$Elt], B:[W$Elt], C:[X$Elt], D:[Y$Elt], E:[Z$Elt])) = C:[X$Elt] .
+  eq 5p4((A:[V$Elt], B:[W$Elt], C:[X$Elt], D:[Y$Elt], E:[Z$Elt])) = D:[Y$Elt] .
+  eq 5p5((A:[V$Elt], B:[W$Elt], C:[X$Elt], D:[Y$Elt], E:[Z$Elt])) = E:[Z$Elt] .
+endfm
+
+fmod 6TUPLE{U :: TRIV, V :: TRIV, W :: TRIV, X :: TRIV, Y :: TRIV, Z :: TRIV} is
+  sort Tuple{U, V, W, X, Y, Z} .
+  op ((_,_,_,_,_,_)) : U$Elt V$Elt W$Elt X$Elt Y$Elt Z$Elt -> Tuple{U, V, W, X, Y, Z} 
+      [format (n d d d d d d d d d d d d d)] .
+  op 6p1_ : Tuple{U, V, W, X, Y, Z} -> U$Elt .
+  op 6p2_ : Tuple{U, V, W, X, Y, Z} -> V$Elt .
+  op 6p3_ : Tuple{U, V, W, X, Y, Z} -> W$Elt .
+  op 6p4_ : Tuple{U, V, W, X, Y, Z} -> X$Elt .
+  op 6p5_ : Tuple{U, V, W, X, Y, Z} -> Y$Elt .
+  op 6p6_ : Tuple{U, V, W, X, Y, Z} -> Z$Elt .
+  eq 6p1((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = A:[U$Elt] .
+  eq 6p2((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = B:[V$Elt] .
+  eq 6p3((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = C:[W$Elt] .
+  eq 6p4((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = D:[X$Elt] .
+  eq 6p5((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = E:[Y$Elt] .
+  eq 6p6((A:[U$Elt], B:[V$Elt], C:[W$Elt], D:[X$Elt], E:[Y$Elt], F:[Z$Elt])) = F:[Z$Elt] .
+endfm

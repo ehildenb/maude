@@ -1,0 +1,104 @@
+
+mod TEST-STATES-OK is
+  inc CASH-SYMBOLIC .
+
+  ops g s1 s2 : -> Oid [ctor] .
+
+  op global1    : -> Object .
+  op server1    : Int Int -> Object .
+  op server2    : Int Int -> Object .
+
+  vars I0 I1 I2 I3 : Int . var B : Bool .
+
+  eq global1
+   = < g : global | time : 0, cq : emptyQueue, available : true, deadline-miss : false > . 
+  eq server1(I0,I1)
+   = < s1 : server | maxBudget : I0, period : I1, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+  eq server2(I2,I3)
+   = < s2 : server | maxBudget : I2, period : I3, state : idle,
+                     timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 > .
+
+  op init   : Int Int Int Int Bool -> Sys .
+  eq init(I0,I1,I2,I3,B)
+   = { (I0 < I1) and (I2 < I3) and (I0 > 0) and (I2 > 0) and B, global1 server1(I0,I1) server2(I2,I3) } .
+endm
+
+--- from case.1.maude
+--- 2/5 + 3/5 <= 1.
+--- Not terminating
+---(
+search [1] init(2,5,3,5,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+---)
+
+
+--- 2/5 + 5/7 > 1
+--- deadline miss found (at depth 17)
+---(
+search [1] init(2,5,5,7,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+
+Solution 1 (state 38739)
+states: 38740  rewrites: 12103612 in 5936ms cpu (5941ms real) (2038883 rewrites/second)
+B:Bool --> true
+Cnf:Configuration --> < s1 : server | maxBudget : 2,period : 5,state : executing,usedOfBudget : 2,timeToDeadline : 4,timeExecuted : 2 > < s2 : server | maxBudget : 5,period :
+    7,state : waiting,usedOfBudget : 0,timeToDeadline : 4,timeExecuted : 0 >
+AtS:AttributeSet --> time : 11,cq : emptyQueue,available : false
+---)
+
+
+--- deadline miss found
+---(
+search [1] init(I0,I1,I2,I3,true) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+
+Solution 1 (state 112)
+states: 113  rewrites: 35016 in 459ms cpu (462ms real) (76265 rewrites/second)
+iB:Bool --> I2 < I3 and I3 < I1 and I0 < I1 and I3 > 0 and I0 > 0 and I1 >= 2 and I2 >= 2 and (I1 >= 1 ? I0 <= I1 - 1 : I0 <= 0) and (I1 >= 2 ? I1 >= 2 : true) and (I3 >= 1 ?
+    I2 <= 1 + (I3 - 1) : I2 <= 1) and (I3 >= 1 ? I3 >= 1 : true) and (I0 >= 0 ? (I1 >= 2 ? (I1 >= 1 ? I0 > I1 - 1 - 1 : I0 > -1) : I0 > 0) : I1 >= 2 and (I1 >= 1 ? 0 > I1 - 1
+    - 1 : true))
+Cnf:Configuration --> < s1 : server | maxBudget : I0,period : I1,state : waiting,usedOfBudget : 0,timeToDeadline : (I1 >= 2) ? (I1 >= 1 ? I1 - 1 - 1 : -1) : 0,timeExecuted :
+    0 > < s2 : server | maxBudget : I2,period : I3,state : executing,usedOfBudget : 2,timeToDeadline : (I3 >= 2) ? (I3 >= 1 ? I3 - 1 - 1 : -1) : 0,timeExecuted : 2 >
+AtS:AttributeSet --> time : 2,cq : emptyQueue,available : false
+---)
+
+--- No deadlinemiss found until killed
+---(
+search [1,17] init(I0,5,I2,7,(I0 * 7 + I2 * 5 <= 35)) =>*  { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+---)
+
+--- Non-linear theories not supported
+--- Abort trap: 6
+---(
+search [1] init(I0,I1,I2,I3,(I0 * I3 + I2 * I1 <= I1 * I3)) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+---)
+
+--- No deadlinemiss found until killed
+--- Killed
+---(
+search [1] init(I0,I1,I2,I1,(I0 + I2 <= I1)) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+---)
+
+--- deadlinemiss found in this case.
+---(
+search [1] init(I0,I1,I2,I1,I0 + I2 > I1) =>* { B:Bool , < g : global | deadline-miss : true, AtS:AttributeSet > Cnf:Configuration } .
+
+q
+
+Solution 1 (state 70)
+states: 71  rewrites: 27988 in 377ms cpu (380ms real) (74078 rewrites/second)
+B --> I2 < I1 and I0 < I1 and I2 <= I1 and I0 <= I1 and I2 > 0 and I2 + I0 > I1 and I1 >= I1 and I1 >= 2 and I0 >= 2 and (I1 >= 1 ? I2 <= I1 - 1 : I2 <= 0) and (I1 >= 1 ? I0
+    <= 1 + (I1 - 1) : I0 <= 1) and (I1 >= 1 ? I1 >= 1 : true) and (I1 >= 2 ? I1 >= 2 : true) and (I2 >= 0 ? (I1 >= 2 ? (I1 >= 1 ? I2 > I1 - 1 - 1 : I2 > -1) : I2 > 0) : I1 >=
+    2 and (I1 >= 1 ? 0 > I1 - 1 - 1 : true))
+Cnf:Configuration --> < s1 : server | maxBudget : I0,period : I1,state : executing,usedOfBudget : 2,timeToDeadline : (I1 >= 2) ? (I1 >= 1 ? I1 - 1 - 1 : -1) : 0,timeExecuted
+    : 2 > < s2 : server | maxBudget : I2,period : I1,state : waiting,usedOfBudget : 0,timeToDeadline : (I1 >= 2) ? (I1 >= 1 ? I1 - 1 - 1 : -1) : 0,timeExecuted : 0 >
+AtS:AttributeSet --> time : 2,cq : emptyQueue,available : false
+---)

@@ -1,0 +1,1786 @@
+--- Version of Oct 14, 2005.
+
+--- Start Real-Time Maude:
+
+load real-time-maude
+
+--- Preemptive earliest deadline first-based scheduling with reuse
+--- of unused budgets.
+--- --------------------------------------------------------------
+
+--- Each task has a maximum budget, often called capacity elsewhere,
+---  and a period, just like in the basic EDF case. However, since 
+---  a task may not always use its maximum budgeted execution time 
+---  in each round, it may give the remaining BUDGET to someone else.
+--- This is done by giving the unused budget (unused execution time)
+---  to the CASH. A task, upon becoming active, may use the residual 
+---  capacity with the earliest deadline, from the CASH, if the 
+---  capacity's deadline is no later than the job's deadline. While 
+---  it uses such residual capacity from the CASH, it does not use 
+---  of its own allocated maximum budget.
+--- When the system is idling, residual capacities, if there are any,
+---  must be used. In the solution of the paper, idling consumes 
+---  always from the residual capacity with the earliest deadline. 
+---  This is proved to be OK.
+
+--- The question is: can we instead use from the spare capacity with
+---  the LATEST deadline when idling? That's what we really want
+---  to analyze in what follows. 
+
+--- We model BOTH aspects of the protocol, as they are very similar.
+--- The specification allows for much nondeterminism, as the length
+--- and start time of each job may be completely nondeterministic!
+--- The specification therefore really covers all possibilities.
+--- Notice that it seems to be an implicit assumption that no task
+--- instance is instantaneous, so that we have to ensure that each
+--- task instance is executed for a non-zero time. If there is a possibility
+--- that a job may execute for zero time, we may have Zeno behavior
+--- in that a job arrives at time k, finishes at time k, another
+--- job arrives at time k, finishes at k. For each new task instance 
+--- that arrives, in addition, the deadline is increased, so we 
+--- can get an arbitrary large capacity queue (with different deadlines)
+--- in zero time!
+
+--- In a different file, we instead use a random number generator
+--- to generate random execution times of the various jobs. 
+
+---   If I read the paper correctly,
+---   the execution should grab directly capacity time from the
+---   CASH. It does not even need to remove them from the CASH ...
+
+--- For simplicity, we choose the natural numbers to be the time domain:
+
+(tmod TIME-DOMAIN is
+   including NAT-TIME-DOMAIN-WITH-INF .
+endtm)
+
+
+
+
+--- First, we define a datatype for the CASH queue of spare capacities.
+--- This queue is modeled as a list of <deadline, budget>-pairs
+--- ordered by deadline.
+
+(tomod CASH is
+  protecting TIME-DOMAIN .
+  
+  sorts Capacity CapacityQueue .
+  subsort Capacity < CapacityQueue .
+
+  op deadline:_budget:_ : Time Time -> Capacity [ctor] .
+  op emptyQueue : -> CapacityQueue [ctor] .
+  op __ : CapacityQueue CapacityQueue -> CapacityQueue 
+                                         [ctor assoc id: emptyQueue] .
+  
+  sort Cash .
+  subsort Cash < Configuration .
+
+  op `[CASH:_`] : CapacityQueue -> Cash [format (sssg b o sg o) ctor] .
+
+  var T : Time .
+  var C : Capacity .
+  var CQ : CapacityQueue .
+  var CASH : Cash .
+  vars NZT NZT' NZT'' NZT''' : NzTime .
+
+  --- Crucial equation: a spare "capacity" is expired/exhausted and 
+  --- should be removed when its budget or deadline is 0:
+  eq deadline: T budget: 0 = emptyQueue .
+  eq deadline: 0 budget: T = emptyQueue .
+
+  --- Add a spare capacity to the cash in sorted order:
+  op addCapacity : Capacity Cash -> Cash .
+  op addCapacity : CapacityQueue Cash -> Cash .   --- for expired capacities
+  op addCapacity : Capacity CapacityQueue -> CapacityQueue .
+
+  eq addCapacity((deadline: NZT budget: NZT'), [CASH: CQ]) = 
+        [CASH: addCapacity((deadline: NZT budget: NZT'), CQ)] .
+  eq addCapacity(emptyQueue, CASH) = CASH .   --- for useless capacities
+
+  eq addCapacity((deadline: NZT budget: NZT'), emptyQueue) =
+       (deadline: NZT budget: NZT') .
+
+  eq addCapacity((deadline: NZT budget: NZT'), 
+             (deadline: NZT'' budget: NZT''') CQ) =
+        if NZT <= NZT'' then 
+          ((deadline: NZT budget: NZT') (deadline: NZT'' budget: NZT''') CQ)
+        else 
+          ((deadline: NZT'' budget: NZT''') 
+           addCapacity((deadline: NZT budget: NZT'), CQ))
+        fi .
+
+  --- find deadline of first fragment:
+  op firstDeadline : Cash -> TimeInf .
+  eq firstDeadline([CASH: (deadline: NZT budget: NZT') CQ]) = NZT .
+  eq firstDeadline([CASH: emptyQueue]) = INF .
+
+  --- Get first budget:
+  op firstBudget : Cash -> Time .
+  eq firstBudget([CASH: (deadline: NZT budget: NZT') CQ]) = NZT' .
+  eq firstBudget([CASH: emptyQueue]) = 0 .
+endtom)
+
+
+
+--- We model all possible task sets "implicitly".
+--- A server is IDLE when it is not serving a task. At ANY time, 
+--- it may become "waiting/executing," indicating that it serves a 
+--- new task. Furthermore, a job may stop at ANY time. So, ALL possible tasks
+--- are modeled this way, instead of using some random functions 
+--- to "generate" tasks!
+
+(tomod SERVER is
+  protecting TIME-DOMAIN .
+
+  class Server |
+        maxBudget      : NzTime,       --- maximum budget Q_i, constant
+        period         : NzTime,       --- period, constant
+        state          : ServerState,  --- state of the server/task
+        usedOfBudget   : Time,         --- how long time has this server
+                                       --- executed OF ITS OWN budget
+                                       --- in this period?
+        timeToDeadline : Time,         --- time left until "current" deadline
+                                       --- can remain 0 while idling 
+                                       --- (no "current" deadline)
+        timeExecuted   : Time .        --- how long has the current job 
+                                       --- been executed?
+
+  sort ServerState .
+  ops idle              --- No task "ready" yet
+      waiting           --- ready to run but blocked/preempted/...
+      executing :       --- this server is executing
+                   -> ServerState [ctor] .
+
+  op AVAILABLE-PROCESSOR : -> Configuration [ctor] .
+  --- Denotes an available processor.
+endtom)
+
+
+
+
+
+
+--- Now, we define the common rules of both protocols, where 
+---   every task is generated ... without generating the tasks!!
+
+(tomod CASH-COMMON is
+  protecting CASH .
+  protecting SERVER .
+
+  --- As usual, we need rules for the following events:
+
+  --- 1. An "idle" server may suddenly become not idle, 
+  ---       that is, it will suddenly "get a task"/"be activated"
+  ---       and will either go to "waiting" or "executing" mode
+  --- Oct 1, 2005, change: the new deadline will be as given in
+  ---       the Caccamo paper.            
+
+  --- 2. An "executing" server finishes its execution. This can happen 
+  ---       at any time, up to its use of all its budget. If it has some
+  ---       budget remaining, this must be donated to the CASH.
+  --- Oct 1, 2005, change: goes to state 'idle' and updates its deadline.
+
+  --- Notice that as usual, the "preemption" is modeled by the rule
+  ---       modeling case 1, and the "resumption" from waiting to 
+  ---       executing is taken care of by the other process in step 2.
+
+  
+  --- Case 1. The server is in state "idle", which means that there
+  ---         is no task to perform. Then two things can happen:
+  ---         1a. The server stays idle since there is a possibility 
+  ---             that it remains idle. This should be reflected in the
+  ---             tick rule.
+  ---         1b. The server gets a task instance and should go
+  ---             to "waiting" or "executing" mode. This case is treated
+  ---             next.
+
+  vars O O' : Oid .
+  vars C C' REST-OF-SYSTEM : Configuration .
+  var STATE : ServerState .
+  var CASH : Cash .
+  vars T T' T'' T''' REMAINING-BUDGET : Time .
+  vars NZT NZT' NZT'' : NzTime .
+  var BUDGET-LEFT : Bool .
+  var CQ : CapacityQueue .
+
+
+  --- Idle to executing when the processor is available:
+
+  rl [idleToExecuting1] :
+     < O : Server | period : NZT, state : idle, timeToDeadline : T >
+     AVAILABLE-PROCESSOR
+    =>
+     < O : Server | state : executing, timeToDeadline : T + NZT,
+                    timeExecuted : 0, usedOfBudget : 0 > .
+
+
+  --- A server becomes active and another server is executing.
+  --- This server will either preempt or not according to usual EDF:
+
+  rl [idleToActive] :
+     < O : Server | period : NZT, state : idle, timeToDeadline : T >
+     < O' : Server | state : executing, timeToDeadline : T' >
+    =>
+     if (T + NZT) < T' then   --- start to execute and preempt O'
+        (< O : Server | state :  executing, timeToDeadline : T + NZT,
+                        timeExecuted : 0, usedOfBudget : 0 >
+         < O' : Server | state :  waiting >)
+     else
+        (< O : Server | state : waiting, timeToDeadline : T + NZT,
+                        timeExecuted : 0, usedOfBudget : 0 >
+         < O' : Server | >)
+     fi .
+       
+  
+  --- Finish executing. If more budget, add to CASH.
+  --- There are two main cases: wake up the first waiting server, or nobody
+  --- is waiting. First case: someone else is waiting:
+  --- We have also added an additional check that the current job
+  --- has actually executed more than zero time.
+
+  crl [stopExecuting1] :
+      {< O : Server | state : executing, usedOfBudget : T,
+                      maxBudget : NZT, timeToDeadline : T',
+                      timeExecuted : NZT', period : NZT'' >
+       < O' : Server | state : waiting, timeToDeadline : T'' >
+       REST-OF-SYSTEM
+       CASH}
+     =>
+      {< O : Server | state : idle,  usedOfBudget : NZT >
+       < O' : Server | state : executing >
+       REST-OF-SYSTEM
+       (if BUDGET-LEFT 
+        then addCapacity((deadline: T' budget: REMAINING-BUDGET), CASH)
+        else CASH fi)}
+     if REMAINING-BUDGET := NZT monus T       /\
+        BUDGET-LEFT := REMAINING-BUDGET > 0   /\
+        REMAINING-BUDGET <= T'                /\   --- overflow check
+        T'' == nextDeadlineWaiting(< O' : Server | >  REST-OF-SYSTEM) .
+
+  --- Finish executing when no other server is waiting. Just release the 
+  --- processor:
+
+  crl [stopExecuting2] :
+      {< O : Server | state : executing, usedOfBudget : T, 
+                      timeToDeadline : T', maxBudget : NZT,
+                      timeExecuted : NZT', period : NZT'' >
+       REST-OF-SYSTEM
+       CASH}
+     =>
+      {< O : Server | state : idle, usedOfBudget : NZT >
+       AVAILABLE-PROCESSOR
+       REST-OF-SYSTEM
+       (if BUDGET-LEFT 
+        then addCapacity((deadline: T' budget: REMAINING-BUDGET), CASH)
+        else CASH fi)}
+     if REMAINING-BUDGET := NZT monus T        /\
+        BUDGET-LEFT := REMAINING-BUDGET > 0    /\
+        REMAINING-BUDGET <= T'                 /\   --- overflow check
+        nooneWaiting(REST-OF-SYSTEM) .
+  
+  op nextDeadlineWaiting : Configuration -> TimeInf [frozen (1)] .
+  eq nextDeadlineWaiting(none) = INF .
+  ceq nextDeadlineWaiting(C C') = 
+         min(nextDeadlineWaiting(C), nextDeadlineWaiting(C')) 
+      if C =/= none /\ C' =/= none .
+  eq nextDeadlineWaiting(< O : Server | state : STATE, timeToDeadline : T >) =
+         if STATE == waiting then T else INF fi .
+  eq nextDeadlineWaiting(DEADLINE-MISS) = INF .
+
+  op nooneWaiting : Configuration -> Bool [frozen (1)] .       
+  eq nooneWaiting(none) = true .
+  ceq nooneWaiting(C C') = nooneWaiting(C) and nooneWaiting(C')
+      if C =/= none /\ C' =/= none .
+  eq nooneWaiting(< O : Server | state : STATE >) = STATE =/= waiting .
+  eq nooneWaiting(DEADLINE-MISS) = true .
+
+
+  --- Finally, we make an overflow explicit:
+  op DEADLINE-MISS : -> Configuration [ctor format (r o)] .
+
+  --- The following rule can be applied when we have reached an overflow 
+  --- situation:
+
+  crl [deadlineMiss] :
+      < O : Server | state : STATE, usedOfBudget : T, timeToDeadline : T',
+                     maxBudget : NZT >
+     =>
+      DEADLINE-MISS
+     if (NZT monus T) > T' /\ STATE == waiting or STATE == executing .
+
+
+  --- We add the following rules for modeling a job which 
+  --- is longer than the execution time in one round of the server.
+  --- This setting is included in the rest of the rules, where 
+  --- an idle server may be immediately activated again. However,
+  --- to completely reflect the informal specification, we include the 
+  --- rules below. 
+ 
+  --- A server has executed all it can in the current round,
+  --- but wish to continue executing in the "next" round. Corresponds
+  --- to case 8. Since its deadline is increased, it cannot
+  --- just continue executing, but must check if some waiting
+  --- server suddenly gets a shorter deadline.
+
+  --- Case 1: no other server is waiting:
+  crl [continueExInNextRound] :
+      {< O : Server | state : executing, maxBudget : NZT,
+                      usedOfBudget : NZT, period : NZT', 
+                      timeToDeadline : T >
+       REST-OF-SYSTEM CASH}
+     =>
+      {< O : Server | usedOfBudget : 0, timeToDeadline : T + NZT',
+                      timeExecuted : 0 >
+       REST-OF-SYSTEM CASH}
+     if nooneWaiting(REST-OF-SYSTEM) .               
+
+  --- Case 2: someone else is waiting, so maybe our server becomes preempted:
+  crl [continueActInNextRound] :
+      {< O : Server | state : executing, maxBudget : NZT, 
+                      usedOfBudget : NZT, period : NZT',
+                      timeToDeadline : T >
+       < O' : Server | state : waiting, timeToDeadline : T' >
+       REST-OF-SYSTEM  CASH}
+     =>
+      if T' < T + NZT' then    --- we become preempted 
+        {< O : Server | state : waiting, usedOfBudget : 0,
+                        timeExecuted : 0, timeToDeadline : T + NZT' >
+         < O' : Server | state : executing >
+         REST-OF-SYSTEM CASH}
+      else                     --- can continue executing
+        {< O : Server | usedOfBudget : 0, timeExecuted : 0, 
+                        timeToDeadline : T + NZT' >
+         < O' : Server | >
+         REST-OF-SYSTEM CASH}
+      fi
+     if T' == nextDeadlineWaiting(< O' : Server | >  REST-OF-SYSTEM) .
+
+
+  --- Timed behavior.
+  --- ---------------
+  --- There are three cases:
+  ---   1. Time elapses when a server is executing a spare capacity.
+  ---   2. Time elapses when a server is executing its own budget.
+  ---   3. Time elapses when no server is executing; i.e., when the system is 
+  ---      idle.
+  --- The first two cases are treated below. The third case must be treated
+  --- in two different ways, depending on whether we model the original
+  --- protocol or its suggested modification. Therefore, that case
+  --- will be modeled in two separate ways in later modules.
+  --- Notice that time cannot advance when we have detected an overflow,
+  --- which must therefore be treated at the same time it is discovered.  
+
+  --- Case 1: tick when a server is executing a spare capacity:
+
+  crl [tickExecutingSpareCapacity] :
+      {< O : Server | state : executing, timeExecuted : T',
+                      timeToDeadline : T'' >
+       REST-OF-SYSTEM 
+       CASH}
+     =>
+      {< O : Server | timeExecuted : T' + T, timeToDeadline : T'' monus T >
+       delta(REST-OF-SYSTEM, T)
+       delta(useSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= min(mte(CASH  REST-OF-SYSTEM), mteCashUse(< O : Server | >)) 
+        /\ firstDeadline(CASH) <= T'' [nonexec] .
+
+  
+  --- Case 2: tick when a server is executing its own budget:
+
+  crl [tickExecutingOwnBudget] :
+      {< O : Server | state : executing, timeExecuted : T', 
+                      usedOfBudget : T'', timeToDeadline : T''' >
+       REST-OF-SYSTEM 
+       CASH}
+     =>
+      {< O : Server | usedOfBudget : T'' + T, timeExecuted : T' + T, 
+                      timeToDeadline : T''' monus T >
+       delta(REST-OF-SYSTEM, T)
+       delta(CASH, T)} 
+      in time T
+     if T <= mte(< O : Server | >  REST-OF-SYSTEM) 
+        /\ T''' <  firstDeadline(CASH)   [nonexec] .
+
+  --- Mte should be 0 when an overflow is detected:
+  op mte : Configuration -> TimeInf [frozen (1)] .
+  eq mte(none) = INF .
+  ceq mte(C C') = min(mte(C), mte(C'))  if C =/= none /\ C' =/= none .
+  eq mte(< O : Server | state : idle >) = INF .
+  eq mte(< O : Server | state : waiting, usedOfBudget : T, maxBudget : NZT,
+                        timeToDeadline : T' >) =
+        if (NZT monus T) > T'    --- overflow!!!
+        then 0 else T' fi .
+  eq mte(< O : Server | state : executing, usedOfBudget : T, maxBudget : NZT,
+                        timeToDeadline : T' >) =
+        if (NZT monus T) > T'     --- overflow!
+        then 0 else (NZT monus T) fi .
+
+  eq mte([CASH: CQ]) = if CQ == emptyQueue then INF 
+                          else min(firstBudget([CASH: CQ]),
+                                   firstDeadline([CASH: CQ])) fi .
+
+  eq mte(DEADLINE-MISS) = 0 .
+
+  --- The mte differs slightly in the cases where a node is executing on 
+  --- whether it executes its own budget or a spare capacity:
+  op mteCashUse : Object -> Time .
+  eq mteCashUse(< O : Server | state : executing, usedOfBudget : T, 
+                               maxBudget : NZT, timeToDeadline : T' >) =
+        if (NZT monus T) > T'     --- overflow!
+        then 0 else T' fi .
+
+
+  op delta : Configuration Time -> Configuration [frozen (1)] .
+  eq delta(none, T) = none .
+  ceq delta(C C', T) = delta(C, T) delta(C', T) if C =/= none /\ C' =/= none .
+  ceq delta(< O : Server | state : STATE, timeToDeadline : T >, T') =
+            < O : Server | state : STATE, timeToDeadline : T monus T' > 
+      if STATE =/= executing .
+  --- Note that the effect of time elapse on an executing node is given 
+  --- directly in the tick rules.
+
+  eq delta([CASH: CQ], T) = [CASH: delta(CQ, T)] .
+  
+  op delta : CapacityQueue Time -> CapacityQueue .
+  eq delta(emptyQueue, T) = emptyQueue .
+  eq delta((deadline: NZT budget: NZT') CQ, T) =
+       ((deadline: (NZT monus T) budget: NZT') delta(CQ, T)) .
+
+---( The long-time analysis was performed with this definition, 
+     which is slightly wrong. However, that shouldn't matter
+     as long as all ticks are of length 1. The results are equally valid.
+  op useSpareCapacity : Cash Time -> Cash .
+  eq useSpareCapacity([CASH: emptyQueue], T) = [CASH: emptyQueue] .
+  eq useSpareCapacity([CASH: (deadline: NZT budget: NZT') CQ], T) =
+       if T <= NZT' then    --- enough time in first budget ...
+          [CASH: (deadline: NZT budget: NZT' monus T) CQ]
+       else
+          useSpareCapacity([CASH: CQ], T monus NZT')
+       fi .
+)---
+
+--- This is the correct definition:
+  op useSpareCapacity : Cash Time -> Cash .
+  op useSpareCapacity : Cash Time Time -> Cash .
+  --- usage: useSpareCapacity(cash,LeftToComsume, UsedSoFarInTick)
+  eq useSpareCapacity(CASH, T) = useSpareCapacity(CASH, T, 0) .
+  eq useSpareCapacity([CASH: emptyQueue], T, T') = [CASH: emptyQueue] .
+  eq useSpareCapacity([CASH: (deadline: NZT budget: NZT') CQ], T, T') =
+       if T <= min(NZT monus T', NZT') then --- enough time in first budget ...
+          [CASH: (deadline: NZT budget: NZT' monus T) CQ]
+       else
+          useSpareCapacity([CASH: CQ], T monus min(NZT monus T', NZT'),
+                                       T' + min(NZT monus T', NZT'))
+       fi .
+endtom)  
+
+
+
+
+(tomod CASH-USE-EARLIEST-BUDGET-WHEN-IDLING is
+  including CASH-COMMON .
+
+  var REST-OF-SYSTEM : Configuration .
+  var CASH : Cash .
+  var T : Time .
+
+  crl [tickIdle] :
+      {REST-OF-SYSTEM 
+       AVAILABLE-PROCESSOR
+       CASH}
+     =>
+      {delta(REST-OF-SYSTEM, T)
+       AVAILABLE-PROCESSOR
+       delta(useSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= mte(REST-OF-SYSTEM) [nonexec] .   
+endtom)
+
+
+
+--- First modification: when idling, steal time from "backwards" ...
+--- instead of from the front ... only change that useSpareCapacity 
+--- is replaced by useLatestSpareCapacity:
+
+(tomod CASH-USE-LATEST-BUDGET-WHEN-IDLING is
+  protecting CASH-COMMON .
+
+  var REST-OF-SYSTEM : Configuration .
+  var CASH : Cash .
+  vars T : Time .
+  vars NZT NZT' : NzTime .
+  var CQ : CapacityQueue .
+
+
+  crl [tickIdle] :
+      {REST-OF-SYSTEM 
+       AVAILABLE-PROCESSOR
+       CASH}
+     =>
+      {delta(REST-OF-SYSTEM, T)
+       AVAILABLE-PROCESSOR
+       delta(useLatestSpareCapacity(CASH, T), T)} 
+      in time T
+     if T <= mte(REST-OF-SYSTEM) [nonexec] .
+
+
+  op useLatestSpareCapacity : Cash Time -> Cash .
+  eq useLatestSpareCapacity([CASH: emptyQueue], T) = [CASH: emptyQueue] .
+  eq useLatestSpareCapacity([CASH: CQ (deadline: NZT budget: NZT')], T) =
+       if T <= NZT' then    --- enough time in LAST budget ...
+          [CASH: CQ (deadline: NZT budget: NZT' monus T)]
+       else
+          useLatestSpareCapacity([CASH: CQ], T monus NZT')
+       fi .
+
+endtom)
+
+
+
+
+
+(tomod TEST-STATES is 
+  including CASH .
+  including SERVER .
+ 
+  ops s1 s2 s3 s4 : -> Oid .
+
+  --- A simple 2/5  3/5 system:
+  op init1 : -> GlobalSystem .
+  eq init1 =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s2 : Server | maxBudget : 3, period : 5, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  --- A slightly more complex 2/5  4/7 system (34/35 total bandwidth used):
+  op init2 : -> GlobalSystem .
+  eq init2 =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  --- A bad state where bandwidth usage is more than 1:
+  op initBad : -> GlobalSystem .
+  eq initBad =
+      {< s1 : Server | maxBudget : 2, period : 5, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s2 : Server | maxBudget : 5, period : 7, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+
+  op init3 : -> GlobalSystem .
+  eq init3 =
+      {< s1 : Server | maxBudget : 2, period : 7, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s2 : Server | maxBudget : 2, period : 8, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s3 : Server | maxBudget : 2, period : 9, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s4 : Server | maxBudget : 1, period : 5, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+
+  op init5 : -> GlobalSystem . 
+  eq init5 =
+      {< s1 : Server | maxBudget : 1, period : 3, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s2 : Server | maxBudget : 4, period : 8, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       < s3 : Server | maxBudget : 4, period : 24, state : idle,
+                       timeExecuted : 0, usedOfBudget : 0, timeToDeadline : 0 >
+       [CASH: emptyQueue]
+       AVAILABLE-PROCESSOR} .
+endtom)
+
+
+
+(tomod TEST-CASH-USE-EARLIEST-BUDGET-WHEN-IDLING is
+  including CASH-USE-EARLIEST-BUDGET-WHEN-IDLING .
+  including TEST-STATES .
+endtom)
+
+
+
+(tomod TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING is
+  including CASH-USE-LATEST-BUDGET-WHEN-IDLING .
+  including TEST-STATES .
+endtom)
+
+
+ 
+
+--- --------------------------------------------------
+--- ANALYSIS:
+--- --------------------------------------------------
+
+(set tick def 1 .)
+
+
+--- ----------------------------------------------------------
+--- Analysis of ORIGINAL protocol, which is supposed to be OK:
+--- ----------------------------------------------------------
+
+(select TEST-CASH-USE-EARLIEST-BUDGET-WHEN-IDLING .)
+
+--- First a little bit of prototyping, just to get a feel for the system:
+--- It is worth noticing the fairly large queues of residual capacities 
+--- encountered!
+
+*** (tfrew init1 in time <= 1000 .)       --- 2/5 3/5 should be OK
+--- Result is OK
+
+*** (tfrew init2 in time <= 1000 .)      --- 2/5 4/7 should be OK
+--- Result is OK
+
+*** (tfrew initBad in time <= 1000 .)     
+--- should give overflow if jobs are long
+--- Result is actually also "OK" so no overflow encountered!
+
+*** (tfrew init5 in time <= 1000 .)       --- 1/3 4/8 4/24 should be OK
+--- Result is OK.
+
+
+--- Now we come to search for some properties of this protocol.
+--- As we have seen, it does not seem as if there is a finite reachable
+--- state space from most of the initial states. 
+--- Therefore we can use time-bounded search, which should always terminate.
+--- However, due to the still fairly large amount of repeated states,
+--- it seems that an untimed search, which is not guaranteed to terminate,
+--- can IN THIS specification find some answers faster.
+
+--- We perform an UNtimed search for an overflow from state init1:
+*** (utsearch [1] init1 =>* {DEADLINE-MISS C:Configuration} .) 
+--- This search should of course NOT terminate ... indeed, it
+--- is still running after a couple of hours.
+
+--- There should be an overflow from state initBad, but a rewriting did not
+--- find it. Maybe untimed search will do?:
+*** (utsearch [1] initBad =>* {DEADLINE-MISS C:Configuration} .)
+--- Finds a solution in about 4 seconds ...
+
+--- How about reaching a bad state from init2? Should not be possible ...
+*** (utsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} .)
+--- Searched for a LONG time without terminating ...
+
+--- OK, we try an UNtimed search from initial state init5:
+*** (utsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} .)
+--- Does not terminate in very long time ...
+
+
+--- Let's try some time-bounded searches:
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 13 .)
+--- 'No solution' in 137 seconds
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 14 .)
+--- 'No solution' in 504 seconds
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 15 .)
+--- 'No solution' in 1265 seconds
+
+--- Just to show the complexity of the system, we show that within
+--- time 14 there can be at least 5 spare capacities in the CASH:
+*** (tsearch [1] init2 
+            =>*
+             {C:Configuration
+              [CASH: (deadline: NZ1:NzTime budget: NZ2:NzTime)
+                     (deadline: NZ3:NzTime budget: NZ4:NzTime)
+                     (deadline: NZ5:NzTime budget: NZ6:NzTime)
+                     (deadline: NZ7:NzTime budget: NZ8:NzTime)
+                     (deadline: NZ9:NzTime budget: NZ10:NzTime)
+                     (deadline: NZ11:NzTime budget: NZ12:NzTime)]}
+             in time < 14 .)
+
+--- Found solution in about 64 seconds:
+---(
+Solution 1
+C:Configuration <- AVAILABLE-PROCESSOR < s1 : Server | maxBudget : 2,period :
+    5,state : idle,timeExecuted : 1,timeToDeadline : 4,usedOfBudget : 2 > < s2
+    : Server | maxBudget : 4,period : 7,state : idle,timeExecuted : 1,
+    timeToDeadline : 35,usedOfBudget : 4 > ; NZ10:NzTime <- 4 ; NZ11:NzTime <-
+    35 ; NZ12:NzTime <- 4 ; NZ1:NzTime <- 4 ; NZ2:NzTime <- 1 ; NZ3:NzTime <- 7
+    ; NZ4:NzTime <- 2 ; NZ5:NzTime <- 14 ; NZ6:NzTime <- 4 ; NZ7:NzTime <- 21 ;
+    NZ8:NzTime <- 4 ; NZ9:NzTime <- 28 ; TIME_ELAPSED:Time <- 7
+)---
+
+
+--- Just for fun: how many DISTINCT states can one reach within 
+--- time 12 from init2?
+
+*** (tsearch init2 =>* {C:Configuration} in time <= 5 .)
+--- Results: in time <= 5 : 2786 distinct time-stamped states, 
+---          in time <= 6 : 6690 states
+---          in time <= 7 : 14599 states
+---   ... seem to indicate that within time 14 we will see 2 M
+---   distinct time-stamped states, some of which will probably
+---   be equivalent if time-stamps are ignored, but still, even in the
+---   worst case there is more than 150.000 distinct untimed states ...
+
+--- Finally, we search for a state where a server has executed for longer
+--- time in a round than its own maximal budget:
+
+*** (utsearch [1] init2 
+            =>* 
+              {C:Configuration 
+               < s1 : Server | timeExecuted : T:Time, ATTS:AttributeSet >}
+              such that T:Time > 2 .)
+---  Found a state in about 0.15 sec
+
+
+
+
+--- ------------------------------------------------
+--- Analysis of protocol with suggested modification:
+--- ------------------------------------------------
+
+(select TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING .)
+
+
+--- First, some timed rewriting for prototyping purposes:
+
+*** (tfrew init1 in time <= 1000 .)       --- 2/5 3/5 
+--- No overflow
+
+*** (tfrew init2 in time <= 1000 .)      --- 2/5 4/7 
+--- No overflow
+
+*** (tfrew initBad in time <= 1000 .)     
+--- Result is actually also "OK" so no overflow encountered!
+
+*** (tfrew init5 in time <= 1000 .)       --- 1/3 4/8 4/24 should be OK
+--- No overflow here either
+
+--- Again, we notice how many capacities there are in the CASH queue ...
+
+--- Now, we try to search for overflows. We try from state init1 first.
+--- Try some time-bounded searches first:
+
+*** (tsearch [1] init1 =>* {DEADLINE-MISS C:Configuration} in time < 13 .)
+--- 'No solution' in 390 seconds
+
+--- UNTIMED search from init1:
+*** (utsearch [1] init1 =>* {DEADLINE-MISS C:Configuration} .)
+--- Fails to terminate in LONG time ...
+
+--- Let's now try initial state init2:
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 10 .)
+--- 'No solution' in 60 sec
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 11 .)
+--- 'No solution' in 112 sec
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 12 .)
+--- 'No solution' in 256 sec
+
+*** (tsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} in time < 13 .)
+--- Gave the following result:
+---(  --- let's see what we found:
+rewrites: 37347435 in 139900ms cpu (146010ms real) (266958 rewrites/second)
+
+Timed search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING 
+        init2 =>* {DEADLINE-MISS C:Configuration} 
+in time < 13 and with mode default time increase 1 :
+
+Solution 1
+C:Configuration <-    [CASH: emptyQueue ]< s1 : Server | maxBudget : 2,period :
+    5,state : idle,timeExecuted : 1,timeToDeadline : 8,usedOfBudget : 2 > ;
+    TIME_ELAPSED:Time <- 12
+)---
+
+
+--- Untimed search for bad state:
+***(utsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} .)
+--- Also gave a result in fairly short time:
+
+---(  --- took less than 50 seconds to find counterexample:
+Maude> (utsearch [1] init2 =>* {DEADLINE-MISS C:Configuration} .)
+rewrites: 13085165 in 49940ms cpu (50600ms real) (262017 rewrites/second)
+
+Untimed search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING 
+        init2 =>* {DEADLINE-MISS C:Configuration} 
+with mode default time increase 1 :
+
+Solution 1
+C:Configuration <-    [CASH: emptyQueue ]< s1 : Server | maxBudget : 2,period :
+    5,state : idle,timeExecuted : 1,timeToDeadline : 8,usedOfBudget : 2 >
+)---
+
+
+--- Were we just lucky with initial state init2, or will also initial state
+--- init5 lead to an overflow? 
+
+*** (tsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} in time < 8 .)
+--- Result: for < 8 :  'No solution' in 182 seconds
+---         for < 9 :  'No solution' in about 873 seconds
+---(
+Maude> (tsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} in time < 9 .)
+
+rewrites: 166859181 in 872920ms cpu (909190ms real) (191150 rewrites/second)
+
+Timed search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING 
+        init5 =>* {DEADLINE-MISS C:Configuration} 
+in time < 9 and with mode default time increase 1 :
+
+No solution
+)---
+---         for < 10 : It took 362 seconds, and found a solution:
+---(
+Maude> (tsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} in time < 10 .)
+rewrites: 78876355 in 362190ms cpu (378450ms real) (217776 rewrites/second)
+
+Timed search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING 
+        init5 =>* {DEADLINE-MISS C:Configuration} 
+in time < 10 and with mode default time increase 1 :
+
+Solution 1
+C:Configuration <-    [CASH: emptyQueue ]< s2 : Server | maxBudget : 4,period :
+    8,state : idle,timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 4 > < s3
+    : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 15,usedOfBudget : 4 > ; TIME_ELAPSED:Time <- 9
+)---
+
+--- Can the error be found using untimed search?
+*** (utsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} .)
+--- Indeed, and in fairly short time, only 158 seconds:
+---(
+Maude>  (utsearch [1] init5 =>* {DEADLINE-MISS C:Configuration} .)
+rewrites: 39627049 in 158940ms cpu (162580ms real) (249320 rewrites/second)
+
+Untimed search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING 
+        init5 =>* {DEADLINE-MISS C:Configuration} 
+with mode default time increase 1 :
+
+Solution 1
+C:Configuration <-    [CASH: emptyQueue ]< s2 : Server | maxBudget : 4,period :
+    8,state : idle,timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 4 > < s3
+    : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 15,usedOfBudget : 4 >
+)---
+
+
+
+
+--- LTL model checking to provide paths leading to missed deadlines:
+--- ----------------------------------------------------------------
+
+(tomod MODEL-CHECK-LATEST is including TIMED-MODEL-CHECKER .
+  protecting TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING .
+
+  op deadlineMissed : -> Prop [ctor] .
+  eq {DEADLINE-MISS REST-OF-SYSTEM:Configuration} |= deadlineMissed = true .
+endtom)
+
+*** (mc init2 |=t [] ~ deadlineMissed in time <= 12 .)
+
+
+
+--- On machine 'seitseman.ifi.uio.no'
+
+
+
+eof
+
+
+--- ----------------------------------------------
+---(
+    This ends the analysis of the two versions of the protocol.
+    Some results and impressions:
+     - The problem seems to lie close to the border of what a normal
+       workstation can solve by explicit-state space exploration.
+       Since we are so close to the border, the number of states
+       saved by avoiding timestamps made it much faster to find
+       the overflow in init5, even though also timed search 
+       could find it in about 500 seconds.
+     - This probably reflects the complexity of the problem. There
+       is no obvious way one could "avoid" states, by using 
+       regions and intervals, etc. There is therefore no reason
+       to expect that other methods would be significantly better
+       in such a first analysis.
+     - We still managed to use Real-Time Maude to strengthen our confidence
+       in the correctness in the original specification, and managed to
+       show and exhibit the error in the other. This did not require
+       expertise of any kind. Indeed, the state init2 is a "standard" state
+       I used already in 2000 in another setting. We had imagined
+       that something like init5 would be needed to find an overflow,
+       as such a state was needed to find an overflow in a less optimized
+       version of the protocol (where a server must wait until 
+       its deadline to start a new "round" of execution). This version
+       of the protocol has a finite reachable state space from
+       any initial state, and was analyzed and model checked and 
+       shown at the Real-Time Maude demo at ETAPS 2004. The current
+       version of the protocol is much tougher which its 
+       infinite reachable state space, where both the numbers in the 
+       queue and the deadlines of the servers may grow beyond any
+       bound, and where the number of spare capacities in the CASH queue
+       is unbounded. Certainly this last aspects causes problems for other 
+       tools.
+     - Real-Time Maude's upcoming version 2.2 will build on an upcoming
+       version of Maude where meta-level search also can output
+       the resulting path of a search, so Real-Time Maude 2.2 should
+       be able to output the rewrite path leading to state found in
+       a search. For the moment, once we have done the analysis, we must
+       rely on core Maude to produce a corresponding path. This is 
+       a trivial process. We have have concrete counterexamples, as will
+       be shown below.
+     - We have also used search to indicate the NUMBER of reachable 
+       states, to show that large cash queues can appear very soon,
+       to show that a server can execute more in a "round" than 
+       its maximum allocated budget.
+     - In some sense, timed search is also useful as a measure of 
+       how long we can expect the search to last. It is not that
+       we start a search and don't know long how we can 'expect'
+       the search to last. Performing the search for increasing
+       time bounds gives us a feel for the complexity involved. 
+       Timed search allows us to slowly approach the limit of what
+       we can analyze, instead of just plunging into a search with
+       no clue of what to expect.
+     - Last but not least, the timed rewriting command was useful
+       to quickly get a first feeling of the system's behavior;
+       in particular, the large number of elements in the CASH queue 
+       was striking.
+     - With OO techniques we can have any number of servers by just
+       changing the initial state.
+     - Concrete analysis results:
+          - timed rewriting showed no overflow in either system,
+            probably because the use of the rules made jobs take short time
+          - neither timed search nor untimed search could find
+            an overflow in the ORIGINAL specification within 
+            an hour of execution time, this applies to both init1,
+            init2, and init5. However, the overflow was quickly
+            found for the state initBad with total bandwidth usage > 1.
+          - neither timed nor untimed search for a LONG time,
+            two/three hours, could find errors in the modified
+            version, for initial state init1. Is there no overflow from
+            this state?
+          - UNtimed search could find the overflow in both states
+            init2 and init5, and in shorter time than timed search:
+            For init2, UNtimed search needed 58 seconds, and timed search
+            up to time 9 we needed 165 seconds to reach the error state.
+            For init5, the number were 59 and 495 seconds, respectively.
+)---
+
+
+--- Exhibiting the "counterexample"
+--- ----------------------------
+---(
+    While we wait for Real-Time Maude to output also the paths leading 
+    to the searched-for states, we must use core Maude.
+
+    This is how it goes:
+     1. Make a copy of the Real-Time Maude specification file.
+     2. To "simulate" the time sampling strategy which just
+        increases time by 1 in each step, add "T := 1 /\ "
+        as the first conjunct in the condition of each of the four
+        tick rules. Then you must remove the [nonexec] attribute
+        of these tick rules. If you want to have the faster
+        "untimed" search, you should also remove the 
+        "in time T" part of the four tick rules. However, then you lose
+        potential useful timing information. Nevertheless, 
+        in this case it may be justified, even though both versions
+        should lead to counterexamples in "reasonable" time.
+     3. When the module to be analyzed is the "current" module, write
+        the lines
+        '(show all .)'
+        followed by a line containing the letter 'q' at the start of the line
+        and NOT enclosed by parentheses.
+     4. Execute this module and redirect the output to some file:
+        e.g. linux> maude-2.1 cash.rtm > cash-core.maude. In my case
+
+csaba:~ csaba$ ~/Maude/maude.darwin xxx.rtm21 > cash-core.maude
+
+     5. Remove the initial part of the resulting file cash-core.maude, and 
+        final 'Bye' at the end of this file. The resulting part should
+        be exactly a core Maude module. However, it includes some
+        built-in Real-Time Maude modules. Therefore, you must add
+        the line 'load real-time-maude' in the BEGINNING of this file.  
+     6. Now, the resulting file 'cash-core.maude' can be executed
+        in core Maude. Then, use should give the corresponding
+        core Maude search command. In this case it would be
+        either 'search [1] init5 =>* {DEADLINE-MISS C:Configuration} .'
+        if you removed 'in time T' in the tick rules in item 2 above,
+        and it would be the search command
+        'search [1] init5 =>* {DEADLINE-MISS C:Configuration} in time X:Time .'
+        if you did NOT remove the timing information in 2.
+
+csaba:~ csaba$ ~/Maude/maude.darwin cash-core.maude
+ ...
+Maude> search [1] init2 =>* {DEADLINE-MISS C:Configuration} .
+search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING : init2 =>* {DEADLINE-MISS
+    C:Configuration}  .
+
+Solution 1 (state 72784)
+states: 72785  rewrites: 7321018 in 46520ms cpu (49036ms real) (157373
+    rewrites/second)
+C:Configuration -->    [CASH: deadline: 8 budget: 1 ] < s2 : Server | maxBudget
+    : 4,period : 7,state : idle,timeExecuted : 0,timeToDeadline : 15,
+    usedOfBudget : 0 >
+
+     7. The result comes with a state number (72784 above). You can 
+        now give the 
+        command 'show path n .' for n the number of the state. This will
+        output the path. 
+
+Maude> show path 72784 .
+state 0, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: emptyQueue ] < s1 :
+    Server | maxBudget : 2,period : 5,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period
+    : 7,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >} 
+===[ rl AVAILABLE-PROCESSOR < O:Oid : V#38:Server | V#42:AttributeSet,maxBudget
+    : V#39:NzTime,period : NZT:NzTime,state : idle,timeExecuted : V#40:Time,
+    timeToDeadline : T:Time,usedOfBudget : V#41:Time > => < O:Oid : V#38:Server
+    | state : executing,timeToDeadline : max(NZT:NzTime, T:Time),maxBudget :
+    V#39:NzTime,period : NZT:NzTime,timeExecuted : V#40:Time,V#42:AttributeSet,
+    usedOfBudget : V#41:Time > [label idleToExecuting1] . ]===>
+state 1, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : executing,timeExecuted : 0,timeToDeadline : 5,
+    usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >} 
+...
+   
+        If the result is too long to see in the terminal, you may want write
+        the result to a file. Therefore, you must add to your cash-core.maude
+        file
+        the lines 'search ...' (previous search command) and then
+        'show path n .' for appropriate n. Add a 'q' to the end. For example,
+
+search [1] init2 =>* {DEADLINE-MISS C:Configuration} .
+show path 72784 .
+q
+
+        Run Maude again,
+        and output the result to a file. There you have your path.
+
+csaba:~ csaba$ ~/Maude/maude.darwin cash-core.maude > search-res1
+
+)---
+
+
+
+--- The paths
+--- -----------
+
+---(
+    I remove the actual rule text in the paths ... only the rule 
+    label remains.
+
+    The path leading from init2 to overflow:
+
+==========================================
+search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING : init2 =>* {DEADLINE-MISS
+    C:Configuration}  .
+
+Solution 1 (state 151780)
+states: 151781  rewrites: 11408147 in 48560ms cpu (49300ms real) (234928
+    rewrites/second)
+C:Configuration -->    [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,period
+    : 5,state : idle,timeExecuted : 1,timeToDeadline : 8,usedOfBudget : 2 >
+
+state 0, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: emptyQueue ] < s1 :
+    Server | maxBudget : 2,period : 5,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period
+    : 7,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >} 
+
+===[ ... [label idleToExecuting1] . ]===>
+
+state 1, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : executing,timeExecuted : 0,timeToDeadline : 5,
+    usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingOwnBudget] . ]===>
+
+state 3, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : executing,timeExecuted : 1,timeToDeadline : 4,
+    usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >} 
+
+===[ ... [label idleToActive] . ]===>
+
+state 8, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : executing,timeExecuted : 1,timeToDeadline : 4,
+    usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period : 7,state :
+    waiting,timeExecuted : 0,timeToDeadline : 7,usedOfBudget : 0 >} 
+
+===[  ... [label tickExecutingOwnBudget] . ]===>
+
+state 19, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : executing,timeExecuted : 2,timeToDeadline : 3,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state :
+    waiting,timeExecuted : 0,timeToDeadline : 6,usedOfBudget : 0 >} 
+
+===[ ... [label continueActInNextRound] . ]===>
+
+state 38, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : waiting,timeExecuted : 0,timeToDeadline : 8,usedOfBudget
+    : 0 > < s2 : Server | maxBudget : 4,period : 7,state : executing,
+    timeExecuted : 0,timeToDeadline : 6,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingOwnBudget] . ]===>
+
+state 75, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 2,
+    period : 5,state : waiting,timeExecuted : 0,timeToDeadline : 7,usedOfBudget
+    : 0 > < s2 : Server | maxBudget : 4,period : 7,state : executing,
+    timeExecuted : 1,timeToDeadline : 5,usedOfBudget : 1 >} 
+
+===[ ... [label stopExecuting1] . ]===>
+
+state 145, GlobalSystem: {   [CASH: deadline: 5 budget: 3 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : executing,timeExecuted : 0,timeToDeadline
+    : 7,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 7,state :
+    idle,timeExecuted : 1,timeToDeadline : 5,usedOfBudget : 4 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 263, GlobalSystem: {   [CASH: deadline: 4 budget: 2 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : executing,timeExecuted : 1,timeToDeadline
+    : 6,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 7,state :
+    idle,timeExecuted : 1,timeToDeadline : 4,usedOfBudget : 4 >} 
+
+===[ ... [label stopExecuting2] . ]===>
+
+state 464, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 4 budget: 2)
+    deadline: 6 budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state :
+    idle,timeExecuted : 1,timeToDeadline : 6,usedOfBudget : 2 > < s2 : Server |
+    maxBudget : 4,period : 7,state : idle,timeExecuted : 1,timeToDeadline : 4,
+    usedOfBudget : 4 >} 
+
+===[ ... [label idleToExecuting1] . ]===>
+
+state 811, GlobalSystem: {   [CASH: (deadline: 4 budget: 2) deadline: 6 budget:
+    2 ] < s1 : Server | maxBudget : 2,period : 5,state : executing,timeExecuted
+    : 0,timeToDeadline : 11,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,
+    period : 7,state : idle,timeExecuted : 1,timeToDeadline : 4,usedOfBudget :
+    4 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 1373, GlobalSystem: {   [CASH: (deadline: 3 budget: 1) deadline: 5
+    budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state : executing,
+    timeExecuted : 1,timeToDeadline : 10,usedOfBudget : 0 > < s2 : Server |
+    maxBudget : 4,period : 7,state : idle,timeExecuted : 1,timeToDeadline : 3,
+    usedOfBudget : 4 >} 
+
+===[ ... [label stopExecuting2] . ]===>
+
+state 2275, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 3 budget:
+    1) (deadline: 5 budget: 2) deadline: 10 budget: 2 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 10,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 1,timeToDeadline : 3,usedOfBudget : 4 >} 
+
+===[ ... [label idleToExecuting1] . ]===>
+
+state 3679, GlobalSystem: {   [CASH: (deadline: 3 budget: 1) (deadline: 5
+    budget: 2) deadline: 10 budget: 2 ] < s1 : Server | maxBudget : 2,period :
+    5,state : executing,timeExecuted : 0,timeToDeadline : 15,usedOfBudget : 0 >
+    < s2 : Server | maxBudget : 4,period : 7,state : idle,timeExecuted : 1,
+    timeToDeadline : 3,usedOfBudget : 4 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 5729, GlobalSystem: {   [CASH: (deadline: 4 budget: 2) deadline: 9
+    budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state : executing,
+    timeExecuted : 1,timeToDeadline : 14,usedOfBudget : 0 > < s2 : Server |
+    maxBudget : 4,period : 7,state : idle,timeExecuted : 1,timeToDeadline : 2,
+    usedOfBudget : 4 >} 
+
+===[ ... [label stopExecuting2] . ]===>
+
+state 8677, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 4 budget:
+    2) (deadline: 9 budget: 2) deadline: 14 budget: 2 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 14,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 1,timeToDeadline : 2,usedOfBudget : 4 >} 
+
+===[ ... [label tickIdle] . ]===>
+
+state 12971, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 3 budget:
+    2) (deadline: 8 budget: 2) deadline: 13 budget: 1 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 13,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state : idle,
+    timeExecuted : 1,timeToDeadline : 1,usedOfBudget : 4 >} 
+
+===[ ... [label tickIdle] . ]===>
+
+state 18943, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 2 budget:
+    2) deadline: 7 budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state :
+    idle,timeExecuted : 1,timeToDeadline : 12,usedOfBudget : 2 > < s2 : Server
+    | maxBudget : 4,period : 7,state : idle,timeExecuted : 1,timeToDeadline :
+    0,usedOfBudget : 4 >} 
+
+===[ ... [label idleToExecuting1] . ]===>
+
+state 27272, GlobalSystem: {   [CASH: (deadline: 2 budget: 2) deadline: 7
+    budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state : idle,
+    timeExecuted : 1,timeToDeadline : 12,usedOfBudget : 2 > < s2 : Server |
+    maxBudget : 4,period : 7,state : executing,timeExecuted : 0,timeToDeadline
+    : 7,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 38859, GlobalSystem: {   [CASH: (deadline: 1 budget: 1) deadline: 6
+    budget: 2 ] < s1 : Server | maxBudget : 2,period : 5,state : idle,
+    timeExecuted : 1,timeToDeadline : 11,usedOfBudget : 2 > < s2 : Server |
+    maxBudget : 4,period : 7,state : executing,timeExecuted : 1,timeToDeadline
+    : 6,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 54948, GlobalSystem: {   [CASH: deadline: 5 budget: 2 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 10,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state :
+    executing,timeExecuted : 2,timeToDeadline : 5,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+state 77427, GlobalSystem: {   [CASH: deadline: 4 budget: 1 ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 9,
+    usedOfBudget : 2 > < s2 : Server | maxBudget : 4,period : 7,state :
+    executing,timeExecuted : 3,timeToDeadline : 4,usedOfBudget : 0 >} 
+
+===[ ... [label tickExecutingSpareCapacity] . ]===>
+
+state 108705, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget :
+    2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 8,usedOfBudget
+    : 2 > < s2 : Server | maxBudget : 4,period : 7,state : executing,
+    timeExecuted : 4,timeToDeadline : 3,usedOfBudget : 0 >} 
+
+===[ ... [label deadlineMiss] . ]===>
+
+state 151780, GlobalSystem: {DEADLINE-MISS    [CASH: emptyQueue ] < s1 : Server |
+    maxBudget : 2,period : 5,state : idle,timeExecuted : 1,timeToDeadline : 8,
+    usedOfBudget : 2 >} 
+Bye.
+
+)---
+
+
+
+
+--- -----------------------------------------------------
+--- Path from init5:
+--- -----------------------------------------------------
+---(
+==========================================
+search [1] in TEST-CASH-USE-LATEST-BUDGET-WHEN-IDLING : init5 =>* {DEADLINE-MISS
+    C:Configuration}  .
+
+Solution 1 (state 365635)
+states: 365636  rewrites: 35590539 in 148250ms cpu (151070ms real) (240071
+    rewrites/second)
+C:Configuration -->    [CASH: emptyQueue ] < s2 : Server | maxBudget : 4,period
+    : 8,state : idle,timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 4 > <
+    s3 : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 15,usedOfBudget : 4 >
+state 0, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: emptyQueue ] < s1 :
+    Server | maxBudget : 1,period : 3,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period
+    : 8,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 > <
+    s3 : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 >} 
+===[ rl AVAILABLE-PROCESSOR < O:Oid : V#38:Server | V#42:AttributeSet,maxBudget
+    : V#39:NzTime,period : NZT:NzTime,state : idle,timeExecuted : V#40:Time,
+    timeToDeadline : T:Time,usedOfBudget : V#41:Time > => < O:Oid : V#38:Server
+    | state : executing,timeToDeadline : (NZT:NzTime + T:Time),timeExecuted :
+    0,usedOfBudget : 0,maxBudget : V#39:NzTime,V#42:AttributeSet,period :
+    NZT:NzTime > [label idleToExecuting1] . ]===>
+state 3, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 1,
+    period : 3,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget :
+    0 > < s2 : Server | maxBudget : 4,period : 8,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s3 : Server | maxBudget : 4,period
+    : 24,state : executing,timeExecuted : 0,timeToDeadline : 24,usedOfBudget :
+    0 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server |
+    V#73:AttributeSet,maxBudget : V#71:NzTime,period : V#72:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T''':Time,usedOfBudget :
+    T'':Time >}  => {(delta(CASH:Cash, T:Time) delta(
+    REST-OF-SYSTEM:Configuration, T:Time)) < O:Oid : V#70:Server | usedOfBudget
+    : (T:Time + T'':Time),timeExecuted : (T:Time + T':Time),timeToDeadline : (
+    T''':Time monus T:Time),maxBudget : V#71:NzTime,period : V#72:NzTime,
+    V#73:AttributeSet,state : executing >}  if T:Time := 1 /\ T:Time <= mte(
+    REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server | maxBudget :
+    V#71:NzTime,period : V#72:NzTime,state : executing,timeExecuted : T':Time,
+    timeToDeadline : T''':Time,V#73:AttributeSet,usedOfBudget : T'':Time >) =
+    true /\ T''':Time < firstDeadline(CASH:Cash) = true [label
+    tickExecutingOwnBudget] . ]===>
+state 9, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget : 1,
+    period : 3,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget :
+    0 > < s2 : Server | maxBudget : 4,period : 8,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s3 : Server | maxBudget : 4,period
+    : 24,state : executing,timeExecuted : 1,timeToDeadline : 23,usedOfBudget :
+    1 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#87:Server |
+    V#88:AttributeSet,maxBudget : NZT:NzTime,period : NZT'':NzTime,state :
+    executing,timeExecuted : NZT':NzTime,timeToDeadline : T':Time,usedOfBudget
+    : T:Time >}  => {(AVAILABLE-PROCESSOR REST-OF-SYSTEM:Configuration if
+    BUDGET-LEFT:Bool then addCapacity(deadline: T':Time budget:
+    REMAINING-BUDGET:Time, CASH:Cash) else CASH:Cash fi) < O:Oid : V#87:Server
+    | state : idle,usedOfBudget : NZT:NzTime,maxBudget : NZT:NzTime,period :
+    NZT'':NzTime,timeExecuted : NZT':NzTime,V#88:AttributeSet,timeToDeadline :
+    T':Time >}  if REMAINING-BUDGET:Time := NZT:NzTime monus T:Time /\
+    BUDGET-LEFT:Bool := REMAINING-BUDGET:Time > 0 /\ REMAINING-BUDGET:Time <=
+    T':Time = true /\ nooneWaiting(REST-OF-SYSTEM:Configuration) = true [label
+    stopExecuting2] . ]===>
+state 23, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: deadline: 23 budget: 3 ]
+    < s1 : Server | maxBudget : 1,period : 3,state : idle,timeExecuted : 0,
+    timeToDeadline : 0,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period
+    : 8,state : idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 > <
+    s3 : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 23,usedOfBudget : 4 >} 
+===[ rl AVAILABLE-PROCESSOR < O:Oid : V#38:Server | V#42:AttributeSet,maxBudget
+    : V#39:NzTime,period : NZT:NzTime,state : idle,timeExecuted : V#40:Time,
+    timeToDeadline : T:Time,usedOfBudget : V#41:Time > => < O:Oid : V#38:Server
+    | state : executing,timeToDeadline : (NZT:NzTime + T:Time),timeExecuted :
+    0,usedOfBudget : 0,maxBudget : V#39:NzTime,V#42:AttributeSet,period :
+    NZT:NzTime > [label idleToExecuting1] . ]===>
+state 59, GlobalSystem: {   [CASH: deadline: 23 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 0,timeToDeadline
+    : 3,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state :
+    idle,timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 > < s3 : Server |
+    maxBudget : 4,period : 24,state : idle,timeExecuted : 1,timeToDeadline :
+    23,usedOfBudget : 4 >} 
+===[ rl < O:Oid : V#43:Server | V#47:AttributeSet,maxBudget : V#44:NzTime,
+    period : NZT:NzTime,state : idle,timeExecuted : V#45:Time,timeToDeadline :
+    T:Time,usedOfBudget : V#46:Time > < O':Oid : V#48:Server |
+    V#53:AttributeSet,maxBudget : V#49:NzTime,period : V#50:NzTime,state :
+    executing,timeExecuted : V#51:Time,timeToDeadline : T':Time,usedOfBudget :
+    V#52:Time > => if NZT:NzTime + T:Time < T':Time then < O:Oid : V#43:Server
+    | state : executing,timeToDeadline : (NZT:NzTime + T:Time),timeExecuted :
+    0,usedOfBudget : 0,maxBudget : V#44:NzTime,V#47:AttributeSet,period :
+    NZT:NzTime > < O':Oid : V#48:Server | state : waiting,maxBudget :
+    V#49:NzTime,period : V#50:NzTime,timeExecuted : V#51:Time,timeToDeadline :
+    T':Time,V#53:AttributeSet,usedOfBudget : V#52:Time > else < O:Oid :
+    V#43:Server | state : waiting,timeToDeadline : (NZT:NzTime + T:Time),
+    timeExecuted : 0,usedOfBudget : 0,maxBudget : V#44:NzTime,
+    V#47:AttributeSet,period : NZT:NzTime > < O':Oid : V#48:Server | maxBudget
+    : V#49:NzTime,period : V#50:NzTime,state : executing,timeExecuted :
+    V#51:Time,timeToDeadline : T':Time,V#53:AttributeSet,usedOfBudget :
+    V#52:Time > fi [label idleToActive] . ]===>
+state 138, GlobalSystem: {   [CASH: deadline: 23 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 0,timeToDeadline
+    : 3,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state :
+    waiting,timeExecuted : 0,timeToDeadline : 8,usedOfBudget : 0 > < s3 :
+    Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 23,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server |
+    V#73:AttributeSet,maxBudget : V#71:NzTime,period : V#72:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T''':Time,usedOfBudget :
+    T'':Time >}  => {(delta(CASH:Cash, T:Time) delta(
+    REST-OF-SYSTEM:Configuration, T:Time)) < O:Oid : V#70:Server | usedOfBudget
+    : (T:Time + T'':Time),timeExecuted : (T:Time + T':Time),timeToDeadline : (
+    T''':Time monus T:Time),maxBudget : V#71:NzTime,period : V#72:NzTime,
+    V#73:AttributeSet,state : executing >}  if T:Time := 1 /\ T:Time <= mte(
+    REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server | maxBudget :
+    V#71:NzTime,period : V#72:NzTime,state : executing,timeExecuted : T':Time,
+    timeToDeadline : T''':Time,V#73:AttributeSet,usedOfBudget : T'':Time >) =
+    true /\ T''':Time < firstDeadline(CASH:Cash) = true [label
+    tickExecutingOwnBudget] . ]===>
+state 315, GlobalSystem: {   [CASH: deadline: 22 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 1,timeToDeadline
+    : 2,usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period : 8,state :
+    waiting,timeExecuted : 0,timeToDeadline : 7,usedOfBudget : 0 > < s3 :
+    Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 22,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#79:Server |
+    V#80:AttributeSet,maxBudget : NZT:NzTime,period : NZT'':NzTime,state :
+    executing,timeExecuted : NZT':NzTime,timeToDeadline : T':Time,usedOfBudget
+    : T:Time > < O':Oid : V#81:Server | V#86:AttributeSet,maxBudget :
+    V#82:NzTime,period : V#83:NzTime,state : waiting,timeExecuted : V#84:Time,
+    timeToDeadline : T'':Time,usedOfBudget : V#85:Time >}  => {((
+    REST-OF-SYSTEM:Configuration if BUDGET-LEFT:Bool then addCapacity(deadline:
+    T':Time budget: REMAINING-BUDGET:Time, CASH:Cash) else CASH:Cash fi) <
+    O':Oid : V#81:Server | state : executing,maxBudget : V#82:NzTime,period :
+    V#83:NzTime,timeExecuted : V#84:Time,timeToDeadline : T'':Time,
+    V#86:AttributeSet,usedOfBudget : V#85:Time >) < O:Oid : V#79:Server | state
+    : idle,usedOfBudget : NZT:NzTime,maxBudget : NZT:NzTime,period :
+    NZT'':NzTime,timeExecuted : NZT':NzTime,V#80:AttributeSet,timeToDeadline :
+    T':Time >}  if REMAINING-BUDGET:Time := NZT:NzTime monus T:Time /\
+    BUDGET-LEFT:Bool := REMAINING-BUDGET:Time > 0 /\ REMAINING-BUDGET:Time <=
+    T':Time = true /\ T'':Time == nextDeadlineWaiting(
+    REST-OF-SYSTEM:Configuration < O':Oid : V#81:Server | maxBudget :
+    V#82:NzTime,period : V#83:NzTime,state : waiting,timeExecuted : V#84:Time,
+    timeToDeadline : T'':Time,V#86:AttributeSet,usedOfBudget : V#85:Time >) =
+    true [label stopExecuting1] . ]===>
+state 688, GlobalSystem: {   [CASH: deadline: 22 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : idle,timeExecuted : 1,timeToDeadline : 2,
+    usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period : 8,state :
+    executing,timeExecuted : 0,timeToDeadline : 7,usedOfBudget : 0 > < s3 :
+    Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 22,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server |
+    V#73:AttributeSet,maxBudget : V#71:NzTime,period : V#72:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T''':Time,usedOfBudget :
+    T'':Time >}  => {(delta(CASH:Cash, T:Time) delta(
+    REST-OF-SYSTEM:Configuration, T:Time)) < O:Oid : V#70:Server | usedOfBudget
+    : (T:Time + T'':Time),timeExecuted : (T:Time + T':Time),timeToDeadline : (
+    T''':Time monus T:Time),maxBudget : V#71:NzTime,period : V#72:NzTime,
+    V#73:AttributeSet,state : executing >}  if T:Time := 1 /\ T:Time <= mte(
+    REST-OF-SYSTEM:Configuration < O:Oid : V#70:Server | maxBudget :
+    V#71:NzTime,period : V#72:NzTime,state : executing,timeExecuted : T':Time,
+    timeToDeadline : T''':Time,V#73:AttributeSet,usedOfBudget : T'':Time >) =
+    true /\ T''':Time < firstDeadline(CASH:Cash) = true [label
+    tickExecutingOwnBudget] . ]===>
+state 1454, GlobalSystem: {   [CASH: deadline: 21 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : idle,timeExecuted : 1,timeToDeadline : 1,
+    usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period : 8,state :
+    executing,timeExecuted : 1,timeToDeadline : 6,usedOfBudget : 1 > < s3 :
+    Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 21,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#87:Server |
+    V#88:AttributeSet,maxBudget : NZT:NzTime,period : NZT'':NzTime,state :
+    executing,timeExecuted : NZT':NzTime,timeToDeadline : T':Time,usedOfBudget
+    : T:Time >}  => {(AVAILABLE-PROCESSOR REST-OF-SYSTEM:Configuration if
+    BUDGET-LEFT:Bool then addCapacity(deadline: T':Time budget:
+    REMAINING-BUDGET:Time, CASH:Cash) else CASH:Cash fi) < O:Oid : V#87:Server
+    | state : idle,usedOfBudget : NZT:NzTime,maxBudget : NZT:NzTime,period :
+    NZT'':NzTime,timeExecuted : NZT':NzTime,V#88:AttributeSet,timeToDeadline :
+    T':Time >}  if REMAINING-BUDGET:Time := NZT:NzTime monus T:Time /\
+    BUDGET-LEFT:Bool := REMAINING-BUDGET:Time > 0 /\ REMAINING-BUDGET:Time <=
+    T':Time = true /\ nooneWaiting(REST-OF-SYSTEM:Configuration) = true [label
+    stopExecuting2] . ]===>
+state 2978, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 6 budget:
+    3) deadline: 21 budget: 3 ] < s1 : Server | maxBudget : 1,period : 3,state
+    : idle,timeExecuted : 1,timeToDeadline : 1,usedOfBudget : 1 > < s2 : Server
+    | maxBudget : 4,period : 8,state : idle,timeExecuted : 1,timeToDeadline :
+    6,usedOfBudget : 4 > < s3 : Server | maxBudget : 4,period : 24,state :
+    idle,timeExecuted : 1,timeToDeadline : 21,usedOfBudget : 4 >} 
+===[ crl {AVAILABLE-PROCESSOR CASH:Cash REST-OF-SYSTEM:Configuration}  => {(
+    AVAILABLE-PROCESSOR delta(useLatestSpareCapacity(CASH:Cash, T:Time),
+    T:Time)) delta(REST-OF-SYSTEM:Configuration, T:Time)}  if T:Time := 1 /\
+    T:Time <= mte(REST-OF-SYSTEM:Configuration) = true [label tickIdle] . ]===>
+state 5906, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 5 budget:
+    3) deadline: 20 budget: 2 ] < s1 : Server | maxBudget : 1,period : 3,state
+    : idle,timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 1 > < s2 : Server
+    | maxBudget : 4,period : 8,state : idle,timeExecuted : 1,timeToDeadline :
+    5,usedOfBudget : 4 > < s3 : Server | maxBudget : 4,period : 24,state :
+    idle,timeExecuted : 1,timeToDeadline : 20,usedOfBudget : 4 >} 
+===[ crl {AVAILABLE-PROCESSOR CASH:Cash REST-OF-SYSTEM:Configuration}  => {(
+    AVAILABLE-PROCESSOR delta(useLatestSpareCapacity(CASH:Cash, T:Time),
+    T:Time)) delta(REST-OF-SYSTEM:Configuration, T:Time)}  if T:Time := 1 /\
+    T:Time <= mte(REST-OF-SYSTEM:Configuration) = true [label tickIdle] . ]===>
+state 11454, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: (deadline: 4 budget:
+    3) deadline: 19 budget: 1 ] < s1 : Server | maxBudget : 1,period : 3,state
+    : idle,timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 1 > < s2 : Server
+    | maxBudget : 4,period : 8,state : idle,timeExecuted : 1,timeToDeadline :
+    4,usedOfBudget : 4 > < s3 : Server | maxBudget : 4,period : 24,state :
+    idle,timeExecuted : 1,timeToDeadline : 19,usedOfBudget : 4 >} 
+===[ crl {AVAILABLE-PROCESSOR CASH:Cash REST-OF-SYSTEM:Configuration}  => {(
+    AVAILABLE-PROCESSOR delta(useLatestSpareCapacity(CASH:Cash, T:Time),
+    T:Time)) delta(REST-OF-SYSTEM:Configuration, T:Time)}  if T:Time := 1 /\
+    T:Time <= mte(REST-OF-SYSTEM:Configuration) = true [label tickIdle] . ]===>
+state 21850, GlobalSystem: {AVAILABLE-PROCESSOR    [CASH: deadline: 3 budget: 3
+    ] < s1 : Server | maxBudget : 1,period : 3,state : idle,timeExecuted : 1,
+    timeToDeadline : 0,usedOfBudget : 1 > < s2 : Server | maxBudget : 4,period
+    : 8,state : idle,timeExecuted : 1,timeToDeadline : 3,usedOfBudget : 4 > <
+    s3 : Server | maxBudget : 4,period : 24,state : idle,timeExecuted : 1,
+    timeToDeadline : 18,usedOfBudget : 4 >} 
+===[ rl AVAILABLE-PROCESSOR < O:Oid : V#38:Server | V#42:AttributeSet,maxBudget
+    : V#39:NzTime,period : NZT:NzTime,state : idle,timeExecuted : V#40:Time,
+    timeToDeadline : T:Time,usedOfBudget : V#41:Time > => < O:Oid : V#38:Server
+    | state : executing,timeToDeadline : (NZT:NzTime + T:Time),timeExecuted :
+    0,usedOfBudget : 0,maxBudget : V#39:NzTime,V#42:AttributeSet,period :
+    NZT:NzTime > [label idleToExecuting1] . ]===>
+state 40355, GlobalSystem: {   [CASH: deadline: 3 budget: 3 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 0,timeToDeadline
+    : 3,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state :
+    idle,timeExecuted : 1,timeToDeadline : 3,usedOfBudget : 4 > < s3 : Server |
+    maxBudget : 4,period : 24,state : idle,timeExecuted : 1,timeToDeadline :
+    18,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#74:Server |
+    V#78:AttributeSet,maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,usedOfBudget :
+    V#77:Time >}  => {(delta(REST-OF-SYSTEM:Configuration, T:Time) delta(
+    useSpareCapacity(CASH:Cash, T:Time), T:Time)) < O:Oid : V#74:Server |
+    timeExecuted : (T:Time + T':Time),timeToDeadline : (T'':Time monus T:Time),
+    maxBudget : V#75:NzTime,period : V#76:NzTime,state : executing,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >}  if T:Time := 1 /\ T:Time <=
+    min(mte(CASH:Cash REST-OF-SYSTEM:Configuration), mteCashUse(< O:Oid :
+    V#74:Server | maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >)) = true /\ firstDeadline(
+    CASH:Cash) <= T'':Time = true [label tickExecutingSpareCapacity] . ]===>
+state 73048, GlobalSystem: {   [CASH: deadline: 2 budget: 2 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 1,timeToDeadline
+    : 2,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state :
+    idle,timeExecuted : 1,timeToDeadline : 2,usedOfBudget : 4 > < s3 : Server |
+    maxBudget : 4,period : 24,state : idle,timeExecuted : 1,timeToDeadline :
+    17,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#74:Server |
+    V#78:AttributeSet,maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,usedOfBudget :
+    V#77:Time >}  => {(delta(REST-OF-SYSTEM:Configuration, T:Time) delta(
+    useSpareCapacity(CASH:Cash, T:Time), T:Time)) < O:Oid : V#74:Server |
+    timeExecuted : (T:Time + T':Time),timeToDeadline : (T'':Time monus T:Time),
+    maxBudget : V#75:NzTime,period : V#76:NzTime,state : executing,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >}  if T:Time := 1 /\ T:Time <=
+    min(mte(CASH:Cash REST-OF-SYSTEM:Configuration), mteCashUse(< O:Oid :
+    V#74:Server | maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >)) = true /\ firstDeadline(
+    CASH:Cash) <= T'':Time = true [label tickExecutingSpareCapacity] . ]===>
+state 128557, GlobalSystem: {   [CASH: deadline: 1 budget: 1 ] < s1 : Server |
+    maxBudget : 1,period : 3,state : executing,timeExecuted : 2,timeToDeadline
+    : 1,usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state :
+    idle,timeExecuted : 1,timeToDeadline : 1,usedOfBudget : 4 > < s3 : Server |
+    maxBudget : 4,period : 24,state : idle,timeExecuted : 1,timeToDeadline :
+    16,usedOfBudget : 4 >} 
+===[ crl {CASH:Cash REST-OF-SYSTEM:Configuration < O:Oid : V#74:Server |
+    V#78:AttributeSet,maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,usedOfBudget :
+    V#77:Time >}  => {(delta(REST-OF-SYSTEM:Configuration, T:Time) delta(
+    useSpareCapacity(CASH:Cash, T:Time), T:Time)) < O:Oid : V#74:Server |
+    timeExecuted : (T:Time + T':Time),timeToDeadline : (T'':Time monus T:Time),
+    maxBudget : V#75:NzTime,period : V#76:NzTime,state : executing,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >}  if T:Time := 1 /\ T:Time <=
+    min(mte(CASH:Cash REST-OF-SYSTEM:Configuration), mteCashUse(< O:Oid :
+    V#74:Server | maxBudget : V#75:NzTime,period : V#76:NzTime,state :
+    executing,timeExecuted : T':Time,timeToDeadline : T'':Time,
+    V#78:AttributeSet,usedOfBudget : V#77:Time >)) = true /\ firstDeadline(
+    CASH:Cash) <= T'':Time = true [label tickExecutingSpareCapacity] . ]===>
+state 219601, GlobalSystem: {   [CASH: emptyQueue ] < s1 : Server | maxBudget :
+    1,period : 3,state : executing,timeExecuted : 3,timeToDeadline : 0,
+    usedOfBudget : 0 > < s2 : Server | maxBudget : 4,period : 8,state : idle,
+    timeExecuted : 1,timeToDeadline : 0,usedOfBudget : 4 > < s3 : Server |
+    maxBudget : 4,period : 24,state : idle,timeExecuted : 1,timeToDeadline :
+    15,usedOfBudget : 4 >} 
+===[ crl < O:Oid : V#54:Server | V#57:AttributeSet,maxBudget : NZT:NzTime,
+    period : V#55:NzTime,state : STATE:ServerState,timeExecuted : V#56:Time,
+    timeToDeadline : T':Time,usedOfBudget : T:Time > => DEADLINE-MISS if NZT:NzTime
+    monus T:Time > T':Time = true /\ STATE:ServerState == executing or
+    STATE:ServerState == waiting = true [label deadlineMiss] . ]===>
+state 365635, GlobalSystem: {DEADLINE-MISS    [CASH: emptyQueue ] < s2 : Server |
+    maxBudget : 4,period : 8,state : idle,timeExecuted : 1,timeToDeadline : 0,
+    usedOfBudget : 4 > < s3 : Server | maxBudget : 4,period : 24,state : idle,
+    timeExecuted : 1,timeToDeadline : 15,usedOfBudget : 4 >} 
+Bye.
+
+
+)---
+
+
+
+
+--- -------------------------------------------------
+--- Counterexamples from LTL model checking. From init2 in time <= 12:
+
+---(
+rewrites: 89019818 in 384330ms cpu (456910ms real) (231623 rewrites/second)
+
+Model check init2 |=t[]~ deadlineMissed in MODEL-CHECK-LATEST in time <= 12
+    with mode default time increase 1
+
+Result ModelCheckResult :
+  counterexample(
+   {{AVAILABLE-PROCESSOR   [CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : idle,
+                     timeExecuted : 0, timeToDeadline : 0, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                     timeExecuted : 0, timeToDeadline : 0, usedOfBudget : 0 >}
+     in time 0,   'idleToExecuting1}
+
+   {{[CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing,
+                     timeExecuted : 0, timeToDeadline : 5, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                     timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >}
+    in time 0,
+    'tickExecutingOwnBudget}
+
+   {{[CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 1, timeToDeadline : 4, usedOfBudget : 1 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                     timeExecuted : 0,timeToDeadline : 0,usedOfBudget : 0 >}
+     in time 1,
+    'stopExecuting2}
+
+   {{AVAILABLE-PROCESSOR   [CASH: deadline: 4 budget: 1 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : idle, 
+                     timeExecuted : 1, timeToDeadline : 4, usedOfBudget : 2 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                     timeExecuted : 0, timeToDeadline : 0, usedOfBudget : 0 >}
+     in time 1,
+    'idleToExecuting1}
+
+   {{[CASH: deadline: 4 budget: 1 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing,
+                     timeExecuted : 0, timeToDeadline : 9,usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                     timeExecuted : 0, timeToDeadline : 0, usedOfBudget : 0 >}
+     in time 1,
+    'idleToActive}
+
+   {{[CASH: deadline: 4 budget: 1 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0,timeToDeadline : 9, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing,
+                     timeExecuted : 0, timeToDeadline : 7, usedOfBudget : 0 >}
+     in time 1,
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting,
+                     timeExecuted : 0, timeToDeadline : 8, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing,
+                     timeExecuted : 1, timeToDeadline : 6, usedOfBudget : 0 >}
+     in time 2,
+    'tickExecutingOwnBudget}
+
+   {{[CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting,
+                     timeExecuted : 0, timeToDeadline : 7, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing,
+                     timeExecuted : 2, timeToDeadline : 5, usedOfBudget : 1 >}
+     in time 3,
+    'stopExecuting1}
+
+   {{[CASH: deadline: 5 budget: 3 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 0, timeToDeadline : 7, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7,state : idle,
+                     timeExecuted : 2, timeToDeadline : 5, usedOfBudget : 4 >}
+     in time 3,
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: deadline: 4 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 1, timeToDeadline : 6, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 4, usedOfBudget : 4 >}
+    in time 4,
+   'stopExecuting2}
+
+   {{AVAILABLE-PROCESSOR   [CASH: (deadline: 4 budget: 2) deadline: 6 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : idle,
+                     timeExecuted : 1, timeToDeadline : 6, usedOfBudget : 2 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 4, usedOfBudget : 4 >}
+     in time 4,
+    'idleToExecuting1}
+   {{[CASH: (deadline: 4 budget: 2) deadline: 6 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing,
+                     timeExecuted : 0, timeToDeadline : 11, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 4, usedOfBudget : 4 >}
+     in time 4, 
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: (deadline: 3 budget: 1) deadline: 5 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 1, timeToDeadline : 10, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 3, usedOfBudget : 4 >}
+     in time 5,
+    'stopExecuting2}
+   {{AVAILABLE-PROCESSOR   [CASH: (deadline: 3 budget: 1) 
+       (deadline: 5 budget: 2) deadline: 10 budget: 2]
+     < s1 : Server | maxBudget : 2, period : 5, state : idle, 
+                     timeExecuted : 1, timeToDeadline : 10, usedOfBudget : 2 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 3, usedOfBudget : 4 >}
+     in time 5,
+    'idleToExecuting1}
+
+   {{[CASH: (deadline: 3 budget: 1) (deadline: 5 budget: 2) 
+            deadline: 10 budget: 2]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 0, timeToDeadline : 15, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 3, usedOfBudget : 4 >}
+     in time 5, 
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: (deadline: 4 budget: 2) deadline: 9 budget: 2]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 1, timeToDeadline : 14, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 2, usedOfBudget : 4 >}
+     in time 6, 
+    'stopExecuting2}
+
+   {{AVAILABLE-PROCESSOR   [CASH: (deadline: 4 budget: 2)
+       (deadline: 9 budget: 2) deadline: 14 budget: 2]
+    < s1 : Server | maxBudget : 2, period : 5, state : idle, 
+                    timeExecuted : 1, timeToDeadline : 14, usedOfBudget : 2 >
+    < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                    timeExecuted : 2, timeToDeadline : 2, usedOfBudget : 4 >}
+    in time 6,
+   'tickIdle}
+
+   {{AVAILABLE-PROCESSOR   [CASH: (deadline: 3 budget: 2)
+        (deadline: 8 budget: 2) deadline: 13 budget: 1]
+    < s1 : Server | maxBudget : 2, period : 5, state : idle, 
+                    timeExecuted : 1, timeToDeadline : 13, usedOfBudget : 2 >
+    < s2 : Server | maxBudget : 4, period : 7, state : idle,
+                    timeExecuted : 2, timeToDeadline : 1, usedOfBudget : 4 >}
+    in time 7, 
+   'tickIdle}
+
+   {{AVAILABLE-PROCESSOR   [CASH: (deadline: 2 budget: 2) deadline: 7 budget: 2]
+     < s1 : Server | maxBudget : 2, period : 5, state : idle, 
+                     timeExecuted : 1, timeToDeadline : 12, usedOfBudget : 2 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 0, usedOfBudget : 4 >}
+     in time 8,
+    'idleToExecuting1}
+   {{[CASH: (deadline: 2 budget: 2) deadline: 7 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : executing, 
+                     timeExecuted : 0, timeToDeadline : 17, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : idle, 
+                     timeExecuted : 2, timeToDeadline : 0, usedOfBudget : 4 >}
+     in time 8,
+    'idleToActive}
+
+   {{[CASH: (deadline: 2 budget: 2) deadline: 7 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 17, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing,
+                     timeExecuted : 0, timeToDeadline : 7, usedOfBudget : 0 >}
+     in time 8, 
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: (deadline: 1 budget: 1) deadline: 6 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 16, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing, 
+                     timeExecuted : 1, timeToDeadline : 6, usedOfBudget : 0 >}
+     in time 9, 
+    'tickExecutingSpareCapacity}
+   {{[CASH: deadline: 5 budget: 2 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 15, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing, 
+                     timeExecuted : 2, timeToDeadline : 5, usedOfBudget : 0 >}
+     in time 10, 
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: deadline: 4 budget: 1 ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 14, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing, 
+                     timeExecuted : 3, timeToDeadline : 4, usedOfBudget : 0 >}
+     in time 11,
+    'tickExecutingSpareCapacity}
+
+   {{[CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 13, usedOfBudget : 0 >
+     < s2 : Server | maxBudget : 4, period : 7, state : executing, 
+                     timeExecuted : 4, timeToDeadline : 3, usedOfBudget : 0 >}
+     in time 12, 
+    'deadlineMiss}, 
+
+   {{DEADLINE-MISS   [CASH: emptyQueue ]
+     < s1 : Server | maxBudget : 2, period : 5, state : waiting, 
+                     timeExecuted : 0, timeToDeadline : 13, usedOfBudget : 0 >}
+     in time 12, deadlock})
+)---
