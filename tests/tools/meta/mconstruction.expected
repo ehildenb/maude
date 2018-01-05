@@ -3,15 +3,88 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
+    var<Sort>('X), 'F{var<Sort>('X)}) .
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+rewrites: 160
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'F{'A} ; 'F{'B} .
+  subsort 'A < 'B .
+  subsort 'F{'A} < 'F{'B} .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
+    COFUNCTOR(var<Sort>('X), 'F{var<Sort>('X)}) .
+rewrites: 160
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'F{'A} ; 'F{'B} .
+  subsort 'A < 'B .
+  subsort 'F{'B} < 'F{'A} .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
+    var<Sort>('X), 'F{var<Sort>('X)})
+| COFUNCTOR(var<Sort>('X), 'G{var<Sort>('X)}) .
+rewrites: 317
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'F{'A} ; 'F{'B} ; 'G{'A} ; 'G{'B} .
+  subsort 'A < 'B .
+  subsort 'F{'A} < 'F{'B} .
+  subsort 'G{'B} < 'G{'A} .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
+    var<Sort>('X), 'F{var<Sort>('X)})
+; COFUNCTOR(var<Sort>('X), 'G{var<Sort>('X)}) .
+rewrites: 351
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'F{'A} ; 'F{'B} ; 'G{'A} ; 'G{'B} ; 'G{'F{'A}} ; 'G{'F{'B}} .
+  subsort 'A < 'B .
+  subsort 'F{'A} < 'F{'B} .
+  subsort 'G{'B} < 'G{'A} .
+  subsort 'G{'F{'B}} < 'G{'F{'A}} .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST .
-Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
-Warning: sort declarations for operator resolveNames failed preregularity check
-    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
-Warning: sort declarations for operator resolveNames failed preregularity check
-    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
-Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
 rewrites: 628
 result FModule: fmod 'TEST-MODULE is
   nil
