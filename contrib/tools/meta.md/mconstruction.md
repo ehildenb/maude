@@ -1,7 +1,7 @@
 Module Constructions
 ====================
 
-Module constructions are a pair of a theory `FTH` and a parametized module `FMOD{X :: FTH}` such that deciding if some module `MOD` has a view from `FTH` can be done purely with matching.
+Module constructions are a pair of a theory `FTH` and a parametized module `FMOD{X :: FTH}` with infrastructure to create a view from `FTH` to `MOD` using purely matching.
 If so, then the resulting substitution is used to instantiate `FMOD{X :: FTH}`, and the resulting module is `MOD + FMOD{X :: FTH}`.
 For this, we'll heavily use the machinery of `MODULE-TEMPLATE`.
 
@@ -19,7 +19,12 @@ fmod MODULE-CONSTRUCTION is
     vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction .
     vars S S' S'' NeS : Sort . vars SS SS' : SortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z TH TH' : Sort . vars T T' : Term .
+```
 
+`_<_>` allows building module constructions which need to know the module header.
+`_;_` gives sequential composition of module constructions, and `_|_` gives parallel.
+
+```maude
     op _<_> : ModModuleConstruction Qid -> ModuleConstruction [ctor] .
     ------------------------------------------------------------------
 
@@ -28,13 +33,21 @@ fmod MODULE-CONSTRUCTION is
     ----------------------------------------------------------------------------------------------------------------
     eq (forall MTS exists none) ; MC = MC .
     eq MC | MC = MC .
+```
 
-    op exists_        : ModuleTemplateSet                   -> ModuleConstruction [prec 75] .
+A module construction is either just a declaration of existence (the empty theory matches anything), or the pair of the theory and the parametric module.
+
+```maude
+    op        exists_ : ModuleTemplateSet                   -> ModuleConstruction [prec 75] .
     op forall_exists_ : ModuleTemplateSet ModuleTemplateSet -> ModuleConstruction [ctor prec 75] .
     ----------------------------------------------------------------------------------------------
     eq exists MTS = forall none exists MTS .
     eq forall MTS exists NeMTS | NeMTS' = (forall MTS exists NeMTS) | (forall MTS exists NeMTS) .
+```
 
+Building many sorts with common subsort structures can be made easier with the parallel `for_in__` operator.
+
+```maude
     op for_in__ : Sort SortDeclSet ModuleConstruction -> ModuleConstruction [prec 76] .
     -----------------------------------------------------------------------------------
    ceq for S in ( sorts S' . ) (forall MTS exists MDS) = forall (MTS << SU) exists (MDS << SU) if SU := upTerm(S) <- upTerm(S') .
@@ -44,17 +57,29 @@ fmod MODULE-CONSTRUCTION is
 
     eq for S in none                      MC = exists none .
     eq for S in ( sorts S' ; S'' ; SS . ) MC = (for S in ( sorts S' . ) MC) | (for S in ( sorts S'' . ) MC) | (for S in ( sorts SS . ) MC) .
+```
 
---- ;    op _over_ : ModuleConstruction ModuleTemplate -> ModuleConstruction [prec 76] .
---- ;    -------------------------------------------------------------------------------
---- ;    eq (forall MT exists MT' | MC) over MT'' = (forall MT exists MT' over MT'') | (MC over MT'') .
---- ;    eq (forall MT exists MT' ; MC) over MT'' = (forall MT exists MT' over MT'') ; (MC over MT'') .
---- ;    eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
+**TODO**: Fix and uncomment this.
 
+```
+    op _over_ : ModuleConstruction ModuleTemplate -> ModuleConstruction [prec 76] .
+    -------------------------------------------------------------------------------
+    eq (forall MT exists MT' | MC) over MT'' = (forall MT exists MT' over MT'') | (MC over MT'') .
+    eq (forall MT exists MT' ; MC) over MT'' = (forall MT exists MT' over MT'') ; (MC over MT'') .
+    eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
+```
+
+Operator `univ_` turns a `ModuleDeclSet` into a module constuction parametric over its sorts.
+
+```maude
     op univ_ : ModuleDeclSet -> ModuleConstruction [prec 75] .
     ----------------------------------------------------------
     eq univ MDS = forall ( sorts fv<Sort>(MDS) . ) exists MDS .
+```
 
+Module constructions can be instantiated further with substitutions using `_<<_`.
+
+```maude
     op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction .
     --------------------------------------------------------------------
     eq MC << empty                   = MC .
@@ -63,6 +88,9 @@ fmod MODULE-CONSTRUCTION is
     eq (MC ; MC') << SU              = (MC << SU) ; (MC' << SU) .
     eq (forall MTS exists MDS) << SU = (forall (MTS << SU) exists (MDS << SU)) | (forall MTS exists MDS) .
 ```
+
+Operator `_deriving_` applies a module construction to a module.
+Helper `not-instance-of?` helps implement the "away from" construct for building modules.
 
 ```maude
     op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [prec 76] .
