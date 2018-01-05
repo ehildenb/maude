@@ -37,10 +37,10 @@ fmod TEST-MODULE2 is
   eq g(c) = d .
 endfm
 
---- Module MODULE-EXPRESSION
---- ========================
+--- Module MODULE-CONSTRUCTION
+--- ==========================
 
-select MODULE-EXPRESSION .
+select MODULE-CONSTRUCTION .
 
 reduce upModule('TEST-MODULE, false) deriving LIST .
 reduce upModule('TEST-MODULE, false) deriving SET  .

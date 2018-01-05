@@ -3,7 +3,7 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
-reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving LIST .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST .
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -42,7 +42,7 @@ result FModule: fmod 'TEST-MODULE is
   eq 'g['a.A] = 'a.A [none] .
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving SET .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving SET .
 rewrites: 739
 result FModule: fmod 'TEST-MODULE is
   nil
@@ -77,7 +77,7 @@ result FModule: fmod 'TEST-MODULE is
   eq 'g['a.A] = 'a.A [none] .
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : upModule('TEST-MODULE, false) deriving MSET .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving MSET .
 rewrites: 636
 result FModule: fmod 'TEST-MODULE is
   nil
@@ -108,7 +108,7 @@ result FModule: fmod 'TEST-MODULE is
   eq 'g['a.A] = 'a.A [none] .
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : upModule('TEST-MODULE2, false) deriving LIST .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE2, false) deriving LIST .
 rewrites: 628
 result FModule: fmod 'TEST-MODULE2 is
   nil
@@ -137,7 +137,7 @@ result FModule: fmod 'TEST-MODULE2 is
   eq 'g['c.C] = 'd.D [none] .
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : upModule('EMPTY, false) deriving LIST .
+reduce in MODULE-CONSTRUCTION : upModule('EMPTY, false) deriving LIST .
 rewrites: 180
 result FModule: fmod 'EMPTY is
   nil
@@ -148,32 +148,32 @@ result FModule: fmod 'EMPTY is
   none
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving LIST)) .
 rewrites: 1089
 result Bool: true
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving SET)) .
 rewrites: 1326
 result Bool: true
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE,
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving MSET)) .
 rewrites: 1109
 result Bool: true
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('TEST-MODULE2,
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE2,
     false) deriving LIST)) .
 rewrites: 1076
 result Bool: true
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(upModule('EMPTY, false)
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('EMPTY, false)
     deriving LIST)) .
 rewrites: 190
 result Bool: true
 ==========================================
-reduce in MODULE-EXPRESSION : #upModule('TEST-MODULE deriving DOWN-TERM <
+reduce in MODULE-CONSTRUCTION : #upModule('TEST-MODULE deriving DOWN-TERM <
     'TEST-MODULE >) .
 rewrites: 506
 result FModule: fmod 'TEST-MODULE is
@@ -207,7 +207,7 @@ result FModule: fmod 'TEST-MODULE is
     'downTerm < 'B >[var('T, 'Term)] [none] .
 endfm
 ==========================================
-reduce in MODULE-EXPRESSION : wellFormed(resolveNames(#upModule('TEST-MODULE
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(#upModule('TEST-MODULE
     deriving DOWN-TERM < 'TEST-MODULE >))) .
 rewrites: 518
 result Bool: true
