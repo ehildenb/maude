@@ -26,3 +26,6 @@ reduce prime(3, F{X}) .
 
 reduce prime(X, F{X}) .
 reduce prime(2, X, F{X}) .
+
+reduce prime(F{X}, F{F{X}}) .
+reduce prime(F{X}, F{(F{X}) (F{X})}) .

@@ -14,10 +14,18 @@ rewrites: 71
 result Sort: F''':Sort{X''':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, F{X}) .
-rewrites: 48
+rewrites: 44
 result Sort: F:Sort{X':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(2, X, F{X}) .
-rewrites: 49
+rewrites: 45
 result Sort: F:Sort{X'':Sort}
+==========================================
+reduce in TEST-STRUCTURED-NAME : prime(F{X}, F{F{X}}) .
+rewrites: 69
+result Sort: F:Sort{F':Sort{X':Sort}}
+==========================================
+reduce in TEST-STRUCTURED-NAME : prime(F{X}, F{(F{X}) (F{X})}) .
+rewrites: 120
+result Sort: F:Sort{(F':Sort{X':Sort}) (F':Sort{X':Sort})}
 Bye.
