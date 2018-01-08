@@ -2,22 +2,22 @@ Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 37 sort tuples. First such tuple is (Type).
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X) .
-rewrites: 33 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 33
 result Sort: X':Sort
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(3, X) .
-rewrites: 36 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 36
 result Sort: X''':Sort
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(3, F{X}) .
-rewrites: 71 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 71
 result Sort: F''':Sort{X''':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, F{X}) .
-rewrites: 48 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 48
 result Sort: F:Sort{X':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(2, X, F{X}) .
-rewrites: 49 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 49
 result Sort: F:Sort{X'':Sort}
 Bye.

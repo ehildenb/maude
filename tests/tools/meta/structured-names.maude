@@ -1,3 +1,5 @@
+set show timing off .
+
 load ../../../contrib/tools/meta/structured-names.maude
 
 fmod TEST-STRUCTURED-NAME is
