@@ -91,7 +91,8 @@ It's useful when building universal constructions to generate the same structure
 
     op #prime : Nat Term TermList -> TermList .
     -------------------------------------------
-    eq #prime(N, TERM, VAR)                  = if TERM == VAR then #prime(N, VAR) else VAR fi .
+    eq #prime(N, TERM, TERM')                = TERM' [owise] .
+    eq #prime(N, TERM, TERM)                 = #prime(N, TERM) .
     eq #prime(N, TERM, CONST)                = CONST .
     eq #prime(N, TERM, Q[NeTERML])           = Q[#prime(N, TERM, NeTERML)] .
     eq #prime(N, TERM, (NeTERML , NeTERML')) = #prime(N, TERM, NeTERML) , #prime(N, TERM, NeTERML') .
