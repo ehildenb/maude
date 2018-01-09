@@ -6,7 +6,6 @@
 
 
 load structured-names.maude
-load metalevel-ext.maude
 
 
 --- ; Module Declarations

@@ -6,7 +6,6 @@ These depend on `STRUCTURED-NAMES` for easy matching, and on `SUBSTITUTIONSET`.
 
 ```maude
 load structured-names.maude
-load metalevel-ext.maude
 ```
 
 Module Declarations
