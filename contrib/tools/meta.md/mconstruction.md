@@ -167,6 +167,29 @@ The first sort serves as a template for which sorts to copy, and the secord sort
                     /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
 ```
 
+`COFUNCTOR` are contravariant in the subsort relation.
+Their construction is similar to functors.
+
+```maude
+    op COFUNCTOR : Sort SortPoset -> ModuleConstruction .
+    -----------------------------------------------------
+    eq COFUNCTOR(X, none)                 = .ModuleConstruction .
+    eq COFUNCTOR(X, NeFS ; NeFS')         = COFUNCTOR(X, NeFS) | COFUNCTOR(X, NeFS') .
+    eq COFUNCTOR(X, (NeFS < NeFS' < SPS)) = ( COFUNCTOR(X, NeFS) | COFUNCTOR(X, (NeFS' < SPS)) )
+                                          ; forall ( sorts NeFS ; NeFS' . )
+                                            exists ( subsorts NeFS < NeFS' . ) .
+
+   ceq COFUNCTOR(X, F) = forall ( sorts X . )
+                         exists ( sorts F . )
+                       ; forall ( sorts X ; X' ; F ; F' . )
+                                ( subsort X  < X' . )
+                         exists ( subsort F' < F  . )
+                      if X' := prime(X)
+                      /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
+```
+
+### Useful Functor Constructions
+
 `FUNCTOR-ABOVE/BELOW` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
 
 **TODO**: Now `FUNCTOR-ABOVE(X, F) == FUNCTOR(X, (X < F))`, so eliminate `FUNCTOR-ABOVE/BELOW`.
@@ -262,29 +285,6 @@ Right now only operators up to arity 2 are handled (until we have a better way t
                                  /\ Y  := var<Sort>('Y)
                                  /\ Z  := var<Sort>('Z)
                                  /\ OP := var<Qid>('OP) .
-```
-
-### Cofunctors
-
-`COFUNCTOR` are contravariant in the subsort relation.
-Their construction is similar to functors.
-
-```maude
-    op COFUNCTOR : Sort SortPoset -> ModuleConstruction .
-    -----------------------------------------------------
-    eq COFUNCTOR(X, none)                 = .ModuleConstruction .
-    eq COFUNCTOR(X, NeFS ; NeFS')         = COFUNCTOR(X, NeFS) | COFUNCTOR(X, NeFS') .
-    eq COFUNCTOR(X, (NeFS < NeFS' < SPS)) = ( COFUNCTOR(X, NeFS) | COFUNCTOR(X, (NeFS' < SPS)) )
-                                          ; forall ( sorts NeFS ; NeFS' . )
-                                            exists ( subsorts NeFS < NeFS' . ) .
-
-   ceq COFUNCTOR(X, F) = forall ( sorts X . )
-                         exists ( sorts F . )
-                       ; forall ( sorts X ; X' ; F ; F' . )
-                                ( subsort X  < X' . )
-                         exists ( subsort F' < F  . )
-                      if X' := prime(X)
-                      /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
 ```
 
 ### Profunctors
