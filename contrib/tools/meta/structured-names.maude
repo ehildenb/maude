@@ -11,7 +11,7 @@ load metalevel-ext.maude
 --- ; Additionally, we’ll need a way to have “structured” sort names and operator names.
 --- ; For this, a few constructors are provided.
 
---- ; -   `var<X>`, where `X` is some sort, will create an object-level variable of the given sort by first creating a meta-level variable and then downing it.
+--- ; `var<X>`, where `X` is some sort, will create an object-level variable of the given sort by first creating a meta-level variable and then downing it.
 
 
 fmod STRUCTURED-NAME is
@@ -28,7 +28,7 @@ fmod STRUCTURED-NAME is
     op _{_}  : Sort TypeList -> Sort     [ctor prec 23] .
     op _@_   : Sort Sort     -> Sort     [ctor prec 23] .
     op _?    : Sort          -> Sort     [ctor prec 23] .
-    op _==>_ : Sort Sort     -> Sort     [ctor prec 25] .
+    op _==>_ : Sort Sort     -> Sort     [ctor prec 25 gather(e E)] .
     op const : Qid  Sort     -> Constant [ctor] .
     op var   : Qid  Sort     -> Variable [ctor] .
     ---------------------------------------------
@@ -158,7 +158,7 @@ fmod STRUCTURED-NAME is
     eq resolveNames((none).SortSet) = none .
     eq resolveNames(S { TL })       = qid(string(resolveNames(S)) + "{" + #tl-string(resolveNames(TL)) + "}") .
     eq resolveNames(Q @ S)          = qid(string(resolveNames(Q)) + "@" + string(resolveNames(S))) .
-    eq resolveNames(S ==> S')       = qid(string(resolveNames(S)) + "==>" + string(resolveNames(S'))) .
+    eq resolveNames(S ==> S')       = qid("(" + string(resolveNames(S)) + "==>" + string(resolveNames(S')) + ")") .
     eq resolveNames(S ?)            = qid(string(resolveNames(S)) + "?") .
     eq resolveNames(S ; S' ; SS)    = resolveNames(S) ; resolveNames(S') ; resolveNames(SS) .
     eq resolveNames(S)              = S [owise] .
