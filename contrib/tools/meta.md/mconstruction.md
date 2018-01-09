@@ -17,7 +17,7 @@ fmod MODULE-CONSTRUCTION is
 
     vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression .
     vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
-    vars S S' S'' NeS : Sort . vars SS SS' : SortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
+    vars S S' S'' F F' NeF : Sort . vars SS SS' : SortSet . vars NeFS NeFS' : NeSortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z TH TH' : Sort . vars T T' : Term .
 ```
 
@@ -150,18 +150,26 @@ In general, you may want to just copy the sort structure with a new name, or cop
 The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
 
 ```maude
-    op FUNCTOR : Sort Sort -> ModuleConstruction .
-    ----------------------------------------------
-    eq FUNCTOR(S, S') = forall ( sorts S . )
-                        exists ( sorts S' . )
-                      ; forall ( sorts S        ; S'
-                                     ; prime(S) ; prime(S') .
-                               )
-                               ( subsort S  < prime(S) . )
-                        exists ( subsort S' < prime(S') . ) .
+    op FUNCTOR : Sort SortPoset -> ModuleConstruction .
+    ---------------------------------------------------
+    eq FUNCTOR(X, none)                 = .ModuleConstruction .
+    eq FUNCTOR(X, NeFS ; NeFS')         = FUNCTOR(X, NeFS) | FUNCTOR(X, NeFS') .
+    eq FUNCTOR(X, (NeFS < NeFS' < SPS)) = ( FUNCTOR(X, NeFS) | FUNCTOR(X, (NeFS' < SPS)) )
+                                        ; forall ( sorts NeFS ; NeFS' . )
+                                          exists ( subsorts NeFS < NeFS' . ) .
+
+   ceq FUNCTOR(X, F) = forall ( sorts X . )
+                       exists ( sorts F . )
+                     ; forall ( sorts X ; X' ; F ; F' . )
+                              ( subsort X < X' . )
+                       exists ( subsort F < F' . )
+                    if X' := prime(X)
+                    /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
 ```
 
 `FUNCTOR-ABOVE/BELOW` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
+
+**TODO**: Now `FUNCTOR-ABOVE(X, F) == FUNCTOR(X, (X < F))`, so eliminate `FUNCTOR-ABOVE/BELOW`.
 
 ```maude
     op FUNCTOR-ABOVE : Sort Sort -> ModuleConstruction .
@@ -258,19 +266,25 @@ Right now only operators up to arity 2 are handled (until we have a better way t
 
 ### Cofunctors
 
-Cofunctors are contravariant in the subsort relation.
+`COFUNCTOR` are contravariant in the subsort relation.
 Their construction is similar to functors.
 
 ```maude
-    op COFUNCTOR : Sort Sort -> ModuleConstruction .
-    ------------------------------------------------
-    eq COFUNCTOR(S, S') = forall ( sorts S . )
-                          exists ( sorts S' . )
-                        ; forall ( sorts S        ; S'
-                                       ; prime(S) ; prime(S') .
-                                 )
-                                 ( subsort       S   < prime(S) . )
-                          exists ( subsort prime(S') < S'       . ) .
+    op COFUNCTOR : Sort SortPoset -> ModuleConstruction .
+    -----------------------------------------------------
+    eq COFUNCTOR(X, none)                 = .ModuleConstruction .
+    eq COFUNCTOR(X, NeFS ; NeFS')         = COFUNCTOR(X, NeFS) | COFUNCTOR(X, NeFS') .
+    eq COFUNCTOR(X, (NeFS < NeFS' < SPS)) = ( COFUNCTOR(X, NeFS) | COFUNCTOR(X, (NeFS' < SPS)) )
+                                          ; forall ( sorts NeFS ; NeFS' . )
+                                            exists ( subsorts NeFS < NeFS' . ) .
+
+   ceq COFUNCTOR(X, F) = forall ( sorts X . )
+                         exists ( sorts F . )
+                       ; forall ( sorts X ; X' ; F ; F' . )
+                                ( subsort X  < X' . )
+                         exists ( subsort F' < F  . )
+                      if X' := prime(X)
+                      /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
 ```
 
 ### Profunctors
