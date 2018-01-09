@@ -195,8 +195,7 @@ Here we add `SortPoset` and allow an entire poset to be declared at once.
     ---------------------------------------------------------
     eq MDS                << empty = (none).NullDeclSet .
     eq (none).NullDeclSet << SU    = none .
-   ceq NeMDS              << SU    = NeMDS'
-    if NeMDS' := downTerm(upTerm(NeMDS) << SU, error<ModuleDeclSet>) .
+   ceq NeMDS              << SU    = NeMDS' if NeMDS' := downTerm(upTerm(NeMDS) << SU, error<ModuleDeclSet>) .
 
     op match_with_ : ModuleDeclSet ModuleDeclSet -> [SubstitutionSet] .
     -------------------------------------------------------------------
