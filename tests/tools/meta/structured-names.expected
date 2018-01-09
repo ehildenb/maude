@@ -1,5 +1,5 @@
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 37 sort tuples. First such tuple is (Type).
+    on 6 out of 38 sort tuples. First such tuple is (Type).
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X) .
 rewrites: 33
@@ -18,38 +18,38 @@ rewrites: 39
 result Sort: 'F{X''':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, X) .
-rewrites: 35
+rewrites: 39
 result Sort: X':Sort
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, Y) .
-rewrites: 18
+rewrites: 45
 result Sort: Y:Sort
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, F{X}) .
-rewrites: 44
+rewrites: 48
 result Sort: F:Sort{X':Sort}
 ==========================================
-reduce in TEST-STRUCTURED-NAME : #prime(1, upTerm(X), upTerm(F{X})) .
-rewrites: 41
-result Term: '_`{_`}['F:Sort,'X':Sort]
-==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X, 'F{X}) .
-rewrites: 38
+rewrites: 42
 result Sort: 'F{X':Sort}
 ==========================================
 reduce in TEST-STRUCTURED-NAME : prime(2, X, F{X}) .
-rewrites: 45
+rewrites: 49
 result Sort: F:Sort{X'':Sort}
 ==========================================
-reduce in TEST-STRUCTURED-NAME : prime(F{X}, F{F{X}}) .
-rewrites: 69
-result Sort: F:Sort{F':Sort{X':Sort}}
-==========================================
-reduce in TEST-STRUCTURED-NAME : prime(F{X}, F{(F{X}) (F{X})}) .
-rewrites: 120
-result Sort: F:Sort{(F':Sort{X':Sort}) (F':Sort{X':Sort})}
-==========================================
 reduce in TEST-STRUCTURED-NAME : prime(Y, F{X}) .
-rewrites: 27
+rewrites: 54
 result Sort: F:Sort{X:Sort}
+==========================================
+reduce in TEST-STRUCTURED-NAME : prime(X, F{F{X}}) .
+rewrites: 51
+result Sort: F:Sort{F:Sort{X':Sort}}
+==========================================
+reduce in TEST-STRUCTURED-NAME : prime(X, F{(F{X}) (F{X})}) .
+rewrites: 57
+result Sort: F:Sort{(F:Sort{X':Sort}) (F:Sort{X':Sort})}
+==========================================
+reduce in TEST-STRUCTURED-NAME : prime(F, F{(F{X}) (F{X})}) .
+rewrites: 57
+result Sort: F':Sort{(F':Sort{X:Sort}) (F':Sort{X:Sort})}
 Bye.
