@@ -51,9 +51,6 @@ A module construction is either just a declaration of existence (the empty theor
 ```
 
 Operator `_deriving_` applies a module construction to a module.
-Helper `not-instance-of?` helps implement the "away from" construct for building modules.
-
-**TODO**: Should `not-instance-of?` be moved to `mtemplate.maude`?
 
 ```maude
     op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [right id: .ModuleConstruction prec 76] .
@@ -62,11 +59,6 @@ Helper `not-instance-of?` helps implement the "away from" construct for building
    ceq MDS deriving forall MTS exists (MDS' \ NeMTS) = ++(MDS | not-instance-of?((MDS' << SUBSTS), NeMTS)) if SUBSTS := match MTS with MDS .
     eq MDS deriving (NeMC ; NeMC')                   = (MDS deriving NeMC) deriving NeMC' .
     eq MDS deriving (NeMC | NeMC')                   = (MDS deriving NeMC) (MDS deriving NeMC') .
-
-    op not-instance-of? : ModuleTemplateSet ModuleTemplateSet -> ModuleTemplateSet .
-    --------------------------------------------------------------------------------
-   ceq not-instance-of?(MDS, MTS)              = if SUBSTS == empty then MDS else none fi if SUBSTS := match MTS with MDS .
-    eq not-instance-of?((NeMTS | NeMTS'), MTS) = not-instance-of?(NeMTS, MTS) | not-instance-of?(NeMTS', MTS) .
 
     op _deriving_ : ModuleExpression ModuleConstruction -> ModuleExpression [right id: .ModuleConstruction prec 80] .
     -----------------------------------------------------------------------------------------------------------------

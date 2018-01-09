@@ -289,6 +289,11 @@ fmod MODULE-TEMPLATE-SET is
     eq empty?(empty)       = true .
     eq empty?(SU | SUBSTS) = false .
 
+    op not-instance-of? : ModuleTemplateSet ModuleTemplateSet -> ModuleTemplateSet .
+    --------------------------------------------------------------------------------
+   ceq not-instance-of?(MDS, MTS)              = if SUBSTS == empty then MDS else none fi if SUBSTS := match MTS with MDS .
+    eq not-instance-of?((NeMTS | NeMTS'), MTS) = not-instance-of?(NeMTS, MTS) | not-instance-of?(NeMTS', MTS) .
+
     op not-instance-with? : ModuleTemplateSet ModuleDeclSet SubstitutionSet -> SubstitutionSet .
     --------------------------------------------------------------------------------------------
     eq not-instance-with?(MTS, MDS, empty)               = empty .
