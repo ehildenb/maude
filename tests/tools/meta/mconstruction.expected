@@ -3,6 +3,106 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
+reduce in MODULE-CONSTRUCTION : forall sorts var<Sort>('X) . exists sorts
+    var<Sort>('X) . .
+rewrites: 6
+result ModuleConstruction: .ModuleConstruction
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), var<Sort>('X)) .
+rewrites: 42
+result ModuleConstruction: .ModuleConstruction
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), 'F{var<Sort>('X)}) .
+rewrites: 41
+result NeModuleConstruction: forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X} < 'F{X'} .
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), ('F{var<Sort>('X)} < 'G{
+    var<Sort>('X)})) .
+rewrites: 79
+result NeModuleConstruction: (forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X} < 'F{X'} .
+| forall sorts X . exists sorts 'G{X} .
+; forall (sorts X ; X' ; 'G{X} ; 'G{X'} .)
+subsort X < X' . exists subsort 'G{X} < 'G{X'} .)
+; forall sorts 'F{X} ; 'G{X} . exists subsort 'F{X} < 'G{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), (var<Sort>('X) < 'F{
+    var<Sort>('X)} < 'G{var<Sort>('X)})) .
+rewrites: 118
+result NeModuleConstruction: (forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X} < 'F{X'} .
+| forall sorts X . exists sorts 'G{X} .
+; forall (sorts X ; X' ; 'G{X} ; 'G{X'} .)
+subsort X < X' . exists subsort 'G{X} < 'G{X'} .)
+; forall sorts 'F{X} ; 'G{X} . exists subsort 'F{X} < 'G{X} .
+; forall sorts X ; 'F{X} . exists subsort X < 'F{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), (var<Sort>('X) < 'F{
+    var<Sort>('X)} < 'G{var<Sort>('X)} < 'H{var<Sort>('X)})) .
+rewrites: 156
+result NeModuleConstruction: (forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X} < 'F{X'} .
+| (forall sorts X . exists sorts 'G{X} .
+; forall (sorts X ; X' ; 'G{X} ; 'G{X'} .)
+subsort X < X' . exists subsort 'G{X} < 'G{X'} .
+| forall sorts X . exists sorts 'H{X} .
+; forall (sorts X ; X' ; 'H{X} ; 'H{X'} .)
+subsort X < X' . exists subsort 'H{X} < 'H{X'} .)
+; forall sorts 'G{X} ; 'H{X} . exists subsort 'G{X} < 'H{X} .)
+; forall sorts 'F{X} ; 'G{X} . exists subsort 'F{X} < 'G{X} .
+; forall sorts X ; 'F{X} . exists subsort X < 'F{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : FUNCTOR(var<Sort>('X), var<Sort>('F){var<Sort>(
+    'X)}) .
+rewrites: 46
+result NeModuleConstruction: forall sorts X . exists sorts F{X} .
+; forall (sorts X ; X' ; F{X} ; F{X'} .)
+subsort X < X' . exists subsort F{X} < F{X'} .
+==========================================
+reduce in MODULE-CONSTRUCTION : COFUNCTOR(var<Sort>('X), 'F{var<Sort>('X)}) .
+rewrites: 41
+result NeModuleConstruction: forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X'} < 'F{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : COFUNCTOR(var<Sort>('X), ('F{var<Sort>('X)} <
+    'G{var<Sort>('X)})) .
+rewrites: 79
+result NeModuleConstruction: (forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X'} < 'F{X} .
+| forall sorts X . exists sorts 'G{X} .
+; forall (sorts X ; X' ; 'G{X} ; 'G{X'} .)
+subsort X < X' . exists subsort 'G{X'} < 'G{X} .)
+; forall sorts 'F{X} ; 'G{X} . exists subsort 'F{X} < 'G{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : COFUNCTOR(var<Sort>('X), ('F{var<Sort>('X)} <
+    'G{var<Sort>('X)} < 'H{var<Sort>('X)})) .
+rewrites: 117
+result NeModuleConstruction: (forall sorts X . exists sorts 'F{X} .
+; forall (sorts X ; X' ; 'F{X} ; 'F{X'} .)
+subsort X < X' . exists subsort 'F{X'} < 'F{X} .
+| (forall sorts X . exists sorts 'G{X} .
+; forall (sorts X ; X' ; 'G{X} ; 'G{X'} .)
+subsort X < X' . exists subsort 'G{X'} < 'G{X} .
+| forall sorts X . exists sorts 'H{X} .
+; forall (sorts X ; X' ; 'H{X} ; 'H{X'} .)
+subsort X < X' . exists subsort 'H{X'} < 'H{X} .)
+; forall sorts 'G{X} ; 'H{X} . exists subsort 'G{X} < 'H{X} .)
+; forall sorts 'F{X} ; 'G{X} . exists subsort 'F{X} < 'G{X} .
+==========================================
+reduce in MODULE-CONSTRUCTION : COFUNCTOR(var<Sort>('X), var<Sort>('F){
+    var<Sort>('X)}) .
+rewrites: 46
+result NeModuleConstruction: forall sorts X . exists sorts F{X} .
+; forall (sorts X ; X' ; F{X} ; F{X'} .)
+subsort X < X' . exists subsort F{X'} < F{X} .
+==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
     var<Sort>('X), 'F{var<Sort>('X)}) .
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -13,7 +113,7 @@ Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
-rewrites: 160
+rewrites: 138
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'F{'A} ; 'F{'B} .
@@ -30,7 +130,7 @@ endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
     COFUNCTOR(var<Sort>('X), 'F{var<Sort>('X)}) .
-rewrites: 160
+rewrites: 138
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'F{'A} ; 'F{'B} .
@@ -48,7 +148,7 @@ endfm
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
     var<Sort>('X), 'F{var<Sort>('X)})
 | COFUNCTOR(var<Sort>('X), 'G{var<Sort>('X)}) .
-rewrites: 317
+rewrites: 273
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'F{'A} ; 'F{'B} ; 'G{'A} ; 'G{'B} .
@@ -67,7 +167,7 @@ endfm
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
     var<Sort>('X), 'F{var<Sort>('X)})
 ; COFUNCTOR(var<Sort>('X), 'G{var<Sort>('X)}) .
-rewrites: 351
+rewrites: 307
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'F{'A} ; 'F{'B} ; 'G{'A} ; 'G{'B} ; 'G{'F{'A}} ; 'G{'F{'B}} .
@@ -84,8 +184,29 @@ result FModule: fmod 'TEST-MODULE is
   eq 'g['a.A] = 'a.A [none] .
 endfm
 ==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving FUNCTOR(
+    var<Sort>('X), var<Sort>('F){var<Sort>('X)})
+; FUNCTOR(var<Sort>('X), var<Sort>('G){var<Sort>('X)}) .
+rewrites: 333
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; F{'A} ; F{'B} ; G:Sort{'A} ; G:Sort{'B} ; G:Sort{F{'A}} ;
+    G:Sort{F{'B}} .
+  subsort 'A < 'B .
+  subsort F{'A} < F{'B} .
+  subsort G:Sort{'A} < G:Sort{'B} .
+  subsort G:Sort{F{'A}} < G:Sort{F{'B}} .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST .
-rewrites: 628
+rewrites: 629
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'List{'A} ; 'List{'B} ; 'NeList{'A} ; 'NeList{'B} .
@@ -116,7 +237,7 @@ result FModule: fmod 'TEST-MODULE is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving SET .
-rewrites: 739
+rewrites: 740
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'NeSet{'A} ; 'NeSet{'B} ; 'Set{'A} ; 'Set{'B} .
@@ -151,7 +272,7 @@ result FModule: fmod 'TEST-MODULE is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving MSET .
-rewrites: 636
+rewrites: 637
 result FModule: fmod 'TEST-MODULE is
   nil
   sorts 'A ; 'B ; 'MSet{'A} ; 'MSet{'B} ; 'NeMSet{'A} ; 'NeMSet{'B} .
@@ -182,7 +303,7 @@ result FModule: fmod 'TEST-MODULE is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE2, false) deriving LIST .
-rewrites: 628
+rewrites: 627
 result FModule: fmod 'TEST-MODULE2 is
   nil
   sorts 'C ; 'D ; 'List{'C} ; 'List{'D} ; 'NeList{'C} ; 'NeList{'D} .
@@ -211,7 +332,7 @@ result FModule: fmod 'TEST-MODULE2 is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('EMPTY, false) deriving LIST .
-rewrites: 180
+rewrites: 172
 result FModule: fmod 'EMPTY is
   nil
   sorts none .
@@ -223,32 +344,153 @@ endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving LIST)) .
-rewrites: 1089
+rewrites: 1090
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving SET)) .
-rewrites: 1326
+rewrites: 1327
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving MSET)) .
-rewrites: 1109
+rewrites: 1110
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE2,
     false) deriving LIST)) .
-rewrites: 1076
+rewrites: 1075
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('EMPTY, false)
     deriving LIST)) .
-rewrites: 190
+rewrites: 182
+result Bool: true
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
+    PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
+rewrites: 195
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'A ==> 'B ; 'B ==> 'A .
+  subsort 'A < 'B .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST
+; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
+rewrites: 2103
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'List{'A} ; 'List{'B} ; 'NeList{'A} ; 'NeList{'B} ; 'A ==> 'B
+    ; 'A ==> ('List{'A}) ; 'A ==> ('List{'B}) ; 'A ==> ('NeList{'A}) ; 'A ==> (
+    'NeList{'B}) ; 'B ==> 'A ; 'B ==> ('List{'A}) ; 'B ==> ('List{'B}) ; 'B ==>
+    ('NeList{'A}) ; 'B ==> ('NeList{'B}) ; ('List{'A}) ==> 'A ; ('List{'A}) ==>
+    'B ; ('List{'A}) ==> ('List{'B}) ; ('List{'A}) ==> ('NeList{'A}) ; ('List{
+    'A}) ==> ('NeList{'B}) ; ('List{'B}) ==> 'A ; ('List{'B}) ==> 'B ; ('List{
+    'B}) ==> ('List{'A}) ; ('List{'B}) ==> ('NeList{'A}) ; ('List{'B}) ==> (
+    'NeList{'B}) ; ('NeList{'A}) ==> 'A ; ('NeList{'A}) ==> 'B ; ('NeList{'A})
+    ==> ('List{'A}) ; ('NeList{'A}) ==> ('List{'B}) ; ('NeList{'A}) ==> (
+    'NeList{'B}) ; ('NeList{'B}) ==> 'A ; ('NeList{'B}) ==> 'B ; ('NeList{'B})
+    ==> ('List{'A}) ; ('NeList{'B}) ==> ('List{'B}) ; ('NeList{'B}) ==> (
+    'NeList{'A}) .
+  subsort 'A < 'B .
+  subsort 'A < 'NeList{'A} .
+  subsort 'B < 'NeList{'B} .
+  subsort 'List{'A} < 'List{'B} .
+  subsort 'NeList{'A} < 'List{'A} .
+  subsort 'NeList{'A} < 'NeList{'B} .
+  subsort 'NeList{'B} < 'List{'B} .
+  subsort 'A ==> 'B < 'A ==> ('NeList{'B}) .
+  subsort 'A ==> ('List{'A}) < 'A ==> ('List{'B}) .
+  subsort 'A ==> ('NeList{'A}) < 'A ==> ('List{'A}) .
+  subsort 'A ==> ('NeList{'A}) < 'A ==> ('NeList{'B}) .
+  subsort 'A ==> ('NeList{'B}) < 'A ==> ('List{'B}) .
+  subsort 'B ==> 'A < 'B ==> ('NeList{'A}) .
+  subsort 'B ==> ('List{'A}) < 'A ==> ('List{'A}) .
+  subsort 'B ==> ('List{'A}) < 'B ==> ('List{'B}) .
+  subsort 'B ==> ('List{'B}) < 'A ==> ('List{'B}) .
+  subsort 'B ==> ('NeList{'A}) < 'A ==> ('NeList{'A}) .
+  subsort 'B ==> ('NeList{'A}) < 'B ==> ('List{'A}) .
+  subsort 'B ==> ('NeList{'A}) < 'B ==> ('NeList{'B}) .
+  subsort 'B ==> ('NeList{'B}) < 'A ==> ('NeList{'B}) .
+  subsort 'B ==> ('NeList{'B}) < 'B ==> ('List{'B}) .
+  subsort ('List{'A}) ==> 'A < ('List{'A}) ==> 'B .
+  subsort ('List{'A}) ==> 'A < ('List{'A}) ==> ('NeList{'A}) .
+  subsort ('List{'A}) ==> 'A < ('NeList{'A}) ==> 'A .
+  subsort ('List{'A}) ==> 'B < ('List{'A}) ==> ('NeList{'B}) .
+  subsort ('List{'A}) ==> 'B < ('NeList{'A}) ==> 'B .
+  subsort ('List{'A}) ==> ('List{'B}) < ('NeList{'A}) ==> ('List{'B}) .
+  subsort ('List{'A}) ==> ('NeList{'A}) < ('List{'A}) ==> ('NeList{'B}) .
+  subsort ('List{'A}) ==> ('NeList{'B}) < ('List{'A}) ==> ('List{'B}) .
+  subsort ('List{'A}) ==> ('NeList{'B}) < ('NeList{'A}) ==> ('NeList{'B}) .
+  subsort ('List{'B}) ==> 'A < ('List{'A}) ==> 'A .
+  subsort ('List{'B}) ==> 'A < ('List{'B}) ==> 'B .
+  subsort ('List{'B}) ==> 'A < ('List{'B}) ==> ('NeList{'A}) .
+  subsort ('List{'B}) ==> 'A < ('NeList{'B}) ==> 'A .
+  subsort ('List{'B}) ==> 'B < ('List{'A}) ==> 'B .
+  subsort ('List{'B}) ==> 'B < ('List{'B}) ==> ('NeList{'B}) .
+  subsort ('List{'B}) ==> 'B < ('NeList{'B}) ==> 'B .
+  subsort ('List{'B}) ==> ('List{'A}) < ('NeList{'B}) ==> ('List{'A}) .
+  subsort ('List{'B}) ==> ('NeList{'A}) < ('List{'A}) ==> ('NeList{'A}) .
+  subsort ('List{'B}) ==> ('NeList{'A}) < ('List{'B}) ==> ('List{'A}) .
+  subsort ('List{'B}) ==> ('NeList{'A}) < ('List{'B}) ==> ('NeList{'B}) .
+  subsort ('List{'B}) ==> ('NeList{'A}) < ('NeList{'B}) ==> ('NeList{'A}) .
+  subsort ('List{'B}) ==> ('NeList{'B}) < ('List{'A}) ==> ('NeList{'B}) .
+  subsort ('NeList{'A}) ==> 'A < ('NeList{'A}) ==> 'B .
+  subsort ('NeList{'A}) ==> 'B < 'A ==> 'B .
+  subsort ('NeList{'A}) ==> 'B < ('NeList{'A}) ==> ('NeList{'B}) .
+  subsort ('NeList{'A}) ==> ('List{'A}) < 'A ==> ('List{'A}) .
+  subsort ('NeList{'A}) ==> ('List{'A}) < ('NeList{'A}) ==> ('List{'B}) .
+  subsort ('NeList{'A}) ==> ('List{'B}) < 'A ==> ('List{'B}) .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < 'A ==> ('NeList{'B}) .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < ('NeList{'A}) ==> ('List{'B}) .
+  subsort ('NeList{'B}) ==> 'A < 'B ==> 'A .
+  subsort ('NeList{'B}) ==> 'A < ('NeList{'A}) ==> 'A .
+  subsort ('NeList{'B}) ==> 'A < ('NeList{'B}) ==> 'B .
+  subsort ('NeList{'B}) ==> 'A < ('NeList{'B}) ==> ('NeList{'A}) .
+  subsort ('NeList{'B}) ==> 'B < ('NeList{'A}) ==> 'B .
+  subsort ('NeList{'B}) ==> ('List{'A}) < 'B ==> ('List{'A}) .
+  subsort ('NeList{'B}) ==> ('List{'A}) < ('NeList{'A}) ==> ('List{'A}) .
+  subsort ('NeList{'B}) ==> ('List{'A}) < ('NeList{'B}) ==> ('List{'B}) .
+  subsort ('NeList{'B}) ==> ('List{'B}) < 'B ==> ('List{'B}) .
+  subsort ('NeList{'B}) ==> ('List{'B}) < ('NeList{'A}) ==> ('List{'B}) .
+  subsort ('NeList{'B}) ==> ('NeList{'A}) < 'B ==> ('NeList{'A}) .
+  subsort ('NeList{'B}) ==> ('NeList{'A}) < ('NeList{'B}) ==> ('List{'A}) .
+  op '.List : nil -> 'List{'A} [ctor] .
+  op '.List : nil -> 'List{'B} [ctor] .
+  op '_`,_ : ('List{'A}) ('List{'A}) -> 'List{'A} [assoc ctor id(const('.List,
+    'List{'A}))] .
+  op '_`,_ : ('List{'A}) ('NeList{'A}) -> 'NeList{'A} [assoc ctor id(const(
+    '.List, 'List{'A}))] .
+  op '_`,_ : ('List{'B}) ('List{'B}) -> 'List{'B} [assoc ctor id(const('.List,
+    'List{'B}))] .
+  op '_`,_ : ('List{'B}) ('NeList{'B}) -> 'NeList{'B} [assoc ctor id(const(
+    '.List, 'List{'B}))] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  none
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving LIST
+; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)))) .
+rewrites: 5555
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : #upModule('TEST-MODULE deriving DOWN-TERM <
     'TEST-MODULE >) .
-rewrites: 506
+rewrites: 522
 result FModule: fmod 'TEST-MODULE is
   protecting 'META-LEVEL .
   protecting 'TEST-MODULE .
@@ -282,6 +524,6 @@ endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(#upModule('TEST-MODULE
     deriving DOWN-TERM < 'TEST-MODULE >))) .
-rewrites: 518
+rewrites: 534
 result Bool: true
 Bye.

@@ -42,6 +42,20 @@ endfm
 
 select MODULE-CONSTRUCTION .
 
+reduce forall ( sorts var<Sort>('X) . ) exists ( sorts var<Sort>('X) . ) .
+
+reduce FUNCTOR(var<Sort>('X), var<Sort>('X)) .
+reduce FUNCTOR(var<Sort>('X), 'F { var<Sort>('X) }) .
+reduce FUNCTOR(var<Sort>('X), (                'F { var<Sort>('X) } < 'G { var<Sort>('X) })) .
+reduce FUNCTOR(var<Sort>('X), (var<Sort>('X) < 'F { var<Sort>('X) } < 'G { var<Sort>('X) })) .
+reduce FUNCTOR(var<Sort>('X), (var<Sort>('X) < 'F { var<Sort>('X) } < 'G { var<Sort>('X) } < 'H { var<Sort>('X) })) .
+reduce FUNCTOR(var<Sort>('X), var<Sort>('F) { var<Sort>('X) }) .
+
+reduce COFUNCTOR(var<Sort>('X), 'F { var<Sort>('X) }) .
+reduce COFUNCTOR(var<Sort>('X), ('F { var<Sort>('X) } < 'G { var<Sort>('X) })) .
+reduce COFUNCTOR(var<Sort>('X), ('F { var<Sort>('X) } < 'G { var<Sort>('X) } < 'H { var<Sort>('X) })) .
+reduce COFUNCTOR(var<Sort>('X), var<Sort>('F) { var<Sort>('X) }) .
+
 reduce upModule('TEST-MODULE, false) deriving   FUNCTOR(var<Sort>('X), 'F { var<Sort>('X) }) .
 reduce upModule('TEST-MODULE, false) deriving COFUNCTOR(var<Sort>('X), 'F { var<Sort>('X) }) .
 reduce upModule('TEST-MODULE, false) deriving (   FUNCTOR(var<Sort>('X), 'F { var<Sort>('X) })
@@ -50,8 +64,6 @@ reduce upModule('TEST-MODULE, false) deriving (   FUNCTOR(var<Sort>('X), 'F { va
 reduce upModule('TEST-MODULE, false) deriving (   FUNCTOR(var<Sort>('X), 'F { var<Sort>('X) })
                                               ; COFUNCTOR(var<Sort>('X), 'G { var<Sort>('X) })
                                               ) .
-
---- bad behavior
 reduce upModule('TEST-MODULE, false) deriving ( FUNCTOR(var<Sort>('X), var<Sort>('F) { var<Sort>('X) })
                                               ; FUNCTOR(var<Sort>('X), var<Sort>('G) { var<Sort>('X) })
                                               ) .
@@ -68,6 +80,10 @@ reduce wellFormed(resolveNames(upModule('TEST-MODULE,  false) deriving SET )) .
 reduce wellFormed(resolveNames(upModule('TEST-MODULE,  false) deriving MSET)) .
 reduce wellFormed(resolveNames(upModule('TEST-MODULE2, false) deriving LIST)) .
 reduce wellFormed(resolveNames(upModule('EMPTY,        false) deriving LIST)) .
+
+reduce upModule('TEST-MODULE, false) deriving PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
+reduce upModule('TEST-MODULE, false) deriving LIST ; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving LIST ; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)))) .
 
 reduce #upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >) .
 reduce wellFormed(resolveNames(#upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >))) .
