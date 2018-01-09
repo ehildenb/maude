@@ -190,42 +190,23 @@ Their construction is similar to functors.
 
 ### Useful Functor Constructions
 
-`FUNCTOR-ABOVE/BELOW` link the original and new sort structures, with the new sorts as super/sub-sorts, respectively.
-
-**TODO**: Now `FUNCTOR-ABOVE(X, F) == FUNCTOR(X, (X < F))`, so eliminate `FUNCTOR-ABOVE/BELOW`.
-
-```maude
-    op FUNCTOR-ABOVE : Sort Sort -> ModuleConstruction .
-    ----------------------------------------------------
-    eq FUNCTOR-ABOVE(S, S') = FUNCTOR(S, S')
-                            ; forall ( sorts S ; S' . )
-                              exists ( subsort S < S' . ) .
-
-    op FUNCTOR-BELOW : Sort Sort -> ModuleConstruction .
-    ----------------------------------------------------
-    eq FUNCTOR-BELOW(S, S') = FUNCTOR(S, S')
-                            ; forall ( sorts S ; S' . )
-                              exists ( subsort S < S' . ) .
-```
-
 A common idiom is to create the subsort-chain `X < NeF{X} < F{X}`, where `F` is some data-structure and `NeF` is the non-empty version.
 These data-structures are often over binary operators with given axioms.
-Here, `BINARY-DATA` uses `FUNCTOR-ABOVE` to build the desired sort structure, then the appropriate binary operators with unit are declared.
+Here, `BINARY-DATA` uses `FUNCTOR` to build the desired sort structure, then the appropriate binary operators with unit are declared.
 
 ```maude
     op BINARY-DATA : Sort Qid AttrSet -> ModuleConstruction .
     ---------------------------------------------------------
-   ceq BINARY-DATA(S, OP, AS) = FUNCTOR-ABOVE(X, NeS{X})
-                              ; FUNCTOR-ABOVE(NeS{X}, S{X})
-                              ; forall ( sorts    X ; NeS{X} ; S{X} . )
-                                       ( subsorts X < NeS{X} < S{X} . )
-                                exists ( op Nil : nil             ->   S{X} [ctor] .
-                                         op OP  : (S{X})   (S{X}) ->   S{X} [ctor id(const(Nil, S{X})) AS] .
-                                         op OP  : (S{X}) (NeS{X}) -> NeS{X} [ctor id(const(Nil, S{X})) AS] .
+   ceq BINARY-DATA(F, OP, AS) = FUNCTOR(X, (X < NeF{X} < F{X}))
+                              ; forall ( sorts    X ; NeF{X} ; F{X} . )
+                                       ( subsorts X < NeF{X} < F{X} . )
+                                exists ( op Nil : nil             ->   F{X} [ctor] .
+                                         op OP  : (F{X})   (F{X}) ->   F{X} [ctor id(const(Nil, F{X})) AS] .
+                                         op OP  : (F{X}) (NeF{X}) -> NeF{X} [ctor id(const(Nil, F{X})) AS] .
                                        )
                              if X   := var<Sort>('X)
-                             /\ NeS := qid("Ne" + string(S))
-                             /\ Nil := qid("."  + string(S)) .
+                             /\ NeF := qid("Ne" + string(F))
+                             /\ Nil := qid("."  + string(F)) .
 ```
 
 Here, some useful module constructions for the list and set data-types are provided:
@@ -256,7 +237,7 @@ Right now only operators up to arity 2 are handled (until we have a better way t
 ```maude
     op signature-refinement : Qid -> ModuleConstruction .
     -----------------------------------------------------
-    eq signature-refinement(Q) = FUNCTOR-BELOW(var<Sort>('X), var<Sort>('X){Q})
+    eq signature-refinement(Q) = FUNCTOR(var<Sort>('X), (var<Sort>('X){Q} < var<Sort>('X)))
                                ; signature-refinement(0, Q)
                                ; signature-refinement(1, Q)
                                ; signature-refinement(2, Q) .
@@ -377,7 +358,7 @@ This is a construction that refines the module `META-TERM` and adds it to your m
    ceq DOWN-TERM < Q > =   exists ( pr 'META-LEVEL .
                                     pr Q .
                                   )
-                         ; FUNCTOR-ABOVE(X, X ?)
+                         ; FUNCTOR(X, (X < X ?))
                          ; forall ( sorts X ; X ? . )
                                   ( subsort X < X ? . )
                            exists ( op 'downTermError < X > : nil   -> X ?   [ctor] .
