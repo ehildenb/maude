@@ -141,8 +141,6 @@ In general, you may want to just copy the sort structure with a new name, or cop
 **TODO**: Lots of common structure between `FUNCTOR`, `COFUNCTOR`, and `PROFUNCTOR`.
           Could we possible factor out the part dealing with the `SortPoset`?
 
-**TODO**: Idiom `downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?)` can be replaced with `F << (upTerm(X) <- upTerm(X'))`?
-
 `FUNCTOR` copies the sort and subsort structure without linking the original and new sort structures.
 The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
 
@@ -161,7 +159,7 @@ The first sort serves as a template for which sorts to copy, and the secord sort
                               ( subsort X < X' . )
                        exists ( subsort F < F' . )
                     if X' := prime(X)
-                    /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
+                    /\ F' := prime(X, F) .
 ```
 
 `COFUNCTOR` are contravariant in the subsort relation.
@@ -182,7 +180,7 @@ Their construction is similar to functors.
                                 ( subsort X  < X' . )
                          exists ( subsort F' < F  . )
                       if X' := prime(X)
-                      /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
+                      /\ F' := prime(X, F) .
 ```
 
 A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
@@ -205,9 +203,8 @@ A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
                                       ( subsort  Y  < Y' . )
                                exists ( subsort FY' < F  . )
                              )
-                          if X' := prime(X) /\ Y' := prime(Y)
-                          /\ FX' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?)
-                          /\ FY' := downTerm(upTerm(F) << (upTerm(Y) <- upTerm(Y')), downSortsError?) .
+                          if X'  := prime(X)    /\ Y'  := prime(Y)
+                          /\ FX' := prime(X, F) /\ FY' := prime(Y, F) .
 ```
 
 ### Useful Functor Constructions
