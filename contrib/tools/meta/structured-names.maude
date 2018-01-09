@@ -1,6 +1,12 @@
 --- ; Structured Names
 --- ; ================
 
+--- ; For substutions:
+
+
+load metalevel-ext.maude
+
+
 --- ; First, we’ll need a way to generate variables at the object level because writing all our syntax at the meta-level can be a pain.
 --- ; Additionally, we’ll need a way to have “structured” sort names and operator names.
 --- ; For this, a few constructors are provided.
@@ -9,7 +15,7 @@
 
 
 fmod STRUCTURED-NAME is
-    extending META-LEVEL .
+   protecting SUBSTITUTIONSET .
 
     vars I I' : Import . vars IL IL' : ImportList . vars S S' S'' : Sort . var SS : SortSet . var SSDS : SubsortDeclSet .
     vars H H' : Header . vars Q Q' : Qid . vars A A' : Attr . var AS : AttrSet . var SU : Substitution .
@@ -80,7 +86,7 @@ fmod STRUCTURED-NAME is
     op prime : Nat Sort Sort -> Sort .
     ----------------------------------
     eq prime(S, S')    = prime(1, S, S') .
-   ceq prime(N, S, S') = S'' if S'' := downTerm(#prime(N, upTerm(S), upTerm(S')), downSortsError?) .
+   ceq prime(N, S, S') = S'' if S'' := downTerm(upTerm(S') << (upTerm(S) <- upTerm(prime(N, S))), downSortsError?) .
 
     op #prime : Nat TermList -> TermList .
     --------------------------------------
@@ -88,14 +94,6 @@ fmod STRUCTURED-NAME is
     eq #prime(N, CONST)                = CONST .
     eq #prime(N, Q[NeTERML])           = Q[#prime(N, NeTERML)] .
     eq #prime(N, (NeTERML , NeTERML')) = #prime(N, NeTERML) , #prime(N, NeTERML') .
-
-    op #prime : Nat Term TermList -> TermList .
-    -------------------------------------------
-    eq #prime(N, TERM, TERM')                = TERM' [owise] .
-    eq #prime(N, TERM, TERM)                 = #prime(N, TERM) .
-    eq #prime(N, TERM, CONST)                = CONST .
-    eq #prime(N, TERM, Q[NeTERML])           = Q[#prime(N, TERM, NeTERML)] .
-    eq #prime(N, TERM, (NeTERML , NeTERML')) = #prime(N, TERM, NeTERML) , #prime(N, TERM, NeTERML') .
 
     op #primes : Nat -> String .
     ----------------------------
