@@ -246,45 +246,6 @@ fmod MODULE-CONSTRUCTION is
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 
 
---- ; **TODO**: Signature refinement isn’t used anywhere and it’s not clear that it’s nice/good.
-
---- ; Signature refinements add subsorts to every sort (adding the annotation that they are refined), as well as copying operators over only the refined sorts down.
---- ; Right now only operators up to arity 2 are handled (until we have a better way to generate them).
-
-
-    op signature-refinement : Qid -> ModuleConstruction .
-    -----------------------------------------------------
-    eq signature-refinement(Q) = FUNCTOR(var<Sort>('X), (var<Sort>('X){Q} < var<Sort>('X)))
-                               ; signature-refinement(0, Q)
-                               ; signature-refinement(1, Q)
-                               ; signature-refinement(2, Q) .
-
-    op signature-refinement : Nat Qid -> ModuleConstruction .
-    ---------------------------------------------------------
-   ceq signature-refinement(0, Q) = forall ( sorts X ; X{Q} . )
-                                           ( op OP : nil -> X [var<AttrSet>('AS)] . )
-                                    exists ( op OP : nil -> X{Q} [var<AttrSet>('AS)] . )
-                                 if X  := var<Sort>('X)
-                                 /\ OP := var<Qid>('OP) .
-
-   ceq signature-refinement(1, Q) = ( forall ( sorts X ; X{Q} ; Y ; Y{Q}. )
-                                             ( op OP : Y -> X [var<AttrSet>('AS)] . )
-                                      exists ( op OP : Y{Q} -> X{Q} [var<AttrSet>('AS)] . )
-                                    ) << ('X:Sort <- 'Y:Sort)
-                                 if X  := var<Sort>('X)
-                                 /\ Y  := var<Sort>('Y)
-                                 /\ OP := var<Qid>('OP) .
-
-   ceq signature-refinement(2, Q) = ( forall ( sorts X ; X{Q} ; Y ; Y{Q} ; Z ; Z{Q} . )
-                                             ( op OP : Y Z -> X [var<AttrSet>('AS)] . )
-                                      exists ( op OP : (Y{Q}) (Z{Q}) -> X{Q} [var<AttrSet>('AS)] . )
-                                    ) << (('X:Sort <- 'Y:Sort) | ('X:Sort <- 'Z:Sort) | ('Y:Sort <- 'Z:Sort) | ('Y:Sort <- 'X:Sort ; 'Z:Sort <- 'X:Sort))
-                                 if X  := var<Sort>('X)
-                                 /\ Y  := var<Sort>('Y)
-                                 /\ Z  := var<Sort>('Z)
-                                 /\ OP := var<Qid>('OP) .
-
-
 --- ; For functional-style programming (including higher-order functional programming), it’s necessary to reify arrows between sorts (functions) as objects themselves.
 --- ; This `EXPONENTIAL` module construction does that.
 
