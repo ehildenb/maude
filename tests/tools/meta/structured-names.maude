@@ -23,9 +23,16 @@ endfm
 reduce prime(X) .
 reduce prime(3, X) .
 reduce prime(3, F{X}) .
+reduce prime(3, 'F{X}) .
 
+reduce prime(X, X) .
+reduce prime(X, Y) .
 reduce prime(X, F{X}) .
+reduce #prime(1, upTerm(X), upTerm(F{X})) .
+reduce prime(X, 'F{X}) .
 reduce prime(2, X, F{X}) .
 
 reduce prime(F{X}, F{F{X}}) .
 reduce prime(F{X}, F{(F{X}) (F{X})}) .
+
+reduce prime(Y, F{X}) .
