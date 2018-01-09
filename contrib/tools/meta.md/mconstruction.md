@@ -17,8 +17,8 @@ fmod MODULE-CONSTRUCTION is
 
     vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression .
     vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
-    vars S S' S'' F F' NeF : Sort . vars SS SS' : SortSet . vars NeFS NeFS' : NeSortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
-    vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z TH TH' : Sort . vars T T' : Term .
+    vars S S' S'' F F' FX' FY' NeF : Sort . vars SS SS' : SortSet . vars NeFS NeFS' : NeSortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
+    vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
 ```
 
 Primitive Constructions
@@ -146,6 +146,11 @@ Functor Constructions
 Covariant constructions copy sort structure and preserve the subsort relation.
 In general, you may want to just copy the sort structure with a new name, or copy the sort structure and then make the copies subsorts (or supersorts) of the original.
 
+**TODO**: Lots of common structure between `FUNCTOR`, `COFUNCTOR`, and `PROFUNCTOR`.
+          Could we possible factor out the part dealing with the `SortPoset`?
+
+**TODO**: Idiom `downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?)` can be replaced with `F << (upTerm(X) <- upTerm(X'))`?
+
 `FUNCTOR` copies the sort and subsort structure without linking the original and new sort structures.
 The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
 
@@ -186,6 +191,31 @@ Their construction is similar to functors.
                          exists ( subsort F' < F  . )
                       if X' := prime(X)
                       /\ F' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?) .
+```
+
+A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
+
+```maude
+    op PROFUNCTOR : Sort Sort SortPoset -> ModuleConstruction .
+    -----------------------------------------------------------
+    eq PROFUNCTOR(X, Y, none)                 = .ModuleConstruction .
+    eq PROFUNCTOR(X, Y, NeFS ; NeFS')         = PROFUNCTOR(X, Y, NeFS) | PROFUNCTOR(X, Y, NeFS') .
+    eq PROFUNCTOR(X, Y, (NeFS < NeFS' < SPS)) = ( PROFUNCTOR(X, Y, NeFS) | PROFUNCTOR(X, Y, (NeFS' < SPS)) )
+                                              ; forall ( sorts NeFS ; NeFS' . )
+                                                exists ( subsorts NeFS < NeFS' . ) .
+
+   ceq PROFUNCTOR(X, Y, F) = forall ( sorts X ; Y . )
+                             exists ( sorts F . )
+                           ; ( forall ( sorts X ; X' ; F ; FX' . )
+                                      ( subsort X <  X' . )
+                               exists ( subsort F < FX' . )
+                             | forall ( sorts Y ; Y' ; F ; FY' . )
+                                      ( subsort  Y  < Y' . )
+                               exists ( subsort FY' < F  . )
+                             )
+                          if X' := prime(X) /\ Y' := prime(Y)
+                          /\ FX' := downTerm(upTerm(F) << (upTerm(X) <- upTerm(X')), downSortsError?)
+                          /\ FY' := downTerm(upTerm(F) << (upTerm(Y) <- upTerm(Y')), downSortsError?) .
 ```
 
 ### Useful Functor Constructions
@@ -267,10 +297,6 @@ Right now only operators up to arity 2 are handled (until we have a better way t
                                  /\ Z  := var<Sort>('Z)
                                  /\ OP := var<Qid>('OP) .
 ```
-
-### Profunctors
-
-**TODO**: Implement `EXPONENTIAL` in terms of a generic `PROFUNCTOR` implementation.
 
 For functional-style programming (including higher-order functional programming), it's necessary to reify arrows between sorts (functions) as objects themselves.
 This `EXPONENTIAL` module construction does that.
