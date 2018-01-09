@@ -36,7 +36,7 @@ A module construction is either just a declaration of existence (the empty theor
 
     op .ModuleConstruction : -> ModuleConstruction [ctor] .
     -------------------------------------------------------
-    eq forall MTS exists none = .ModuleConstruction .
+    eq forall MDS MDS' exists MDS = .ModuleConstruction .
 ```
 
 `_;_` gives sequential composition of module constructions, and `_|_` gives parallel.
