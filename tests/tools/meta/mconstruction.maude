@@ -37,6 +37,20 @@ fmod TEST-MODULE2 is
   eq g(c) = d .
 endfm
 
+fmod TEST-MODULE3 is
+  sorts A B C D .
+  subsort A < B C < D .
+
+  op a : -> A .
+  op b : -> B .
+  op c : -> C .
+  op d : -> D .
+
+  op g : C -> D .
+  ---------------
+  eq g(c) = d .
+endfm
+
 --- Module MODULE-CONSTRUCTION
 --- ==========================
 
