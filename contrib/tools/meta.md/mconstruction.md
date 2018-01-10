@@ -112,24 +112,6 @@ Module constructions can be instantiated further with substitutions using `_<<_`
     eq for S in ( sorts S' ; S'' ; SS . ) MC = (for S in ( sorts S' . ) MC) | (for S in ( sorts S'' . ) MC) | (for S in ( sorts SS . ) MC) .
 ```
 
-Operator `univ_` turns a `ModuleDeclSet` into a module constuction parametric over its sorts.
-
-**TODO**: Are `univ_` and `_over_` used anywhere/are they useful yet?
-
-```maude
-    op univ_ : ModuleDeclSet -> ModuleConstruction [prec 75] .
-    ----------------------------------------------------------
-    eq univ MDS = forall ( sorts fv<Sort>(MDS) . ) exists MDS .
-```
-
-```
-    op _over_ : ModuleConstruction ModuleTemplate -> ModuleConstruction [prec 76] .
-    -------------------------------------------------------------------------------
-    eq (forall MT exists MT' | MC) over MT'' = (forall MT exists MT' over MT'') | (MC over MT'') .
-    eq (forall MT exists MT' ; MC) over MT'' = (forall MT exists MT' over MT'') ; (MC over MT'') .
-    eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
-```
-
 Functor Constructions
 ---------------------
 
