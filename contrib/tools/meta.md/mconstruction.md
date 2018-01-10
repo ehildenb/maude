@@ -15,7 +15,7 @@ fmod MODULE-CONSTRUCTION is
     -----------------------------------------------
     subsort NeModuleConstruction < ModuleConstruction .
 
-    vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression .
+    vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression . var B : Bool .
     vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
     vars S S' S'' F F' FX' FY' NeF : Sort . vars SS SS' : SortSet . vars NeFS NeFS' : NeSortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
@@ -66,21 +66,11 @@ Operator `_deriving_` applies a module construction to a module.
 
     op _deriving_ : ModuleExpression ModuleConstruction -> ModuleExpression [right id: .ModuleConstruction prec 80] .
     -----------------------------------------------------------------------------------------------------------------
-    eq #upModule(ME deriving NeMC) = #upModule(ME) deriving NeMC .
+    eq upModule(ME deriving NeMC, B) = upModule(ME, B) deriving NeMC .
 
     op _deriving_ : Module ModuleConstruction -> [Module] [right id: .ModuleConstruction prec 80] .
     -----------------------------------------------------------------------------------------------
     eq MOD deriving NeMC = fromTemplate(getName(MOD), asTemplate(MOD) deriving NeMC) .
-```
-
-`#upModule` defaults to passing `false` to `upModule`.
-
-**TODO**: Move this to the prelude, and name `upModule`.
-
-```maude
-    op #upModule : ModuleExpression -> Module [memo] .
-    --------------------------------------------------
-    eq #upModule(ME) = upModule(ME, false) [owise] .
 ```
 
 ### Operators Over Constructions
