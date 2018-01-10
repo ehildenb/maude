@@ -108,5 +108,5 @@ reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving EXPONENTIA
 reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving LIST ; EXPONENTIAL)) .
 reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving EXPONENTIAL ; EXPONENTIAL)) .
 
-reduce #upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >) .
-reduce wellFormed(resolveNames(#upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >))) .
+reduce upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >))) .

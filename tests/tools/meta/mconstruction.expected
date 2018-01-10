@@ -2346,7 +2346,7 @@ Warning: sort declarations for operator _;_ failed preregularity check on 4 out
 rewrites: 52501
 result Bool: true
 ==========================================
-reduce in MODULE-CONSTRUCTION : #upModule('TEST-MODULE deriving DOWN-TERM <
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE deriving DOWN-TERM <
     'TEST-MODULE >) .
 rewrites: 578
 result FModule: fmod 'TEST-MODULE is
@@ -2380,7 +2380,7 @@ result FModule: fmod 'TEST-MODULE is
     'downTerm < 'B >[var('T, 'Term)] [none] .
 endfm
 ==========================================
-reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(#upModule('TEST-MODULE
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE
     deriving DOWN-TERM < 'TEST-MODULE >))) .
 rewrites: 590
 result Bool: true
