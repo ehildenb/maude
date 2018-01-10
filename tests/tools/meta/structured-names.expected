@@ -1,6 +1,40 @@
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 38 sort tuples. First such tuple is (Type).
 ==========================================
+reduce in TEST-STRUCTURED-NAME : x ==> y .
+rewrites: 2
+result Sort: 'x ==> 'y
+==========================================
+reduce in TEST-STRUCTURED-NAME : x ==> y ==> z .
+rewrites: 3
+result Sort: 'x ==> 'y ==> 'z
+==========================================
+reduce in TEST-STRUCTURED-NAME : (x ==> y) ==> z == x ==> y ==> z .
+rewrites: 4
+result Bool: false
+==========================================
+reduce in TEST-STRUCTURED-NAME : x ==> y ==> z == x ==> y ==> z .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in TEST-STRUCTURED-NAME : resolveNames(x ==> y) .
+rewrites: 12
+result Sort: '`(x==>y`)
+==========================================
+reduce in TEST-STRUCTURED-NAME : resolveNames(x ==> y ==> z) .
+rewrites: 22
+result Sort: '`(x==>`(y==>z`)`)
+==========================================
+reduce in TEST-STRUCTURED-NAME : resolveNames((x ==> y) ==> z) == resolveNames(
+    x ==> y ==> z) .
+rewrites: 42
+result Bool: false
+==========================================
+reduce in TEST-STRUCTURED-NAME : resolveNames(x ==> y ==> z) == resolveNames(x
+    ==> y ==> z) .
+rewrites: 23
+result Bool: true
+==========================================
 reduce in TEST-STRUCTURED-NAME : prime(X) .
 rewrites: 33
 result Sort: X':Sort

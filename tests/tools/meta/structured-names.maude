@@ -5,20 +5,33 @@ load ../../../contrib/tools/meta/structured-names.maude
 fmod TEST-STRUCTURED-NAME is
    protecting STRUCTURED-NAME .
 
-    ops X Y Z F : -> Sort .
-    -----------------------
+   ops X Y Z F : -> Sort .
+   -----------------------
     eq X = var<Sort>('X) .
     eq Y = var<Sort>('Y) .
     eq Z = var<Sort>('Z) .
     eq F = var<Sort>('F) .
 
-    op sortName : Nat -> Sort .
-    ---------------------------
-    eq sortName(0) = X .
+   ops x y z f : -> Sort .
+   -----------------------
+    eq x = 'x .
+    eq y = 'y .
+    eq z = 'z .
+    eq f = 'f .
 endfm
 
 --- Module STRUCTURED-NAMES
 --- -----------------------
+
+reduce x ==> y .
+reduce x ==> y ==> z .
+reduce (x ==> y) ==> z == x ==> y ==> z .
+reduce x ==> (y ==> z) == x ==> y ==> z .
+
+reduce resolveNames(x ==> y) .
+reduce resolveNames(x ==> y ==> z) .
+reduce resolveNames((x ==> y) ==> z) == resolveNames(x ==> y ==> z) .
+reduce resolveNames(x ==> (y ==> z)) == resolveNames(x ==> y ==> z) .
 
 reduce prime(X) .
 reduce prime(3, X) .
