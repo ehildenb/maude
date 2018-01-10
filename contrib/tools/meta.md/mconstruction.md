@@ -21,8 +21,10 @@ fmod MODULE-CONSTRUCTION is
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
 ```
 
-Primitive Constructions
------------------------
+Module Construction Implementation
+----------------------------------
+
+### Constructors
 
 A module construction is either just a declaration of existence (the empty theory matches anything), or the pair of the theory and the parametric module.
 `.ModuleConstruction` is the empty module construction.
@@ -49,6 +51,8 @@ A module construction is either just a declaration of existence (the empty theor
     ----------------------------------------------------------------------------------------------------------------------------------------
     eq NeMC | NeMC = NeMC .
 ```
+
+### Applying Module Constructions
 
 Operator `_deriving_` applies a module construction to a module.
 
@@ -79,8 +83,7 @@ Operator `_deriving_` applies a module construction to a module.
     eq #upModule(ME) = upModule(ME, false) [owise] .
 ```
 
-Operators Over Constructions
-----------------------------
+### Operators Over Constructions
 
 Module constructions can be instantiated further with substitutions using `_<<_`.
 
@@ -115,7 +118,7 @@ Module constructions can be instantiated further with substitutions using `_<<_`
 Functor Constructions
 ---------------------
 
-### Functors
+### Covariant
 
 Covariant constructions copy sort structure and preserve the subsort relation.
 In general, you may want to just copy the sort structure with a new name, or copy the sort structure and then make the copies subsorts (or supersorts) of the original.
@@ -144,6 +147,8 @@ The first sort serves as a template for which sorts to copy, and the secord sort
                     /\ F' := prime(X, F) .
 ```
 
+### Contravariant
+
 `COFUNCTOR` are contravariant in the subsort relation.
 Their construction is similar to functors.
 
@@ -164,6 +169,8 @@ Their construction is similar to functors.
                       if X' := prime(X)
                       /\ F' := prime(X, F) .
 ```
+
+### Provariant?
 
 A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
 
@@ -189,7 +196,10 @@ A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
                           /\ FX' := prime(X, F) /\ FY' := prime(Y, F) .
 ```
 
-### Useful Functor Constructions
+Data Structures
+---------------
+
+### Binary Operator Collections
 
 A common idiom is to create the subsort-chain `X < NeF{X} < F{X}`, where `F` is some data-structure and `NeF` is the non-empty version.
 These data-structures are often over binary operators with given axioms.
@@ -210,6 +220,8 @@ Here, `BINARY-DATA` uses `FUNCTOR` to build the desired sort structure, then the
                              /\ Nil := qid("."  + string(F)) .
 ```
 
+### Standard Data Structures
+
 Here, some useful module constructions for the list and set data-types are provided:
 
 **TODO**: Add `TUPLE : Nat -> ModuleConstruction` declaring all tuples up to specified size.
@@ -229,6 +241,8 @@ Here, some useful module constructions for the list and set data-types are provi
               exists ( eq '_;_[NES, NES] = NES [none] . )
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 ```
+
+### Function Spaces
 
 For functional-style programming (including higher-order functional programming), it's necessary to reify arrows between sorts (functions) as objects themselves.
 This `EXPONENTIAL` module construction does that.
