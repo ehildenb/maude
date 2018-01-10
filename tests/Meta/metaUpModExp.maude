@@ -49,3 +49,8 @@ red in META-LEVEL : upImports('BAZ) .
 red in META-LEVEL : upModule('BAZ, false) .
 
 red in META-LEVEL : upModule('BAZ, true) .
+
+red in META-LEVEL : upModule('BAZ) == upModule('BAZ, false) .
+red in META-LEVEL : upModule('BAR) == upModule('BAR, false) .
+red in META-LEVEL : upModule('BAZ) == upModule('BAZ, true) .
+red in META-LEVEL : upModule('BAR) == upModule('BAR, true) .

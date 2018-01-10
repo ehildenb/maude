@@ -196,4 +196,20 @@ result FModule: fmod 'BAZ is
   eq '_xor_['false.Bool,'A:Bool] = 'A:Bool [none] .
   eq 'not_['A:Bool] = '_xor_['true.Bool,'A:Bool] [none] .
 endfm
+==========================================
+reduce in META-LEVEL : upModule('BAZ) == upModule('BAZ, false) .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in META-LEVEL : upModule('BAR) == upModule('BAR, false) .
+rewrites: 4
+result Bool: true
+==========================================
+reduce in META-LEVEL : upModule('BAZ) == upModule('BAZ, true) .
+rewrites: 3
+result Bool: false
+==========================================
+reduce in META-LEVEL : upModule('BAR) == upModule('BAR, true) .
+rewrites: 3
+result Bool: false
 Bye.

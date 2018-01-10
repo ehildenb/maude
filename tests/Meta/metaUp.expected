@@ -403,6 +403,8 @@ eq 'size['L:QidList] = '$size['L:QidList,'0.Zero] [none] .
 eq 'tail['__['E:Nat,'L:NatList]] = 'L:NatList [none] .
 eq 'tail['__['E:Qid,'L:QidList]] = 'L:QidList [none] .
 eq 'union['S:QidSet,'S':QidSet] = '_;_['S:QidSet,'S':QidSet] [none] .
+eq 'upModule['ME:ModuleExpression] = 'upModule['ME:ModuleExpression,
+    'false.Bool] [none] .
 eq '|_|['S:QidSet] = '$card['S:QidSet,'0.Zero] [none] .
 ceq 'continue['_`,_['N:Nat,'B:Bound]] = '_`,_['s_['N:Nat],'B:Bound] if '_<_[
     'N:Nat,'B:Bound] = 'true.Bool [none] .
