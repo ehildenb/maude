@@ -2655,6 +2655,10 @@ fmod META-LEVEL is
 *** backward compatibility
   op metaPrettyPrint : Module Term ~> QidList .
   eq metaPrettyPrint(M:Module, T:Term) = metaPrettyPrint(M:Module, T:Term, mixfix flat format number rat) .
+
+  op upModule : ModuleExpression ~> Module [memo] .
+  -------------------------------------------------
+  eq upModule(ME:ModuleExpression) = upModule(ME:ModuleExpression, false) .
 endfm
 
 
