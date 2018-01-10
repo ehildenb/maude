@@ -256,23 +256,17 @@ This `EXPONENTIAL` module construction does that.
 ```maude
     op EXPONENTIAL : -> ModuleConstruction .
     ----------------------------------------
-   ceq EXPONENTIAL =   ( forall ( sorts X ; Y . )
-                         exists ( sorts X ==> Y . )
-                                ( op '__ : (X ==> Y) X -> Y [none] . )
-                       ) << ('Y:Sort <- 'X:Sort)
-                     ; forall ( sorts X ==> X . )
-                       exists ( op 'id < X > : nil -> X ==> X [ctor] . )
-                              ( eq '__[const('id < X >, X ==> X), var('X, X)] = var('X, X) [none] . )
-                     ; forall ( sorts X ; Y ; Z ; X ==> Y ; X ==> Z . )
-                              ( subsort Y < Z . )
-                       exists ( subsort X ==> Y < X ==> Z . )
-                     ; forall ( sorts X ; Y ; Z ; X ==> Y ; Z ==> Y . )
-                              ( subsort Z < X . )
-                       exists ( subsort X ==> Y < Z ==> Y . )
-                     ; forall ( sorts X ==> Y ; Y ==> Z ; X ==> Z . )
+   ceq EXPONENTIAL = PROFUNCTOR(X, Y, X ==> Y) << (upTerm(X) <- upTerm(Y))
+                   ; forall ( sorts X ==> Y . )
+                     exists ( op '__ : (X ==> Y) X -> Y [none] . )
+                   ; ( forall ( sorts X ==> Y ; Y ==> Z ; X ==> Z . )
                        exists ( op '_._ : (Y ==> Z) (X ==> Y) -> X ==> Z [none] .
                                 op '_;_ : (X ==> Y) (Y ==> Z) -> X ==> Z [none] .
                               )
+                     ) << ((upTerm(X) <- upTerm(Y)) | (upTerm(Y) <- upTerm(Z)) | (upTerm(X) <- upTerm(Z) ; upTerm(X) <- upTerm(Z)))
+                   ; forall ( sorts X ==> X . )
+                     exists ( op 'id < X > : nil -> X ==> X [ctor] . )
+                            ( eq '__[const('id < X >, X ==> X), var('X, X)] = var('X, X) [none] . )
                   if X := var<Sort>('X)
                   /\ Y := var<Sort>('Y)
                   /\ Z := var<Sort>('Z) .
