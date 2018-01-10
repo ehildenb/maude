@@ -485,7 +485,1865 @@ endfm
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving LIST
 ; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)))) .
-rewrites: 5696
+rewrites: 5980
+result Bool: true
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
+    EXPONENTIAL .
+rewrites: 1552
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'A ==> 'A ; 'A ==> 'B ; 'B ==> 'A ; 'B ==> 'B .
+  subsort 'A < 'B .
+  subsort 'A ==> 'A < 'B ==> 'A .
+  subsort 'A ==> 'B < 'A ==> 'A .
+  subsort 'A ==> 'B < 'B ==> 'B .
+  subsort 'B ==> 'B < 'B ==> 'A .
+  op '_._ : ('A ==> 'A) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_._ : ('A ==> 'B) 'A ==> 'A -> 'A ==> 'B [none] .
+  op '_._ : ('A ==> 'B) 'B ==> 'A -> 'B ==> 'B [none] .
+  op '_._ : ('B ==> 'A) 'A ==> 'B -> 'A ==> 'A [none] .
+  op '_._ : ('B ==> 'A) 'B ==> 'B -> 'B ==> 'A [none] .
+  op '_._ : ('B ==> 'B) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '__ : ('A ==> 'A) 'A -> 'A [none] .
+  op '__ : ('A ==> 'B) 'A -> 'B [none] .
+  op '__ : ('B ==> 'A) 'B -> 'A [none] .
+  op '__ : ('B ==> 'B) 'B -> 'B [none] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  op 'id < 'A > : nil -> 'A ==> 'A [ctor] .
+  op 'id < 'B > : nil -> 'B ==> 'B [ctor] .
+  none
+  eq '__[const('id < 'A >, 'A ==> 'A),var('X, 'A)] = var('X, 'A) [none] .
+  eq '__[const('id < 'B >, 'B ==> 'B),var('X, 'B)] = var('X, 'B) [none] .
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST
+; EXPONENTIAL .
+rewrites: 16770
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'List{'A} ; 'List{'B} ; 'NeList{'A} ; 'NeList{'B} ; 'A ==> 'A
+    ; 'A ==> 'B ; 'A ==> ('List{'A}) ; 'A ==> ('List{'B}) ; 'A ==> ('NeList{
+    'A}) ; 'A ==> ('NeList{'B}) ; 'B ==> 'A ; 'B ==> 'B ; 'B ==> ('List{'A}) ;
+    'B ==> ('List{'B}) ; 'B ==> ('NeList{'A}) ; 'B ==> ('NeList{'B}) ; ('List{
+    'A}) ==> 'A ; ('List{'A}) ==> 'B ; ('List{'A}) ==> ('List{'A}) ; ('List{
+    'A}) ==> ('List{'B}) ; ('List{'A}) ==> ('NeList{'A}) ; ('List{'A}) ==> (
+    'NeList{'B}) ; ('List{'B}) ==> 'A ; ('List{'B}) ==> 'B ; ('List{'B}) ==> (
+    'List{'A}) ; ('List{'B}) ==> ('List{'B}) ; ('List{'B}) ==> ('NeList{'A}) ;
+    ('List{'B}) ==> ('NeList{'B}) ; ('NeList{'A}) ==> 'A ; ('NeList{'A}) ==> 'B
+    ; ('NeList{'A}) ==> ('List{'A}) ; ('NeList{'A}) ==> ('List{'B}) ; ('NeList{
+    'A}) ==> ('NeList{'A}) ; ('NeList{'A}) ==> ('NeList{'B}) ; ('NeList{'B})
+    ==> 'A ; ('NeList{'B}) ==> 'B ; ('NeList{'B}) ==> ('List{'A}) ; ('NeList{
+    'B}) ==> ('List{'B}) ; ('NeList{'B}) ==> ('NeList{'A}) ; ('NeList{'B}) ==>
+    ('NeList{'B}) .
+  subsort 'A < 'B .
+  subsort 'A < 'NeList{'A} .
+  subsort 'B < 'NeList{'B} .
+  subsort 'List{'A} < 'List{'B} .
+  subsort 'NeList{'A} < 'List{'A} .
+  subsort 'NeList{'A} < 'NeList{'B} .
+  subsort 'NeList{'B} < 'List{'B} .
+  subsort 'A ==> 'A < 'B ==> 'A .
+  subsort 'A ==> 'A < ('NeList{'A}) ==> 'A .
+  subsort 'A ==> 'B < 'A ==> 'A .
+  subsort 'A ==> 'B < 'B ==> 'B .
+  subsort 'A ==> 'B < ('NeList{'A}) ==> 'B .
+  subsort 'A ==> ('List{'A}) < 'A ==> ('NeList{'A}) .
+  subsort 'A ==> ('List{'A}) < 'B ==> ('List{'A}) .
+  subsort 'A ==> ('List{'A}) < ('NeList{'A}) ==> ('List{'A}) .
+  subsort 'A ==> ('List{'B}) < 'A ==> ('List{'A}) .
+  subsort 'A ==> ('List{'B}) < 'A ==> ('NeList{'B}) .
+  subsort 'A ==> ('List{'B}) < 'B ==> ('List{'B}) .
+  subsort 'A ==> ('List{'B}) < ('NeList{'A}) ==> ('List{'B}) .
+  subsort 'A ==> ('NeList{'A}) < 'A ==> 'A .
+  subsort 'A ==> ('NeList{'A}) < 'B ==> ('NeList{'A}) .
+  subsort 'A ==> ('NeList{'A}) < ('NeList{'A}) ==> ('NeList{'A}) .
+  subsort 'A ==> ('NeList{'B}) < 'A ==> 'B .
+  subsort 'A ==> ('NeList{'B}) < 'A ==> ('NeList{'A}) .
+  subsort 'A ==> ('NeList{'B}) < 'B ==> ('NeList{'B}) .
+  subsort 'A ==> ('NeList{'B}) < ('NeList{'A}) ==> ('NeList{'B}) .
+  subsort 'B ==> 'A < ('NeList{'B}) ==> 'A .
+  subsort 'B ==> 'B < 'B ==> 'A .
+  subsort 'B ==> 'B < ('NeList{'B}) ==> 'B .
+  subsort 'B ==> ('List{'A}) < 'B ==> ('NeList{'A}) .
+  subsort 'B ==> ('List{'A}) < ('NeList{'B}) ==> ('List{'A}) .
+  subsort 'B ==> ('List{'B}) < 'B ==> ('List{'A}) .
+  subsort 'B ==> ('List{'B}) < 'B ==> ('NeList{'B}) .
+  subsort 'B ==> ('List{'B}) < ('NeList{'B}) ==> ('List{'B}) .
+  subsort 'B ==> ('NeList{'A}) < 'B ==> 'A .
+  subsort 'B ==> ('NeList{'A}) < ('NeList{'B}) ==> ('NeList{'A}) .
+  subsort 'B ==> ('NeList{'B}) < 'B ==> 'B .
+  subsort 'B ==> ('NeList{'B}) < 'B ==> ('NeList{'A}) .
+  subsort 'B ==> ('NeList{'B}) < ('NeList{'B}) ==> ('NeList{'B}) .
+  subsort ('List{'A}) ==> 'A < ('List{'B}) ==> 'A .
+  subsort ('List{'A}) ==> 'B < ('List{'A}) ==> 'A .
+  subsort ('List{'A}) ==> 'B < ('List{'B}) ==> 'B .
+  subsort ('List{'A}) ==> ('List{'A}) < ('List{'A}) ==> ('NeList{'A}) .
+  subsort ('List{'A}) ==> ('List{'A}) < ('List{'B}) ==> ('List{'A}) .
+  subsort ('List{'A}) ==> ('List{'B}) < ('List{'A}) ==> ('List{'A}) .
+  subsort ('List{'A}) ==> ('List{'B}) < ('List{'A}) ==> ('NeList{'B}) .
+  subsort ('List{'A}) ==> ('List{'B}) < ('List{'B}) ==> ('List{'B}) .
+  subsort ('List{'A}) ==> ('NeList{'A}) < ('List{'A}) ==> 'A .
+  subsort ('List{'A}) ==> ('NeList{'A}) < ('List{'B}) ==> ('NeList{'A}) .
+  subsort ('List{'A}) ==> ('NeList{'B}) < ('List{'A}) ==> 'B .
+  subsort ('List{'A}) ==> ('NeList{'B}) < ('List{'A}) ==> ('NeList{'A}) .
+  subsort ('List{'A}) ==> ('NeList{'B}) < ('List{'B}) ==> ('NeList{'B}) .
+  subsort ('List{'B}) ==> 'B < ('List{'B}) ==> 'A .
+  subsort ('List{'B}) ==> ('List{'A}) < ('List{'B}) ==> ('NeList{'A}) .
+  subsort ('List{'B}) ==> ('List{'B}) < ('List{'B}) ==> ('List{'A}) .
+  subsort ('List{'B}) ==> ('List{'B}) < ('List{'B}) ==> ('NeList{'B}) .
+  subsort ('List{'B}) ==> ('NeList{'A}) < ('List{'B}) ==> 'A .
+  subsort ('List{'B}) ==> ('NeList{'B}) < ('List{'B}) ==> 'B .
+  subsort ('List{'B}) ==> ('NeList{'B}) < ('List{'B}) ==> ('NeList{'A}) .
+  subsort ('NeList{'A}) ==> 'A < ('List{'A}) ==> 'A .
+  subsort ('NeList{'A}) ==> 'A < ('NeList{'B}) ==> 'A .
+  subsort ('NeList{'A}) ==> 'B < ('List{'A}) ==> 'B .
+  subsort ('NeList{'A}) ==> 'B < ('NeList{'A}) ==> 'A .
+  subsort ('NeList{'A}) ==> 'B < ('NeList{'B}) ==> 'B .
+  subsort ('NeList{'A}) ==> ('List{'A}) < ('List{'A}) ==> ('List{'A}) .
+  subsort ('NeList{'A}) ==> ('List{'A}) < ('NeList{'A}) ==> ('NeList{'A}) .
+  subsort ('NeList{'A}) ==> ('List{'A}) < ('NeList{'B}) ==> ('List{'A}) .
+  subsort ('NeList{'A}) ==> ('List{'B}) < ('List{'A}) ==> ('List{'B}) .
+  subsort ('NeList{'A}) ==> ('List{'B}) < ('NeList{'A}) ==> ('List{'A}) .
+  subsort ('NeList{'A}) ==> ('List{'B}) < ('NeList{'A}) ==> ('NeList{'B}) .
+  subsort ('NeList{'A}) ==> ('List{'B}) < ('NeList{'B}) ==> ('List{'B}) .
+  subsort ('NeList{'A}) ==> ('NeList{'A}) < ('List{'A}) ==> ('NeList{'A}) .
+  subsort ('NeList{'A}) ==> ('NeList{'A}) < ('NeList{'A}) ==> 'A .
+  subsort ('NeList{'A}) ==> ('NeList{'A}) < ('NeList{'B}) ==> ('NeList{'A}) .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < ('List{'A}) ==> ('NeList{'B}) .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < ('NeList{'A}) ==> 'B .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < ('NeList{'A}) ==> ('NeList{'A}) .
+  subsort ('NeList{'A}) ==> ('NeList{'B}) < ('NeList{'B}) ==> ('NeList{'B}) .
+  subsort ('NeList{'B}) ==> 'A < ('List{'B}) ==> 'A .
+  subsort ('NeList{'B}) ==> 'B < ('List{'B}) ==> 'B .
+  subsort ('NeList{'B}) ==> 'B < ('NeList{'B}) ==> 'A .
+  subsort ('NeList{'B}) ==> ('List{'A}) < ('List{'B}) ==> ('List{'A}) .
+  subsort ('NeList{'B}) ==> ('List{'A}) < ('NeList{'B}) ==> ('NeList{'A}) .
+  subsort ('NeList{'B}) ==> ('List{'B}) < ('List{'B}) ==> ('List{'B}) .
+  subsort ('NeList{'B}) ==> ('List{'B}) < ('NeList{'B}) ==> ('List{'A}) .
+  subsort ('NeList{'B}) ==> ('List{'B}) < ('NeList{'B}) ==> ('NeList{'B}) .
+  subsort ('NeList{'B}) ==> ('NeList{'A}) < ('List{'B}) ==> ('NeList{'A}) .
+  subsort ('NeList{'B}) ==> ('NeList{'A}) < ('NeList{'B}) ==> 'A .
+  subsort ('NeList{'B}) ==> ('NeList{'B}) < ('List{'B}) ==> ('NeList{'B}) .
+  subsort ('NeList{'B}) ==> ('NeList{'B}) < ('NeList{'B}) ==> 'B .
+  subsort ('NeList{'B}) ==> ('NeList{'B}) < ('NeList{'B}) ==> ('NeList{'A}) .
+  op '.List : nil -> 'List{'A} [ctor] .
+  op '.List : nil -> 'List{'B} [ctor] .
+  op '_._ : ('A ==> 'A) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('List{'A}) ==> 'A -> ('List{'A}) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('List{'B}) ==> 'A -> ('List{'B}) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> 'A [none] .
+  op '_._ : ('A ==> 'B) 'A ==> 'A -> 'A ==> 'B [none] .
+  op '_._ : ('A ==> 'B) 'B ==> 'A -> 'B ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('List{'A}) ==> 'A -> ('List{'A}) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('List{'B}) ==> 'A -> ('List{'B}) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> 'B [none] .
+  op '_._ : ('A ==> ('List{'A})) 'A ==> 'A -> 'A ==> ('List{'A}) [none] .
+  op '_._ : ('A ==> ('List{'A})) 'B ==> 'A -> 'B ==> ('List{'A}) [none] .
+  op '_._ : ('A ==> ('List{'A})) ('List{'A}) ==> 'A -> ('List{'A}) ==> ('List{
+    'A}) [none] .
+  op '_._ : ('A ==> ('List{'A})) ('List{'B}) ==> 'A -> ('List{'B}) ==> ('List{
+    'A}) [none] .
+  op '_._ : ('A ==> ('List{'A})) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> (
+    'List{'A}) [none] .
+  op '_._ : ('A ==> ('List{'A})) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> (
+    'List{'A}) [none] .
+  op '_._ : ('A ==> ('List{'B})) 'A ==> 'A -> 'A ==> ('List{'B}) [none] .
+  op '_._ : ('A ==> ('List{'B})) 'B ==> 'A -> 'B ==> ('List{'B}) [none] .
+  op '_._ : ('A ==> ('List{'B})) ('List{'A}) ==> 'A -> ('List{'A}) ==> ('List{
+    'B}) [none] .
+  op '_._ : ('A ==> ('List{'B})) ('List{'B}) ==> 'A -> ('List{'B}) ==> ('List{
+    'B}) [none] .
+  op '_._ : ('A ==> ('List{'B})) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> (
+    'List{'B}) [none] .
+  op '_._ : ('A ==> ('List{'B})) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> (
+    'List{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) 'A ==> 'A -> 'A ==> ('NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) 'B ==> 'A -> 'B ==> ('NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) ('List{'A}) ==> 'A -> ('List{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) ('List{'B}) ==> 'A -> ('List{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'A})) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) 'A ==> 'A -> 'A ==> ('NeList{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) 'B ==> 'A -> 'B ==> ('NeList{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) ('List{'A}) ==> 'A -> ('List{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) ('List{'B}) ==> 'A -> ('List{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) ('NeList{'A}) ==> 'A -> ('NeList{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> ('NeList{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('B ==> 'A) 'A ==> 'B -> 'A ==> 'A [none] .
+  op '_._ : ('B ==> 'A) 'B ==> 'B -> 'B ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('List{'A}) ==> 'B -> ('List{'A}) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('List{'B}) ==> 'B -> ('List{'B}) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> 'A [none] .
+  op '_._ : ('B ==> 'B) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('List{'A}) ==> 'B -> ('List{'A}) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('List{'B}) ==> 'B -> ('List{'B}) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> 'B [none] .
+  op '_._ : ('B ==> ('List{'A})) 'A ==> 'B -> 'A ==> ('List{'A}) [none] .
+  op '_._ : ('B ==> ('List{'A})) 'B ==> 'B -> 'B ==> ('List{'A}) [none] .
+  op '_._ : ('B ==> ('List{'A})) ('List{'A}) ==> 'B -> ('List{'A}) ==> ('List{
+    'A}) [none] .
+  op '_._ : ('B ==> ('List{'A})) ('List{'B}) ==> 'B -> ('List{'B}) ==> ('List{
+    'A}) [none] .
+  op '_._ : ('B ==> ('List{'A})) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> (
+    'List{'A}) [none] .
+  op '_._ : ('B ==> ('List{'A})) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> (
+    'List{'A}) [none] .
+  op '_._ : ('B ==> ('List{'B})) 'A ==> 'B -> 'A ==> ('List{'B}) [none] .
+  op '_._ : ('B ==> ('List{'B})) 'B ==> 'B -> 'B ==> ('List{'B}) [none] .
+  op '_._ : ('B ==> ('List{'B})) ('List{'A}) ==> 'B -> ('List{'A}) ==> ('List{
+    'B}) [none] .
+  op '_._ : ('B ==> ('List{'B})) ('List{'B}) ==> 'B -> ('List{'B}) ==> ('List{
+    'B}) [none] .
+  op '_._ : ('B ==> ('List{'B})) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> (
+    'List{'B}) [none] .
+  op '_._ : ('B ==> ('List{'B})) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> (
+    'List{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) 'A ==> 'B -> 'A ==> ('NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) 'B ==> 'B -> 'B ==> ('NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) ('List{'A}) ==> 'B -> ('List{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) ('List{'B}) ==> 'B -> ('List{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'A})) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) 'A ==> 'B -> 'A ==> ('NeList{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) 'B ==> 'B -> 'B ==> ('NeList{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) ('List{'A}) ==> 'B -> ('List{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) ('List{'B}) ==> 'B -> ('List{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) ('NeList{'A}) ==> 'B -> ('NeList{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> ('NeList{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> 'A) 'A ==> ('List{'A}) -> 'A ==> 'A [none] .
+  op '_._ : (('List{'A}) ==> 'A) 'B ==> ('List{'A}) -> 'B ==> 'A [none] .
+  op '_._ : (('List{'A}) ==> 'A) ('List{'A}) ==> ('List{'A}) -> ('List{'A}) ==>
+    'A [none] .
+  op '_._ : (('List{'A}) ==> 'A) ('List{'B}) ==> ('List{'A}) -> ('List{'B}) ==>
+    'A [none] .
+  op '_._ : (('List{'A}) ==> 'A) ('NeList{'A}) ==> ('List{'A}) -> ('NeList{'A})
+    ==> 'A [none] .
+  op '_._ : (('List{'A}) ==> 'A) ('NeList{'B}) ==> ('List{'A}) -> ('NeList{'B})
+    ==> 'A [none] .
+  op '_._ : (('List{'A}) ==> 'B) 'A ==> ('List{'A}) -> 'A ==> 'B [none] .
+  op '_._ : (('List{'A}) ==> 'B) 'B ==> ('List{'A}) -> 'B ==> 'B [none] .
+  op '_._ : (('List{'A}) ==> 'B) ('List{'A}) ==> ('List{'A}) -> ('List{'A}) ==>
+    'B [none] .
+  op '_._ : (('List{'A}) ==> 'B) ('List{'B}) ==> ('List{'A}) -> ('List{'B}) ==>
+    'B [none] .
+  op '_._ : (('List{'A}) ==> 'B) ('NeList{'A}) ==> ('List{'A}) -> ('NeList{'A})
+    ==> 'B [none] .
+  op '_._ : (('List{'A}) ==> 'B) ('NeList{'B}) ==> ('List{'A}) -> ('NeList{'B})
+    ==> 'B [none] .
+  op '_._ : (('List{'A}) ==> ('List{'A})) 'A ==> ('List{'A}) -> 'A ==> ('List{
+    'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'A})) 'B ==> ('List{'A}) -> 'B ==> ('List{
+    'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'A})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'A})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'A})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) 'A ==> ('List{'A}) -> 'A ==> ('List{
+    'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) 'B ==> ('List{'A}) -> 'B ==> ('List{
+    'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) ('List{'A}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('List{'B})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) 'A ==> ('List{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) 'B ==> ('List{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) ('List{'A}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) 'A ==> ('List{'A}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) 'B ==> ('List{'A}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) ('List{'A}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> 'A) 'A ==> ('List{'B}) -> 'A ==> 'A [none] .
+  op '_._ : (('List{'B}) ==> 'A) 'B ==> ('List{'B}) -> 'B ==> 'A [none] .
+  op '_._ : (('List{'B}) ==> 'A) ('List{'A}) ==> ('List{'B}) -> ('List{'A}) ==>
+    'A [none] .
+  op '_._ : (('List{'B}) ==> 'A) ('List{'B}) ==> ('List{'B}) -> ('List{'B}) ==>
+    'A [none] .
+  op '_._ : (('List{'B}) ==> 'A) ('NeList{'A}) ==> ('List{'B}) -> ('NeList{'A})
+    ==> 'A [none] .
+  op '_._ : (('List{'B}) ==> 'A) ('NeList{'B}) ==> ('List{'B}) -> ('NeList{'B})
+    ==> 'A [none] .
+  op '_._ : (('List{'B}) ==> 'B) 'A ==> ('List{'B}) -> 'A ==> 'B [none] .
+  op '_._ : (('List{'B}) ==> 'B) 'B ==> ('List{'B}) -> 'B ==> 'B [none] .
+  op '_._ : (('List{'B}) ==> 'B) ('List{'A}) ==> ('List{'B}) -> ('List{'A}) ==>
+    'B [none] .
+  op '_._ : (('List{'B}) ==> 'B) ('List{'B}) ==> ('List{'B}) -> ('List{'B}) ==>
+    'B [none] .
+  op '_._ : (('List{'B}) ==> 'B) ('NeList{'A}) ==> ('List{'B}) -> ('NeList{'A})
+    ==> 'B [none] .
+  op '_._ : (('List{'B}) ==> 'B) ('NeList{'B}) ==> ('List{'B}) -> ('NeList{'B})
+    ==> 'B [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) 'A ==> ('List{'B}) -> 'A ==> ('List{
+    'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) 'B ==> ('List{'B}) -> 'B ==> ('List{
+    'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) ('List{'B}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'A})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'B})) 'A ==> ('List{'B}) -> 'A ==> ('List{
+    'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'B})) 'B ==> ('List{'B}) -> 'B ==> ('List{
+    'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'B})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'B})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('List{'B})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) 'A ==> ('List{'B}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) 'B ==> ('List{'B}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) ('List{'B}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) 'A ==> ('List{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) 'B ==> ('List{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) ('List{'B}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) 'A ==> ('NeList{'A}) -> 'A ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) 'B ==> ('NeList{'A}) -> 'B ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) ('List{'A}) ==> ('NeList{'A}) -> ('List{'A})
+    ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) ('List{'B}) ==> ('NeList{'A}) -> ('List{'B})
+    ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) ('NeList{'A}) ==> ('NeList{'A}) -> ('NeList{
+    'A}) ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'A) ('NeList{'B}) ==> ('NeList{'A}) -> ('NeList{
+    'B}) ==> 'A [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) 'A ==> ('NeList{'A}) -> 'A ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) 'B ==> ('NeList{'A}) -> 'B ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) ('List{'A}) ==> ('NeList{'A}) -> ('List{'A})
+    ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) ('List{'B}) ==> ('NeList{'A}) -> ('List{'B})
+    ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) ('NeList{'A}) ==> ('NeList{'A}) -> ('NeList{
+    'A}) ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> 'B) ('NeList{'B}) ==> ('NeList{'A}) -> ('NeList{
+    'B}) ==> 'B [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) 'A ==> ('NeList{'A}) -> 'A ==> (
+    'List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) 'B ==> ('NeList{'A}) -> 'B ==> (
+    'List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) ('NeList{'A}) ==> ('NeList{'A}) ->
+    ('NeList{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'A})) ('NeList{'B}) ==> ('NeList{'A}) ->
+    ('NeList{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) 'A ==> ('NeList{'A}) -> 'A ==> (
+    'List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) 'B ==> ('NeList{'A}) -> 'B ==> (
+    'List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) ('NeList{'A}) ==> ('NeList{'A}) ->
+    ('NeList{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('List{'B})) ('NeList{'B}) ==> ('NeList{'A}) ->
+    ('NeList{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'A})) 'A ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'A})) 'B ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'A})) ('List{'A}) ==> ('NeList{'A}) ->
+    ('List{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'A})) ('List{'B}) ==> ('NeList{'A}) ->
+    ('List{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'B}) ==> ('NeList{'A})
+    -> ('NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) 'A ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) 'B ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) ('List{'A}) ==> ('NeList{'A}) ->
+    ('List{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) ('List{'B}) ==> ('NeList{'A}) ->
+    ('List{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'A}) ==> ('NeList{'A})
+    -> ('NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A})
+    -> ('NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) 'A ==> ('NeList{'B}) -> 'A ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) 'B ==> ('NeList{'B}) -> 'B ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) ('List{'A}) ==> ('NeList{'B}) -> ('List{'A})
+    ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) ('List{'B}) ==> ('NeList{'B}) -> ('List{'B})
+    ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) ('NeList{'A}) ==> ('NeList{'B}) -> ('NeList{
+    'A}) ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'A) ('NeList{'B}) ==> ('NeList{'B}) -> ('NeList{
+    'B}) ==> 'A [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) 'A ==> ('NeList{'B}) -> 'A ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) 'B ==> ('NeList{'B}) -> 'B ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) ('List{'A}) ==> ('NeList{'B}) -> ('List{'A})
+    ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) ('List{'B}) ==> ('NeList{'B}) -> ('List{'B})
+    ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) ('NeList{'A}) ==> ('NeList{'B}) -> ('NeList{
+    'A}) ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> 'B) ('NeList{'B}) ==> ('NeList{'B}) -> ('NeList{
+    'B}) ==> 'B [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) 'A ==> ('NeList{'B}) -> 'A ==> (
+    'List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) 'B ==> ('NeList{'B}) -> 'B ==> (
+    'List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) ('NeList{'A}) ==> ('NeList{'B}) ->
+    ('NeList{'A}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'A})) ('NeList{'B}) ==> ('NeList{'B}) ->
+    ('NeList{'B}) ==> ('List{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) 'A ==> ('NeList{'B}) -> 'A ==> (
+    'List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) 'B ==> ('NeList{'B}) -> 'B ==> (
+    'List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) ('NeList{'A}) ==> ('NeList{'B}) ->
+    ('NeList{'A}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('List{'B})) ('NeList{'B}) ==> ('NeList{'B}) ->
+    ('NeList{'B}) ==> ('List{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) 'A ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) 'B ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) ('List{'A}) ==> ('NeList{'B}) ->
+    ('List{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) ('List{'B}) ==> ('NeList{'B}) ->
+    ('List{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B})
+    -> ('NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'B}) ==> ('NeList{'B})
+    -> ('NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'B})) 'A ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'B})) 'B ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'B})) ('List{'A}) ==> ('NeList{'B}) ->
+    ('List{'A}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'B})) ('List{'B}) ==> ('NeList{'B}) ->
+    ('List{'B}) ==> ('NeList{'B}) [none] .
+  op '_._ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'A}) ==> ('NeList{'B})
+    -> ('NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> ('List{'A}) -> 'A ==> ('List{'A}) [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> ('List{'B}) -> 'A ==> ('List{'B}) [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> ('NeList{'A}) -> 'A ==> ('NeList{'A}) [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> ('NeList{'B}) -> 'A ==> ('NeList{'B}) [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> ('List{'A}) -> 'A ==> ('List{'A}) [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> ('List{'B}) -> 'A ==> ('List{'B}) [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> ('NeList{'A}) -> 'A ==> ('NeList{'A}) [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> ('NeList{'B}) -> 'A ==> ('NeList{'B}) [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> ('List{'A}) -> 'A ==> ('List{
+    'A}) [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> 'A ==> ('List{
+    'B}) [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('A ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> 'A ==> ('List{
+    'A}) [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> ('List{'B}) -> 'A ==> ('List{
+    'B}) [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('A ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) -> 'A ==> (
+    'List{'A}) [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) -> 'A ==> (
+    'List{'B}) [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('A ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) -> 'A ==> (
+    'List{'A}) [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) -> 'A ==> (
+    'List{'B}) [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A}) -> 'A ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('A ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'B}) -> 'A ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> ('List{'A}) -> 'B ==> ('List{'A}) [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> ('List{'B}) -> 'B ==> ('List{'B}) [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> ('NeList{'A}) -> 'B ==> ('NeList{'A}) [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> ('NeList{'B}) -> 'B ==> ('NeList{'B}) [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> ('List{'A}) -> 'B ==> ('List{'A}) [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> ('List{'B}) -> 'B ==> ('List{'B}) [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> ('NeList{'A}) -> 'B ==> ('NeList{'A}) [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> ('NeList{'B}) -> 'B ==> ('NeList{'B}) [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> ('List{'A}) -> 'B ==> ('List{
+    'A}) [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> 'B ==> ('List{
+    'B}) [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('B ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> 'B ==> ('List{
+    'A}) [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> ('List{'B}) -> 'B ==> ('List{
+    'B}) [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('B ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) -> 'B ==> (
+    'List{'A}) [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) -> 'B ==> (
+    'List{'B}) [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('B ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) -> 'B ==> (
+    'List{'A}) [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) -> 'B ==> (
+    'List{'B}) [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A}) -> 'B ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : ('B ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'B}) -> 'B ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> 'A -> ('List{'A}) ==> 'A [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> 'B -> ('List{'A}) ==> 'B [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> ('List{'A}) -> ('List{'A}) ==> ('List{
+    'A}) [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> ('List{'B}) -> ('List{'A}) ==> ('List{
+    'B}) [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> ('NeList{'A}) -> ('List{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> 'A) 'A ==> ('NeList{'B}) -> ('List{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> 'A -> ('List{'A}) ==> 'A [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> 'B -> ('List{'A}) ==> 'B [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> ('List{'A}) -> ('List{'A}) ==> ('List{
+    'A}) [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> ('List{'B}) -> ('List{'A}) ==> ('List{
+    'B}) [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> ('NeList{'A}) -> ('List{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> 'B) 'B ==> ('NeList{'B}) -> ('List{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'A})) ('List{'A}) ==> 'A -> ('List{'A}) ==>
+    'A [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'A})) ('List{'A}) ==> 'B -> ('List{'A}) ==>
+    'B [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'List{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'List{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> 'A -> ('List{'A}) ==>
+    'A [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> 'B -> ('List{'A}) ==>
+    'B [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'List{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'List{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> ('List{'A})
+    ==> 'A [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> ('List{'A})
+    ==> 'B [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'A}) ->
+    ('List{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B}) ->
+    ('List{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> ('List{'A})
+    ==> 'A [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> ('List{'A})
+    ==> 'B [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'List{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'List{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A}) ->
+    ('List{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'B}) ->
+    ('List{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> 'A -> ('List{'B}) ==> 'A [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> 'B -> ('List{'B}) ==> 'B [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> ('List{'A}) -> ('List{'B}) ==> ('List{
+    'A}) [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> ('List{'B}) -> ('List{'B}) ==> ('List{
+    'B}) [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> ('NeList{'A}) -> ('List{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> 'A) 'A ==> ('NeList{'B}) -> ('List{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> 'A -> ('List{'B}) ==> 'A [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> 'B -> ('List{'B}) ==> 'B [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> ('List{'A}) -> ('List{'B}) ==> ('List{
+    'A}) [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> ('List{'B}) -> ('List{'B}) ==> ('List{
+    'B}) [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> ('NeList{'A}) -> ('List{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> 'B) 'B ==> ('NeList{'B}) -> ('List{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> 'A -> ('List{'B}) ==>
+    'A [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> 'B -> ('List{'B}) ==>
+    'B [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'List{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'List{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'B})) ('List{'B}) ==> 'A -> ('List{'B}) ==>
+    'A [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'B})) ('List{'B}) ==> 'B -> ('List{'B}) ==>
+    'B [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'List{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'List{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> ('List{'B})
+    ==> 'A [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> ('List{'B})
+    ==> 'B [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'A}) ->
+    ('List{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B}) ->
+    ('List{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> ('List{'B})
+    ==> 'A [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> ('List{'B})
+    ==> 'B [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) -> (
+    'List{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) -> (
+    'List{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A}) ->
+    ('List{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('List{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'B}) ->
+    ('List{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> 'A -> ('NeList{'A}) ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> 'B -> ('NeList{'A}) ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> ('List{'A}) -> ('NeList{'A}) ==> (
+    'List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> ('List{'B}) -> ('NeList{'A}) ==> (
+    'List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> ('NeList{'A}) -> ('NeList{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'A) 'A ==> ('NeList{'B}) -> ('NeList{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> 'A -> ('NeList{'A}) ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> 'B -> ('NeList{'A}) ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> ('List{'A}) -> ('NeList{'A}) ==> (
+    'List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> ('List{'B}) -> ('NeList{'A}) ==> (
+    'List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> ('NeList{'A}) -> ('NeList{'A}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> 'B) 'B ==> ('NeList{'B}) -> ('NeList{'A}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> 'A -> ('NeList{'A})
+    ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> 'B -> ('NeList{'A})
+    ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> 'A -> ('NeList{'A})
+    ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> 'B -> ('NeList{'A})
+    ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'NeList{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> ('List{'B}) -> (
+    'NeList{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> ('NeList{
+    'A}) ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> ('NeList{
+    'A}) ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) ->
+    ('NeList{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) ->
+    ('NeList{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B})
+    -> ('NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> ('NeList{
+    'A}) ==> 'A [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> ('NeList{
+    'A}) ==> 'B [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) ->
+    ('NeList{'A}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) ->
+    ('NeList{'A}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A})
+    -> ('NeList{'A}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'B})
+    -> ('NeList{'A}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> 'A -> ('NeList{'B}) ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> 'B -> ('NeList{'B}) ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> ('List{'A}) -> ('NeList{'B}) ==> (
+    'List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> ('List{'B}) -> ('NeList{'B}) ==> (
+    'List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> ('NeList{'A}) -> ('NeList{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'A) 'A ==> ('NeList{'B}) -> ('NeList{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> 'A -> ('NeList{'B}) ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> 'B -> ('NeList{'B}) ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> ('List{'A}) -> ('NeList{'B}) ==> (
+    'List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> ('List{'B}) -> ('NeList{'B}) ==> (
+    'List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> ('NeList{'A}) -> ('NeList{'B}) ==> (
+    'NeList{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> 'B) 'B ==> ('NeList{'B}) -> ('NeList{'B}) ==> (
+    'NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> 'A -> ('NeList{'B})
+    ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> 'B -> ('NeList{'B})
+    ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'A}) -> (
+    'NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'A})) ('List{'A}) ==> ('NeList{'B}) -> (
+    'NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> 'A -> ('NeList{'B})
+    ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> 'B -> ('NeList{'B})
+    ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> ('List{'A}) -> (
+    'NeList{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> ('List{'B}) -> (
+    'NeList{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'A}) -> (
+    'NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('List{'B})) ('List{'B}) ==> ('NeList{'B}) -> (
+    'NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'A -> ('NeList{
+    'B}) ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> 'B -> ('NeList{
+    'B}) ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'A}) ->
+    ('NeList{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('List{'B}) ->
+    ('NeList{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'A})
+    -> ('NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'A}) ==> ('NeList{'B})
+    -> ('NeList{'B}) ==> ('NeList{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'A -> ('NeList{
+    'B}) ==> 'A [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> 'B -> ('NeList{
+    'B}) ==> 'B [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'A}) ->
+    ('NeList{'B}) ==> ('List{'A}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('List{'B}) ->
+    ('NeList{'B}) ==> ('List{'B}) [none] .
+  op '_;_ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) ==> ('NeList{'A})
+    -> ('NeList{'B}) ==> ('NeList{'A}) [none] .
+  op '__ : ('A ==> 'A) 'A -> 'A [none] .
+  op '__ : ('A ==> 'B) 'A -> 'B [none] .
+  op '__ : ('A ==> ('List{'A})) 'A -> 'List{'A} [none] .
+  op '__ : ('A ==> ('List{'B})) 'A -> 'List{'B} [none] .
+  op '__ : ('A ==> ('NeList{'A})) 'A -> 'NeList{'A} [none] .
+  op '__ : ('A ==> ('NeList{'B})) 'A -> 'NeList{'B} [none] .
+  op '__ : ('B ==> 'A) 'B -> 'A [none] .
+  op '__ : ('B ==> 'B) 'B -> 'B [none] .
+  op '__ : ('B ==> ('List{'A})) 'B -> 'List{'A} [none] .
+  op '__ : ('B ==> ('List{'B})) 'B -> 'List{'B} [none] .
+  op '__ : ('B ==> ('NeList{'A})) 'B -> 'NeList{'A} [none] .
+  op '__ : ('B ==> ('NeList{'B})) 'B -> 'NeList{'B} [none] .
+  op '__ : (('List{'A}) ==> 'A) ('List{'A}) -> 'A [none] .
+  op '__ : (('List{'A}) ==> 'B) ('List{'A}) -> 'B [none] .
+  op '__ : (('List{'A}) ==> ('List{'A})) ('List{'A}) -> 'List{'A} [none] .
+  op '__ : (('List{'A}) ==> ('List{'B})) ('List{'A}) -> 'List{'B} [none] .
+  op '__ : (('List{'A}) ==> ('NeList{'A})) ('List{'A}) -> 'NeList{'A} [none] .
+  op '__ : (('List{'A}) ==> ('NeList{'B})) ('List{'A}) -> 'NeList{'B} [none] .
+  op '__ : (('List{'B}) ==> 'A) ('List{'B}) -> 'A [none] .
+  op '__ : (('List{'B}) ==> 'B) ('List{'B}) -> 'B [none] .
+  op '__ : (('List{'B}) ==> ('List{'A})) ('List{'B}) -> 'List{'A} [none] .
+  op '__ : (('List{'B}) ==> ('List{'B})) ('List{'B}) -> 'List{'B} [none] .
+  op '__ : (('List{'B}) ==> ('NeList{'A})) ('List{'B}) -> 'NeList{'A} [none] .
+  op '__ : (('List{'B}) ==> ('NeList{'B})) ('List{'B}) -> 'NeList{'B} [none] .
+  op '__ : (('NeList{'A}) ==> 'A) ('NeList{'A}) -> 'A [none] .
+  op '__ : (('NeList{'A}) ==> 'B) ('NeList{'A}) -> 'B [none] .
+  op '__ : (('NeList{'A}) ==> ('List{'A})) ('NeList{'A}) -> 'List{'A} [none] .
+  op '__ : (('NeList{'A}) ==> ('List{'B})) ('NeList{'A}) -> 'List{'B} [none] .
+  op '__ : (('NeList{'A}) ==> ('NeList{'A})) ('NeList{'A}) -> 'NeList{'A} [
+    none] .
+  op '__ : (('NeList{'A}) ==> ('NeList{'B})) ('NeList{'A}) -> 'NeList{'B} [
+    none] .
+  op '__ : (('NeList{'B}) ==> 'A) ('NeList{'B}) -> 'A [none] .
+  op '__ : (('NeList{'B}) ==> 'B) ('NeList{'B}) -> 'B [none] .
+  op '__ : (('NeList{'B}) ==> ('List{'A})) ('NeList{'B}) -> 'List{'A} [none] .
+  op '__ : (('NeList{'B}) ==> ('List{'B})) ('NeList{'B}) -> 'List{'B} [none] .
+  op '__ : (('NeList{'B}) ==> ('NeList{'A})) ('NeList{'B}) -> 'NeList{'A} [
+    none] .
+  op '__ : (('NeList{'B}) ==> ('NeList{'B})) ('NeList{'B}) -> 'NeList{'B} [
+    none] .
+  op '_`,_ : ('List{'A}) ('List{'A}) -> 'List{'A} [assoc ctor id(const('.List,
+    'List{'A}))] .
+  op '_`,_ : ('List{'A}) ('NeList{'A}) -> 'NeList{'A} [assoc ctor id(const(
+    '.List, 'List{'A}))] .
+  op '_`,_ : ('List{'B}) ('List{'B}) -> 'List{'B} [assoc ctor id(const('.List,
+    'List{'B}))] .
+  op '_`,_ : ('List{'B}) ('NeList{'B}) -> 'NeList{'B} [assoc ctor id(const(
+    '.List, 'List{'B}))] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  op 'id < 'A > : nil -> 'A ==> 'A [ctor] .
+  op 'id < 'B > : nil -> 'B ==> 'B [ctor] .
+  op 'id < 'List{'A} > : nil -> ('List{'A}) ==> ('List{'A}) [ctor] .
+  op 'id < 'List{'B} > : nil -> ('List{'B}) ==> ('List{'B}) [ctor] .
+  op 'id < 'NeList{'A} > : nil -> ('NeList{'A}) ==> ('NeList{'A}) [ctor] .
+  op 'id < 'NeList{'B} > : nil -> ('NeList{'B}) ==> ('NeList{'B}) [ctor] .
+  none
+  eq '__[const('id < 'A >, 'A ==> 'A),var('X, 'A)] = var('X, 'A) [none] .
+  eq '__[const('id < 'B >, 'B ==> 'B),var('X, 'B)] = var('X, 'B) [none] .
+  eq '__[const('id < 'List{'A} >, ('List{'A}) ==> ('List{'A})),var('X, 'List{
+    'A})] = var('X, 'List{'A}) [none] .
+  eq '__[const('id < 'List{'B} >, ('List{'B}) ==> ('List{'B})),var('X, 'List{
+    'B})] = var('X, 'List{'B}) [none] .
+  eq '__[const('id < 'NeList{'A} >, ('NeList{'A}) ==> ('NeList{'A})),var('X,
+    'NeList{'A})] = var('X, 'NeList{'A}) [none] .
+  eq '__[const('id < 'NeList{'B} >, ('NeList{'B}) ==> ('NeList{'B})),var('X,
+    'NeList{'B})] = var('X, 'NeList{'B}) [none] .
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
+    EXPONENTIAL
+; EXPONENTIAL .
+rewrites: 16716
+result FModule: fmod 'TEST-MODULE is
+  nil
+  sorts 'A ; 'B ; 'A ==> 'A ; 'A ==> 'B ; 'A ==> 'A ==> 'A ; 'A ==> 'A ==> 'B ;
+    'A ==> 'B ==> 'A ; 'A ==> 'B ==> 'B ; 'B ==> 'A ; 'B ==> 'B ; 'B ==> 'A ==>
+    'A ; 'B ==> 'A ==> 'B ; 'B ==> 'B ==> 'A ; 'B ==> 'B ==> 'B ; ('A ==> 'A)
+    ==> 'A ; ('A ==> 'A) ==> 'B ; ('A ==> 'A) ==> 'A ==> 'A ; ('A ==> 'A) ==>
+    'A ==> 'B ; ('A ==> 'A) ==> 'B ==> 'A ; ('A ==> 'A) ==> 'B ==> 'B ; ('A ==>
+    'B) ==> 'A ; ('A ==> 'B) ==> 'B ; ('A ==> 'B) ==> 'A ==> 'A ; ('A ==> 'B)
+    ==> 'A ==> 'B ; ('A ==> 'B) ==> 'B ==> 'A ; ('A ==> 'B) ==> 'B ==> 'B ; ('B
+    ==> 'A) ==> 'A ; ('B ==> 'A) ==> 'B ; ('B ==> 'A) ==> 'A ==> 'A ; ('B ==>
+    'A) ==> 'A ==> 'B ; ('B ==> 'A) ==> 'B ==> 'A ; ('B ==> 'A) ==> 'B ==> 'B ;
+    ('B ==> 'B) ==> 'A ; ('B ==> 'B) ==> 'B ; ('B ==> 'B) ==> 'A ==> 'A ; ('B
+    ==> 'B) ==> 'A ==> 'B ; ('B ==> 'B) ==> 'B ==> 'A ; ('B ==> 'B) ==> 'B ==>
+    'B .
+  subsort 'A < 'B .
+  subsort 'A ==> 'A < 'B ==> 'A .
+  subsort 'A ==> 'B < 'A ==> 'A .
+  subsort 'A ==> 'B < 'B ==> 'B .
+  subsort 'A ==> 'A ==> 'A < 'A ==> 'A ==> 'B .
+  subsort 'A ==> 'A ==> 'A < 'B ==> 'A ==> 'A .
+  subsort 'A ==> 'A ==> 'B < 'B ==> 'A ==> 'B .
+  subsort 'A ==> 'B ==> 'A < 'A ==> 'A ==> 'A .
+  subsort 'A ==> 'B ==> 'A < 'A ==> 'B ==> 'B .
+  subsort 'A ==> 'B ==> 'A < 'B ==> 'B ==> 'A .
+  subsort 'A ==> 'B ==> 'B < 'A ==> 'A ==> 'B .
+  subsort 'A ==> 'B ==> 'B < 'B ==> 'B ==> 'B .
+  subsort 'B ==> 'B < 'B ==> 'A .
+  subsort 'B ==> 'A ==> 'A < 'B ==> 'A ==> 'B .
+  subsort 'B ==> 'B ==> 'A < 'B ==> 'A ==> 'A .
+  subsort 'B ==> 'B ==> 'A < 'B ==> 'B ==> 'B .
+  subsort 'B ==> 'B ==> 'B < 'B ==> 'A ==> 'B .
+  subsort ('A ==> 'A) ==> 'A < ('B ==> 'A) ==> 'A .
+  subsort ('A ==> 'A) ==> 'B < ('A ==> 'A) ==> 'A .
+  subsort ('A ==> 'A) ==> 'B < ('B ==> 'A) ==> 'B .
+  subsort ('A ==> 'A) ==> 'A ==> 'A < ('A ==> 'A) ==> 'A ==> 'B .
+  subsort ('A ==> 'A) ==> 'A ==> 'A < ('B ==> 'A) ==> 'A ==> 'A .
+  subsort ('A ==> 'A) ==> 'A ==> 'B < ('B ==> 'A) ==> 'A ==> 'B .
+  subsort ('A ==> 'A) ==> 'B ==> 'A < ('A ==> 'A) ==> 'A ==> 'A .
+  subsort ('A ==> 'A) ==> 'B ==> 'A < ('A ==> 'A) ==> 'B ==> 'B .
+  subsort ('A ==> 'A) ==> 'B ==> 'A < ('B ==> 'A) ==> 'B ==> 'A .
+  subsort ('A ==> 'A) ==> 'B ==> 'B < ('A ==> 'A) ==> 'A ==> 'B .
+  subsort ('A ==> 'A) ==> 'B ==> 'B < ('B ==> 'A) ==> 'B ==> 'B .
+  subsort ('A ==> 'B) ==> 'A < ('A ==> 'A) ==> 'A .
+  subsort ('A ==> 'B) ==> 'A < ('B ==> 'B) ==> 'A .
+  subsort ('A ==> 'B) ==> 'B < ('A ==> 'A) ==> 'B .
+  subsort ('A ==> 'B) ==> 'B < ('A ==> 'B) ==> 'A .
+  subsort ('A ==> 'B) ==> 'B < ('B ==> 'B) ==> 'B .
+  subsort ('A ==> 'B) ==> 'A ==> 'A < ('A ==> 'A) ==> 'A ==> 'A .
+  subsort ('A ==> 'B) ==> 'A ==> 'A < ('A ==> 'B) ==> 'A ==> 'B .
+  subsort ('A ==> 'B) ==> 'A ==> 'A < ('B ==> 'B) ==> 'A ==> 'A .
+  subsort ('A ==> 'B) ==> 'A ==> 'B < ('A ==> 'A) ==> 'A ==> 'B .
+  subsort ('A ==> 'B) ==> 'A ==> 'B < ('B ==> 'B) ==> 'A ==> 'B .
+  subsort ('A ==> 'B) ==> 'B ==> 'A < ('A ==> 'A) ==> 'B ==> 'A .
+  subsort ('A ==> 'B) ==> 'B ==> 'A < ('A ==> 'B) ==> 'A ==> 'A .
+  subsort ('A ==> 'B) ==> 'B ==> 'A < ('A ==> 'B) ==> 'B ==> 'B .
+  subsort ('A ==> 'B) ==> 'B ==> 'A < ('B ==> 'B) ==> 'B ==> 'A .
+  subsort ('A ==> 'B) ==> 'B ==> 'B < ('A ==> 'A) ==> 'B ==> 'B .
+  subsort ('A ==> 'B) ==> 'B ==> 'B < ('A ==> 'B) ==> 'A ==> 'B .
+  subsort ('A ==> 'B) ==> 'B ==> 'B < ('B ==> 'B) ==> 'B ==> 'B .
+  subsort ('B ==> 'A) ==> 'B < ('B ==> 'A) ==> 'A .
+  subsort ('B ==> 'A) ==> 'A ==> 'A < ('B ==> 'A) ==> 'A ==> 'B .
+  subsort ('B ==> 'A) ==> 'B ==> 'A < ('B ==> 'A) ==> 'A ==> 'A .
+  subsort ('B ==> 'A) ==> 'B ==> 'A < ('B ==> 'A) ==> 'B ==> 'B .
+  subsort ('B ==> 'A) ==> 'B ==> 'B < ('B ==> 'A) ==> 'A ==> 'B .
+  subsort ('B ==> 'B) ==> 'A < ('B ==> 'A) ==> 'A .
+  subsort ('B ==> 'B) ==> 'B < ('B ==> 'A) ==> 'B .
+  subsort ('B ==> 'B) ==> 'B < ('B ==> 'B) ==> 'A .
+  subsort ('B ==> 'B) ==> 'A ==> 'A < ('B ==> 'A) ==> 'A ==> 'A .
+  subsort ('B ==> 'B) ==> 'A ==> 'A < ('B ==> 'B) ==> 'A ==> 'B .
+  subsort ('B ==> 'B) ==> 'A ==> 'B < ('B ==> 'A) ==> 'A ==> 'B .
+  subsort ('B ==> 'B) ==> 'B ==> 'A < ('B ==> 'A) ==> 'B ==> 'A .
+  subsort ('B ==> 'B) ==> 'B ==> 'A < ('B ==> 'B) ==> 'A ==> 'A .
+  subsort ('B ==> 'B) ==> 'B ==> 'A < ('B ==> 'B) ==> 'B ==> 'B .
+  subsort ('B ==> 'B) ==> 'B ==> 'B < ('B ==> 'A) ==> 'B ==> 'B .
+  subsort ('B ==> 'B) ==> 'B ==> 'B < ('B ==> 'B) ==> 'A ==> 'B .
+  op '_._ : ('A ==> 'A) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'A [none] .
+  op '_._ : ('A ==> 'A) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'A [none] .
+  op '_._ : ('A ==> 'B) 'A ==> 'A -> 'A ==> 'B [none] .
+  op '_._ : ('A ==> 'B) 'B ==> 'A -> 'B ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'B [none] .
+  op '_._ : ('A ==> 'B) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'B [none] .
+  op '_._ : ('A ==> 'A ==> 'A) 'A ==> 'A -> 'A ==> 'A ==> 'A [none] .
+  op '_._ : ('A ==> 'A ==> 'A) 'B ==> 'A -> 'B ==> 'A ==> 'A [none] .
+  op '_._ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'A) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'A) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'A) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'B) 'A ==> 'A -> 'A ==> 'A ==> 'B [none] .
+  op '_._ : ('A ==> 'A ==> 'B) 'B ==> 'A -> 'B ==> 'A ==> 'B [none] .
+  op '_._ : ('A ==> 'A ==> 'B) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'B) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'A ==> 'B) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'A) 'A ==> 'A -> 'A ==> 'B ==> 'A [none] .
+  op '_._ : ('A ==> 'B ==> 'A) 'B ==> 'A -> 'B ==> 'B ==> 'A [none] .
+  op '_._ : ('A ==> 'B ==> 'A) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'A) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'A) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'B) 'A ==> 'A -> 'A ==> 'B ==> 'B [none] .
+  op '_._ : ('A ==> 'B ==> 'B) 'B ==> 'A -> 'B ==> 'B ==> 'B [none] .
+  op '_._ : ('A ==> 'B ==> 'B) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'B) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'B) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'A) 'A ==> 'B -> 'A ==> 'A [none] .
+  op '_._ : ('B ==> 'A) 'B ==> 'B -> 'B ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'A [none] .
+  op '_._ : ('B ==> 'A) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'A [none] .
+  op '_._ : ('B ==> 'B) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'B [none] .
+  op '_._ : ('B ==> 'B) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'B [none] .
+  op '_._ : ('B ==> 'A ==> 'A) 'A ==> 'B -> 'A ==> 'A ==> 'A [none] .
+  op '_._ : ('B ==> 'A ==> 'A) 'B ==> 'B -> 'B ==> 'A ==> 'A [none] .
+  op '_._ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'A) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'A) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'A) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'B) 'A ==> 'B -> 'A ==> 'A ==> 'B [none] .
+  op '_._ : ('B ==> 'A ==> 'B) 'B ==> 'B -> 'B ==> 'A ==> 'B [none] .
+  op '_._ : ('B ==> 'A ==> 'B) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'B) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'A ==> 'B) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'A) 'A ==> 'B -> 'A ==> 'B ==> 'A [none] .
+  op '_._ : ('B ==> 'B ==> 'A) 'B ==> 'B -> 'B ==> 'B ==> 'A [none] .
+  op '_._ : ('B ==> 'B ==> 'A) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'A) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'A) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'B) 'A ==> 'B -> 'A ==> 'B ==> 'B [none] .
+  op '_._ : ('B ==> 'B ==> 'B) 'B ==> 'B -> 'B ==> 'B ==> 'B [none] .
+  op '_._ : ('B ==> 'B ==> 'B) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'B) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'B) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_._ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) 'A ==> 'A ==> 'A -> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) 'B ==> 'A ==> 'A -> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) 'A ==> 'A ==> 'A -> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) 'B ==> 'A ==> 'A -> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'A) 'A ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'A) 'B ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'A) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) 'A ==> 'A ==> 'A -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) 'B ==> 'A ==> 'A -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'A ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) 'A ==> 'A ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) 'B ==> 'A ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) 'A ==> 'A ==> 'A -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) 'B ==> 'A ==> 'A -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) 'A ==> 'A ==> 'B -> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) 'B ==> 'A ==> 'B -> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) 'A ==> 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) 'B ==> 'A ==> 'B -> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) 'A ==> 'A ==> 'B -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) 'B ==> 'A ==> 'B -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'A) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'B) 'A ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'B) 'B ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'B) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'A ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) 'A ==> 'A ==> 'B -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) 'B ==> 'A ==> 'B -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) 'A ==> 'A ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) 'B ==> 'A ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) 'A ==> 'B ==> 'A -> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) 'B ==> 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) 'A ==> 'B ==> 'A -> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) 'B ==> 'B ==> 'A -> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) 'A ==> 'B ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) 'B ==> 'B ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'A) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) 'A ==> 'B ==> 'A -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) 'B ==> 'B ==> 'A -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'A ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'A) 'A ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'A) 'B ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'A) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) 'A ==> 'B ==> 'A -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) 'B ==> 'B ==> 'A -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) 'A ==> 'B ==> 'B -> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) 'B ==> 'B ==> 'B -> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) 'A ==> 'B ==> 'B -> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) 'B ==> 'B ==> 'B -> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) 'A ==> 'B ==> 'B -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) 'B ==> 'B ==> 'B -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'A) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) 'A ==> 'B ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) 'B ==> 'B ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'A ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) 'A ==> 'B ==> 'B -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) 'B ==> 'B ==> 'B -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'B) 'A ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'B) 'B ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'B) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_._ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [none] .
+  op '_;_ : ('A ==> 'A) 'A ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [none] .
+  op '_;_ : ('A ==> 'B) 'B ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> 'A ==> 'A [none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> 'A ==> 'B [none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> 'A ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> 'A ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> 'A ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('A ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> 'A ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A) 'A ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'B) 'B ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> 'B ==> 'A [none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> 'B ==> 'B [none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> 'B ==> 'A ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> 'B ==> 'A ==> 'B [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> 'B ==> 'B ==> 'A [
+    none] .
+  op '_;_ : ('B ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> 'B ==> 'B ==> 'B [
+    none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'A -> ('A ==> 'A) ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'B -> ('A ==> 'A) ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'A ==> 'A -> ('A ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'A ==> 'B -> ('A ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'B ==> 'A -> ('A ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A) 'A ==> 'B ==> 'B -> ('A ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'A -> ('A ==> 'A) ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'B -> ('A ==> 'A) ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'A ==> 'A -> ('A ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'A ==> 'B -> ('A ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'B ==> 'A -> ('A ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B) 'B ==> 'B ==> 'B -> ('A ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> ('A ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> ('A ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'A -> ('A ==> 'B) ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'B -> ('A ==> 'B) ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'A ==> 'A -> ('A ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'A ==> 'B -> ('A ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'B ==> 'A -> ('A ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A) 'A ==> 'B ==> 'B -> ('A ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'A -> ('A ==> 'B) ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'B -> ('A ==> 'B) ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'A ==> 'A -> ('A ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'A ==> 'B -> ('A ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'B ==> 'A -> ('A ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B) 'B ==> 'B ==> 'B -> ('A ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> ('A ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> ('A ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('A ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('A ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('A ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('A ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> ('A ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'A -> ('B ==> 'A) ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'B -> ('B ==> 'A) ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'A ==> 'A -> ('B ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'A ==> 'B -> ('B ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'B ==> 'A -> ('B ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A) 'A ==> 'B ==> 'B -> ('B ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'A -> ('B ==> 'A) ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'B -> ('B ==> 'A) ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'A ==> 'A -> ('B ==> 'A) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'A ==> 'B -> ('B ==> 'A) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'B ==> 'A -> ('B ==> 'A) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B) 'B ==> 'B ==> 'B -> ('B ==> 'A) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> ('B ==> 'A) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> ('B ==> 'A) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'A) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'A) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'A) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'A) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'A) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'A -> ('B ==> 'B) ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'B -> ('B ==> 'B) ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'A ==> 'A -> ('B ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'A ==> 'B -> ('B ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'B ==> 'A -> ('B ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A) 'A ==> 'B ==> 'B -> ('B ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'A -> ('B ==> 'B) ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'B -> ('B ==> 'B) ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'A ==> 'A -> ('B ==> 'B) ==> 'A ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'A ==> 'B -> ('B ==> 'B) ==> 'A ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'B ==> 'A -> ('B ==> 'B) ==> 'B ==> 'A
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B) 'B ==> 'B ==> 'B -> ('B ==> 'B) ==> 'B ==> 'B
+    [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'A) ('A ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'A ==> 'B) ('A ==> 'B) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'A) ('B ==> 'A) ==> 'B ==> 'B -> ('B ==>
+    'B) ==> 'B ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A -> ('B ==> 'B) ==>
+    'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B -> ('B ==> 'B) ==>
+    'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'A -> ('B ==>
+    'B) ==> 'A ==> 'A [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'A ==> 'B -> ('B ==>
+    'B) ==> 'A ==> 'B [none] .
+  op '_;_ : (('B ==> 'B) ==> 'B ==> 'B) ('B ==> 'B) ==> 'B ==> 'A -> ('B ==>
+    'B) ==> 'B ==> 'A [none] .
+  op '__ : ('A ==> 'A) 'A -> 'A [none] .
+  op '__ : ('A ==> 'B) 'A -> 'B [none] .
+  op '__ : ('A ==> 'A ==> 'A) 'A -> 'A ==> 'A [none] .
+  op '__ : ('A ==> 'A ==> 'B) 'A -> 'A ==> 'B [none] .
+  op '__ : ('A ==> 'B ==> 'A) 'A -> 'B ==> 'A [none] .
+  op '__ : ('A ==> 'B ==> 'B) 'A -> 'B ==> 'B [none] .
+  op '__ : ('B ==> 'A) 'B -> 'A [none] .
+  op '__ : ('B ==> 'B) 'B -> 'B [none] .
+  op '__ : ('B ==> 'A ==> 'A) 'B -> 'A ==> 'A [none] .
+  op '__ : ('B ==> 'A ==> 'B) 'B -> 'A ==> 'B [none] .
+  op '__ : ('B ==> 'B ==> 'A) 'B -> 'B ==> 'A [none] .
+  op '__ : ('B ==> 'B ==> 'B) 'B -> 'B ==> 'B [none] .
+  op '__ : (('A ==> 'A) ==> 'A) 'A ==> 'A -> 'A [none] .
+  op '__ : (('A ==> 'A) ==> 'B) 'A ==> 'A -> 'B [none] .
+  op '__ : (('A ==> 'A) ==> 'A ==> 'A) 'A ==> 'A -> 'A ==> 'A [none] .
+  op '__ : (('A ==> 'A) ==> 'A ==> 'B) 'A ==> 'A -> 'A ==> 'B [none] .
+  op '__ : (('A ==> 'A) ==> 'B ==> 'A) 'A ==> 'A -> 'B ==> 'A [none] .
+  op '__ : (('A ==> 'A) ==> 'B ==> 'B) 'A ==> 'A -> 'B ==> 'B [none] .
+  op '__ : (('A ==> 'B) ==> 'A) 'A ==> 'B -> 'A [none] .
+  op '__ : (('A ==> 'B) ==> 'B) 'A ==> 'B -> 'B [none] .
+  op '__ : (('A ==> 'B) ==> 'A ==> 'A) 'A ==> 'B -> 'A ==> 'A [none] .
+  op '__ : (('A ==> 'B) ==> 'A ==> 'B) 'A ==> 'B -> 'A ==> 'B [none] .
+  op '__ : (('A ==> 'B) ==> 'B ==> 'A) 'A ==> 'B -> 'B ==> 'A [none] .
+  op '__ : (('A ==> 'B) ==> 'B ==> 'B) 'A ==> 'B -> 'B ==> 'B [none] .
+  op '__ : (('B ==> 'A) ==> 'A) 'B ==> 'A -> 'A [none] .
+  op '__ : (('B ==> 'A) ==> 'B) 'B ==> 'A -> 'B [none] .
+  op '__ : (('B ==> 'A) ==> 'A ==> 'A) 'B ==> 'A -> 'A ==> 'A [none] .
+  op '__ : (('B ==> 'A) ==> 'A ==> 'B) 'B ==> 'A -> 'A ==> 'B [none] .
+  op '__ : (('B ==> 'A) ==> 'B ==> 'A) 'B ==> 'A -> 'B ==> 'A [none] .
+  op '__ : (('B ==> 'A) ==> 'B ==> 'B) 'B ==> 'A -> 'B ==> 'B [none] .
+  op '__ : (('B ==> 'B) ==> 'A) 'B ==> 'B -> 'A [none] .
+  op '__ : (('B ==> 'B) ==> 'B) 'B ==> 'B -> 'B [none] .
+  op '__ : (('B ==> 'B) ==> 'A ==> 'A) 'B ==> 'B -> 'A ==> 'A [none] .
+  op '__ : (('B ==> 'B) ==> 'A ==> 'B) 'B ==> 'B -> 'A ==> 'B [none] .
+  op '__ : (('B ==> 'B) ==> 'B ==> 'A) 'B ==> 'B -> 'B ==> 'A [none] .
+  op '__ : (('B ==> 'B) ==> 'B ==> 'B) 'B ==> 'B -> 'B ==> 'B [none] .
+  op 'a : nil -> 'A [none] .
+  op 'b : nil -> 'B [none] .
+  op 'f : 'B -> 'A [none] .
+  op 'g : 'B -> 'B [none] .
+  op 'id < 'A > : nil -> 'A ==> 'A [ctor] .
+  op 'id < 'B > : nil -> 'B ==> 'B [ctor] .
+  op 'id < 'A ==> 'A > : nil -> ('A ==> 'A) ==> 'A ==> 'A [ctor] .
+  op 'id < 'A ==> 'B > : nil -> ('A ==> 'B) ==> 'A ==> 'B [ctor] .
+  op 'id < 'B ==> 'A > : nil -> ('B ==> 'A) ==> 'B ==> 'A [ctor] .
+  op 'id < 'B ==> 'B > : nil -> ('B ==> 'B) ==> 'B ==> 'B [ctor] .
+  none
+  eq '__[const('id < 'A >, 'A ==> 'A),var('X, 'A)] = var('X, 'A) [none] .
+  eq '__[const('id < 'B >, 'B ==> 'B),var('X, 'B)] = var('X, 'B) [none] .
+  eq '__[const('id < 'A ==> 'A >, ('A ==> 'A) ==> 'A ==> 'A),var('X, 'A ==>
+    'A)] = var('X, 'A ==> 'A) [none] .
+  eq '__[const('id < 'A ==> 'B >, ('A ==> 'B) ==> 'A ==> 'B),var('X, 'A ==>
+    'B)] = var('X, 'A ==> 'B) [none] .
+  eq '__[const('id < 'B ==> 'A >, ('B ==> 'A) ==> 'B ==> 'A),var('X, 'B ==>
+    'A)] = var('X, 'B ==> 'A) [none] .
+  eq '__[const('id < 'B ==> 'B >, ('B ==> 'B) ==> 'B ==> 'B),var('X, 'B ==>
+    'B)] = var('X, 'B ==> 'B) [none] .
+  eq 'f['b.B] = 'a.A [none] .
+  eq 'g['a.A] = 'a.A [none] .
+endfm
+==========================================
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving EXPONENTIAL)) .
+rewrites: 2369
+result Bool: true
+==========================================
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving LIST
+; EXPONENTIAL)) .
+Warning: sort declarations for operator _._ failed preregularity check on 6 out
+    of 1369 sort tuples. First such tuple is (`(List{A}==>List{A}`), `(List{
+    A}==>List{A}`)).
+Warning: sort declarations for operator _;_ failed preregularity check on 6 out
+    of 1369 sort tuples. First such tuple is (`(List{A}==>List{A}`), `(List{
+    A}==>List{A}`)).
+rewrites: 53993
+result Bool: true
+==========================================
+reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
+    false) deriving EXPONENTIAL
+; EXPONENTIAL)) .
+Warning: sort declarations for operator _._ failed preregularity check on 4 out
+    of 289 sort tuples. First such tuple is (`(`(A==>A`)==>`(A==>A`)`),
+    `(`(A==>A`)==>`(A==>A`)`)).
+Warning: sort declarations for operator _;_ failed preregularity check on 4 out
+    of 289 sort tuples. First such tuple is (`(`(A==>A`)==>`(A==>A`)`),
+    `(`(A==>A`)==>`(A==>A`)`)).
+rewrites: 52501
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : #upModule('TEST-MODULE deriving DOWN-TERM <

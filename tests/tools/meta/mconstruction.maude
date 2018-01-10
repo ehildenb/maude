@@ -97,7 +97,16 @@ reduce wellFormed(resolveNames(upModule('EMPTY,        false) deriving LIST)) .
 
 reduce upModule('TEST-MODULE, false) deriving PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
 reduce upModule('TEST-MODULE, false) deriving LIST ; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)) .
+
 reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving LIST ; PROFUNCTOR(var<Sort>('X), var<Sort>('Y), var<Sort>('Y) ==> var<Sort>('X)))) .
+
+reduce upModule('TEST-MODULE, false) deriving EXPONENTIAL .
+reduce upModule('TEST-MODULE, false) deriving LIST ; EXPONENTIAL .
+reduce upModule('TEST-MODULE, false) deriving EXPONENTIAL ; EXPONENTIAL .
+
+reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving EXPONENTIAL)) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving LIST ; EXPONENTIAL)) .
+reduce wellFormed(resolveNames(upModule('TEST-MODULE, false) deriving EXPONENTIAL ; EXPONENTIAL)) .
 
 reduce #upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >) .
 reduce wellFormed(resolveNames(#upModule('TEST-MODULE deriving DOWN-TERM < 'TEST-MODULE >))) .
