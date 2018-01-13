@@ -232,30 +232,30 @@ Here, some useful module constructions for the list and set data-types are provi
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 ```
 
-### Function Spaces
+### Exponential Sorts/Function Spaces
 
 For functional-style programming (including higher-order functional programming), it's necessary to reify arrows between sorts (functions) as objects themselves.
-This `EXPONENTIAL` module construction does that.
+This `ARROW` module construction does that.
 
 **TODO**: make identify functions actually behave like identity in composition
 
 ```maude
-    op EXPONENTIAL : -> ModuleConstruction .
-    ----------------------------------------
-   ceq EXPONENTIAL = PROFUNCTOR(X, Y, X ==> Y) << (upTerm(X) <- upTerm(Y))
-                   ; forall ( sorts X ==> Y . )
-                     exists ( op '__ : (X ==> Y) X -> Y [none] . )
-                   ; ( forall ( sorts X ==> Y ; Y ==> Z ; X ==> Z . )
-                       exists ( op '_._ : (Y ==> Z) (X ==> Y) -> X ==> Z [none] .
-                                op '_;_ : (X ==> Y) (Y ==> Z) -> X ==> Z [none] .
-                              )
-                     ) << ((upTerm(X) <- upTerm(Y)) | (upTerm(Y) <- upTerm(Z)) | (upTerm(X) <- upTerm(Z) ; upTerm(X) <- upTerm(Z)))
-                   ; forall ( sorts X ==> X . )
-                     exists ( op 'id < X > : nil -> X ==> X [ctor] . )
-                            ( eq '__[const('id < X >, X ==> X), var('X, X)] = var('X, X) [none] . )
-                  if X := var<Sort>('X)
-                  /\ Y := var<Sort>('Y)
-                  /\ Z := var<Sort>('Z) .
+    op ARROW : -> ModuleConstruction .
+    ----------------------------------
+   ceq ARROW = PROFUNCTOR(X, Y, X ==> Y) << (upTerm(X) <- upTerm(Y))
+             ; forall ( sorts X ==> Y . )
+               exists ( op '__ : (X ==> Y) X -> Y [none] . )
+             ; ( forall ( sorts X ==> Y ; Y ==> Z ; X ==> Z . )
+                 exists ( op '_._ : (Y ==> Z) (X ==> Y) -> X ==> Z [none] .
+                          op '_;_ : (X ==> Y) (Y ==> Z) -> X ==> Z [none] .
+                        )
+               ) << ((upTerm(X) <- upTerm(Y)) | (upTerm(Y) <- upTerm(Z)) | (upTerm(X) <- upTerm(Z) ; upTerm(X) <- upTerm(Z)))
+             ; forall ( sorts X ==> X . )
+               exists ( op 'id < X > : nil -> X ==> X [ctor] . )
+                      ( eq '__[const('id < X >, X ==> X), var('X, X)] = var('X, X) [none] . )
+            if X := var<Sort>('X)
+            /\ Y := var<Sort>('Y)
+            /\ Z := var<Sort>('Z) .
 ```
 
 Meta Theory Constructions
