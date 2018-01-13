@@ -488,8 +488,7 @@ reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
 rewrites: 5980
 result Bool: true
 ==========================================
-reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
-    EXPONENTIAL .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving ARROW .
 rewrites: 1552
 result FModule: fmod 'TEST-MODULE is
   nil
@@ -529,7 +528,7 @@ result FModule: fmod 'TEST-MODULE is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving LIST
-; EXPONENTIAL .
+; ARROW .
 rewrites: 16770
 result FModule: fmod 'TEST-MODULE is
   nil
@@ -1445,9 +1444,8 @@ result FModule: fmod 'TEST-MODULE is
   eq 'g['a.A] = 'a.A [none] .
 endfm
 ==========================================
-reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving
-    EXPONENTIAL
-; EXPONENTIAL .
+reduce in MODULE-CONSTRUCTION : upModule('TEST-MODULE, false) deriving ARROW
+; ARROW .
 rewrites: 16716
 result FModule: fmod 'TEST-MODULE is
   nil
@@ -2318,13 +2316,13 @@ result FModule: fmod 'TEST-MODULE is
 endfm
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
-    false) deriving EXPONENTIAL)) .
+    false) deriving ARROW)) .
 rewrites: 2369
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
     false) deriving LIST
-; EXPONENTIAL)) .
+; ARROW)) .
 Warning: sort declarations for operator _._ failed preregularity check on 6 out
     of 1369 sort tuples. First such tuple is (`(List{A}==>List{A}`), `(List{
     A}==>List{A}`)).
@@ -2335,8 +2333,8 @@ rewrites: 53993
 result Bool: true
 ==========================================
 reduce in MODULE-CONSTRUCTION : wellFormed(resolveNames(upModule('TEST-MODULE,
-    false) deriving EXPONENTIAL
-; EXPONENTIAL)) .
+    false) deriving ARROW
+; ARROW)) .
 Warning: sort declarations for operator _._ failed preregularity check on 4 out
     of 289 sort tuples. First such tuple is (`(`(A==>A`)==>`(A==>A`)`),
     `(`(A==>A`)==>`(A==>A`)`)).
