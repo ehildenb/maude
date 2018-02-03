@@ -16,9 +16,9 @@ fmod MODULE-CONSTRUCTION is
     subsort NeModuleConstruction < ModuleConstruction .
 
     vars SU SU' : Substitution . var SUBSTS : SubstitutionSet . var MOD : Module . var ME : ModuleExpression . var B : Bool .
-    vars MDS MDS' MDS'' : ModuleDeclSet . vars MTS MTS' : ModuleTemplateSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
+    vars MDS MDS' MDS'' : ModuleDeclSet . vars MC MC' MC'' : ModuleConstruction . vars NeMC NeMC' : NeModuleConstruction .
     vars S S' S'' F F' FX' FY' NeF : Sort . vars SS SS' : SortSet . vars NeFS NeFS' : NeSortSet . vars OP Nil Q : Qid . var AS : AttrSet . var NES : Variable .
-    vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
+    var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
 ```
 
 Module Construction Implementation
@@ -30,11 +30,10 @@ A module construction is either just a declaration of existence (the empty theor
 `.ModuleConstruction` is the empty module construction.
 
 ```maude
-    op        exists_ : ModuleTemplateSet                   -> NeModuleConstruction [     prec 75] .
-    op forall_exists_ : ModuleTemplateSet ModuleTemplateSet -> NeModuleConstruction [ctor prec 75] .
-    ------------------------------------------------------------------------------------------------
-    eq exists MTS = forall none exists MTS .
-    eq forall MTS exists NeMTS | NeMTS' = (forall MTS exists NeMTS) | (forall MTS exists NeMTS) .
+    op        exists_ : ModuleDeclSet               -> NeModuleConstruction [     prec 75] .
+    op forall_exists_ : ModuleDeclSet ModuleDeclSet -> NeModuleConstruction [ctor prec 75] .
+    ----------------------------------------------------------------------------------------
+    eq exists MDS = forall none exists MDS .
 
     op .ModuleConstruction : -> ModuleConstruction [ctor] .
     -------------------------------------------------------
@@ -48,7 +47,7 @@ A module construction is either just a declaration of existence (the empty theor
     op _;_ : ModuleConstruction NeModuleConstruction -> NeModuleConstruction [ctor assoc      id: .ModuleConstruction prec 76 format(d n d d)] .
     op _|_ : ModuleConstruction   ModuleConstruction ->   ModuleConstruction [ctor assoc comm id: .ModuleConstruction prec 77 format(d n d d)] .
     op _|_ : ModuleConstruction NeModuleConstruction -> NeModuleConstruction [ctor assoc comm id: .ModuleConstruction prec 77 format(d n d d)] .
-    ----------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------
     eq NeMC | NeMC = NeMC .
 ```
 
@@ -59,10 +58,10 @@ Operator `_deriving_` applies a module construction to a module.
 ```maude
     op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [right id: .ModuleConstruction prec 76] .
     -----------------------------------------------------------------------------------------------------------
-   ceq MDS deriving forall MTS exists MDS'           = ++(MDS | (MDS' << SUBSTS))                          if SUBSTS := match MTS with MDS .
-   ceq MDS deriving forall MTS exists (MDS' \ NeMTS) = ++(MDS | not-instance-of?((MDS' << SUBSTS), NeMTS)) if SUBSTS := match MTS with MDS .
-    eq MDS deriving (NeMC ; NeMC')                   = (MDS deriving NeMC) deriving NeMC' .
-    eq MDS deriving (NeMC | NeMC')                   = (MDS deriving NeMC) (MDS deriving NeMC') .
+    eq MDS deriving (NeMC ; NeMC')           = (MDS deriving NeMC) deriving NeMC' .
+    eq MDS deriving (NeMC | NeMC')           = (MDS deriving NeMC) (MDS deriving NeMC') .
+   ceq MDS deriving forall MDS' exists MDS'' = MDS (MDS'' << SUBSTS)
+                                            if SUBSTS := match MDS' with MDS .
 
     op _deriving_ : ModuleExpression ModuleConstruction -> ModuleExpression [right id: .ModuleConstruction prec 80] .
     -----------------------------------------------------------------------------------------------------------------
@@ -77,12 +76,12 @@ Operator `_deriving_` applies a module construction to a module.
 
 Module constructions can be instantiated further with substitutions using `_<<_`.
 
-**TODO**: It feels strange to also generate `forall MTS exists MDS` in the first equation.
+**TODO**: It feels strange to also generate `forall MDS exists MDS'` in the first equation.
 
 ```maude
     op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction [right id: empty] .
     --------------------------------------------------------------------------------------
-    eq (forall MTS exists MDS) << SU = (forall (MTS << SU) exists (MDS << SU)) | (forall MTS exists MDS) .
+    eq (forall MDS exists MDS') << SU = (forall (MDS << SU) exists (MDS' << SU)) | (forall MDS exists MDS') .
 
     eq NeMC << (SU | SU' | SUBSTS) = (NeMC << SU) | (NeMC << SU') | (NeMC << SUBSTS) .
 
@@ -96,7 +95,7 @@ Module constructions can be instantiated further with substitutions using `_<<_`
 ```maude
     op for_in__ : Sort SortDeclSet ModuleConstruction -> ModuleConstruction [prec 76] .
     -----------------------------------------------------------------------------------
-   ceq for S in ( sorts S' . ) (forall MTS exists MDS) = forall (MTS << SU) exists (MDS << SU) if SU := upTerm(S) <- upTerm(S') .
+   ceq for S in ( sorts S' . ) (forall MDS exists MDS') = forall (MDS << SU) exists (MDS' << SU) if SU := upTerm(S) <- upTerm(S') .
 
     eq for S in SDS (NeMC ; NeMC') = (for S in SDS NeMC) ; (for S in SDS NeMC') .
     eq for S in SDS (NeMC | NeMC') = (for S in SDS NeMC) | (for S in SDS NeMC') .
@@ -294,9 +293,9 @@ This is a construction that refines the module `META-TERM` and adds it to your m
     ---------------------------------------
     eq cmb-pred(S, S', Q) = ( cmb var('X, S) : S' if Q[var('X, S)] = 'true.Bool [none] . ) .
 
-    op top-sorts : Sort -> ModuleTemplateSet .
-    ------------------------------------------
-    eq top-sorts(S) = (sorts S .) \ ((sorts S ; prime(S) .) subsort S < prime(S) .) .
+---    op top-sorts : Sort -> ModuleTemplateSet .
+---    ------------------------------------------
+---    eq top-sorts(S) = (sorts S .) \ ((sorts S ; prime(S) .) subsort S < prime(S) .) .
 
     op sort-intersect : Sort -> ModuleConstruction .
     ------------------------------------------------
@@ -326,33 +325,33 @@ This is a construction that refines the module `META-TERM` and adds it to your m
                                   )
                       if X := var<Sort>('X) .
 
-    op META-TERM : -> ModModuleConstruction .
-    -----------------------------------------
-   ceq META-TERM < Q > =   DOWN-TERM < Q >
-                         ; exists tag-sorts(Q, (SDS SSDS))
-                         ; for TH in SDS ( exists ( subsort TH{Q} < TH . )
-                                         ; forall ( sorts X ; X ? . ) exists ( sorts TH{X @ Q} . )
-                                         ; forall top-sorts(X ?)      exists ( subsort TH{X @ Q} < TH{Q} . )
-                                         )
-                         ; FUNCTOR(TH{Q}, TH{X @ Q})
-                         ; FUNCTOR(X, TH{X @ Q})
-                      if SDS SSDS := connected-component(asTemplate('META-TERM), ( sorts 'Term . ))
-                      /\ X        := var<Sort>('X)
-                      /\ Y        := var<Sort>('Y)
-                      /\ TH       := var<Sort>('TH) .
+---    op META-TERM : -> ModModuleConstruction .
+---    -----------------------------------------
+---   ceq META-TERM < Q > =   DOWN-TERM < Q >
+---                         ; exists tag-sorts(Q, (SDS SSDS))
+---                         ; for TH in SDS ( exists ( subsort TH{Q} < TH . )
+---                                         ; forall ( sorts X ; X ? . ) exists ( sorts TH{X @ Q} . )
+---                                         ; forall top-sorts(X ?)      exists ( subsort TH{X @ Q} < TH{Q} . )
+---                                         )
+---                         ; FUNCTOR(TH{Q}, TH{X @ Q})
+---                         ; FUNCTOR(X, TH{X @ Q})
+---                      if SDS SSDS := connected-component(asTemplate('META-TERM), ( sorts 'Term . ))
+---                      /\ X        := var<Sort>('X)
+---                      /\ Y        := var<Sort>('Y)
+---                      /\ TH       := var<Sort>('TH) .
 
     op tmp-mb : Sort Sort Qid -> ModuleConstruction .
     -------------------------------------------------
     eq tmp-mb(S, S', Q) = forall ( sorts S ; S ? ; S'{Q @ S} . )
                           exists ( cmb-pred( S' , S'{Q @ S} , 'wellFormed < S > ) ) .
 
-    op META-THEORY : -> ModModuleConstruction .
-    -------------------------------------------
-   ceq META-THEORY < Q > =   ( DOWN-TERM < Q > | META-TERM < Q > )
-                           ; tmp-mb(X, 'Constant,   Q)
-                           ; tmp-mb(X, 'GroundTerm, Q)
-                           ; tmp-mb(X, 'Variable,   Q)
-                           ; tmp-mb(X, 'Term,       Q)
-                        if X := var<Sort>('X) .
+---    op META-THEORY : -> ModModuleConstruction .
+---    -------------------------------------------
+---   ceq META-THEORY < Q > =   ( DOWN-TERM < Q > | META-TERM < Q > )
+---                           ; tmp-mb(X, 'Constant,   Q)
+---                           ; tmp-mb(X, 'GroundTerm, Q)
+---                           ; tmp-mb(X, 'Variable,   Q)
+---                           ; tmp-mb(X, 'Term,       Q)
+---                        if X := var<Sort>('X) .
 endfm
 ```

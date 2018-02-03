@@ -223,59 +223,16 @@ Module Templates
           They seem to add a lot of complication for (perhaps) little gain.
 
 Module templates serve as more flexible module data-structures than what the prelude provides for modules.
-Every `ModuleDeclSet` is a `ModuleTemplateSet`.
 The main functionality exported is:
 
--   `_|_` and `_\_` serve as `ModuleTemplateSet` union and difference, respectively.
--   `++ : ModuleTemplateSet -> ModuleDeclSet` unions together the given `ModuleTemplateSet` into a single `ModuleDeclSet`.
--   `_<<_ : ModuleTemplateSet SubstitutionSet -> [ModuleTemplateSet]` is lifted pointwise over *both* of its arguments.
--   `match_with_ : ModuleTemplateSet ModuleDeclSet -> [SubstitionSet]` allows to specify a union or difference of source templates to match from.
--   `resolveNames` and `fv<Sort>` are lifted over `ModuleTemplateSet`.
+-   `resolveNames` and `fv<Sort>` are lifted over `ModuleDeclSet`.
 
 ```maude
 fmod MODULE-TEMPLATE-SET is
    protecting MODULE-DECLARATION .
 
-    sorts NeModuleTemplateSet ModuleTemplateSet .
-    ---------------------------------------------
-    subsorts   ModuleDeclSet <   ModuleTemplateSet .
-    subsorts NeModuleDeclSet < NeModuleTemplateSet < ModuleTemplateSet .
-
-    vars NeMDS NeMDS' : NeModuleDeclSet . var MDS : ModuleDeclSet .
-    vars NeMTS NeMTS' NeMTS'' : NeModuleTemplateSet . var MTS : ModuleTemplateSet .
+    vars NeMDS NeMDS' : NeModuleDeclSet . var MDS MDS' : ModuleDeclSet .
     vars SU SU' SU'' : Substitution . var SUBSTS : SubstitutionSet . var B : [Bool] .
-
-    op _|_ : ModuleTemplateSet   ModuleTemplateSet ->   ModuleTemplateSet [ctor assoc comm id: (none).NullDeclSet prec 73] .
-    op _|_ : ModuleTemplateSet NeModuleTemplateSet -> NeModuleTemplateSet [ctor ditto] .
-    ------------------------------------------------------------------------------------
-    eq NeMTS | NeMTS = NeMTS .
-
-    op _\_ : ModuleTemplateSet ModuleTemplateSet -> ModuleTemplateSet [ctor right id: none prec 74] .
-    -------------------------------------------------------------------------------------------------
-    eq NeMTS            \ (NeMTS | MTS) = none .
-    eq none             \ NeMTS         = none .
-    eq (NeMTS | NeMTS') \ NeMTS''       = (NeMTS \ NeMTS'') | (NeMTS' \ NeMTS'') .
-    eq (NeMTS \ NeMTS') \ NeMTS''       = NeMTS \ (NeMTS' | NeMTS'') .
-
-    op ++ : ModuleTemplateSet -> ModuleDeclSet .
-    --------------------------------------------
-    eq ++(none)          = none .
-    eq ++(NeMDS)         = NeMDS .
-    eq ++(NeMDS | NeMTS) = NeMDS ++(NeMTS) .
-
-    op error<ModuleTemplateSet> : -> [ModuleTemplateSet] .
-    op _<<_ : ModuleTemplateSet SubstitutionSet -> [ModuleTemplateSet] .
-    --------------------------------------------------------------------
-    eq MTS              << empty               = MTS .
-    eq MTS              << (SU | SU' | SUBSTS) = (MTS << SU) | (MTS << SU') | (MTS << SUBSTS) .
-    eq (NeMTS | NeMTS') << SUBSTS              = (NeMTS << SUBSTS) | (NeMTS' << SUBSTS) .
-    eq (NeMTS \ NeMTS') << SUBSTS              = (NeMTS << SUBSTS) \ (NeMTS' << SUBSTS) .
-
-    op match_with_ : ModuleTemplateSet ModuleDeclSet -> [SubstitutionSet] .
-    -----------------------------------------------------------------------
-    eq match NeMTS | NeMTS' with MDS = (match NeMTS with MDS) | (match NeMTS' with MDS) .
-   ceq match NeMTS \ NeMTS' with MDS = SUBSTS
-    if SUBSTS := not-instance-with?(NeMTS', MDS, match NeMTS with MDS) .
 
     op {_in_|_} : Substitution SubstitutionSet [Bool] -> SubstitutionSet [strat(2 0)] .
     -----------------------------------------------------------------------------------
@@ -288,27 +245,17 @@ fmod MODULE-TEMPLATE-SET is
     eq empty?(empty)       = true .
     eq empty?(SU | SUBSTS) = false .
 
-    op not-instance-of? : ModuleTemplateSet ModuleTemplateSet -> ModuleTemplateSet .
-    --------------------------------------------------------------------------------
-   ceq not-instance-of?(MDS, MTS)              = if SUBSTS == empty then MDS else none fi if SUBSTS := match MTS with MDS .
-    eq not-instance-of?((NeMTS | NeMTS'), MTS) = not-instance-of?(NeMTS, MTS) | not-instance-of?(NeMTS', MTS) .
+    op not-instance-of? : ModuleDeclSet ModuleDeclSet  -> ModuleDeclSet .
+    ---------------------------------------------------------------------
+   ceq not-instance-of?(MDS, MDS') = if SUBSTS == empty then MDS else none fi
+                                  if SUBSTS := match MDS' with MDS .
 
-    op not-instance-with? : ModuleTemplateSet ModuleDeclSet SubstitutionSet -> SubstitutionSet .
-    --------------------------------------------------------------------------------------------
-    eq not-instance-with?(MTS, MDS, empty)               = empty .
-    eq not-instance-with?(MTS, MDS, (SU | SU' | SUBSTS)) = not-instance-with?(MTS, MDS, SU) | not-instance-with?(MTS, MDS, SU') | not-instance-with?(MTS, MDS, SUBSTS) .
-   ceq not-instance-with?(MTS, MDS, SU)                  = if SUBSTS == empty then SU else empty fi
-    if SUBSTS := match (MTS << SU) with MDS .
-
-    op resolveNames : ModuleTemplateSet -> ModuleTemplateSet .
-    ----------------------------------------------------------
-    eq resolveNames(NeMTS | NeMTS') = resolveNames(NeMTS) | resolveNames(NeMTS') .
-    eq resolveNames(NeMTS \ NeMTS') = resolveNames(NeMTS) \ resolveNames(NeMTS') .
-
-    op fv<Sort> : ModuleTemplateSet -> SortSet .
-    --------------------------------------------
-    eq fv<Sort>(NeMTS | NeMTS') = fv<Sort>(NeMTS) ; fv<Sort>(NeMTS') .
-    eq fv<Sort>(NeMTS \ NeMTS') = fv<Sort>(NeMTS) ; fv<Sort>(NeMTS') .
+    op not-instance-with? : ModuleDeclSet ModuleDeclSet SubstitutionSet -> SubstitutionSet .
+    ----------------------------------------------------------------------------------------
+    eq not-instance-with?(MDS, MDS', empty)               = empty .
+    eq not-instance-with?(MDS, MDS', (SU | SU' | SUBSTS)) = not-instance-with?(MDS, MDS', SU) | not-instance-with?(MDS, MDS', SU') | not-instance-with?(MDS, MDS', SUBSTS) .
+   ceq not-instance-with?(MDS, MDS', SU)                  = if SUBSTS == empty then SU else empty fi
+                                                         if SUBSTS := match (MDS << SU) with MDS' .
 endfm
 ```
 
@@ -318,8 +265,8 @@ Interface to `Module`
 To actually do execution in the modules generated by a module template, we need functions to convert between `Module` and `ModuleTemplate`.
 
 -   `asTemplate : Module -> ModuleTemplate`, `asTemplate : ModuleExpression -> ModuleTemplate` and `fromTemplate : ModuleTemplate -> Module` provide functions between the normal Maude modules and the module templates defined here.
--   `_++_ : Module ModuleTemplateSet -> Module` and `_++_ : Module Module -> Module` are the lifting of operator `_++_` in `MODULE-TEMPLATE-DATA` to work directly on Maude modules.
--   `resolveModule: ModuleTemplate -> ModuleTemplate` resolves the structured names of a module into proper Core Maude names.
+-   `_++_ : Module ModuleDeclSet -> Module` and `_++_ : Module Module -> Module` are the lifting of operator `_++_` in `MODULE-TEMPLATE-DATA` to work directly on Maude modules.
+-   `resolveNames : Module -> Module` resolves the structured names of a module into proper Core Maude names.
 
 ```maude
 fmod MODULE-TEMPLATE is
@@ -329,23 +276,23 @@ fmod MODULE-TEMPLATE is
     var H : Header . var IL : ImportList . var SS : SortSet .
     var IS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . var OPDS : OpDeclSet .
     var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet . var NeRLS : NeRuleSet .
-    var ME : ModuleExpression . vars MOD MOD' : Module . var NeMTS : NeModuleTemplateSet .
+    var MDS : ModuleDeclSet . var NeMDS : NeModuleDeclSet . var ME : ModuleExpression . vars MOD MOD' : Module .
 
     op asTemplate : ModuleExpression -> [ModuleDeclSet] .
     op asTemplate : Module -> [ModuleDeclSet] .
     -------------------------------------------
     eq asTemplate(ME) = asTemplate(upModule(ME, false)) .
     eq asTemplate(fmod H is IL sorts SS . SSDS OPDS MAS EQS     endfm) = (importDecls(IL) (sorts SS .) SSDS OPDS MAS EQS) .
-    eq asTemplate (mod H is IL sorts SS . SSDS OPDS MAS EQS RLS endm)  = (importDecls(IL) (sorts SS .) SSDS OPDS MAS EQS RLS) .
+    eq asTemplate( mod H is IL sorts SS . SSDS OPDS MAS EQS RLS endm ) = (importDecls(IL) (sorts SS .) SSDS OPDS MAS EQS RLS) .
 
     op fromTemplate : Header ModuleDeclSet -> [Module] .
     ----------------------------------------------------
     eq fromTemplate(H, (IS SDS SSDS OPDS MAS EQS))       = (fmod H is importList(IS) sorts sortSet(SDS) . SSDS OPDS MAS EQS       endfm) .
     eq fromTemplate(H, (IS SDS SSDS OPDS MAS EQS NeRLS)) =  (mod H is importList(IS) sorts sortSet(SDS) . SSDS OPDS MAS EQS NeRLS endm) .
 
-    op _++_ : Module ModuleTemplateSet -> [Module] [right id: none prec 72] .
-    -------------------------------------------------------------------------
-    eq MOD ++ NeMTS = fromTemplate(getName(MOD), ++(NeMTS | asTemplate(MOD))) .
+    op _++_ : Module ModuleDeclSet -> [Module] [right id: none prec 72] .
+    ---------------------------------------------------------------------
+    eq MOD ++ NeMDS = fromTemplate(getName(MOD), (asTemplate(MOD) NeMDS)) .
 
     op _++_ : Module Module -> [Module] [assoc prec 73] .
     -----------------------------------------------------
