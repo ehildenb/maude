@@ -53,3 +53,22 @@ reduce metaNarrowingApply(upModule('EXT-CYCLE, true), 'f['a.PreState], empty, '#
 
 reduce metaNarrowingApply(upModule('EXT-CYCLE, true), 'f['a.PreState], empty, '#, 2)
     == (failure).NarrowingApplyResult? .
+
+--- Pretty Printing
+--- ---------------
+
+fmod PRETTY-PRINT-MODULE is
+   protecting META-LEVEL + LEXICAL .
+
+    var ME : ModuleExpression . var POS : PrintOptionSet .
+
+    op printModule : ModuleExpression PrintOptionSet -> [QidList] .
+    ---------------------------------------------------------------
+    eq printModule(ME, POS) = metaPrettyPrint(upModule('META-LEVEL, false), upTerm(upModule(ME, false)), POS) .
+endfm
+
+reduce printModule('EXT-CYCLE, mixfix flat number rat qid-as-id) .
+reduce printModule('EXT-CYCLE, mixfix flat number rat) .
+
+reduce printTokens(printModule('EXT-CYCLE, mixfix flat number rat qid-as-id)) .
+reduce printTokens(printModule('EXT-CYCLE, mixfix flat number rat)) .

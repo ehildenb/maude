@@ -113,4 +113,32 @@ reduce in META-LEVEL : metaNarrowingApply(upModule('EXT-CYCLE, true), 'f[
     'a.PreState], empty, '#, 2) == (failure).NarrowingApplyResult? .
 rewrites: 4
 result Bool: true
+==========================================
+reduce in PRETTY-PRINT-MODULE : printModule('EXT-CYCLE, mixfix flat number rat
+    qid-as-id) .
+rewrites: 5
+result NeQidList: 'mod 'EXT-CYCLE 'is 'extending 'CYCLE '. 'sorts 'none '.
+    'none 'op 'g ': 'PreState '-> 'State '`[ 'none '`] '. 'none 'none 'rl 'g
+    '`[ 'a.PreState '`] '=> 'g '`[ 'c.PreState '`] '`[ 'narrowing 'label '`(
+    'a2c '`) '`] '. 'rl 'g '`[ 'c.PreState '`] '=> 'g '`[ 'a.PreState '`] '`[
+    'narrowing 'label '`( 'c2a '`) '`] '. 'endm
+==========================================
+reduce in PRETTY-PRINT-MODULE : printModule('EXT-CYCLE, mixfix flat number rat)
+    .
+rewrites: 5
+result NeQidList: 'mod ''EXT-CYCLE 'is 'extending ''CYCLE '. 'sorts 'none '.
+    'none 'op ''g ': ''PreState '-> ''State '`[ 'none '`] '. 'none 'none 'rl
+    ''g '`[ ''a.PreState '`] '=> ''g '`[ ''c.PreState '`] '`[ 'narrowing 'label
+    '`( ''a2c '`) '`] '. 'rl ''g '`[ ''c.PreState '`] '=> ''g '`[ ''a.PreState
+    '`] '`[ 'narrowing 'label '`( ''c2a '`) '`] '. 'endm
+==========================================
+reduce in PRETTY-PRINT-MODULE : printTokens(printModule('EXT-CYCLE, mixfix flat
+    number rat qid-as-id)) .
+rewrites: 6
+result String: "mod EXT-CYCLE is extending CYCLE . sorts none . none op g : PreState -> State[none] . none none rl g[a.PreState] => g[c.PreState][narrowing label(a2c)] . rl g[c.PreState] => g[a.PreState][narrowing label(c2a)] . endm"
+==========================================
+reduce in PRETTY-PRINT-MODULE : printTokens(printModule('EXT-CYCLE, mixfix flat
+    number rat)) .
+rewrites: 6
+result String: "mod 'EXT-CYCLE is extending 'CYCLE . sorts none . none op 'g : 'PreState -> 'State[none] . none none rl 'g['a.PreState] => 'g['c.PreState][narrowing label('a2c)] . rl 'g['c.PreState] => 'g['a.PreState][narrowing label('c2a)] . endm"
 Bye.
