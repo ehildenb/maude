@@ -220,9 +220,10 @@ Token::dotNameCode(int sortNameCode)
 }
 
 int
-Token::quoteNameCode(int idCode)
+Token::quoteNameCode(int idCode, bool quote)
 {
-  string quotedName("'");
+  string quotedName("");
+  quotedName += quote ? "'" : "";
   quotedName += stringTable.name(idCode);
   return encode(quotedName.c_str());
 }

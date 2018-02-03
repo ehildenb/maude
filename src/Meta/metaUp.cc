@@ -134,7 +134,7 @@ MetaLevel::upDagNode(DagNode* dagNode,
     case SymbolType::QUOTED_IDENTIFIER:
       {
 	int id = static_cast<QuotedIdentifierDagNode*>(dagNode)->getIdIndex();
-	d = upConstant(Token::quoteNameCode(id), dagNode, qidMap);
+	d = upConstant(Token::quoteNameCode(id, true), dagNode, qidMap);
 	break;
       }
     case SymbolType::STRING:
@@ -213,7 +213,7 @@ MetaLevel::upTerm(const Term* term, MixfixModule* m, PointerMap& qidMap)
     case SymbolType::QUOTED_IDENTIFIER:
       {
 	int id = static_cast<const QuotedIdentifierTerm*>(term)->getIdIndex();
-	return upConstant(Token::quoteNameCode(id), MixfixModule::disambiguatorSort(term), qidMap);
+	return upConstant(Token::quoteNameCode(id, true), MixfixModule::disambiguatorSort(term), qidMap);
       }
     case SymbolType::STRING:
       {

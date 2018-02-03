@@ -191,8 +191,9 @@ MixfixModule::handleQuotedIdentifier(Vector<int>& buffer, Term* term, bool range
 {
   int qidCode = safeCast(QuotedIdentifierTerm*, term)->getIdIndex();
   bool needDisambig = !rangeKnown && (quotedIdentifierSymbols.size() > 1 || overloadedQuotedIdentifiers.count(qidCode));
+  bool printQuotes  = true;
   prefix(buffer, needDisambig);
-  buffer.append(Token::quoteNameCode(qidCode));
+  buffer.append(Token::quoteNameCode(qidCode, printQuotes));
   suffix(buffer, term, needDisambig, printFlags);
 }
 
