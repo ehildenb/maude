@@ -1999,7 +1999,7 @@ fmod META-LEVEL is
 *** options for metaPrettyPrint()
   sorts PrintOption PrintOptionSet .
   subsort PrintOption < PrintOptionSet .
-  ops mixfix with-parens flat format number rat : -> PrintOption [ctor] .
+  ops mixfix with-parens flat format number rat qid-as-id : -> PrintOption [ctor] .
   op none : -> PrintOptionSet [ctor] .
   op __ : PrintOptionSet PrintOptionSet -> PrintOptionSet [ctor assoc comm id: none] .
 
@@ -2397,6 +2397,7 @@ fmod META-LEVEL is
         op-hook formatPrintOptionSymbol	(format : ~> PrintOption)
         op-hook numberSymbol		(number : ~> PrintOption)
         op-hook ratSymbol		(rat : ~> PrintOption)
+        op-hook qidAsIdSymbol   (qid-as-id : ~> PrintOption)
         op-hook emptyPrintOptionSetSymbol	(none : ~> PrintOptionSet)
         op-hook printOptionSetSymbol	(__ : PrintOptionSet PrintOptionSet ~> PrintOptionSet)
 

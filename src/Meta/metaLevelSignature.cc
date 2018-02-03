@@ -272,5 +272,6 @@
      MACRO(formatPrintOptionSymbol, Symbol, 0, 0)
      MACRO(numberSymbol, Symbol, 0, 0)
      MACRO(ratSymbol, Symbol, 0, 0)
+     MACRO(qidAsIdSymbol, Symbol, 0, 0)
      MACRO(emptyPrintOptionSetSymbol, Symbol, 0, 0)
      MACRO(printOptionSetSymbol, Symbol, SymbolType::ASSOC | SymbolType::COMM, 2)

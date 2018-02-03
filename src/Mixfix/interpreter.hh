@@ -130,19 +130,20 @@ public:
     //
     //	General prettyprinter flags.
     //
-    PRINT_GRAPH = 0x1,		// print as a set of DAG nodes
-    PRINT_CONCEAL = 0x2,	// respect concealed argument lists
-    PRINT_FORMAT = 0x4,		// respect format attribute
-    PRINT_MIXFIX = 0x8,		// mixfix notation
-    PRINT_WITH_PARENS = 0x10,	// maximal parens
-    PRINT_COLOR = 0x20,		// dag node coloring based on ctor/reduced status
+    PRINT_GRAPH       = 0x1,  // print as a set of DAG nodes
+    PRINT_CONCEAL     = 0x2,  // respect concealed argument lists
+    PRINT_FORMAT      = 0x4,  // respect format attribute
+    PRINT_MIXFIX      = 0x8,  // mixfix notation
+    PRINT_WITH_PARENS = 0x10, // maximal parens
+    PRINT_COLOR       = 0x20, // dag node coloring based on ctor/reduced status
     //
     //	Prettyprinter flags for particular symbol types.
     //
-    PRINT_WITH_ALIASES = 0x100,	// for variables
-    PRINT_FLAT = 0x200,		// for assoc symbols
-    PRINT_NUMBER = 0x400,	// for nats & ints
-    PRINT_RAT = 0x800,		// for rats
+    PRINT_WITH_ALIASES = 0x100,  // for variables
+    PRINT_FLAT         = 0x200,  // for assoc symbols
+    PRINT_NUMBER       = 0x400,  // for nats & ints
+    PRINT_RAT          = 0x800,  // for rats
+    PRINT_QID_AS_ID    = 0x1000, // for when we want pretty printing of Qid
 
     DEFAULT_PRINT_FLAGS = PRINT_FORMAT | PRINT_MIXFIX | PRINT_WITH_ALIASES |
     PRINT_FLAT | PRINT_NUMBER | PRINT_RAT

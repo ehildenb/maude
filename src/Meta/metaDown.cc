@@ -1351,6 +1351,8 @@ MetaLevel::downPrintOption(DagNode* metaPrintOption, int& printFlags) const
     printFlags |= Interpreter::PRINT_NUMBER;
   else if (mp == ratSymbol)
     printFlags |= Interpreter::PRINT_RAT;
+  else if (mp == qidAsIdSymbol)
+    printFlags |= Interpreter::PRINT_QID_AS_ID;
   else
     return false;
   return true;
