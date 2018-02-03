@@ -278,6 +278,24 @@ fmod MODULE-TEMPLATE is
     var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet . var NeRLS : NeRuleSet .
     var MDS : ModuleDeclSet . var NeMDS : NeModuleDeclSet . var ME : ModuleExpression . vars MOD MOD' : Module .
 
+    sorts FModuleTemplate SModuleTemplate ModuleTemplate .
+    ------------------------------------------------------
+    subsorts FModuleTemplate SModuleTemplate < ModuleTemplate .
+
+    op fmod_is_endfm : Header ModuleDeclSet -> FModuleTemplate .
+    op  mod_is_endm  : Header ModuleDeclSet -> SModuleTemplate .
+    ------------------------------------------------------------
+
+    op decls : ModuleTemplate -> ModuleDeclSet .
+    --------------------------------------------
+    eq decls(fmod H is MDS endfm) = MDS .
+    eq decls( mod H is MDS endm ) = MDS .
+
+    op asTemplate' : Module -> ModuleTemplate .
+    -------------------------------------------
+    eq asTemplate'(fmod H is IL sorts SS . SSDS OPDS MAS EQS     endfm) = fmod H is (importDecls(IL) (sorts SS .) SSDS OPDS MAS EQS)     endfm .
+    eq asTemplate'( mod H is IL sorts SS . SSDS OPDS MAS EQS RLS endm ) =  mod H is (importDecls(IL) (sorts SS .) SSDS OPDS MAS EQS RLS) endm .
+
     op asTemplate : ModuleExpression -> [ModuleDeclSet] .
     op asTemplate : Module -> [ModuleDeclSet] .
     -------------------------------------------
