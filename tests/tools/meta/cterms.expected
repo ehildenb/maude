@@ -13,7 +13,7 @@ result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 43 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
 reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('NAT*, true)),
     upModule('MULT-NAT*, true), '0.Nat*) == '0.Nat* .

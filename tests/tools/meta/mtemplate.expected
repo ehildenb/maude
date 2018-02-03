@@ -27,7 +27,7 @@ result NeSortSet: 'Q ; 'S ; 'T
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
 reduce in MODULE-TEMPLATE : asTemplate(fmod 'TEST is
   nil
