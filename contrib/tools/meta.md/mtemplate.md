@@ -321,3 +321,116 @@ fmod MODULE-TEMPLATE is
     eq resolveNames(MOD) = fromTemplate(getName(MOD), resolveNames(asTemplate(MOD))) .
 endfm
 ```
+
+Printing `ModuleTemplate`
+-------------------------
+
+For the purpose of using `ModuleTemplate` for meta-level programming and theory transformations, we need to be able to print them in a way Core Maude can read them.
+To that end, this module defines pretty-printing capabilities for `ModuleDeclSet` and `ModuleTemplate`.
+
+```maude
+fmod PRINT-MODULE-TEMPLATE is
+   protecting MODULE-TEMPLATE .
+   protecting LEXICAL .
+
+    var N : Nat . vars T T' : Term . var Q : Qid . var QL : QidList . var H : Header . vars S S' : Sort . var SS : SortSet .
+    var MOD : Module . var MT : ModuleTemplate . var MDS : ModuleDeclSet . vars NeMDS NeMDS' : NeModuleDeclSet .
+    vars A A' : Attr . var AS : AttrSet . vars C C' : Condition . var TYPEL : TypeList . var TYPE : Type .
+    var IS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . var OPDS : OpDeclSet .
+    var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet .
+
+    op prettyPrint : ModuleDeclSet -> QidList .
+    op prettyPrint : Term          -> QidList .
+    op prettyPrint : Term Module   -> QidList .
+    -------------------------------------------
+    eq prettyPrint(MDS)    = prettyPrint(upTerm(MDS)) .
+    eq prettyPrint(T)      = prettyPrint(T, upModule('MODULE-TEMPLATE)) .
+    eq prettyPrint(T, MOD) = metaPrettyPrint(MOD, T, mixfix number rat qid-as-id) .
+
+    op space    :     -> QidList .
+    op spaces   : Nat -> QidList .
+    ------------------------------
+    eq space = spaces(1) .
+
+    eq spaces(0)    = nil .
+    eq spaces(s(N)) = qid(" ") spaces(N) .
+
+    op newline    :     -> QidList .
+    op newlines   : Nat -> QidList .
+    --------------------------------
+    eq newline = newlines(1) .
+
+    eq newlines(0)    = nil .
+    eq newlines(s(N)) = '\n newlines(N) .
+
+    op printSortSet : SortSet -> QidList .
+    --------------------------------------
+    eq printSortSet(none)        = nil .
+    eq printSortSet(S ; S' ; SS) = printSortSet(S) printSortSet(S') printSortSet(SS) .
+
+    eq printSortSet(S) = prettyPrint(upTerm(S)) .
+
+    op printAttrSet : AttrSet Module -> QidList .
+    ---------------------------------------------
+    eq printAttrSet(none,    MOD) = nil .
+    eq printAttrSet(A A' AS, MOD) = printAttrSet(A, MOD) printAttrSet(A', MOD) printAttrSet(AS, MOD) .
+
+    eq printAttrSet(A,           MOD) = prettyPrint(upTerm(A)) [owise] .
+    eq printAttrSet(prec(N),     MOD) = 'prec prettyPrint(upTerm(N), upModule('NAT)) .
+    eq printAttrSet(id(T),       MOD) = 'id: prettyPrint(T, MOD) .
+    eq printAttrSet(left-id(T),  MOD) = 'left-id: prettyPrint(T, MOD) .
+    eq printAttrSet(right-id(T), MOD) = 'right-id: prettyPrint(T, MOD) .
+
+    op printCondition : Condition Module -> QidList .
+    -------------------------------------------------
+    eq printCondition(nil,     MOD) = 'true.Bool .
+    eq printCondition(T = T',  MOD) = prettyPrint(T, MOD) '=  prettyPrint(T', MOD) .
+    eq printCondition(T : S,   MOD) = prettyPrint(T, MOD) ':  printSortSet(S) .
+    eq printCondition(T := T', MOD) = prettyPrint(T, MOD) ':= prettyPrint(T', MOD) .
+    eq printCondition(T => T', MOD) = prettyPrint(T, MOD) '=> prettyPrint(T', MOD) .
+    eq printCondition(C /\ C', MOD) = printCondition(C, MOD) '/\ printCondition(C', MOD) .
+
+    op  printDecls : ModuleDeclSet Module -> QidList .
+    op #printDecls : ModuleDeclSet Module -> QidList .
+    --------------------------------------------------
+    eq printDecls(IS SDS SSDS OPDS MAS EQS RLS, MOD)
+     = #printDecls(IS,   MOD) newlines(2) #printDecls(SDS,  MOD) newlines(2) #printDecls(SSDS, MOD) newlines(2)
+       #printDecls(OPDS, MOD) newlines(2) #printDecls(MAS,  MOD) newlines(2) #printDecls(EQS,  MOD) newlines(2) #printDecls(RLS,  MOD) .
+
+    eq #printDecls(none,         MOD) = nil .
+    eq #printDecls(NeMDS NeMDS', MOD) = #printDecls(NeMDS, MOD) newline #printDecls(NeMDS', MOD) .
+
+    eq #printDecls(IS, MOD) = spaces(4) prettyPrint(IS) .
+
+    eq #printDecls((sorts SS .), MOD)
+     = (spaces(4) 'sorts printSortSet(SS) '.) .
+
+    eq #printDecls(SSDS, MOD) = spaces(4) prettyPrint(SSDS) .
+
+    eq #printDecls(op Q : TYPEL -> TYPE [AS] ., MOD)
+     = (spaces(4) 'op Q ': prettyPrint(upTerm(TYPEL)) '-> prettyPrint(upTerm(TYPE)) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(mb T : S [AS] ., MOD)
+     = (spaces(4) 'mb prettyPrint(T, MOD) ': printSortSet(S) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(cmb T : S if C [AS] ., MOD)
+     = (spaces(4) 'cmb prettyPrint(T, MOD) ': printSortSet(S) 'if printCondition(C, MOD) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(eq T = T' [AS] ., MOD)
+     = (spaces(4) 'eq prettyPrint(T, MOD) '= prettyPrint(T', MOD) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(ceq T = T' if C [AS] ., MOD)
+     = (spaces(4) 'ceq prettyPrint(T, MOD) '= prettyPrint(T', MOD) 'if printCondition(C, MOD) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(rl T => T' [AS] ., MOD)
+     = (spaces(4) 'rl prettyPrint(T, MOD) '=> prettyPrint(T', MOD) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    eq #printDecls(crl T => T' if C [AS] ., MOD)
+     = (spaces(4) 'crl prettyPrint(T, MOD) '=> prettyPrint(T', MOD) 'if printCondition(C, MOD) space '`[ printAttrSet(AS, MOD) '`] '.) .
+
+    op printTemplate : ModuleTemplate -> [QidList] .
+    ------------------------------------------------
+    eq printTemplate(fmod H is MDS endfm) = 'fmod prettyPrint(upTerm(H)) 'is newline printDecls(MDS, fromTemplate(H, MDS)) newline 'endfm .
+    eq printTemplate( mod H is MDS endm ) =  'mod prettyPrint(upTerm(H)) 'is newline printDecls(MDS, fromTemplate(H, MDS)) newline 'endm .
+endfm
+```
