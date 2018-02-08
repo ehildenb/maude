@@ -36,3 +36,41 @@ reduce wellFormed(fromTemplate('TEST, (none).ModuleDeclSet)) .
 reduce wellFormed(fromTemplate('TEST, asTemplate(upModule('BOOL, false)))) .
 reduce wellFormed(fromTemplate('DIJKSTRA, asTemplate(upModule('DIJKSTRA, true)))) .
 reduce wellFormed(fromTemplate('BAKERY-FVP, asTemplate(upModule('BAKERY-FVP, true)))) .
+
+--- Test PRINT-MODULE-TEMPLATE
+--- ==========================
+
+select PRINT-MODULE-TEMPLATE .
+
+reduce printDecls(sorts 'A ; 'B ; 'C ; 'D ., upModule('BOOL)) .
+reduce printDecls(sorts 'A ; 'List`{B`} ., upModule('BOOL)) .
+
+reduce printTokens(printDecls(sorts 'A ; 'B ; 'C ; 'D ., upModule('BOOL))) .
+reduce printTokens(printDecls(sorts 'A ; 'List`{B`} ., upModule('BOOL))) .
+
+reduce printDecls(subsorts 'A < 'B < ('C ; 'D) ., upModule('BOOL)) .
+reduce printDecls(subsorts 'A < 'B < ('List`{C`} ; 'D) ., upModule('BOOL)) .
+
+reduce printTokens(printDecls(subsorts 'A < 'B < ('C ; 'D) ., upModule('BOOL))) .
+reduce printTokens(printDecls(subsorts 'A < 'B < ('List`{C`} ; 'D) ., upModule('BOOL))) .
+
+reduce printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm] ., upModule('NAT)) .
+reduce printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm id('0.Nat)] ., upModule('NAT)) .
+reduce printDecls(op 'if_then_else_ : 'Bool 'Nat 'Nat -> 'Nat [prec(30)] ., upModule('NAT)) .
+
+reduce printTokens(printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm] ., upModule('NAT))) .
+reduce printTokens(printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm id('0.Nat)] ., upModule('NAT))) .
+reduce printTokens(printDecls(op 'if_then_else_ : 'Bool 'Nat 'Nat -> 'Nat [prec(30)] ., upModule('NAT))) .
+
+reduce printDecls(eq '_+_['0.Nat, 'X:Nat] = 'X:Nat [none] ., upModule('NAT)) .
+reduce printDecls(ceq '_+_['0.Nat, 'X:Nat] = 'X:Nat if '_==_['X:Nat, '0.Nat] = 'false.Bool [none] ., upModule('NAT)) .
+
+reduce printTokens(printDecls(eq '_+_['0.Nat, 'X:Nat] = 'X:Nat [none] ., upModule('NAT))) .
+reduce printTokens(printDecls(ceq '_+_['0.Nat, 'X:Nat] = 'X:Nat if '_==_['X:Nat, '0.Nat] = 'false.Bool [none] ., upModule('NAT))) .
+
+reduce printTemplate(asTemplate'(upModule('BOOL-OPS))) .
+reduce printTemplate(asTemplate'(upModule('DIJKSTRA))) .
+
+reduce printTokens(printTemplate(asTemplate'(upModule('BOOL-OPS)))) .
+reduce printTokens(printTemplate(asTemplate'(upModule('DIJKSTRA)))) .
+

@@ -387,4 +387,190 @@ reduce in MODULE-TEMPLATE : wellFormed(fromTemplate('BAKERY-FVP, asTemplate(
     upModule('BAKERY-FVP, true)))) .
 rewrites: 7
 result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(sorts 'A ; 'B ; 'C ; 'D .,
+    upModule('BOOL)) .
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 39 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+rewrites: 50
+result NeQidList: '\n '\n ' ' ' ' 'sorts 'A 'B 'C 'D '. '\n '\n '\n '\n '\n '\n
+    '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(sorts 'A ; 'List`{B`} ., upModule(
+    'BOOL)) .
+rewrites: 35
+result NeQidList: '\n '\n ' ' ' ' 'sorts 'A 'List`{B`} '. '\n '\n '\n '\n '\n
+    '\n '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(sorts 'A ; 'B ; 'C ;
+    'D ., upModule('BOOL))) .
+rewrites: 49
+result String: "\n\n    sorts A B C D .\n\n\n\n\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(sorts 'A ; 'List`{B`}
+    ., upModule('BOOL))) .
+rewrites: 36
+result String: "\n\n    sorts A List`{B`} .\n\n\n\n\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(subsorts 'A < 'B < 'C ; 'D .,
+    upModule('BOOL)) .
+rewrites: 74
+result NeQidList: '\n '\n '\n '\n ' ' ' ' 'subsort 'B '< 'D '. '\n ' ' ' '
+    'subsort 'B '< 'C '. '\n ' ' ' ' 'subsort 'A '< 'B '. '\n '\n '\n '\n '\n
+    '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(subsorts 'A < 'B < 'D ; 'List`{C`}
+    ., upModule('BOOL)) .
+rewrites: 74
+result NeQidList: '\n '\n '\n '\n ' ' ' ' 'subsort 'B '< 'List`{C`} '. '\n ' '
+    ' ' 'subsort 'B '< 'D '. '\n ' ' ' ' 'subsort 'A '< 'B '. '\n '\n '\n '\n
+    '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(subsorts 'A < 'B < 'C
+    ; 'D ., upModule('BOOL))) .
+rewrites: 75
+result String: "\n\n\n\n    subsort B < D .\n    subsort B < C .\n    subsort A < B .\n\n\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(subsorts 'A < 'B < 'D
+    ; 'List`{C`} ., upModule('BOOL))) .
+rewrites: 75
+result String: "\n\n\n\n    subsort B < List`{C`} .\n    subsort B < D .\n    subsort A < B .\n\n\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc
+    comm] ., upModule('NAT)) .
+rewrites: 50
+result NeQidList: '\n '\n '\n '\n '\n '\n ' ' ' ' 'op '_+_ ': 'Nat 'Nat '->
+    'Nat ' '`[ 'assoc 'comm '`] '. '\n '\n '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(op '_+_ : 'Nat 'Nat -> 'Nat [assoc
+    comm id('0.Nat)] ., upModule('NAT)) .
+rewrites: 51
+result NeQidList: '\n '\n '\n '\n '\n '\n ' ' ' ' 'op '_+_ ': 'Nat 'Nat '->
+    'Nat ' '`[ 'assoc 'comm 'id: '0 '`] '. '\n '\n '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(op 'if_then_else_ : 'Bool 'Nat
+    'Nat -> 'Nat [prec(30)] ., upModule('NAT)) .
+rewrites: 40
+result NeQidList: '\n '\n '\n '\n '\n '\n ' ' ' ' 'op 'if_then_else_ ': 'Bool
+    'Nat 'Nat '-> 'Nat ' '`[ 'prec '30 '`] '. '\n '\n '\n '\n '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(op '_+_ : 'Nat 'Nat ->
+    'Nat [assoc comm] ., upModule('NAT))) .
+rewrites: 50
+result String:
+    "\n\n\n\n\n\n    op _+_ : Nat Nat -> Nat [assoc comm] .\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(op '_+_ : 'Nat 'Nat ->
+    'Nat [assoc comm id('0.Nat)] ., upModule('NAT))) .
+rewrites: 52
+result String:
+    "\n\n\n\n\n\n    op _+_ : Nat Nat -> Nat [assoc comm id: 0] .\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(op 'if_then_else_ :
+    'Bool 'Nat 'Nat -> 'Nat [prec(30)] ., upModule('NAT))) .
+rewrites: 41
+result String: "\n\n\n\n\n\n    op if_then_else_ : Bool Nat Nat -> Nat [prec 30] .\n\n\n\n\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(eq '_+_['0.Nat,'X:Nat] = 'X:Nat [
+    none] ., upModule('NAT)) .
+rewrites: 30
+result NeQidList: '\n '\n '\n '\n '\n '\n '\n '\n '\n '\n ' ' ' ' 'eq '0 '+
+    'X:Nat '= 'X:Nat ' '`[ '`] '. '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printDecls(ceq '_+_['0.Nat,'X:Nat] = 'X:Nat
+    if '_==_['X:Nat,'0.Nat] = 'false.Bool [none] ., upModule('NAT)) .
+rewrites: 35
+result NeQidList: '\n '\n '\n '\n '\n '\n '\n '\n '\n '\n ' ' ' ' 'ceq '0 '+
+    'X:Nat '= 'X:Nat 'if 'X:Nat '== '0 '= 'false ' '`[ '`] '. '\n '\n
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(eq '_+_['0.Nat,'X:Nat]
+    = 'X:Nat [none] ., upModule('NAT))) .
+rewrites: 31
+result String: "\n\n\n\n\n\n\n\n\n\n    eq 0 + X:Nat = X:Nat [] .\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printDecls(ceq '_+_['0.Nat,
+    'X:Nat] = 'X:Nat if '_==_['X:Nat,'0.Nat] = 'false.Bool [none] ., upModule(
+    'NAT))) .
+rewrites: 36
+result String: "\n\n\n\n\n\n\n\n\n\n    ceq 0 + X:Nat = X:Nat if X:Nat == 0 = false [] .\n\n"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTemplate(asTemplate'(upModule(
+    'BOOL-OPS))) .
+rewrites: 452
+result NeQidList: 'fmod 'BOOL-OPS 'is '\n ' ' ' ' 'pr 'TRUTH-VALUE '. '\n '\n
+    '\n '\n '\n '\n ' ' ' ' 'op 'not_ ': 'Bool '-> 'Bool ' '`[ 'prec '53 '`] '.
+    '\n ' ' ' ' 'op '_xor_ ': 'Bool 'Bool '-> 'Bool ' '`[ 'assoc 'comm 'prec
+    '57 '`] '. '\n ' ' ' ' 'op '_or_ ': 'Bool 'Bool '-> 'Bool ' '`[ 'assoc
+    'comm 'prec '59 '`] '. '\n ' ' ' ' 'op '_implies_ ': 'Bool 'Bool '-> 'Bool
+    ' '`[ 'prec '61 'gather '`( 'e 'E '`) '`] '. '\n ' ' ' ' 'op '_and_ ':
+    'Bool 'Bool '-> 'Bool ' '`[ 'assoc 'comm 'prec '55 '`] '. '\n '\n '\n '\n '
+    ' ' ' 'eq 'not 'A:Bool '= 'true 'xor 'A:Bool ' '`[ '`] '. '\n ' ' ' ' 'eq
+    'false 'xor 'A:Bool '= 'A:Bool ' '`[ '`] '. '\n ' ' ' ' 'eq 'A:Bool 'xor
+    'A:Bool '= 'false ' '`[ '`] '. '\n ' ' ' ' 'eq 'A:Bool 'or 'B:Bool '=
+    'A:Bool 'and 'B:Bool 'xor 'A:Bool 'xor 'B:Bool ' '`[ '`] '. '\n ' ' ' ' 'eq
+    'A:Bool 'implies 'B:Bool '= 'not '`( 'A:Bool 'xor 'A:Bool 'and 'B:Bool '`)
+    ' '`[ '`] '. '\n ' ' ' ' 'eq 'true 'and 'A:Bool '= 'A:Bool ' '`[ '`] '. '\n
+    ' ' ' ' 'eq 'false 'and 'A:Bool '= 'false ' '`[ '`] '. '\n ' ' ' ' 'eq
+    'A:Bool 'and '`( 'B:Bool 'xor 'C:Bool '`) '= 'A:Bool 'and 'B:Bool 'xor
+    'A:Bool 'and 'C:Bool ' '`[ '`] '. '\n ' ' ' ' 'eq 'A:Bool 'and 'A:Bool '=
+    'A:Bool ' '`[ '`] '. '\n '\n '\n 'endfm
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTemplate(asTemplate'(upModule(
+    'DIJKSTRA))) .
+rewrites: 615
+result NeQidList: 'mod 'DIJKSTRA 'is '\n ' ' ' ' 'pr 'DIJKSTRA-DATA '. '\n '\n
+    ' ' ' ' 'sorts 'Conf 'State '. '\n '\n '\n '\n ' ' ' ' 'op '`[_`] ': 'Conf
+    '-> 'State ' '`[ 'ctor '`] '. '\n ' ' ' ' 'op '_|_ ': 'Proc 'ProcSet '->
+    'Conf ' '`[ 'ctor '`] '. '\n ' ' ' ' 'op '<_> ': 'Conf '-> 'State ' '`[
+    'ctor '`] '. '\n '\n '\n '\n '\n '\n ' ' ' ' 'crl '< 'P:Proc '| '`{ '2 '`,
+    'chf '`} 'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '2 '`, 'ext '`} 'PS:ProcSet
+    '> 'if 'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'ff '= 'tt ' '`[ 'label '`(
+    'fail-crit1 '`) '`] '. '\n ' ' ' ' 'crl '< 'P:Proc '| '`{ '2 '`, 'chf '`}
+    'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '2 '`, 'crt '`} 'PS:ProcSet '> 'if
+    'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'tt '= 'tt ' '`[ 'label '`(
+    'go-crit1 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'ext '`} '| 'PS:ProcSet
+    '> '=> '< '`{ '0 '`, 'try '`} '| 'PS:ProcSet '> ' '`[ 'label '`(
+    'exit-crit2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'crt '`} '|
+    'PS:ProcSet '> '=> '< '`{ '2 '`, 'ext '`} '| 'PS:ProcSet '> ' '`[ 'label
+    '`( 'done-crit2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'chf '`} '|
+    'WPS:WProcSet '> '=> '< '`{ '2 '`, 'crt '`} '| 'WPS:WProcSet '> ' '`[
+    'label '`( 'go-crit2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'chf '`} '|
+    '2PS:2ProcSet '> '=> '< '`{ '2 '`, 'ext '`} '| '2PS:2ProcSet '> ' '`[
+    'label '`( 'fail-crit2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '1 '`, 'upf '`} '|
+    'PS:ProcSet '> '=> '< '`{ '2 '`, 'chf '`} '| 'PS:ProcSet '> ' '`[ 'label
+    '`( 'set-flag2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '1 '`, 'try '`} '|
+    'PS:ProcSet '> '=> '< '`{ '1 '`, 'upf '`} '| 'PS:ProcSet '> ' '`[ 'label
+    '`( 'chk-turn2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '0 '`, 'try '`} '| '`{ '1
+    '`, 'try '`} 'PS:ProcSet '> '=> '< '`{ '0 '`, 'try '`} '| '`{ '1 '`, 'upt
+    '`} 'PS:ProcSet '> ' '`[ 'label '`( 'chk-turn1 '`) '`] '. '\n ' ' ' ' 'rl
+    '< '`{ '0 '`, 'try '`} '| 'PS:ProcSet '> '=> '< '`{ '1 '`, 'try '`} '|
+    'PS:ProcSet '> ' '`[ 'label '`( 'start2 '`) '`] '. '\n ' ' ' ' 'rl '<
+    'P:Proc '| '`{ '2 '`, 'ext '`} 'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '0 '`,
+    'try '`} 'PS:ProcSet '> ' '`[ 'label '`( 'exit-crit1 '`) '`] '. '\n ' ' ' '
+    'rl '< 'P:Proc '| '`{ '2 '`, 'crt '`} 'PS:ProcSet '> '=> '< 'P:Proc '| '`{
+    '2 '`, 'ext '`} 'PS:ProcSet '> ' '`[ 'label '`( 'done-crit1 '`) '`] '. '\n
+    ' ' ' ' 'rl '< 'P:Proc '| '`{ '1 '`, 'upt '`} 'PS:ProcSet '> '=> '< '`{ '1
+    '`, 'upf '`} '| 'P:Proc 'PS:ProcSet '> ' '`[ 'label '`( 'set-turn1 '`) '`]
+    '. '\n ' ' ' ' 'rl '< 'P:Proc '| '`{ '1 '`, 'upf '`} 'PS:ProcSet '> '=> '<
+    'P:Proc '| '`{ '2 '`, 'chf '`} 'PS:ProcSet '> ' '`[ 'label '`( 'set-flag1
+    '`) '`] '. '\n ' ' ' ' 'rl '< 'P:Proc '| '`{ '0 '`, 'try '`} 'PS:ProcSet '>
+    '=> '< 'P:Proc '| '`{ '1 '`, 'try '`} 'PS:ProcSet '> ' '`[ 'label '`(
+    'start1 '`) '`] '. '\n ' ' ' ' 'rl '< 'P:Proc '| 'PS:ProcSet '> '=> '`[
+    'P:Proc '| 'PS:ProcSet '`] ' '`[ 'label '`( 'stop '`) '`] '. '\n 'endm
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printTemplate(asTemplate'(
+    upModule('BOOL-OPS)))) .
+rewrites: 452
+result String: "fmod BOOL-OPS is\n    pr TRUTH-VALUE .\n\n\n\n\n\n    op not_ : Bool -> Bool [prec 53] .\n    op _xor_ : Bool Bool -> Bool [assoc comm prec 57] .\n    op _or_ : Bool Bool -> Bool [assoc comm prec 59] .\n    op _implies_ : Bool Bool -> Bool [prec 61 gather(e E)] .\n    op _and_ : Bool Bool -> Bool [assoc comm prec 55] .\n\n\n\n    eq not A:Bool = true xor A:Bool [] .\n    eq false xor A:Bool = A:Bool [] .\n    eq A:Bool xor A:Bool = false [] .\n    eq A:Bool or B:Bool = A:Bool and B:Bool xor A:Bool xor B:Bool [] .\n    eq A:Bool implies B:Bool = not(A:Bool xor A:Bool and B:Bool) [] .\n    eq true and A:Bool = A:Bool [] .\n    eq false and A:Bool = false [] .\n    eq A:Bool and(B:Bool xor C:Bool) = A:Bool and B:Bool xor A:Bool and C:Bool [] .\n    eq A:Bool and A:Bool = A:Bool [] .\n\n\nendfm"
+==========================================
+reduce in PRINT-MODULE-TEMPLATE : printTokens(printTemplate(asTemplate'(
+    upModule('DIJKSTRA)))) .
+rewrites: 615
+result String: "mod DIJKSTRA is\n    pr DIJKSTRA-DATA .\n\n    sorts Conf State .\n\n\n\n    op `[_`] : Conf -> State [ctor] .\n    op _|_ : Proc ProcSet -> Conf [ctor] .\n    op <_> : Conf -> State [ctor] .\n\n\n\n\n\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == ff = tt [label(fail-crit1)] .\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, crt} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == tt = tt [label(go-crit1)] .\n    rl <{2, ext} | PS:ProcSet > => <{0, try} | PS:ProcSet > [label(exit-crit2)] .\n    rl <{2, crt} | PS:ProcSet > => <{2, ext} | PS:ProcSet > [label(done-crit2)] .\n    rl <{2, chf} | WPS:WProcSet > => <{2, crt} | WPS:WProcSet > [label(go-crit2)] .\n    rl <{2, chf} | 2PS:2ProcSet > => <{2, ext} | 2PS:2ProcSet > [label(fail-crit2)] .\n    rl <{1, upf} | PS:ProcSet > => <{2, chf} | PS:ProcSet > [label(set-flag2)] .\n    rl <{1, try} | PS:ProcSet > => <{1, upf} | PS:ProcSet > [label(chk-turn2)] .\n    rl <{0, try} |{1, try} PS:ProcSet > => <{0, try} |{1, upt} PS:ProcSet > [label(chk-turn1)] .\n    rl <{0, try} | PS:ProcSet > => <{1, try} | PS:ProcSet > [label(start2)] .\n    rl < P:Proc |{2, ext} PS:ProcSet > => < P:Proc |{0, try} PS:ProcSet > [label(exit-crit1)] .\n    rl < P:Proc |{2, crt} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > [label(done-crit1)] .\n    rl < P:Proc |{1, upt} PS:ProcSet > => <{1, upf} | P:Proc PS:ProcSet > [label(set-turn1)] .\n    rl < P:Proc |{1, upf} PS:ProcSet > => < P:Proc |{2, chf} PS:ProcSet > [label(set-flag1)] .\n    rl < P:Proc |{0, try} PS:ProcSet > => < P:Proc |{1, try} PS:ProcSet > [label(start1)] .\n    rl < P:Proc | PS:ProcSet > =>[P:Proc | PS:ProcSet] [label(stop)] .\nendm"
 Bye.
