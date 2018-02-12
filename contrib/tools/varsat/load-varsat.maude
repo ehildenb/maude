@@ -13,14 +13,14 @@
 ---       An example invocation:
 ---
 ---         red var-sat(upModule(MYMOD,true),
----                     'X:Var ==? 'C.Const /\
----                     'OperatorName['C1.Const,'Y:Var] =!? 'X:Var) .
+---                     'X:Var ?= 'C.Const /\
+---                     'OperatorName['C1.Const,'Y:Var] != 'X:Var) .
 ---
 ---       A few things to notice:
 ---             [1] The syntax of meta-terms above: in particular
 ---                 for constants, variables, and non-constant terms
 ---             [2] The syntax for the disunification problems;
----                 T ==? T' is a unification literal, T =!? T' is
+---                 T ?= T' is a unification literal, T != T' is
 ---                 a disunification literal
 ---             [3] The operator /\ is used to conjoin literals
 ---             [4] Right now, the tool does not support \/; we
@@ -38,7 +38,7 @@
 ---                 reserved names included any symbol starting with
 ---                 an "#" or a "@"
 ---             [3] Your input problem is well-formed, i.e. for each
----                 literal T ==? T' and T =!? T', T and T' are both
+---                 literal T ?= T' and T != T', T and T' are both
 ---                 well-formed and that they are in the same connected
 ---                 component
 ---
