@@ -1,0 +1,45 @@
+set show timing off .
+
+load ../../../contrib/tools/varsat/numbers.maude
+load ../../../contrib/tools/varsat/load-varsat.maude
+
+fmod TEST is
+  pr VAR-SAT .
+  pr FOFORM-DEFINEDOPS .
+  pr NAT* .
+  op nat : -> Module .
+  op nat-valid : QFForm -> Bool .
+  var U V W X Y Z : Nat* .
+  var F : QFForm .
+  eq nat = upModule('NAT*,true) .
+endfm
+
+--- Satisfiability
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  Y) != 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  X) ?= 'tt.Bool*)    == false .
+red var-sat(nat, upTerm(X <=Nat Y) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <=Nat X) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
+              /\ upTerm(Y <=Nat Z) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
+              \/ upTerm(Y <=Nat Z) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
+              /\ upTerm(Y <Nat  X) ?= 'tt.Bool*)    == false .
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
+              \/ upTerm(Y <Nat  X) ?= 'tt.Bool*)    == true  .
+red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
+              /\ upTerm(Y <Nat  Z) ?= 'tt.Bool*
+              /\ upTerm(Z <Nat  X) ?= 'tt.Bool*)    == false .
+
+red var-sat(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
+              => (upTerm((X :+ 1) <Nat Y ) ?= 'tt.Bool*)) == true .
+
+--- Validity
+
+red var-valid(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
+                => (upTerm(X <Nat  (Y :+ 1)) ?= 'tt.Bool*)) == true .
+red var-valid(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
+                => (upTerm((X :+ 1) <Nat Y ) ?= 'tt.Bool*)) == false .
+red var-valid(nat, (upTerm(X <Nat  Y) ?= 'tt.Bool*)
+                => (upTerm(Y <Nat  X) ?= 'tt.Bool*)) == false .

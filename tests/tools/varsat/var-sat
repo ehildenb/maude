@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAUDE_LIB=$srcdir/../../../src/Main
+export MAUDE_LIB
+
+../../../src/Main/maude \
+  < var-sat.maude -no-banner -no-advise \
+  > var-sat.out 2>&1
+
+diff var-sat.expected var-sat.out > /dev/null 2>&1
