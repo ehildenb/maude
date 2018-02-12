@@ -1,0 +1,55 @@
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y)) == true .
+rewrites: 1695
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* != upTerm(X <Nat Y)) == true .
+rewrites: 750
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat X)) == false .
+rewrites: 99
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <=Nat Y)) == true .
+rewrites: 136
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <=Nat X)) == true .
+rewrites: 72
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y) /\ 'tt.Bool* ?=
+    upTerm(Y <=Nat Z)) == true .
+rewrites: 181
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y) \/ 'tt.Bool* ?=
+    upTerm(Y <=Nat Z)) == true .
+rewrites: 139
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y) /\ 'tt.Bool* ?=
+    upTerm(Y <Nat X)) == false .
+rewrites: 115
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y) \/ 'tt.Bool* ?=
+    upTerm(Y <Nat X)) == true .
+rewrites: 139
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, 'tt.Bool* ?= upTerm(X <Nat Y) /\ 'tt.Bool* ?=
+    upTerm(Z <Nat X) /\ 'tt.Bool* ?= upTerm(Y <Nat Z)) == false .
+rewrites: 132
+result Bool: true
+==========================================
+reduce in TEST : var-sat(nat, ('tt.Bool* ?= upTerm(X <Nat Y)) => ('tt.Bool* ?=
+    upTerm((1 :+ X) <Nat Y))) == true .
+rewrites: 143
+result Bool: true
+==========================================
+reduce in TEST : var-valid(nat, ('tt.Bool* ?= upTerm(X <Nat Y)) => ('tt.Bool*
+    ?= upTerm(X <Nat 1 :+ Y))) == true .
+rewrites: 176
+result Bool: true
