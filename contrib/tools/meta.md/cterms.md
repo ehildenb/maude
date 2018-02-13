@@ -204,7 +204,7 @@ Right now we just take *any* maximal sort in `C1 /\ C2`, but we really need to t
     op joint-sort : Sort ModuleDeclSet ModuleDeclSet -> Sort .
     ----------------------------------------------------------
     ceq joint-sort(S, MDS, MDS') = S if S inS intersect(MDS, MDS') .
-    ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS .
+    ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS' .
     ceq joint-sort(S, MDS, MDS') = if S inS MDS'' then S else #top-sort(MDS'') fi
                                 if S inS MDS /\ MDS'' := intersect(connected-component(MDS, (sorts S .)), MDS') .
 
