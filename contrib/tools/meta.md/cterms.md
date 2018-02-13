@@ -361,26 +361,41 @@ fmod PURIFICATION is
 Purifying Equational Conjunctions
 ---------------------------------
 
+Since in the purification process the order of the modules does not matter, we define `modulePair` a helper to abstract this.
+
+```maude
+    sort ModulePair .
+
+    op modulePair : Module Module -> ModulePair [ctor comm] .
+    ---------------------------------------------------------
+```
+
 Purification first checks if the conjunction is well-formed in one of the modules.
 If so, then it leaves it alone, otherwise more work is required on the equational atoms.
 
 ```maude
     op purify : ModuleExpression ModuleExpression EqConj -> [EqConj] .
     ------------------------------------------------------------------
-    eq purify(ME, ME', EqC) = purify(upModule(ME, true), upModule(ME', true), EqC) .
+    eq purify(ME, ME', EqC) = purify(modulePair(upModule(ME, true), upModule(ME', true)), EqC) .
 
-    op purify : Module Module EqConj -> [EqConj] .
-    ----------------------------------------------
-    ceq purify(M, M', EqC)         = EqC if (EqC in M) or (EqC in M') .
-    eq  purify(M, M', EqC /\ EqC') = purify(M, M', EqC) /\ purify(M, M', EqC') .
+    op purify : ModulePair EqConj -> [EqConj] .
+    -------------------------------------------
+    ceq purify(modulePair(M, M'), EqC)         = EqC if (EqC in M) .
+    eq  purify(modulePair(M, M'), EqC /\ EqC') = purify(modulePair(M, M'), EqC) /\ purify(modulePair(M, M'), EqC') .
 ```
 
-If one of the sides of the equality is not in the first module, purify it with respect to the first module.
-Note that the equational atoms are commutative, which handles the reversed case.
+If a term in a (dis)equality is not `wellFormed` in either `Module`, then we purify it.
+If a (dis)equality has terms pure in the same theory, then it is pure.
+If a (dis)equality has terms pure in different theories then we separate it into two
+contraints each pure in one of the theories, and forced to be (dis)equal via a `joint-variable`.
+
+TODO: Abstract ?= vs !=
 
 ```maude
-    ceq purify(M, M', T1 ?= T2) = purify(M, M', purify(M, M', T1) ?= T2) if not wellFormed(M, T1) .
-    ceq purify(M, M', T1 != T2) = purify(M, M', purify(M, M', T1) != T2) if not wellFormed(M, T1) .
+    ceq purify(modulePair(M, M'), T1 ?= T2) = purify(modulePair(M, M'), purify(M, M', T1) ?= T2) if not wellFormed(M, T1) and not wellFormed(M', T1) .
+    ceq purify(modulePair(M, M'), T1 != T2) = purify(modulePair(M, M'), purify(M, M', T1) != T2) if not wellFormed(M, T1) and not wellFormed(M', T1) .
+    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= 'TODO-WHAT-GOES-HERE /\ 'TODO-WHAT-GOES-HERE ?= T2       if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
+    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                                       if     wellFormed(M, T1) and wellFormed(M, T2) .
 ```
 
 Purifying Terms
