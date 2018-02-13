@@ -81,21 +81,25 @@ fmod MAYBENAT* is
   op _==_  : MaybeNat* MaybeNat* -> Bool* .
 endfm
 
-fmod ASSOC-LISTNAT* is
-  pr NAT* .
-  sort ListNat* NeListNat* .
-  subsort Nat* < NeListNat* < ListNat* .
-  op __  : NeListNat* NeListNat* -> NeListNat* [ctor assoc] .
-  op nil : -> ListNat* [ctor] .
+fmod ASSOC-LIST* { X :: TRIV } is
+  sort List*{X} NeList*{X} .
+  subsort X$Elt < NeList*{X} < List*{X} .
+  op __  : NeList*{X} NeList*{X} -> NeList*{X} [ctor assoc] .
+  op nil : -> List*{X} [ctor] .
 endfm
 
-fmod ASSOC-LISTBOOL* is
-  pr BOOL* .
-  sort ListBool* NeListBool* .
-  subsort Bool* < NeListBool* < ListBool* .
-  op __  : NeListBool* NeListBool* -> NeListBool* [ctor assoc] .
-  op nil : -> ListBool* .
+view Nat*  from TRIV to NAT*  is sort Elt to Nat*  . endv
+fmod ASSOC-LISTNAT* is
+  protecting NAT* .
+  protecting ASSOC-LIST*{Nat*} * (sort NeList*{Nat*} to NeListNat*, sort List*{Nat*} to ListNat*) .
 endfm
+
+view Bool* from TRIV to BOOL* is sort Elt to Bool* . endv
+fmod ASSOC-LISTBOOL* is
+  protecting BOOL* .
+  protecting ASSOC-LIST*{Bool*} * (sort NeList*{Bool*} to NeBoolList*, sort List*{Bool*} to BoolList*) .
+endfm
+
 
 fmod NUMBERS is
   pr NAT* .
