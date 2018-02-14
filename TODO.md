@@ -44,3 +44,9 @@ Amorphous
     switch between Maude packages.
 
 -   Increase inter-opability of Maude files.
+
+
+Nelson Oppen
+============
+
+- Generalize to multiple modules
