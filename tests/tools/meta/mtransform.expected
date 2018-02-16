@@ -128,7 +128,7 @@ op 'wait : nil -> 'NcMode [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('FT-COMM,
     true))) .
-rewrites: 114
+rewrites: 118
 result NeModuleDeclSet: (sorts 'Bool* ; 'ListNat* ; 'MaybeNat* ; 'MaybePairNat*
     ; 'Nat* ; 'NeListNat* ; 'NzNat* ; 'PairNat* ; 'State .)
 subsort 'Nat* < 'MaybeNat* .
@@ -144,6 +144,7 @@ eq '_and*_['B:Bool*,'ff.Bool*] = 'ff.Bool* [variant] .
 eq '_and*_['B:Bool*,'tt.Bool*] = 'B:Bool* [variant] .
 eq '_or*_['B:Bool*,'ff.Bool*] = 'B:Bool* [variant] .
 eq '_or*_['B:Bool*,'tt.Bool*] = 'tt.Bool* [variant] .
+eq 'head['__['N:Nat*,'L:ListNat*]] = 'N:Nat* [none] .
 eq 'max['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = '_:+_['n:Nat*,'m:Nat*] [variant] .
 eq 'min['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = 'n:Nat* [variant] .
 eq 'not*_['ff.Bool*] = 'tt.Bool* [variant] .
@@ -209,6 +210,7 @@ op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
     'Nat* -> 'State [ctor] .
 op '`[_`,_`] : 'Nat* 'NzNat* -> 'PairNat* [ctor] .
 op 'ff : nil -> 'Bool* [ctor] .
+op 'head : 'NeListNat* -> 'Nat* [none] .
 op 'max : 'Nat* 'Nat* -> 'Nat* [comm] .
 op 'min : 'Nat* 'Nat* -> 'Nat* [comm] .
 op 'nil : nil -> 'ListNat* [ctor] .
@@ -256,7 +258,7 @@ result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('FT-COMM, stripConditions(
     asTemplate(upModule('FT-COMM, true))))) .
-rewrites: 118
+rewrites: 122
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
