@@ -1,0 +1,19 @@
+==========================================
+reduce in SORT-GEN-EXTRA : metaSearch(mod 'NAT*-FSTH is
+  protecting 'MODEL-CHECKER .
+  sorts none .
+  none
+  ((op 'Nat* : nil -> 'State [none] .
+  op 'NzNat* : nil -> 'State [none] .)
+  op 'Bool* : nil -> 'State [none] .)
+  op '@ : 'State -> 'Prop [none] .
+  none
+  eq '_|=_['S:State,'@['S':State]] = '_==_['S:State,'S':State] [none] .
+  ((rl 'NzNat*.State => 'Nat*.State [none] .
+  rl 'NzNat*.State => 'NzNat*.State [none] .)
+  rl 'Nat*.State => 'NzNat*.State [none] .)
+  rl 'Nat*.State => 'Nat*.State [none] .
+endm, 'Bool*.State, 'Bool*.State, nil, '+, unbounded, 0) .
+rewrites: 1
+result ResultTriple?: (failure).ResultTriple?
+Bye.
