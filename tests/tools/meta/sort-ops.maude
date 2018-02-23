@@ -1,0 +1,22 @@
+set show timing off .
+
+load ../../../contrib/tools/meta/sort-ops.maude
+
+--- Checking that `Bool*` is a finite sort
+reduce
+  metaSearch(mod 'NAT*-FSTH is
+  protecting 'MODEL-CHECKER .
+  sorts none .
+  none
+  op '@ : 'State -> 'Prop [none] .
+  op 'Bool* : nil -> 'State [none] .
+  op 'Nat* : nil -> 'State [none] .
+  op 'NzNat* : nil -> 'State [none] .
+  none
+  eq '_|=_['S:State,'@['S':State]] = '_==_['S:State,'S':State] [none] .
+  rl 'Nat*.State => 'Nat*.State [none] .
+  rl 'Nat*.State => 'NzNat*.State [none] .
+  rl 'NzNat*.State => 'Nat*.State [none] .
+  rl 'NzNat*.State => 'NzNat*.State [none] .
+endm, 'Bool*.State, 'Bool*.State, nil, '+, unbounded, 0)
+.

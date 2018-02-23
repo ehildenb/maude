@@ -6,6 +6,7 @@ TESTS = \
 	mtemplate \
 	mtransform \
 	mconstruction \
+	sort-ops \
 	unification \
 	variables \
 	narrowing
@@ -18,6 +19,7 @@ MAUDE_FILES = \
 	mtemplate.maude \
 	mtransform.maude \
 	mconstruction.maude \
+	sort-ops.maude \
 	unification.maude \
 	variables.maude \
 	narrowing.maude
@@ -30,6 +32,7 @@ RESULT_FILES = \
 	mtemplate.expected \
 	mtransform.expected \
 	mconstruction.expected \
+	sort-ops.expected \
 	unification.expected \
 	variables.expected \
 	narrowing.expected
