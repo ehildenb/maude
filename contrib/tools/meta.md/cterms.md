@@ -163,6 +163,7 @@ fmod INTERSECTION is
     vars MOD MOD' M0 : Module . vars ME ME' : ModuleExpression .
     vars Q Q' : Qid . vars H H' : Header . vars S S' : Sort . vars SS SS' : SortSet .
     vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
+    var TM : Term .
 
     op intersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
     -----------------------------------------------------------------------------------
@@ -225,14 +226,14 @@ Sometimes it's necessary to calculate a joint-variable of a term in the intersec
 ```maude
     op joint-variable : ModuleExpression ModuleExpression Term -> Variable .
     ------------------------------------------------------------------------
-    eq joint-variable(ME, ME', T) = joint-variable(upModule(ME, true), upModule(ME', true), T) .
+    eq joint-variable(ME, ME', TM) = joint-variable(upModule(ME, true), upModule(ME', true), TM) .
 
     op joint-variable : Module Module Term -> Variable .
     ----------------------------------------------------
-   ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T), joint-sort(leastSort(MOD, T),  MOD, MOD'))
-                                   if wellFormed(MOD, T) .
-   ceq joint-variable(MOD, MOD', T) = #makeVariable(#string(T) ,joint-sort(leastSort(MOD', T), MOD', MOD))
-                                   if wellFormed(MOD', T) .
+   ceq joint-variable(MOD, MOD', TM) = #makeVariable(#string(TM), joint-sort(leastSort(MOD, TM),  MOD, MOD'))
+                                    if wellFormed(MOD, TM) .
+   ceq joint-variable(MOD, MOD', TM) = #makeVariable(#string(TM), joint-sort(leastSort(MOD', TM), MOD', MOD))
+                                    if wellFormed(MOD', TM) .
 endfm
 ```
 
