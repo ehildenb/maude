@@ -398,8 +398,8 @@ Note that we take advantage of the fact that generated constraints will bubble t
 
     op purify : Module Module TermList -> [CTerm] .
     -----------------------------------------------
-    eq purify(M, M', empty)          = empty .
-    eq purify(M, M', (NeTL , NeTL')) = purify(M, M', NeTL) , purify(M, M', NeTL') .
+    eq purify(M, M', empty)      = empty .
+    eq purify(M, M', (T , NeTL)) = purify(M, M', T) , purify(M, M', NeTL) .
 ```
 
 If the term is well-formed in the first module, return it.
