@@ -604,8 +604,8 @@ endfm
 The only remaining Full Maude dependency is the `UNIT` import here.
 
 ```maude
---- TODO: commented out to avoid Full Maude dependency
---- load ../base/full-maude.maude
+--- TODO: avoid Full Maude dependency
+load ../base/full-maude.maude
 --- Gathers all functionality into a single module
 fmod RENAME-METAVARS is
   pr META-LEVEL      .
@@ -613,8 +613,8 @@ fmod RENAME-METAVARS is
   pr GET-TYPES       .
   pr GEN-VARNAMES    .
   pr RENAME-DATA     .
-  --- TODO: commented out to avoid Full Maude dependency
-  --- pr UNIT .
+  --- TODO: avoid Full Maude dependency
+  pr UNIT .
 
   --- auxiliary function that adds a types equation to a module
   op  add-types    : Module Module -> Module .
@@ -647,8 +647,8 @@ fmod RENAME-METAVARS is
 
   var M M' : Module . var T T' T'' : Term . var L L' : GTermList . var N : Nat . var TI BI BI' : FindResult . var S : Substitution .
 
-  --- TODO: commented out to avoid Full Maude dependency
-  --- eq  add-types(M,M') = addEqs(eq 'types.TypeSet = upTerm(get-types(M)) [none].,M') .
+  --- TODO: avoid Full Maude dependency
+  eq  add-types(M,M') = addEqs(eq 'types.TypeSet = upTerm(get-types(M)) [none].,M') .
 
   --- INP: TermList
   --- PRE: None
@@ -697,8 +697,8 @@ fmod RENAME-METAVARS is
        termdata($renameTmpVar(if BI :: Nat then s(BI) else 0 fi,T),
          if TI :: Nat then TI + if BI :: Nat then s(BI) else 0 fi else BI fi) .
 
-  --- TODO: commented out to avoid Full Maude dependency
-  --- eq $renameTmpVar(N,T) =
-  ---      downTerm(getTerm(metaReduce(addEqs(eq 'base.Nat = upTerm(N) [none] .,upModule('RTV-IMPL3,false)),T)),empty) .
+  --- TODO: avoid Full Maude dependency
+  eq $renameTmpVar(N,T) =
+       downTerm(getTerm(metaReduce(addEqs(eq 'base.Nat = upTerm(N) [none] .,upModule('RTV-IMPL3,false)),T)),empty) .
 endfm
 ```
