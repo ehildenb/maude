@@ -112,14 +112,13 @@ This should either be implemented, hooked up to an existing implementation, or w
 ```
 
 `EqConj` is extended to handle constrained terms.
-It's not clear that we always want to separate a constraint from its term (the commented equations).
 
 ```maude
     op _?=_ : CTerm CTerm -> EqConj [ditto] .
     op _!=_ : CTerm CTerm -> EqConj [ditto] .
     -----------------------------------------
----    eq TM? ?= (TM | EqC) = (TM? ?= TM) /\ EqC .
----    eq TM? != (TM | EqC) = (TM? != TM) /\ EqC .
+    eq T ?= (T' | EqC) = (T ?= T') /\ EqC .
+    eq T != (T' | EqC) = (T != T') /\ EqC .
 endfm
 ```
 
