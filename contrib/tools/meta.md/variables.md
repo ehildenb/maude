@@ -428,10 +428,11 @@ fmod GEN-VARNAMES is
   --- OUT: A stdvar deterministically chosen based on S and I
   eq  stdvar(V,I)     =  stdvar(string(V),I) .
   eq  stdvar(N,I)     = $stdvar(substr(N,0,1),N,I) .
-  eq $stdvar("#",N,I) =  qid("@" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
-  eq $stdvar("%",N,I) =  qid("@" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
-  eq $stdvar("@",N,I) =  qid("@" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
-  eq $stdvar( K ,N,I) =  qid( K  + "@" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) [owise] .
+  eq $stdvar("#",N,I) =  qid("&" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
+  eq $stdvar("%",N,I) =  qid("&" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
+  eq $stdvar("@",N,I) =  qid("&" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
+  eq $stdvar("&",N,I) =  qid("&" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) .
+  eq $stdvar( K ,N,I) =  qid( K  + "&" + string(I,10) + substr(N,rfind(N,":",length(N)),length(N))) [owise] .
 endfm
 
 --- Given a meta*term, grab all of its meta*variables (represented as metavariables)
@@ -502,9 +503,10 @@ fmod RTV-IMPL2 is
   --- [2,6] ignores constants,nonconforming vars
   --- [7-8] max function extened to FindResult
   eq [0] : check(X)               = check(X,#parse-metavar(X,types)) .
-  eq [1] : check(X,(I,V))         = check(X,I,V,#get-idx("@" : "#" : "%" : nil,V)) .
+  eq [1] : check(X,(I,V))         = check(X,I,V,#get-idx("&" : "@" : "#" : "%" : nil,V)) .
   eq [2] : check(X,W)             = X [owise] .
-  eq [3] : check(X,I,V,(N,"@",J)) = X,                       gather(true, J) .
+  eq [3] : check(X,I,V,(N,"&",J)) = X,                       gather(true, J) .
+  eq [4] : check(X,I,V,(N,"@",J)) = shift(I,N,J,getType(V)), gather(false,J) .
   eq [4] : check(X,I,V,(N,"#",J)) = shift(I,N,J,getType(V)), gather(false,J) .
   eq [5] : check(X,I,V,(N,"%",J)) = shift(I,N,J,getType(V)), gather(false,J) .
   eq [6] : check(X,I,V,Y)         = X [owise] .
@@ -519,7 +521,7 @@ fmod RTV-IMPL3 is
   op base  :                     -> Nat  . --- constant for shift
   op shift : Nat String Nat Type -> Term .
   var X : TermQid . var I J : Nat . var N : String . var S : Type .
-  eq shift(I,N,J,S) = up(I,qid(N + "@" + string(J + base,10) + ":" + string(S))) .
+  eq shift(I,N,J,S) = up(I,qid(N + "&" + string(J + base,10) + ":" + string(S))) .
 endfm
 
 --- Renames all meta*vars in a termlist to be fresh w.r.t. a base index
