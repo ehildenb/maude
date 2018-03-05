@@ -352,7 +352,7 @@ endfm
 
 fmod FOFORMSIMPLIFY-IMPL is
   pr FOFORM .
-  var C : Conj . var D : Disj . var F : FOForm . var T : Term .
+  var C : Conj . var D : Disj . var F : FOForm . vars T T' : Term .
   --- Repeated subformula in Conj/Disj
   eq F /\ F = F .
   eq F \/ F = F .
@@ -367,6 +367,9 @@ fmod FOFORMSIMPLIFY-IMPL is
   --- Negated Formula
   eq F  \/ ~ F = tt .
   eq F  /\ ~ F = ff .
+  --- Negated Equality/Disequality
+  eq ~(T ?= T') = T != T' .
+  eq ~(T != T') = T ?= T' .
   --- Trivial Equality/Disequality
   eq T ?= T = tt .
   eq T != T = ff .
