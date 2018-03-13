@@ -165,18 +165,18 @@ fmod INTERSECTION is
     vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
     var TM : Term .
 
-    op intersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
-    -----------------------------------------------------------------------------------
-    eq intersect( NeMDS     , NeMDS' )     = none [owise] .
-    eq intersect( NeMDS MDS , NeMDS MDS' ) = NeMDS intersect( MDS , MDS' ) .
-    eq intersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
-     = (sorts S .) intersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
+    op moduleIntersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
+    -----------------------------------------------------------------------------------------
+    eq moduleIntersect( NeMDS     , NeMDS' )     = none [owise] .
+    eq moduleIntersect( NeMDS MDS , NeMDS MDS' ) = NeMDS moduleIntersect( MDS , MDS' ) .
+    eq moduleIntersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
+     = (sorts S .) moduleIntersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
 
-    op intersect : Module Module -> Module .
-    op intersect : ModuleExpression ModuleExpression -> Module .
-    ------------------------------------------------------------
-    eq intersect(MOD, MOD') = fromTemplate(qid("INTERSECT{" + string(resolveNames(getName(MOD))) + "," + string(resolveNames(getName(MOD'))) + "}"), intersect(asTemplate(MOD), asTemplate(MOD'))) .
-    eq intersect(ME, ME')   = intersect(upModule(ME, true), upModule(ME', true)) .
+    op moduleIntersect : Module           Module           -> Module .
+    op moduleIntersect : ModuleExpression ModuleExpression -> Module .
+    ------------------------------------------------------------------
+    eq moduleIntersect(ME, ME')   = moduleIntersect(upModule(ME, true), upModule(ME', true)) .
+    eq moduleIntersect(MOD, MOD') = fromTemplate(qid("INTERSECT{" + string(resolveNames(getName(MOD))) + "," + string(resolveNames(getName(MOD'))) + "}"), moduleIntersect(asTemplate(MOD), asTemplate(MOD'))) .
 ```
 
 It will often be useful to know if a sort or an operator is in a `ModuleDeclSet`.
@@ -204,15 +204,15 @@ Right now we just take *any* maximal sort in `C1 /\ C2`, but we really need to t
 ```maude
     op joint-sort : Sort ModuleDeclSet ModuleDeclSet -> Sort .
     ----------------------------------------------------------
-    ceq joint-sort(S, MDS, MDS') = S if S inS intersect(MDS, MDS') .
+    ceq joint-sort(S, MDS, MDS') = S if S inS moduleIntersect(MDS, MDS') .
     ceq joint-sort(S, MDS, MDS') = joint-sort(S, MDS', MDS) if (not S inS MDS) /\ S inS MDS' .
     ceq joint-sort(S, MDS, MDS') = if S inS MDS'' then S else #top-sort(MDS'') fi
-                                if S inS MDS /\ MDS'' := intersect(connected-component(MDS, (sorts S .)), MDS') .
+                                if S inS MDS /\ MDS'' := moduleIntersect(connected-component(MDS, (sorts S .)), MDS') .
 
     op joint-sort : Sort Module           Module           -> Sort .
     op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
     ----------------------------------------------------------------
-    eq joint-sort(S, ME,  ME')  = joint-sort(S, intersect(ME, ME'), intersect(ME, ME')) .
+    eq joint-sort(S, ME,  ME')  = joint-sort(S, moduleIntersect(ME, ME'), moduleIntersect(ME, ME')) .
     eq joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
 
     op #top-sort : ModuleDeclSet -> [Sort] .
