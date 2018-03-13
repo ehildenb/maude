@@ -3,6 +3,9 @@
 *.sw*
 .DS_Store
 
+# Temporary directory for developers
+/tmp
+
 # build products (when using automake)
 /autom4te.cache
 /src/Main/maude
