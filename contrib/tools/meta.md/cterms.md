@@ -37,18 +37,18 @@ fmod CTERM-SET is
     op _<<_ : CTermSet SubstitutionSet -> CTermSet .
     ------------------------------------------------
     eq .CTermSet     << SS = .CTermSet .
-    eq (CT ;; NeCTS) << SS = (CT << SS) ;; (NeCTS << SS) .
+    eq (CT ;x; NeCTS) << SS = (CT << SS) ;x; (NeCTS << SS) .
     eq CT << empty         = .CTermSet .
-    eq CT << (S | S' | SS) = (CT << S) ;; (CT << S') ;; (CT << SS) .
+    eq CT << (S | S' | SS) = (CT << S) ;x; (CT << S') ;x; (CT << SS) .
    ceq (T | F)       << S  = (T << S) | (F << S)
     if not (F == tt) .
 
     op .CTermSet : -> CTermSet .
-    op _;;_ : CTermSet CTermSet   -> CTermSet   [ctor assoc comm id: .CTermSet prec 60] .
-    op _;;_ : CTermSet CTermSet?  -> CTermSet?  [ctor ditto] .
-    op _;;_ : CTermSet NeCTermSet -> NeCTermSet [ctor ditto] .
+    op _;x;_ : CTermSet CTermSet   -> CTermSet   [ctor assoc comm id: .CTermSet prec 60] .
+    op _;x;_ : CTermSet CTermSet?  -> CTermSet?  [ctor ditto] .
+    op _;x;_ : CTermSet NeCTermSet -> NeCTermSet [ctor ditto] .
     ----------------------------------------------------------
-    eq NeCTS ;; NeCTS = NeCTS .
+    eq NeCTS ;x; NeCTS = NeCTS .
 
     op _[_] : CTermSet? Module -> [CTermSet] [prec 64] .
     ----------------------------------------------------
@@ -56,10 +56,10 @@ fmod CTERM-SET is
 
     op _++_ : CTermSet? CTermSet? -> CTermSet? [assoc comm id: .CTermSet prec 61] .
     -------------------------------------------------------------------------------
-    eq NeCTS ;; CTS ++ NeCTS ;; CTS'  = NeCTS ;; CTS ++ CTS' .
-    eq NeCTS        ++ NeCTS' [ MOD ] = NeCTS ;; NeCTS' [owise] .
+    eq NeCTS ;x; CTS ++ NeCTS ;x; CTS'  = NeCTS ;x; CTS ++ CTS' .
+    eq NeCTS        ++ NeCTS' [ MOD ] = NeCTS ;x; NeCTS' [owise] .
 
-   ceq T | F ;; CTS ++ CT' ;; CTS' [ MOD ] = T | F'' ;; CTS ++ CTS' [ MOD ]
+   ceq T | F ;x; CTS ++ CT' ;x; CTS' [ MOD ] = T | F'' ;x; CTS ++ CTS' [ MOD ]
     if T' | F' := #varsApart(CT', T | F)
     /\ S | SS  := #subsumesWith(MOD, T, T')
     /\ F''     := F \/ (F' /\ #disjSubsts(S | SS)) .
@@ -67,19 +67,19 @@ fmod CTERM-SET is
     op _--_ : CTermSet? CTermSet? -> CTermSet? [right id: .CTermSet prec 62] .
     --------------------------------------------------------------------------
     eq .CTermSet    -- NeCTS          = .CTermSet .
-    eq NeCTS ;; CTS -- NeCTS ;; CTS'  = CTS -- NeCTS ;; CTS' .
-    eq CT ;; NeCTS  -- NeCTS' [ MOD ] = (CT -- NeCTS' [ MOD ]) ;; (NeCTS -- NeCTS' [ MOD ]) .
+    eq NeCTS ;x; CTS -- NeCTS ;x; CTS'  = CTS -- NeCTS ;x; CTS' .
+    eq CT ;x; NeCTS  -- NeCTS' [ MOD ] = (CT -- NeCTS' [ MOD ]) ;x; (NeCTS -- NeCTS' [ MOD ]) .
     eq NeCTS        -- NeCTS' [ MOD ] = NeCTS [owise] . --- Over-approximate when we can't simplify
 
-   ceq CT    -- CT' ;; CTS'  [ MOD ] = .CTermSet
+   ceq CT    -- CT' ;x; CTS'  [ MOD ] = .CTermSet
     if S | SS := #subsumesWith(MOD, CT', #varsApart(CT, CT')) .
 
-   ceq T | F -- CT' ;; CTS'  [ MOD ] = CT -- CTS' [ MOD ]
+   ceq T | F -- CT' ;x; CTS'  [ MOD ] = CT -- CTS' [ MOD ]
     if T' | F' := #varsApart(CT', T | F)
     /\ S | SS  := #subsumesWith(MOD, T, T')
     /\ CT      := (T | F /\ (#disjSubsts(S | SS) => (~ F'))) .
 
-   ceq CT    -- CT' ;; CTS   [ MOD ] = CT -- CTS' ;; CTS [ MOD ]
+   ceq CT    -- CT' ;x; CTS   [ MOD ] = CT -- CTS' ;x; CTS [ MOD ]
     if CTS' := #intersect(MOD, CT, CT') .
 
     op #intersect : Module CTerm CTerm -> CTermSet? .
