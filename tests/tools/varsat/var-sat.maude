@@ -3,15 +3,12 @@ set show timing off .
 load ../../../contrib/tools/varsat/numbers.maude
 load ../../../contrib/tools/varsat/load-varsat.maude
 
-fmod TEST is
+fmod TEST-NAT is
   pr VAR-SAT .
   pr FOFORM-DEFINEDOPS .
-  pr NAT* .
-  op nat : -> Module .
-  op nat-valid : QFForm -> Bool .
-  var U V W X Y Z : Nat* .
+  pr NAT*       . op nat  : -> Module . vars U V W X Y Z : Nat* .
   var F : QFForm .
-  eq nat = upModule('NAT*,true) .
+  eq nat  = upModule('NAT*,       true) .
 endfm
 
 --- Satisfiability
@@ -35,7 +32,17 @@ red var-sat(nat, upTerm(X <Nat  Y) ?= 'tt.Bool*
 red var-sat(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
               => (upTerm((X :+ 1) <Nat Y ) ?= 'tt.Bool*)) == true .
 
---- Validity
+red var-sat(nat,
+       'Z:Bool* ?= '_<Nat_['_:+_[ 'N:Nat* , 'N:Nat* ]
+                          ,'_:+_[ 'M:Nat* , 'M:Nat* ]]
+    /\ 'Z:Bool* != 'tt.Bool*
+    /\ 'N:Nat* != 'M:Nat*)
+    == true .
+
+red var-sat(nat,
+       'B1:Bool* ?= '_<Nat_[ 'N:Nat*, 'M:Nat* ]
+    /\ 'N:Nat* != 'M:Nat*)
+    == true .
 
 red var-valid(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
                 => (upTerm(X <Nat  (Y :+ 1)) ?= 'tt.Bool*)) == true .
@@ -43,3 +50,175 @@ red var-valid(nat, (upTerm(X <Nat  Y       ) ?= 'tt.Bool*)
                 => (upTerm((X :+ 1) <Nat Y ) ?= 'tt.Bool*)) == false .
 red var-valid(nat, (upTerm(X <Nat  Y) ?= 'tt.Bool*)
                 => (upTerm(Y <Nat  X) ?= 'tt.Bool*)) == false .
+
+reduce var-sat(nat,
+        'B2:Bool* ?= 'tt.Bool*
+     /\ 'B2:Bool* ?= '_<Nat_['N2:Nat*,'N1:Nat*])
+     == true .
+
+reduce var-sat(nat,
+            'B2:Bool* ?= '_<Nat_['N2:Nat*, 'N1:Nat*]
+         /\ 'N2:Nat* ?= 'N1:Nat*)
+    == true .
+
+reduce var-sat(nat,
+            'B2:Bool* ?= 'tt.Bool*
+         /\ 'B2:Bool* ?= '_<Nat_[ 'N2:Nat*, 'N1:Nat*]
+         /\ 'N2:Nat* ?= 'N1:Nat*)
+    == false .
+
+reduce var-sat(nat,
+                'B1:Bool* ?= '_<Nat_[ 'N1:Nat*, 'N2:Nat*  ]
+             /\ 'N1:Nat* != 'N2:Nat* )
+    == true .
+
+reduce var-sat(nat,
+            'B2:Bool* ?= 'tt.Bool*
+         /\ 'B2:Bool* ?= '_<Nat_['N2:Nat*,'N1:Nat*]
+         /\ 'N2:Nat* != 'N1:Nat*)
+      == true .
+
+reduce var-sat(nat,
+        'B1:Bool* ?= '_<Nat_['N2:Nat*, '_:+_['N1:Nat*,'N1:Nat*]]
+     /\ 'B1:Bool* != 'tt.Bool*)
+     == true .
+
+
+--- These checks are to make sure we work with the theories that nelson oppen
+--- uses for testing.
+
+fmod MYNATLIST* is
+  protecting BOOL* .
+  sort Nat* .
+
+  op fake-zero :      -> Nat* [ctor] .
+  op fake-succ : Nat* -> Nat* [ctor] .
+
+  sort NeNatList* NatList* .
+  subsort Nat* < NeNatList* < NatList* .
+  op __  : NeNatList* NeNatList* -> NeNatList* [ctor assoc] .
+  op nil : -> NatList* [ctor] .
+
+  op head : NeNatList* -> Nat* .
+  var N : Nat* . var L : NeNatList* .
+  eq head(N)   = N [variant] .
+  eq head(N L) = N [variant] .
+endfm
+
+fmod TEST-LIST is
+  pr VAR-SAT .
+  pr FOFORM-DEFINEDOPS .
+  var F : QFForm .
+  op list : -> Module .
+  eq list = upModule('MYNATLIST*, true) .
+endfm
+
+reduce var-sat(list,
+                'N1:Nat* ?= 'head['L':NeNatList*]
+             /\ 'N2:Nat* ?= 'head['L:NeNatList*]
+             /\ 'N1:Nat* != 'N2:Nat* )
+    == true .
+
+reduce var-sat(list,
+            'B2:Bool* ?= 'tt.Bool*
+         /\ 'N2:Nat* ?= 'head['L':NeNatList*]
+         /\ 'N1:Nat* ?= 'head['L:NeNatList*]
+         /\ 'L':NeNatList* ?= 'L:NeNatList*
+         /\ 'N2:Nat* != 'N1:Nat*
+        )
+    == false .
+
+reduce var-sat(list,
+            'N2:Nat* ?= 'head['L':NeNatList*]
+         /\ 'N1:Nat* ?= 'head['L:NeNatList*]
+         /\ 'B1:Bool* != 'tt.Bool*
+         /\ 'N2:Nat* != 'N1:Nat*)
+      == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I2:Nat* ?= 'head['M:NeNatList*]
+     /\ 'I1:Nat* != 'I2:Nat*)
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'I2:Nat*
+     /\ 'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I2:Nat* ?= 'head['M:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'N2:Nat* ?= 'head['L':NeNatList*]
+     /\ 'N1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'B1:Bool* != 'tt.Bool*)
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I2:Nat* ?= 'head['M:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'B2:Bool* ?= 'tt.Bool*
+     /\ 'N2:Nat* ?= 'head['L':NeNatList*]
+     /\ 'N1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'L':NeNatList* ?= 'L:NeNatList*)
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'X:Nat*  != 'head['L:NeNatList*]
+     /\ 'Y:Nat*  != 'head['L:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I1:Nat* != 'X:Nat*
+     /\ 'X:Nat*  != 'head['L:NeNatList*]
+     /\ 'Y:Nat*  != 'head['L:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I1:Nat* != 'Y:Nat*
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'X:Nat* != 'Y:Nat*
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'I1:Nat* != 'X:Nat*
+     /\ 'I1:Nat* != 'Y:Nat*
+     /\ 'X:Nat* != 'Y:Nat*
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == true .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'X:Nat*
+     /\ 'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == false .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'Y:Nat*
+     /\ 'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == false .
+
+reduce var-sat(list,
+        'I1:Nat* ?= 'head['L:NeNatList*]
+     /\ 'X:Nat* ?= 'Y:Nat*
+     /\ 'X:Nat* != 'head['L:NeNatList*]
+     /\ 'Y:Nat* != 'head['L:NeNatList*])
+     == true
+     .
