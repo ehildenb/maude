@@ -1,14 +1,14 @@
---- ; Narrowing
---- ; =========
 
---- ; Several narrowing utilities/wrappers are provided here.
+
+
+
 
 
 load unification.maude
 
 
---- ; Variant Sets
---- ; ------------
+
+
 
 
 fmod VARIANT-SET is
@@ -42,8 +42,8 @@ fmod VARIANT-SET is
 endfm
 
 
---- ; Single Narrowing Steps
---- ; ----------------------
+
+
 
 
 fmod NARROWING-STEP-SET is
@@ -90,8 +90,8 @@ fmod NARROWING-STEP-SET is
 endfm
 
 
---- ; Narrowing using Santiago Escobar’s Code
---- ; ---------------------------------------
+
+
 
 
 fmod NARROWING is
@@ -107,8 +107,8 @@ fmod NARROWING is
 endfm
 
 
---- ; Narrowing using Core Maude
---- ; --------------------------
+
+
 
 
 fmod NARROWING2 is
@@ -130,6 +130,5 @@ fmod NARROWING2 is
     --------------------------------------------
     eq metaNarrow2(M,T) = allNarrowSteps(M, T, 0) .
 endfm
-
 
 

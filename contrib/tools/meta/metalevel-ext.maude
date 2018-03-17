@@ -1,7 +1,7 @@
---- ; Meta Level Extensions
---- ; =====================
 
---- ; Code that should be moved into the Meta Level once it’s separated from the prelude.
+
+
+
 
 
 load unification.maude
@@ -34,6 +34,5 @@ fmod META-LEVEL-EXT is
    ceq #subsumesXWith(MOD, T, T', N) = S | #subsumesXWith(MOD, T, T', s(N)) if { S , CTX } := metaXmatch(MOD, T, T', nil, 0, unbounded, N) .
     eq #subsumesXWith(MOD, T, T', N) = empty [owise] .
 endfm
-
 
 

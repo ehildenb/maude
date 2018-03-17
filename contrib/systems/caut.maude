@@ -1,21 +1,21 @@
---- ; Cellular Automata in Maude
---- ; ==========================
 
---- ; A cellular automata is a soup of cells, where each cell is holding some internal state.
---- ; Once a cell is “activated”, it reads the state of each of its neighbor cells to compute its own next state.
---- ; Once the next state has been computed, a cell waits to be deactivated.
---- ; All of the cells are activated simultaneously, and once all of the cells have computed their next state they are all deactivated.
 
---- ; Data Structures
---- ; ---------------
 
---- ; ### States
+
+
+
+
+
+
+
+
+
 
 
 fmod CELLULAR-AUTOMATA-DATA is
 
 
---- ; -   Sort `State` is left empty (for the user to fill) and represents the states that each cell can be in.
+
 
 
     sorts State States State? .
@@ -26,8 +26,8 @@ fmod CELLULAR-AUTOMATA-DATA is
     var  SS SS' : States .
 
 
---- ; -   Operator `_->_` represents a cell that is computing its next state given its current state and neighboring states.
---- ; -   Operator `__` lets us group states together in a multiset.
+
+
 
 
     op _->_ : State States  -> State? [prec 56] .
@@ -38,11 +38,11 @@ fmod CELLULAR-AUTOMATA-DATA is
     -----------------------------------------------------------------------
 
 
---- ; ### Cells
 
---- ; -   Sort `Cell` represents an individual cell on the board.
---- ; -   Operator `_::_` holds a cell marked by its identifier and current state.
---- ; -   Operator `_;_` gives us a soup of cells which can evolve together (with the empty set of cells being `.Cells`).
+
+
+
+
 
 
     sorts CellId Cell Cells .
@@ -62,10 +62,10 @@ fmod CELLULAR-AUTOMATA-DATA is
     eq C ; C = C .
 
 
---- ; ### Evolution
 
---- ; -   Sort `CellKey` should be filled by the user to provide identifiers for each neighboring cell state.
---- ; -   Operator `_[_]` is used to load the current state of the neighboring cells so that the next state of the current cell can be calculated.
+
+
+
 
 
     sort CellKey .
@@ -82,16 +82,16 @@ fmod CELLULAR-AUTOMATA-DATA is
      = N :: S -> CK[S'] SS ; N' :: S' -> SS' .
 
 
---- ; -   `neighbors` is defined by the user to inform which cells should be considered neighbors by the simulator.
+
 
 
     op neighbors : CellId -> State? .
     ---------------------------------
 
 
---- ; -   Sort `Conf` wraps sort `Cells` to create the “game board”.
---- ; -   Operator `[_]` tells the board that it’s time to load the neighboring states.
---- ; -   Operator `{_}` tells the board that it’s time to accept the new state.
+
+
+
 
 
     sort Conf .
@@ -109,10 +109,10 @@ fmod CELLULAR-AUTOMATA-DATA is
 endfm
 
 
---- ; Simulator
---- ; ---------
 
---- ; To drive the clock forward, we’ll have two rules which switch the surrounding braces between `[_]` and `{_}`.
+
+
+
 
 
 mod CELLULAR-AUTOMATA is
@@ -125,17 +125,17 @@ mod CELLULAR-AUTOMATA is
 endm
 
 
---- ; Instantiations
---- ; ==============
 
---- ; The above data-structures provide a simulator for *any* cellular automata, but some common cases come up often.
 
---- ; Periodic Grid
---- ; -------------
 
---- ; One common example is the 2D periodic grid (embedding on a torus).
---- ; Here, the `CELLULAR-AUTOMATA-DATA` is specialized to this case.
---- ; This grid does not count diagonal neighbors, which would be necessary for Conway’s Game of Life.
+
+
+
+
+
+
+
+
 
 
 mod PERIODIC-GRID is
@@ -145,7 +145,7 @@ mod PERIODIC-GRID is
     vars N M : Int .
 
 
---- ; -   Sort `Point` will be pairs of integers marking which position in the torus we’re at.
+
 
 
     sort Point .
@@ -158,7 +158,7 @@ mod PERIODIC-GRID is
     eq pt(N) = < N quo width , N rem width > .
 
 
---- ; -   `width` and `height` are specified by the user to make the grid the correct size (notice that inside a `Point` modular arithmetic is performed).
+
 
 
    ops width height : -> Nat .
@@ -169,8 +169,8 @@ mod PERIODIC-GRID is
    ceq < N , M > = < N          , M + width > if M < 0 .
 
 
---- ; -   We have 4 neighbors, so there are 4 `CellKey`s, one for each neighbor.
---- ;     Here we specify how `neighbors` calculates the correct `CellId` for each neighboring `CellKey`.
+
+
 
 
    ops up down left right : -> CellKey .
@@ -181,6 +181,5 @@ mod PERIODIC-GRID is
        down  [< N + 1 , M     >]
        right [< N     , M + 1 >] .
 endm
-
 
 

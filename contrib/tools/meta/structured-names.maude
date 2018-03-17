@@ -1,17 +1,17 @@
---- ; Structured Names
---- ; ================
 
---- ; For substutions:
+
+
+
 
 
 load metalevel-ext.maude
 
 
---- ; First, we’ll need a way to generate variables at the object level because writing all our syntax at the meta-level can be a pain.
---- ; Additionally, we’ll need a way to have “structured” sort names and operator names.
---- ; For this, a few constructors are provided.
 
---- ; `var<X>`, where `X` is some sort, will create an object-level variable of the given sort by first creating a meta-level variable and then downing it.
+
+
+
+
 
 
 fmod STRUCTURED-NAME is
@@ -70,10 +70,10 @@ fmod STRUCTURED-NAME is
    ceq var<RuleSet>        (Q) = RLS  if RLS  := downTerm(qid(string(Q) + ":RuleSet"),        downRuleSetError?) .
 
 
---- ; It’s useful when building universal constructions to generate the same structure, but with incremented variable names.
 
---- ; -   `prime` will add a prime `'` to every variable in a given term, the variant which takes an extra sort only primes that extra sort.
---- ; -   `#prime` is the meta-level version, which does the same over a `Term`.
+
+
+
 
 
     op prime :     Sort -> Sort .
@@ -101,9 +101,9 @@ fmod STRUCTURED-NAME is
     eq #primes(s(N)) = "'" + #primes(N) .
 
 
---- ; We’ll need the ability to get the free variables of some specific sorts.
 
---- ; -   `#fv<Sort>` is a meta-level operation which gets all the variables of sort `Sort` from a `Term`.
+
+
 
 
     op #fv<Sort> : TermList -> SortSet .
@@ -115,14 +115,14 @@ fmod STRUCTURED-NAME is
     eq #fv<Sort>(Q)                    = none [owise] .
 
 
---- ; We’ll also need ways to “resolve” these names into proper Maude names, so that we can do execution in Maude with the results.
---- ; Here we provide the “base” resolution, as well as lifting it over the various meta-level data.
 
---- ; -   `resolveNames` provides the reduction of structured names to unstructured
---- ;     Core Maude names (a single quoted identifier).
 
---- ; TODO: `resolveNames` should be defined over just a few primitives (the ones that we have structured names for), and `#resolveNames` should be a META-LEVEL version which descends to those points in the term and then calls the object level version.
---- ; This should fix the preregularity issue with this as well.
+
+
+
+
+
+
 
 
     op resolveNames : Header -> Header .
@@ -202,6 +202,5 @@ fmod STRUCTURED-NAME is
     eq resolveNames( rl TERM => TERM'         [AS] .) = ( rl resolveNames(TERM) => resolveNames(TERM')                       [resolveNames(AS)] .) .
     eq resolveNames(crl TERM => TERM' if COND [AS] .) = (crl resolveNames(TERM) => resolveNames(TERM') if resolveNames(COND) [resolveNames(AS)] .) .
 endfm
-
 
 

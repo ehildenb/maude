@@ -1,13 +1,13 @@
---- ; Constrained Terms
---- ; =================
 
---- ; Constrained terms are a term coupled with a FO-formula (provided by `foform.maude`).
 
---- ; We should make the first part of a constrained term use Stephen Skeirik’s pattern operations when it detects that the term falls in a module where that is safe.
---- ; The formulas present are being broken into different categories based on what we have decision procedures for, so it’s only natural that we use the pattern operations when they are safe.
 
---- ; We also need to extend FOForm to handle terms which fall into CVC4’s abilities directly.
---- ; This will require infrastructure to determine whether part of a formula downs correctly into a module.
+
+
+
+
+
+
+
 
 
 load mtemplate.maude
@@ -89,7 +89,7 @@ fmod CTERM-SET is
     /\ S | SS  := #unifiers(MOD, T, T') .
 
 
---- ; This should either be implemented, hooked up to an existing implementation, or we should convince ourselves it’s not needed.
+
 
 
     op #varsApart : CTerm CTerm -> [CTerm] .
@@ -111,8 +111,8 @@ fmod CTERM-SET is
     eq #varsApart(CT, CT') = CT .
 
 
---- ; `EqConj` is extended to handle constrained terms.
---- ; It’s not clear that we always want to separate a constraint from its term (the commented equations).
+
+
 
 
     op _?=_ : CTerm CTerm -> EqConj [ditto] .
@@ -123,8 +123,8 @@ fmod CTERM-SET is
 endfm
 
 
---- ; A trace of constrained terms is just a map from naturals to pairs constrained-term sets.
---- ; The first element of the pair are the states seen for the first time in that step, and the second element are the accumulated states up to that point.
+
+
 
 
 fmod CTERM-TRACE is
@@ -147,11 +147,11 @@ fmod CTERM-TRACE is
 endfm
 
 
---- ; Module Intersection
---- ; ===================
 
---- ; This module computes module intersections over `ModuleDeclSet`.
---- ; The intersection operation is lifted to `Module` via `asTemplate`.
+
+
+
+
 
 
 fmod INTERSECTION is
@@ -178,7 +178,7 @@ fmod INTERSECTION is
     eq intersect(ME, ME')   = intersect(upModule(ME, true), upModule(ME', true)) .
 
 
---- ; It will often be useful to know if a sort or an operator is in a `ModuleDeclSet`.
+
 
 
     op _inS_ : Sort ModuleDeclSet -> Bool .
@@ -190,15 +190,15 @@ fmod INTERSECTION is
     eq Q inO MDS = false [owise] .
 
 
---- ; Joint Sorts
---- ; -----------
 
---- ; Calculating the joint sort of a sort `S` in connected components `C1` and `C2` corresponding to modules `MOD` and `MOD'`:
 
---- ; -   If `S` is a sort of `C1 /\ C2`, return `S`;
---- ; -   If not, return the maximal sort in `C1 /\ C2`.
 
---- ; Right now we just take *any* maximal sort in `C1 /\ C2`, but we really need to take the correct maximal sort.
+
+
+
+
+
+
 
 
     op joint-sort : Sort ModuleDeclSet ModuleDeclSet -> Sort .
@@ -220,7 +220,7 @@ fmod INTERSECTION is
     eq #top-sort( ( subsort S < S' . ) MDS ) = top-sort( ( subsort S < S' . ) MDS , S ) .
 
 
---- ; Sometimes it’s necessary to calculate a joint-variable of a term in the intersection of two modules.
+
 
 
     op joint-variable : ModuleExpression ModuleExpression Term -> Variable .
@@ -236,13 +236,13 @@ fmod INTERSECTION is
 endfm
 
 
---- ; Breaking Equalities
---- ; ===================
 
---- ; Breaking equality atoms means taking an equality atom between terms of different modules and reforming them:
 
---- ; -   `T ?= T'` goes to `x ?= T /\ x ?= T'` for `x` a variable of sort common to `T` and `T'`.
---- ; -   `T != T'` goes to `x ?= T /\ x != T'` for `x` a variable of sort greater than that `T'`.
+
+
+
+
+
 
 
 fmod BREAK-EQATOMS is
@@ -269,17 +269,9 @@ fmod BREAK-EQATOMS is
 endfm
 
 
---- ; Variable Abstraction
---- ; ====================
 
---- ; Input:  
---- ; One module `M`, and an Equational Conjunction: a conjunction of
---- ; equations of the form `T ?= T'` and `T != T'`.
---- ; 
---- ; Output:  
---- ; A new Equational Conjunction, where each Equational Atom is of the form
---- ; `T1 = T2`, where either `T1` or `T2` (or both) is a variable, and the other
---- ; is of the form `f(V1, ..., Vn)` for variables `V1` through `Vn`.
+
+
 
 
 fmod VABS is
@@ -295,7 +287,7 @@ fmod VABS is
     eq vabs(ME, EqC) = vabs(upModule(ME, true), EqC) .
 
 
---- ; `abstracted : Term -> Bool` returns true if the current is abstracted.
+
 
 
     op abstracted : Term -> Bool .
@@ -304,7 +296,7 @@ fmod VABS is
     ceq abstracted(Q[TL, T, TL']) = false if not (T :: Variable) .
 
 
---- ; The operation `vabs : Module EqConj -> EqConj` takes in an equational conjunction and variable abstracts all the equational atoms.
+
 
 
     op vabs : Module EqConj -> [EqConj] .
@@ -314,15 +306,15 @@ fmod VABS is
     ceq vabs(M, V != T)      = V != T if abstracted(T) .
 
 
---- ; If the top terms in the equality atom are both not variables and abstracted, then `break-eqatoms` is used to make it a conjunct of simple equalities.
+
 
 
     ceq vabs(M, T ?= T') = break-eqatoms(M, M, T ?= T') if not (T :: Variable or T' :: Variable) /\ abstracted(T) /\ abstracted(T') .
     ceq vabs(M, T != T') = break-eqatoms(M, M, T != T') if not (T :: Variable or T' :: Variable) /\ abstracted(T) /\ abstracted(T') .
 
 
---- ; If there is a non-variable subterm, it is extracted as an equality.
---- ; Both the remaining subterms and the new equality are variable abstracted.
+
+
 
 
     ceq vabs(M, Q[TL, T, TL'] ?= T') = vabs(M, Q[TL, FV, TL'] ?= T') /\ vabs(M, FV ?= T) if not (T :: Variable) /\ FV := joint-variable(M, M, T) .
@@ -330,14 +322,14 @@ fmod VABS is
 endfm
 
 
---- ; Purification
---- ; ============
 
---- ; Purification ensures that a conjunction of equational atoms has sub-conjuncts strictly formed of equational atoms from the individual theories.
---- ; The resulting formulas will always be of the form
 
---- ; -   `T ?= T'` or `T != T'` with `T` and `T'` in the same signature.
---- ; -   `x ?= T` or `x != T` with `x` a variable of appropriate sort in the signature of `T`.
+
+
+
+
+
+
 
 
 fmod PURIFICATION is
@@ -358,11 +350,11 @@ fmod PURIFICATION is
     eq (T != T')     in M = wellFormed(M, T) and wellFormed(M, T') .
 
 
---- ; Purifying Equational Conjunctions
---- ; ---------------------------------
 
---- ; Purification first checks if the conjunction is well-formed in one of the modules.
---- ; If so, then it leaves it alone, otherwise more work is required on the equational atoms.
+
+
+
+
 
 
     op purify : ModuleExpression ModuleExpression EqConj -> [EqConj] .
@@ -375,20 +367,20 @@ fmod PURIFICATION is
     eq  purify(M, M', EqC /\ EqC') = purify(M, M', EqC) /\ purify(M, M', EqC') .
 
 
---- ; If one of the sides of the equality is not in the first module, purify it with respect to the first module.
---- ; Note that the equational atoms are commutative, which handles the reversed case.
+
+
 
 
     ceq purify(M, M', T1 ?= T2) = purify(M, M', purify(M, M', T1) ?= T2) if not wellFormed(M, T1) .
     ceq purify(M, M', T1 != T2) = purify(M, M', purify(M, M', T1) != T2) if not wellFormed(M, T1) .
 
 
---- ; Purifying Terms
---- ; ---------------
 
---- ; Purifying a term means finding alien sub-terms and extracting them as equality constraints.
---- ; This is lifted to `TermList` in the normal way.
---- ; Note that we take advantage of the fact that generated constraints will bubble to the top.
+
+
+
+
+
 
 
     op purify : ModuleExpression ModuleExpression TermList -> [CTerm] .
@@ -401,9 +393,9 @@ fmod PURIFICATION is
     eq purify(M, M', (NeTL , NeTL')) = purify(M, M', NeTL) , purify(M, M', NeTL') .
 
 
---- ; If the term is well-formed in the first module, return it.
---- ; If the top symbol of the term is from the first module, purify the subterms.
---- ; Otherwise, generate an equality constraint at the top and purify with respect to the second module.
+
+
+
 
 
     ceq purify(M, M', T)     = T                       if wellFormed(M, T) .
@@ -413,7 +405,7 @@ fmod PURIFICATION is
                                                        /\ FV      := joint-variable(M', M, T) .
 
 
---- ; Sometimes, we need to make sure that a term contains only symbols from a given subtheory.
+
 
 
     op subtheoryPurify : ModuleDeclSet Module TermList -> [TermList] .
@@ -430,48 +422,49 @@ fmod PURIFICATION is
 endfm
 
 
---- ; Traversing Terms
---- ; ================
 
---- ;     fmod TERM-TRAVERSE is
---- ;        protecting FOFORMSIMPLIFY-IMPL .
---- ;        protecting META-LEVEL .
---- ;        protecting BREAK-EQATOMS .
---- ; 
---- ;         var TO TO' : TermOp . var C : Constant . var V : Variable . var Q : Qid .
---- ;         var T : Term . var NeTL NeTL' : NeTermList . var TL : TermList .
---- ; 
---- ;         sorts TermOp ModuleExpressionList .
---- ;         subsort ModuleExpression < ModuleExpressionList .
---- ; 
---- ;         op _;_  : TermOp TermOp -> TermOp [assoc] .
---- ;         op _[_] : TermOp TermList -> [TermList] .
---- ;         -----------------------------------------
---- ;         eq (TO ; TO')[T]    = TO'[TO[T]] .
---- ;         eq TO[NeTL , NeTL'] = TO[NeTL] , TO[NeTL'] .
---- ; 
---- ;         op onChildren : TermOp -> TermOp .
---- ;         ----------------------------------
---- ;         eq onChildren(TO)[C]     = C .
---- ;         eq onChildren(TO)[V]     = V .
---- ;         eq onChildren(TO)[Q[TL]] = Q[TO[TL]] .
---- ; 
---- ;         op traverseUp   : TermOp -> TermOp .
---- ;         op traverseDown : TermOp -> TermOp .
---- ;         ------------------------------------
---- ;         eq traverseUp  (TO)[T] = TO[onChildren(traverseUp(TO))[T]] .
---- ;         eq traverseDown(TO)[T] = onChildren(traverseDown(TO))[TO[T]] .
---- ; 
---- ;         op _;;;_ : ModuleExpressionList ModuleExpressionList -> ModuleExpressionList [assoc] .
---- ;         --------------------------------------------------------------------------------------
---- ; 
---- ;         op purify : ModuleExpressionList -> TermOp .
---- ;         --------------------------------------------
---- ;         ceq purify(ME ;;; MEL          [T]     = T                          if wellFormed(M, T) .
---- ;         ceq purify(ME ;;; MEL)         [Q[TL]] = Q[purify((ME ;; MEL))[TL]] if Q inO asTemplate(ME) .
---- ;     ---    ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV | ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
---- ;     ---                                                                        /\ T | QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
---- ;     ---                                                                        /\ FV      := ??? .
---- ;     endfm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

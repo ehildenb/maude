@@ -1,7 +1,7 @@
---- ; Narrowing and Equational Unification
---- ; ====================================
 
---- ; Santiago Escobar
+
+
+
 
 
 fmod META-LEVEL-MNPA is
@@ -5313,6 +5313,5 @@ fmod META-NARROWING-SEARCH is
    = upDown#(M,S':Substitution ; V <- getTerm(metaReduce(M,T)),S:Substitution) .
 
 endfm
-
 
 

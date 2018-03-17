@@ -1,9 +1,9 @@
---- ; Module Constructions
---- ; ====================
 
---- ; Module constructions are a pair of a theory `FTH` and a parametized module `FMOD{X :: FTH}` with infrastructure to create a view from `FTH` to `MOD` using purely matching.
---- ; If so, then the resulting substitution is used to instantiate `FMOD{X :: FTH}`, and the resulting module is `MOD + FMOD{X :: FTH}`.
---- ; For this, we’ll heavily use the machinery of `MODULE-TEMPLATE`.
+
+
+
+
+
 
 
 load mtemplate.maude
@@ -21,11 +21,11 @@ fmod MODULE-CONSTRUCTION is
     vars NeMTS NeMTS' : NeModuleTemplateSet . var SPS : SortPoset . var SDS : SortDeclSet . var SSDS : SubsortDeclSet . vars X Y Z X' Y' TH TH' : Sort . vars T T' : Term .
 
 
---- ; Primitive Constructions
---- ; -----------------------
 
---- ; A module construction is either just a declaration of existence (the empty theory matches anything), or the pair of the theory and the parametric module.
---- ; `.ModuleConstruction` is the empty module construction.
+
+
+
+
 
 
     op        exists_ : ModuleTemplateSet                   -> NeModuleConstruction [     prec 75] .
@@ -39,7 +39,7 @@ fmod MODULE-CONSTRUCTION is
     eq forall MDS MDS' exists MDS = .ModuleConstruction .
 
 
---- ; `_;_` gives sequential composition of module constructions, and `_|_` gives parallel.
+
 
 
     op _;_ : ModuleConstruction   ModuleConstruction ->   ModuleConstruction [ctor assoc      id: .ModuleConstruction prec 76 format(d n d d)] .
@@ -50,7 +50,7 @@ fmod MODULE-CONSTRUCTION is
     eq NeMC | NeMC = NeMC .
 
 
---- ; Operator `_deriving_` applies a module construction to a module.
+
 
 
     op _deriving_ : ModuleDeclSet ModuleConstruction -> ModuleDeclSet [right id: .ModuleConstruction prec 76] .
@@ -69,9 +69,9 @@ fmod MODULE-CONSTRUCTION is
     eq MOD deriving NeMC = fromTemplate(getName(MOD), asTemplate(MOD) deriving NeMC) .
 
 
---- ; `#upModule` defaults to passing `false` to `upModule`.
 
---- ; **TODO**: Move this to the prelude, and name `upModule`.
+
+
 
 
     op #upModule : ModuleExpression -> Module [memo] .
@@ -79,12 +79,12 @@ fmod MODULE-CONSTRUCTION is
     eq #upModule(ME) = upModule(ME, false) [owise] .
 
 
---- ; Operators Over Constructions
---- ; ----------------------------
 
---- ; Module constructions can be instantiated further with substitutions using `_<<_`.
 
---- ; **TODO**: It feels strange to also generate `forall MTS exists MDS` in the first equation.
+
+
+
+
 
 
     op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction [right id: empty] .
@@ -98,7 +98,7 @@ fmod MODULE-CONSTRUCTION is
     eq (NeMC ; NeMC')      << SU = (NeMC << SU) ; (NeMC' << SU) .
 
 
---- ; `for_in__` allows building the same structure for many different sorts at a time.
+
 
 
     op for_in__ : Sort SortDeclSet ModuleConstruction -> ModuleConstruction [prec 76] .
@@ -112,9 +112,9 @@ fmod MODULE-CONSTRUCTION is
     eq for S in ( sorts S' ; S'' ; SS . ) MC = (for S in ( sorts S' . ) MC) | (for S in ( sorts S'' . ) MC) | (for S in ( sorts SS . ) MC) .
 
 
---- ; Operator `univ_` turns a `ModuleDeclSet` into a module constuction parametric over its sorts.
 
---- ; **TODO**: Are `univ_` and `_over_` used anywhere/are they useful yet?
+
+
 
 
     op univ_ : ModuleDeclSet -> ModuleConstruction [prec 75] .
@@ -122,25 +122,27 @@ fmod MODULE-CONSTRUCTION is
     eq univ MDS = forall ( sorts fv<Sort>(MDS) . ) exists MDS .
 
 
---- ;         op _over_ : ModuleConstruction ModuleTemplate -> ModuleConstruction [prec 76] .
---- ;         -------------------------------------------------------------------------------
---- ;         eq (forall MT exists MT' | MC) over MT'' = (forall MT exists MT' over MT'') | (MC over MT'') .
---- ;         eq (forall MT exists MT' ; MC) over MT'' = (forall MT exists MT' over MT'') ; (MC over MT'') .
---- ;         eq forall MT exists MT' over MT'' = forall (MT \ (( sorts none . ) \ MT'')) exists MT' .
 
---- ; Functor Constructions
---- ; ---------------------
 
---- ; ### Functors
 
---- ; Covariant constructions copy sort structure and preserve the subsort relation.
---- ; In general, you may want to just copy the sort structure with a new name, or copy the sort structure and then make the copies subsorts (or supersorts) of the original.
 
---- ; **TODO**: Lots of common structure between `FUNCTOR`, `COFUNCTOR`, and `PROFUNCTOR`.
---- ; Could we possible factor out the part dealing with the `SortPoset`?
 
---- ; `FUNCTOR` copies the sort and subsort structure without linking the original and new sort structures.
---- ; The first sort serves as a template for which sorts to copy, and the secord sort serves as a template for the sort to build (these templates can themselves be structured sorts).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     op FUNCTOR : Sort SortPoset -> ModuleConstruction .
@@ -160,8 +162,8 @@ fmod MODULE-CONSTRUCTION is
                     /\ F' := prime(X, F) .
 
 
---- ; `COFUNCTOR` are contravariant in the subsort relation.
---- ; Their construction is similar to functors.
+
+
 
 
     op COFUNCTOR : Sort SortPoset -> ModuleConstruction .
@@ -181,7 +183,7 @@ fmod MODULE-CONSTRUCTION is
                       /\ F' := prime(X, F) .
 
 
---- ; A `PROFUNCTOR` is covariant in one argument and contravariant in the other.
+
 
 
     op PROFUNCTOR : Sort Sort SortPoset -> ModuleConstruction .
@@ -205,11 +207,11 @@ fmod MODULE-CONSTRUCTION is
                           /\ FX' := prime(X, F) /\ FY' := prime(Y, F) .
 
 
---- ; ### Useful Functor Constructions
 
---- ; A common idiom is to create the subsort-chain `X < NeF{X} < F{X}`, where `F` is some data-structure and `NeF` is the non-empty version.
---- ; These data-structures are often over binary operators with given axioms.
---- ; Here, `BINARY-DATA` uses `FUNCTOR` to build the desired sort structure, then the appropriate binary operators with unit are declared.
+
+
+
+
 
 
     op BINARY-DATA : Sort Qid AttrSet -> ModuleConstruction .
@@ -226,14 +228,14 @@ fmod MODULE-CONSTRUCTION is
                              /\ Nil := qid("."  + string(F)) .
 
 
---- ; Here, some useful module constructions for the list and set data-types are provided:
 
---- ; **TODO**: Add `TUPLE : Nat -> ModuleConstruction` declaring all tuples up to specified size.
 
---- ; -   `LIST : -> ModuleConstruction` constructs the sorts `X < NeList{X} < List{X}` for every `X` in the module, using `_,_` as the associative constructor and `.List` as the empty list.
---- ; -   `MSET : -> ModuleConstruction` constructs the sorts `X < NeMSet{X} < MSet{X}` for every `X` in the module, using `_;_` as the associative-commutative constructor and `.MSet` as the empty set.
---- ; -   `SET : -> ModuleConstruction` constructs the sorts `X < NeSet{X} < Set{X}` for every `X` in the module, using `_;_` as the associative-commutative constructor and `.Set` as the empty set.
---- ;     Additionally, the set-idempotency equation is added.
+
+
+
+
+
+
 
 
    ops LIST MSET SET : -> ModuleConstruction .
@@ -246,10 +248,10 @@ fmod MODULE-CONSTRUCTION is
            if NES := var('NeS, 'NeSet{var<Sort>('X)}) .
 
 
---- ; For functional-style programming (including higher-order functional programming), it’s necessary to reify arrows between sorts (functions) as objects themselves.
---- ; This `EXPONENTIAL` module construction does that.
 
---- ; **TODO**: make identify functions actually behave like identity in composition
+
+
+
 
 
     op EXPONENTIAL : -> ModuleConstruction .
@@ -270,14 +272,14 @@ fmod MODULE-CONSTRUCTION is
                   /\ Z := var<Sort>('Z) .
 
 
---- ; Meta Theory Constructions
---- ; -------------------------
 
---- ; **TODO**: Fix, finish, and test these.
---- ; **TODO**: Is it the case that any of these are useful?
 
---- ; `ModuleConstruction*` is for module constructions which must know the header of the module they are modifying.
---- ; `_<_>` allows building module constructions which need to know the module header (as many meta-theoretic constructions do).
+
+
+
+
+
+
 
 
     sort ModModuleConstruction .
@@ -296,10 +298,10 @@ fmod MODULE-CONSTRUCTION is
     eq MOD deriving MMC = MOD deriving (MMC < getName(MOD) >) .
 
 
---- ; Sometimes you want a “meta theory” specific to your module.
---- ; For example, you may want to express using just a sort that a meta-level `Term` is a well-formed term in your theory, or that it is a well-formed term of a specific sort in your theory.
---- ; This module construction will extend your module with its meta-theory, so that this can be done.
---- ; This is a construction that refines the module `META-TERM` and adds it to your module, as well as adding in conditional memberships which push elements of the sort `Term` into the subsort of `Term{MYMOD}` when appropriate.
+
+
+
+
 
 
     op cmb-pred : Sort Sort Qid -> MembAx .
@@ -367,6 +369,5 @@ fmod MODULE-CONSTRUCTION is
                            ; tmp-mb(X, 'Term,       Q)
                         if X := var<Sort>('X) .
 endfm
-
 
 
