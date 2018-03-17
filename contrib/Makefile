@@ -1,3 +1,19 @@
+.PHONY: all tools systems
+
+# Tangler
+# -------
+
+tangler_repo=$(CURDIR)/pandoc-tangle
+tangler=$(tangler_repo)/tangle.lua
+LUA_PATH=$(tangler_repo)/?.lua;;
+export LUA_PATH
+
+$(tangler):
+	git submodule update --init -- $(tangler_repo)
+
+# Tangled Files
+# -------------
+
 all: \
 	tools \
 	systems
@@ -18,11 +34,8 @@ systems: \
 	systems/nim.maude \
 	systems/caut.maude
 
-# `pd` is a patched version of `pandoc` capable of writing code files
-# Download it from 'https://github.com/ehildenb/pandoc'
+tools/meta/%.maude: tools/meta.md/%.md $(tangler)
+	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
-tools/meta/%.maude: tools/meta.md/%.md
-	pd --from markdown --to 'code{.maude}' $< > $@
-
-systems/%.maude: systems.md/%.md
-	pd --from markdown --to 'code{.maude}' $< > $@
+systems/%.maude: systems.md/%.md $(tangler)
+	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
