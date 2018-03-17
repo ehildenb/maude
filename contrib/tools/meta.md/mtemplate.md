@@ -49,8 +49,8 @@ fmod MODULE-DECLARATION is
     var Q : Qid . var ME : ModuleExpression .
     vars I I' : Import . var IL : ImportList . vars ID : ImportDecl . var NeIDS : NeImportDeclSet . var IDS : ImportDeclSet .
     vars S S' S'' : Sort . vars SS SS' : SortSet . var SPS : SortPoset .
-    var SU : Substitution . var SUBSTS : SubstitutionSet .
-    vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' : ModuleDeclSet .
+    vars SU SU' : Substitution . var SUBSTS : SubstitutionSet .
+    vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' : ModuleDeclSet . vars MD MD' : ModuleDecl .
 
     op __ : ImportDeclSet  NeImportDeclSet  -> NeImportDeclSet  [ctor ditto] .
     op __ : SortDeclSet    NeSortDeclSet    -> NeSortDeclSet    [ctor ditto] .
@@ -190,11 +190,15 @@ Here we add `SortPoset` and allow an entire poset to be declared at once.
    ceq var<ModuleDeclSet>(Q) = MDS
     if MDS := downTerm(qid(string(Q) + ":ModuleDeclSet"), error<ModuleDeclSet>) .
 
-    op _<<_ : ModuleDeclSet Substitution -> [ModuleDeclSet] .
-    ---------------------------------------------------------
-    eq MDS                << empty = (none).NullDeclSet .
-    eq (none).NullDeclSet << SU    = none .
-   ceq NeMDS              << SU    = NeMDS' if NeMDS' := downTerm(upTerm(NeMDS) << SU, error<ModuleDeclSet>) .
+    op _<<_ : ModuleDeclSet SubstitutionSet -> [ModuleDeclSet] .
+    ------------------------------------------------------------
+    eq MDS          << empty               = (none).NullDeclSet .
+    eq MDS          << (SU | SU' | SUBSTS) = (MDS << SU) (MDS << SU') (MDS << SUBSTS) .
+
+    eq (none).NullDeclSet << SU = none .
+    eq (NeMDS NeMDS')     << SU = (NeMDS << SU) (NeMDS' << SU) .
+
+   ceq MD << SU = MD' if MD' := downTerm(upTerm(MD) << SU, error<ModuleDeclSet>) .
 
     op match_with_ : ModuleDeclSet ModuleDeclSet -> [SubstitutionSet] .
     -------------------------------------------------------------------
