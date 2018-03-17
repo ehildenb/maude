@@ -29,7 +29,11 @@ develop:
     2.  All tests in the repository pass.
     3.  Code review has approved the changes.
 
-Each feature/topic branch should follow this naming prefix scheme:
+Each feature/topic branch should use the following naming prefix scheme.
+If your branch falls into two categories, pick the earlier one in this list.
+
+build/FEATURE-NAME:
+:   Branches which modify/update the build system.
 
 core/FEATURE-NAME:
 :   Any branch that touches code in `src/` (modifying Core Maude).
