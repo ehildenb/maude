@@ -1,5 +1,9 @@
 .PHONY: all tools systems
 
+all: \
+	tools \
+	systems
+
 # Tangler
 # -------
 
@@ -13,10 +17,6 @@ $(tangler):
 
 # Tangled Files
 # -------------
-
-all: \
-	tools \
-	systems
 
 tools: \
 	tools/meta/metalevel-ext.maude \
