@@ -16,7 +16,7 @@ autoconf
 autoheader
 automake
 
-./configure --without-cvc4 "$@"
+./configure "$@"
 
 make -s -j4
 
