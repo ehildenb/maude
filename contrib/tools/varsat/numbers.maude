@@ -93,7 +93,8 @@ fmod ASSOC-LIST* { X :: TRIV } is
   op nil : -> List*{X} [ctor] .
 
   op head : NeList*{X} -> X$Elt .
-  var N : X$Elt . var L : List*{X} .
+  var N : X$Elt . var L : NeList*{X} .
+  eq head(N)   = N .
   eq head(N L) = N .
 endfm
 
