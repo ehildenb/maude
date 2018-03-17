@@ -4,6 +4,7 @@ top_dir="$(pwd)"
 build_dir="$top_dir/.build"
 include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
+contrib_dir="contrib"
 
 automake --add-missing
 aclocal
@@ -18,3 +19,7 @@ make -s -j4
 git checkout -- src/Mixfix/surface.cc
 
 make -s -j4
+
+( cd "$contrib_dir"
+  make all || exit 1
+)
