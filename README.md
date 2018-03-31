@@ -12,6 +12,12 @@ For documentation and examples, see the Maude website: <http://maude.cs.uiuc.edu
 For help using Maude 2:	<maude-help@maude.cs.uiuc.edu>
 Report bugs to:	<maude-bugs@maude.cs.uiuc.edu>
 
+Installing
+==========
+
+The script `./build` will help with building and installing Maude.
+Run `./build help` for instructions on how to use.
+
 Contributing
 ============
 
