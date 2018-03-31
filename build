@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
+# Settings/Utilities
+# ------------------
+
 set -e
+set -u
 
 top_dir="$(pwd)"
 build_dir="$top_dir/.build"
@@ -10,30 +14,75 @@ contrib_dir="contrib"
 
 cvc4_dir="src/SMT/cvc4"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
-git submodule update --init -- "$cvc4_dir" "$pandoc_tangle_dir"
 
-(   cd "$cvc4_dir"
-    ./autogen.sh
-    ./contrib/get-antlr-3.4
-    ./configure --prefix="$build_dir" \
-                --with-antlr-dir="$(pwd)/antlr-3.4" ANTLR="$(pwd)/antlr-3.4/bin/antlr3"
-    make -s -j4
-    make -s install
-)
+# Functionality
+# -------------
 
-automake --add-missing
-aclocal
-autoconf
-autoheader
-automake
+build_clean() {
+    rm -rf "$build_dir"
+    make clean || true
+    git clean -dfx
+    [[ ! -f "$cvc4_dir/Makefile" ]] \
+        || ( cd "$cvc4_dir"
+             make distclean
+           )
+}
 
-./configure CXXFLAGS="-I$include_dir -L$lib_dir" "$@"
+build_deps() {
+    git submodule update --init -- "$cvc4_dir" "$pandoc_tangle_dir"
 
-make -s -j4 \
-    || ( git checkout -- src/Mixfix/surface.cc
-         make -s -j4
-       )
+    (   cd "$cvc4_dir"
+        ./autogen.sh
+        ./contrib/get-antlr-3.4
+        ./configure --prefix="$build_dir" \
+                    --with-antlr-dir="$(pwd)/antlr-3.4" ANTLR="$(pwd)/antlr-3.4/bin/antlr3"
+        make -s -j4
+        make -s install
+    )
+}
 
-(   cd "$contrib_dir"
-    make all
-)
+build_maude() {
+    aclocal
+    autoconf
+    autoheader
+    automake --add-missing
+    automake
+
+    ./configure CXXFLAGS="-I$include_dir -L$lib_dir" "$@"
+    make -s -j4 \
+        || ( git checkout -- src/Mixfix/surface.cc
+             make -s -j4
+           )
+}
+
+build_tangle() {
+    (   cd "$contrib_dir"
+        make all
+    )
+}
+
+# Main
+# ----
+
+build_command="$1" ; shift
+case "$build_command" in
+    clean)  build_clean  "$@" ;;
+    deps)   build_deps   "$@" ;;
+    maude)  build_maude  "$@" ;;
+    tangle) build_tangle "$@" ;;
+    *)      echo "
+    usage: $0 [clean|deps|tangle]
+           $0 maude <options>
+
+    $0 clean:           remove build directory '$build_dir', and call 'make clean'.
+    $0 deps:            clone git submodules and build CVC4.
+    $0 maude <options>: build maude passing <options> to the ./configure step.
+    $0 tangle:          generate '*.maude' files from '*.md' files in '$contrib_dir'.
+
+    Note: CI servers should:
+        $0 clean
+        $0 deps
+        $0 maude
+        $0 tangle
+" ;;
+esac
