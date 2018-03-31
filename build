@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 top_dir="$(pwd)"
 build_dir="$top_dir/.build"
 include_dir="$build_dir/include"
@@ -25,14 +27,13 @@ autoconf
 autoheader
 automake
 
-./configure "$@"
+./configure CXXFLAGS="-I$include_dir -L$lib_dir" "$@"
 
-make -s -j4
+make -s -j4 \
+    || ( git checkout -- src/Mixfix/surface.cc
+         make -s -j4
+       )
 
-git checkout -- src/Mixfix/surface.cc
-
-make -s -j4
-
-( cd "$contrib_dir"
-  make all || exit 1
+(   cd "$contrib_dir"
+    make all
 )
