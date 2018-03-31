@@ -6,6 +6,10 @@ include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 contrib_dir="contrib"
 
+cvc4_dir="src/SMT/cvc4"
+pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
+git submodule update --init -- "$cvc4_dir" "$pandoc_tangle_dir"
+
 automake --add-missing
 aclocal
 autoconf
