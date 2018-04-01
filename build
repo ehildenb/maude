@@ -15,6 +15,9 @@ contrib_dir="contrib"
 cvc4_dir="src/SMT/cvc4"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
 
+export PATH="/usr/lib/ccache/bin:$PATH"
+export PATH="/usr/lib/ccache:$PATH"
+
 # Functionality
 # -------------
 
