@@ -21,34 +21,17 @@ Run `./build help` for instructions on how to use.
 Contributing
 ============
 
-There are two main trunk branches:
+Merging into `master` will only occur when the following have been done:
 
-master:
-:   History of master branch never changes, and it should always be in a "good" state.
-    Only receives merges from the develop branch, and only with commits that have been stable for at least 14 days.
-
-develop:
-:   History of develop branch can change sometimes, tests should always pass on the develop branch.
-    Feature branches are merged into the develop branch only *after*:
-
-    1.  The feature branch is rebased on develop.
-    2.  All tests in the repository pass.
-    3.  Code review has approved the changes.
+1.  The feature branch is rebased on `master`.
+2.  All tests in the repository pass.
+3.  Code review has approved the changes.
 
 Each feature/topic branch should use the following naming prefix scheme.
 If your branch falls into two categories, pick the earlier one in this list.
 
-build/FEATURE-NAME:
-:   Branches which modify/update the build system.
-
-core/FEATURE-NAME:
-:   Any branch that touches code in `src/` (modifying Core Maude).
-
-tools/FEATURE-NAME:
-:   Branches which work in the `contrib/tools` directory.
-
-systems/FEATURE-NAME:
-:   Branches which add systems to the `contrib/systems` directory.
-
-doc/FEATURE-NAME:
-:   Branches which work on repository documentation.
+-   `build/FEATURE-NAME`:   Branches which modify/update the build system.
+-   `core/FEATURE-NAME`:    Any branch that touches code in `src/` (modifying Core Maude).
+-   `tools/FEATURE-NAME`:   Branches which work in the `contrib/tools` directory.
+-   `systems/FEATURE-NAME`: Branches which add systems to the `contrib/systems` directory.
+-   `doc/FEATURE-NAME`:     Branches which work on repository documentation.
