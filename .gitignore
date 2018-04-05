@@ -51,6 +51,7 @@ contrib/systems/choice.maude
 contrib/systems/cycle.maude
 contrib/systems/dijkstra.maude
 contrib/systems/oc.maude
+contrib/systems/qlock.maude
 contrib/tools/meta/cterms.maude
 contrib/tools/meta/foform.maude
 contrib/tools/meta/mconstruction.maude
