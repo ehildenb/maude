@@ -1,10 +1,19 @@
+Readers and Writers
+===================
+
+Yet another mutual exclusion algorithm, at most one writer should be present but as many readers as you want is ok.
+Several variants provided.
+
+```maude
 load ../tools/varsat/numbers.maude
 
 set include BOOL off .
+```
 
---- Version 1 - RL
---- --------------
+Version 1 - RL
+--------------
 
+```maude
 mod R&W is
   sorts Nat Config .
   op 0 : -> Nat [ctor] .
@@ -24,12 +33,14 @@ mod R&W-stop is pr R&W .
   vars R W : Nat .
   rl [finish] : < R , W > => [ R , W ] .
 endm
+```
 
---- Version 2 - LMC
---- ---------------
+Version 2 - LMC
+---------------
 
---- The readers-writers problem in Maude
---- From: All About Maude - A High-Performance Logical Framework.
+This comes from *All About Maude - A High-Performance Logical Framework*.
+
+```maude
 mod READERS-WRITERS is
   sort Nat .
   op 0 : -> Nat [ctor] .
@@ -44,13 +55,14 @@ mod READERS-WRITERS is
   rl [enter-r] : < R    , 0    > => < s(R) , 0    > [narrowing] .
   rl [leave-r] : < s(R) , W    > => < R    , W    > [narrowing] .
 endm
+```
 
---- Version 3 - LMC RW-SHARED
---- -------------------------
+Version 3 - LMC RW-SHARED
+-------------------------
 
---- The Readers-Writers problem with explicit shared variables
---- from: Constrained Monotonic Abstraction, P.A. Abdulla, et. al.
+This comes from *Constrained Monotonic Abstraction, P.A. Abdulla, et. al.*.
 
+```maude
 fmod RW-CONF is
   sort Natural .
   op 0 : -> Natural [ctor] .
@@ -93,3 +105,4 @@ mod RW is
   rl [w1]: < N       , true  | think ; PS > => < N       , false | write ; PS > [narrowing] .
   rl [w2]: < N       , false | write ; PS > => < N       , true  | think ; PS > [narrowing] .
 endm
+```
