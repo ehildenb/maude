@@ -40,7 +40,8 @@ systems: \
 	systems/dijkstra.maude \
 	systems/oc.maude \
 	systems/qlock.maude \
-	systems/rw.maude
+	systems/rw.maude \
+	systems/thermostat.maude
 
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@

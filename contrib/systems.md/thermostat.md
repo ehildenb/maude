@@ -1,3 +1,9 @@
+Thermostat
+==========
+
+A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
+
+```maude
 load ../tools/varsat/numbers.maude
 
 mod THERMOSTAT is
@@ -20,3 +26,4 @@ mod THERMOSTAT is
   rl [stop1] : < TIME,TMP,MODE,BND,MIN,MAX > => [ TIME,TMP,MODE,BND,MIN,MAX ] .
   rl [stop2] : { TIME,TMP,MODE,BND,MIN,MAX } => [ TIME,TMP,MODE,BND,MIN,MAX ] .
 endm
+```
