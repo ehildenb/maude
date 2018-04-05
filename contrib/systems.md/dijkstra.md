@@ -1,8 +1,17 @@
+Dijkstra's Algorithm
+====================
+
+Dijkstra's mutual exclusion algorithm is a simple token-ring algorithm for ensuring no two processes access a critical resource simultaneously.
+Several implementations are provided.
+
+```maude
 load ../tools/varsat/numbers.maude
+```
 
---- Version 1 - RL
---- --------------
+Version 1 - RL
+--------------
 
+```maude
 fmod DIJKSTRA-DATA is
   pr BOOL* .
 
@@ -79,24 +88,27 @@ mod DIJKSTRA is
 
   rl [stop]       : < P | PS > => [ P | PS ] .
 endm
+```
 
+Version 2 - LMC
+---------------
 
---- Version 2 - LMC
---- ---------------
+This version comes from *Nancy Ann Lynch, Distributed algorithms, Morgan Kaufmann, 1996*.
+In psuedo-code:
 
---- The Dijkstra's mutual exclusion algorithms in Maude
---- From: Nancy Ann Lynch, Distributed algorithms, Morgan Kaufmann, 1996
----
---- l0: repeat
---- l1:   flag[i] := 1
---- l2:   while turn != i do
----         if flag[turn] = 0 then turn := i
---- l3:   flag[i] := 2
---- l4:   for j != i do
----         if flag[j] = 2 then goto l1
---- crit:
---- l5:   flag[i] := 0
+```
+l0: repeat
+l1:   flag[i] := 1
+l2:   while turn != i do
+        if flag[turn] = 0 then turn := i
+l3:   flag[i] := 2
+l4:   for j != i do
+        if flag[j] = 2 then goto l1
+crit:
+l5:   flag[i] := 0
+```
 
+```maude
 fmod DIJKSTRA-DATA2 is
   sorts Flag InitFlag WaitFlag .
   subsorts InitFlag < WaitFlag < Flag .
@@ -117,7 +129,6 @@ fmod DIJKSTRA-DATA2 is
   op ! : -> CTurn [ctor] .
   op - : -> Turn [ctor] .
 endfm
-
 
 fmod DIJKSTRA-MUTEX-PROC is
   pr DIJKSTRA-DATA2 .
@@ -303,3 +314,4 @@ mod DIJKSTRA-MUTEX is
   rl [l5]  : < {F,crit,-} CPS >        => < {0,l1,-} CPS >         [narrowing] .
   rl [l5]  : < {F,crit,!} PS >         => < {0,l1,!} PS >          [narrowing] .
 endm
+```
