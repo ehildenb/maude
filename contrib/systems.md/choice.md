@@ -1,3 +1,9 @@
+Choice
+======
+
+This very simple system simply takes advantage of AC data-structures to make a non-deterministic choice.
+
+```maude
 set include BOOL off .
 
 fmod CHOICE-DATA is
@@ -18,3 +24,4 @@ mod CHOICE is pr CHOICE-DATA .
   vars U V : MSet .
   rl [choice] : {U V} => {U} .
 endm
+```

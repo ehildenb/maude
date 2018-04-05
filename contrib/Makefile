@@ -34,7 +34,8 @@ systems: \
 	systems/nim.maude \
 	systems/caut.maude \
 	systems/bakery.maude \
-	systems/bank-account.maude
+	systems/bank-account.maude \
+	systems/choice.maude
 
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
