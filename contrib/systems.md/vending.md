@@ -1,6 +1,9 @@
---- from the Maude manual
---- http://maude.cs.uiuc.edu/maude2-manual/maude-manual.pdf
+Vending Machine
+===============
 
+This simple system is an used as a running example in the *Maude Manual*.
+
+```maude
 mod NARROWING-VENDING-MACHINE is
   sorts Coin Item Marking Money Conf .
   subsort Coin < Money .
@@ -22,3 +25,4 @@ mod NARROWING-VENDING-MACHINE is
   rl [change] : < q q q q   > => < $     > .
   rl [change] : < M q q q q > => < M $   > .
 endm
+```
