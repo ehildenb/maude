@@ -228,7 +228,7 @@ Here several simple IMP programs are provided as primitives which desugar into t
 
 ```maude
 mod IMP-PROGRAMS is
-   protecting IMP-SEMANTICS + IDENTIFIER .
+   protecting IMP-SYNTAX + IDENTIFIER .
 
     vars N M O P Q R S T X Y Z : Id .
     vars XS YS ZS : Ids .

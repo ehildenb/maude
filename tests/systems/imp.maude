@@ -2,6 +2,10 @@ set show timing off .
 
 load ../../contrib/systems/imp.maude
 
+mod IMP-TEST is
+   protecting IMP-SEMANTICS + IMP-PROGRAMS .
+endm
+
 rewrite < x = 3 ; ~> done | x |-> 0 > .
 
 rewrite < sum(n, s) ~> done | n |-> 10 * s |-> 3 > .

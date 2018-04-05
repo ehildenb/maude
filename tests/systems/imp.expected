@@ -1,9 +1,9 @@
 ==========================================
-rewrite in IMP-PROGRAMS : < x = 3 ; ~> done | x |-> 0 > .
+rewrite in IMP-TEST : < x = 3 ; ~> done | x |-> 0 > .
 rewrites: 3
 result RedContext: < done | x |-> 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < sum(n, s) ~> done | n |-> 10 * s |-> 3 > .
+rewrite in IMP-TEST : < sum(n, s) ~> done | n |-> 10 * s |-> 3 > .
 rewrites: 408
 result RedContext: < done | n |-> 0 * s |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
     1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
@@ -11,36 +11,35 @@ result RedContext: < done | n |-> 0 * s |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
     1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
     1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap(x, y, t) ~> done | x |-> 3 * t |-> 0 * y |-> 5
-    > .
+rewrite in IMP-TEST : < swap(x, y, t) ~> done | x |-> 3 * t |-> 0 * y |-> 5 > .
 rewrites: 20
 result RedContext: < done | t |-> 1 :+ 1 :+ 1 * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y
     |-> 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap-in-place(x, y) ~> done | x |-> 3 * y |-> 5 > .
+rewrite in IMP-TEST : < swap-in-place(x, y) ~> done | x |-> 3 * y |-> 5 > .
 rewrites: 49
 result RedContext: < done | x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap-sort(x ; y ; z) ~> done | x |-> 3 * y |-> 4 *
-    z |-> 5 > .
+rewrite in IMP-TEST : < swap-sort(x ; y ; z) ~> done | x |-> 3 * y |-> 4 * z
+    |-> 5 > .
 rewrites: 60
 result RedContext: < done | x |-> 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 * z |->
     1 :+ 1 :+ 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap-sort(x ; z ; y) ~> done | x |-> 3 * y |-> 4 *
-    z |-> 5 > .
+rewrite in IMP-TEST : < swap-sort(x ; z ; y) ~> done | x |-> 3 * y |-> 4 * z
+    |-> 5 > .
 rewrites: 106
 result RedContext: < done | x |-> 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z
     |-> 1 :+ 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap-sort(y ; z ; x) ~> done | x |-> 3 * y |-> 4 *
-    z |-> 5 > .
+rewrite in IMP-TEST : < swap-sort(y ; z ; x) ~> done | x |-> 3 * y |-> 4 * z
+    |-> 5 > .
 rewrites: 152
 result RedContext: < done | x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z
     |-> 1 :+ 1 :+ 1 :+ 1 >
 ==========================================
-rewrite in IMP-PROGRAMS : < swap-sort(y ; z ; q ; x ; r) ~> done | x |-> 3 * y
-    |-> 4 * z |-> 5 * q |-> 3 * r |-> 7 > .
+rewrite in IMP-TEST : < swap-sort(y ; z ; q ; x ; r) ~> done | x |-> 3 * y |->
+    4 * z |-> 5 * q |-> 3 * r |-> 7 > .
 rewrites: 525
 result RedContext: < done | q |-> 1 :+ 1 :+ 1 :+ 1 * r |-> 1 :+ 1 :+ 1 :+ 1 :+
     1 :+ 1 :+ 1 * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+
