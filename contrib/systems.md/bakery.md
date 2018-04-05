@@ -1,8 +1,18 @@
+Bakery Protocol
+===============
+
+The Bakery protocol is a simple scheduling protocol for multiple processes.
+The details differ among implementations, but the same basic ingredients are the same.
+Processes wait to receive some token, and upon receiving the token are scheduled until they give up the token.
+
+```maude
 load ../tools/varsat/numbers.maude
+```
 
---- Version 1 - RL
---- --------------
+Version 1 - RL
+--------------
 
+```maude
 fmod BAKERY-STATE is
   pr NAT* .
   sort Conf .
@@ -38,12 +48,14 @@ mod REVERSE-BAKERY is
   rl [exit]: < N      ; M :+ 1 ; [I,idle   ] S > => < N ; M ; [I,crit(M)] S > .
   rl [term]: < C:Conf > => [ C:Conf ] .
 endm
+```
 
---- Version 2 - LMC
---- ---------------
+Version 2 - LMC
+---------------
 
---- Lamport's Bakery protocol in Maude.
---- From: All About Maude - A High-Performance Logical Framework.
+This version comes from the book *All About Maude - A High-Performance Logical Framework*.
+
+```maude
 fmod BAKERY-SYNTAX is
   sort Name .
   op 0 : -> Name [ctor] .
@@ -82,10 +94,14 @@ mod BAKERY is
   rl [crit] : N ; M ; [wait(M)] PS => N   ; M   ; [crit(M)] PS [narrowing] .
   rl [exit] : N ; M ; [crit(M)] PS => N   ; s M ; [idle]    PS [narrowing] .
 endm
+```
 
---- Version 3 - FVP
---- ---------------
+Version 3 - FVP
+---------------
 
+This version specifically has the Finite Variant Property.
+
+```maude
 set include BOOL off .
 
 fmod NAT> is
@@ -139,7 +155,11 @@ mod BAKERY-FVP is
    crl [p2_wait]  : < P, X,  wait, Y > => < P, X,  crit, Y      > if X > Y = tt .
     rl [p2_crit]  : < P, X,  crit, Y > => < P, X, sleep, 0      > .
 endm
+```
 
+After constructor-decomposition of `BAKERY-FVP`, you should get the following theory.
+
+```maude
 mod BAKERY-FVP-CTOR is
    protecting NAT> .
 
@@ -166,3 +186,4 @@ mod BAKERY-FVP-CTOR is
     rl [p2_wait]  : < P, V1:Nat> + V2:NzNat>,  wait, V1:Nat> > => < P, V1:Nat> + V2:NzNat>,  crit, V1:Nat> > [narrowing] .
     rl [p2_crit]  : < P, X,                    crit, Y       > => < P, X,                   sleep, 0       > [narrowing] .
 endm
+```
