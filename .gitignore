@@ -54,6 +54,7 @@ contrib/systems/oc.maude
 contrib/systems/qlock.maude
 contrib/systems/rw.maude
 contrib/systems/thermostat.maude
+contrib/systems/token.maude
 contrib/tools/meta/cterms.maude
 contrib/tools/meta/foform.maude
 contrib/tools/meta/mconstruction.maude

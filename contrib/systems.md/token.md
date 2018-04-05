@@ -1,8 +1,17 @@
+Token Ring
+==========
+
+A group of processes pass a token around the ring.
+Several versions are provided.
+
+```maude
 set include BOOL off .
+```
 
---- Version 1 - RL
---- --------------
+Version 1 - RL
+--------------
 
+```maude
 mod 2TOKEN is
   sorts Name Proc Token Conf State .
   subsorts Proc Token < Conf .
@@ -25,12 +34,14 @@ mod 2TOKEN-stop is protecting 2TOKEN .
   var C  : Conf .
   rl [done] : { C } => [ C ] .
 endm
+```
 
---- Version 2 - LMC
---- ---------------
+Version 2 - LMC
+---------------
 
---- modified from "All about Maude," p390.
+This version is modified from *All about Maude* p390.
 
+```maude
 fmod TOKEN-CONF is
   sorts Number .
   op 0 : -> Number [ctor] .
@@ -77,3 +88,4 @@ mod TOKEN-MUTEX is
   rl [exit2] : <     s M,       [M, crit] CF >
             => <     s M,   {0} [M, wait] CF > [narrowing] .
 endm
+```
