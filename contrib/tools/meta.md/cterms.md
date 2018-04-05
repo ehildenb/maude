@@ -162,12 +162,12 @@ fmod INTERSECTION is
     vars MOD MOD' M0 : Module . vars ME ME' : ModuleExpression .
     vars Q Q' : Qid . vars H H' : Header . vars S S' : Sort . vars SS SS' : SortSet .
     vars NeMDS NeMDS' : NeModuleDeclSet . vars MDS MDS' MDS'' : ModuleDeclSet .
-    var TM : Term .
+    var MD : ModuleDecl . var TM : Term .
 
     op moduleIntersect : ModuleDeclSet ModuleDeclSet -> ModuleDeclSet [assoc comm id: none] .
     -----------------------------------------------------------------------------------------
-    eq moduleIntersect( NeMDS     , NeMDS' )     = none [owise] .
-    eq moduleIntersect( NeMDS MDS , NeMDS MDS' ) = NeMDS moduleIntersect( MDS , MDS' ) .
+    eq moduleIntersect( NeMDS  , NeMDS' )     = none [owise] .
+    eq moduleIntersect( MD MDS , MD MDS' )    = MD moduleIntersect( MDS , MDS' ) .
     eq moduleIntersect( (sorts S ; SS .) MDS , (sorts S ; SS' .) MDS' )
      = (sorts S .) moduleIntersect( (sorts SS .) MDS , (sorts SS' .) MDS' ) .
 
