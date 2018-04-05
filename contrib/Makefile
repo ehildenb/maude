@@ -38,6 +38,7 @@ systems: \
 	systems/choice.maude \
 	systems/cycle.maude \
 	systems/dijkstra.maude \
+	systems/imp.maude \
 	systems/oc.maude \
 	systems/qlock.maude \
 	systems/rw.maude \

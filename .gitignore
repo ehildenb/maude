@@ -50,6 +50,7 @@ contrib/systems/bank-account.maude
 contrib/systems/choice.maude
 contrib/systems/cycle.maude
 contrib/systems/dijkstra.maude
+contrib/systems/imp.maude
 contrib/systems/oc.maude
 contrib/systems/qlock.maude
 contrib/systems/rw.maude

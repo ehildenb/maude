@@ -1,7 +1,20 @@
+IMP Language
+============
+
+IMP is a simple imperative language with expression, variables assignment/lookup, and structured control flow.
+
+```maude
 set include BOOL off .
 
 load ../tools/varsat/numbers.maude
+```
 
+Data Structures
+---------------
+
+The variant-satisfiability data-structures are used here.
+
+```maude
 fmod IMP-DATA is
    protecting MULT-NAT* + NUMBERS .
 
@@ -21,7 +34,12 @@ fmod IMP-DATA is
     op {_}    : Env -> WrappedEnv [ctor] .
     --------------------------------------
 endfm
+```
 
+IMP Syntax
+----------
+
+```maude
 fmod IMP-SYNTAX is
    protecting IMP-DATA .
 
@@ -67,7 +85,15 @@ fmod IMP-SYNTAX is
     eq val?(B &&: B') = ff [variant] .
     eq val?(V:Value)  = tt [variant] .
 endfm
+```
 
+Contex Holes
+------------
+
+IMP will be given semantics in terms of context-evaluations.
+Here we provide the generic context/hole infrastructure.
+
+```maude
 fmod IMP-HOLE-SYNTAX is
    protecting IMP-SYNTAX .
 
@@ -104,7 +130,12 @@ fmod IMP-HOLE-SYNTAX is
     op done   :                    -> Continuation [ctor] .
     op _~>_   : Redex Continuation -> Continuation [ctor prec 43] .
 endfm
+```
 
+IMP Semantics
+-------------
+
+```maude
 mod IMP-SEMANTICS is
    protecting IMP-HOLE-SYNTAX .
 
@@ -171,7 +202,12 @@ mod IMP-SEMANTICS is
     rl [and-true]  : < tt &&: BE ~> K | E > => < BE       ~> K | E > .
     rl [and-false] : < ff &&: BE ~> K | E > => < ff       ~> K | E > .
 endm
+```
 
+By adding this module, you get (confluent) non-determinism in the resulting executions.
+This can be used to test partial-order reduction engines.
+
+```maude
 mod NONSEQ-IMP-SEMANTICS is
    protecting IMP-SEMANTICS .
 
@@ -183,7 +219,14 @@ mod NONSEQ-IMP-SEMANTICS is
    crl [@add-rght] : < AE +: AE'      ~> K | E > => < AE' ~> AE +: [] ~> K | E > if val?(AE) = ff .
     rl [#add-rght] : < N  ~> AE +: [] ~> K | E > => < AE +: N         ~> K | E > .
 endm
+```
 
+IMP Programs
+------------
+
+Here several simple IMP programs are provided as primitives which desugar into their equivalent code.
+
+```maude
 mod IMP-PROGRAMS is
    protecting IMP-SEMANTICS + IDENTIFIER .
 
@@ -221,3 +264,4 @@ mod IMP-PROGRAMS is
                                swap-sort(X ; ZS)
                                swap-sort(Y ; ZS) .
 endm
+```
