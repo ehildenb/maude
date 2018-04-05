@@ -46,6 +46,7 @@ lib*.a
 contrib/systems/caut.maude
 contrib/systems/nim.maude
 contrib/systems/bakery.maude
+contrib/systems/bank-account.maude
 contrib/tools/meta/cterms.maude
 contrib/tools/meta/foform.maude
 contrib/tools/meta/mconstruction.maude

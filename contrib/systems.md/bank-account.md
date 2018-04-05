@@ -1,3 +1,17 @@
+Bank Account
+============
+
+The Bank Account models a single account in a bank.
+The account can receive deposits and withdrawals, and should never go into overdraft under proper usage.
+
+FVP Numbers
+-----------
+
+Finite Variant Property numbers are supplied.
+
+**TODO**: Use some standard FVP numbers.
+
+```maude
 set include BOOL off .
 
 fmod BOOL-FVP is
@@ -53,7 +67,14 @@ fmod NAT-PRES-MONUS is
     eq n       - (n + m) = 0 [variant] .
     eq (n + m) - n       = m [variant] .
 endfm
+```
 
+Bank Account
+------------
+
+Here is the high-level specification of the bank account system.
+
+```maude
 mod BANK-ACCOUNT is
    protecting NAT-PRES-MONUS .
 
@@ -106,7 +127,11 @@ mod BANK-ACCOUNT is
     rl < bal: n     pend: x overdraft: ff > # msgs
     => < bal: n + m pend: x overdraft: ff > # msgs .
 endm
+```
 
+After performing constructor decomposition, you should arrive at this specification of the bank account system.
+
+```maude
 mod BANK-ACCOUNT-CTOR is
    protecting NAT-PRES-MONUS .
 
@@ -160,7 +185,14 @@ mod BANK-ACCOUNT-CTOR is
     rl < bal: n     pend: x overdraft: ff > # msgs
     => < bal: n + m pend: x overdraft: ff > # msgs [narrowing] .
 endm
+```
 
+Defined Operations
+------------------
+
+The following operations help to specify claims about the bank account system.
+
+```maude
 mod BANK-ACCOUNT-DEFINEDOPS is
    protecting BANK-ACCOUNT-CTOR .
 
@@ -171,3 +203,4 @@ mod BANK-ACCOUNT-DEFINEDOPS is
     eq debts(mt)                 = 0 .
     eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
 endm
+```
