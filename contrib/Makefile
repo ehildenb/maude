@@ -30,24 +30,15 @@ tools: \
 	tools/meta/variables.maude \
 	tools/meta/narrowing.maude
 
-systems: \
-	systems/nim.maude \
-	systems/caut.maude \
-	systems/bakery.maude \
-	systems/bank-account.maude \
-	systems/choice.maude \
-	systems/cycle.maude \
-	systems/dijkstra.maude \
-	systems/imp.maude \
-	systems/oc.maude \
-	systems/qlock.maude \
-	systems/rw.maude \
-	systems/thermostat.maude \
-	systems/token.maude \
-	systems/vending.maude
+system_names:=bakery bank-account caut choice \
+              cycle  dijkstra     imp  nim \
+              oc     qlock        rw   thermostat \
+              token  vending
+systems: $(patsubst %, systems/%.maude, $(system_names))
 
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
 systems/%.maude: systems.md/%.md $(tangler)
+	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
