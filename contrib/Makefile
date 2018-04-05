@@ -37,7 +37,8 @@ systems: \
 	systems/bank-account.maude \
 	systems/choice.maude \
 	systems/cycle.maude \
-	systems/dijkstra.maude
+	systems/dijkstra.maude \
+	systems/oc.maude
 
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@

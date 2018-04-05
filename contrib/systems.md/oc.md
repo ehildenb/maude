@@ -1,21 +1,33 @@
-load ../tools/varsat/numbers.maude
+Ordered Communication
+=====================
 
-*** This is a very simple fault-tolerant communication protocol.
-*** There are two size-one buffers used as uni-directional channels by the sender and the
-*** receiver.  Either of them can test if the channels are empty and each can read the
-*** contents of the channel directed to them.  The state is quite simple:
-***
-*** [sender-counter ::  sender-list | channel-to-sender | channel-to-receiver | receiver-list :: receiver-counter]
-***
-*** The key problem is that values in channels can be lost.  This is modeled by the [drop] rules.  For
-*** this reason, both the sender and the receiver need to keep resending data and acks when they test that
-*** the channel where these should be placed is empty; since there is no way to know whether
-*** the channel is empty because something has been read on the other end; or becuase it has been lost.
-***
-*** The main property one would like to prove is "successful in-order-communication," which is the reachability
-*** formula:
-***
-*** [1 :: l1 | null | nullp | nil :: 0] | k = | l1 |  ->* [k :: nil | null | nullp | l1 :: k]
+This is a very simple fault-tolerant communication protocol.
+There are two size-one buffers used as uni-directional channels by the sender and the receiver.
+Either of them can test if the channels are empty and each can read the contents of the channel directed to them.
+The state is quite simple:
+
+```
+    [sender-counter ::  sender-list | channel-to-sender | channel-to-receiver | receiver-list :: receiver-counter]
+```
+
+The key problem is that values in channels can be lost.
+This is modeled by the `[drop]` rules.
+For this reason, both the sender and the receiver need to keep resending data and acks when they test that the channel where these should be placed is empty.
+There is no way to know whether the channel is empty because something has been read on the other end; or becuase it has been lost.
+
+The main property one would like to prove is "successful in-order-communication," which is the reachability formula:
+
+```
+    [1 :: l1 | null | nullp | nil :: 0] | k = | l1 |  ->* [k :: nil | null | nullp | l1 :: k]
+```
+
+Data Structures
+---------------
+
+Here we extend FVP numbers with pairs and lists.
+
+```maude
+load ../tools/varsat/numbers.maude
 
 fmod PAIRNAT* is
   pr NAT* .
@@ -39,7 +51,12 @@ fmod FT-COMM-DATA is
   pr PAIRNAT* .
   pr ASSOC-LISTNAT* .
 endfm
+```
 
+Fault Tolerant Protocol
+-----------------------
+
+```maude
 mod FT-COMM is
   pr FT-COMM-DATA .
   sort State .
@@ -58,3 +75,4 @@ mod FT-COMM is
   rl [drop-snd] :   [n :: l1     | n?   | pa         | l2  :: m] => [n      :: l1   | n?     | nullp      | l2   :: m     ] .
   rl [drop-ack] :   [n :: l1     | k    | pa?        | l2  :: m] => [n      :: l1   | null   | pa?        | l2   :: m     ] .
 endm
+```
