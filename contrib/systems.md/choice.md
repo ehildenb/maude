@@ -1,6 +1,9 @@
 Choice
 ======
 
+AC Choice
+---------
+
 This very simple system simply takes advantage of AC data-structures to make a non-deterministic choice.
 
 ```maude
@@ -23,5 +26,46 @@ endfm
 mod CHOICE is pr CHOICE-DATA .
   vars U V : MSet .
   rl [choice] : {U V} => {U} .
+endm
+```
+
+Scheduler Choice
+----------------
+
+This simple system takes a set of tasks and non-deterministically chooses the order to execute them in.
+
+```maude
+fmod SCHEDULER is
+    sorts Task NeTasks Tasks .
+    subsorts Task < NeTasks < Tasks .
+    ---------------------------------
+    vars NeTS : NeTasks . vars TS TS' : Tasks . var T : Task .
+
+    sort State .
+
+    op .Tasks : -> Tasks .
+    op __ : NeTasks Tasks -> NeTasks [assoc comm id: .Tasks] .
+    op __ : Tasks   Tasks -> Tasks   [ditto] .
+    ------------------------------------------
+    eq NeTS NeTS = NeTS .
+
+    ops ta tb tc : -> Task .
+    op {_} : Tasks -> State .
+    op _|_ : Task Tasks -> State .
+
+    op addTasks    : Tasks -> Task .
+    op removeTasks : Tasks -> Task .
+    --------------------------------
+    eq addTasks(TS)      | TS'   = {TS TS'} .
+    eq removeTasks(T TS) | T TS' = removeTasks(T TS) | TS' .
+    eq removeTasks(TS)   | TS'   = {TS'} [owise] .
+endfm
+
+mod NONDET-SCHEDULER is
+    protecting SCHEDULER .
+    var T : Task . var TS : Tasks .
+
+    rl { T TS } => T | TS .
+    rl T | TS   => { TS } .
 endm
 ```
