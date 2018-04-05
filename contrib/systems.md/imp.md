@@ -221,6 +221,45 @@ mod NONSEQ-IMP-SEMANTICS is
 endm
 ```
 
+Threaded IMP Semantics
+----------------------
+
+IMP can become threaded by allowing multiple threads to operate on the memory at a time.
+The threads are kept in a thread-pool and allowed to operate on the memory if they are not `done`.
+Once they have taken some steps, any other thread can switch into being the active one.
+
+```maude
+mod THREADED-IMP-SEMANTICS is
+   protecting IMP-SEMANTICS .
+
+    sorts RedContexts ThreadPool .
+    ------------------------------
+    subsort RedContext < RedContexts .
+
+    vars K K' : Continuation . var E : Env . var R : Redex . var RCS : RedContexts .
+
+    op <_> : Continuation -> RedContext [ctor] .
+    --------------------------------------------
+
+    op .RedContexts : -> RedContexts [ctor] .
+    op __ : RedContexts RedContexts -> RedContexts [ctor assoc comm id: .RedContexts] .
+    -----------------------------------------------------------------------------------
+
+    op {_} : RedContexts -> ThreadPool [ctor] .
+    -------------------------------------------
+    rl [context-switch] : { RCS < R ~> K' > < K | E > } => { RCS < K > < R ~> K' | E > } .
+endm
+```
+
+This also allows the nondeterministic evaluation of `AExp`.
+
+```maude
+mod NONSEQ-THREADED-IMP-SEMANTICS is
+   protecting THREADED-IMP-SEMANTICS .
+   protecting NONSEQ-IMP-SEMANTICS .
+endm
+```
+
 IMP Programs
 ------------
 

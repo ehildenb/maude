@@ -44,4 +44,39 @@ rewrites: 525
 result RedContext: < done | q |-> 1 :+ 1 :+ 1 :+ 1 * r |-> 1 :+ 1 :+ 1 :+ 1 :+
     1 :+ 1 :+ 1 * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+
     1 :+ 1 >
+==========================================
+rewrite in THREADED-IMP-TEST : {< swap(x, y, s) ~> done > < done | x |-> 3 * y
+    |-> 4 * z |-> 5 * s |-> 0 * t |-> 0 >} .
+rewrites: 22
+result ThreadPool: {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 0 * x |-> 1 :+
+    1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 >}
+==========================================
+search in THREADED-IMP-TEST : {< swap(x, y, s) ~> done > < swap(y, z, t) ~>
+    done | x |-> 3 * y |-> 4 * z |-> 5 * s |-> 0 * t |-> 0 >} =>! TP:ThreadPool
+    .
+
+Solution 1 (state 526)
+states: 532  rewrites: 1185
+TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
+    * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1
+    >}
+
+Solution 2 (state 530)
+states: 534  rewrites: 1189
+TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 * x
+    |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 >}
+
+Solution 3 (state 531)
+states: 534  rewrites: 1189
+TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
+    * x |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1
+    :+ 1 >}
+
+Solution 4 (state 533)
+states: 534  rewrites: 1191
+TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
+    * x |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1 >}
+
+No more solutions.
+states: 534  rewrites: 1191
 Bye.
