@@ -48,6 +48,7 @@ contrib/systems/nim.maude
 contrib/systems/bakery.maude
 contrib/systems/bank-account.maude
 contrib/systems/choice.maude
+contrib/systems/cycle.maude
 contrib/tools/meta/cterms.maude
 contrib/tools/meta/foform.maude
 contrib/tools/meta/mconstruction.maude

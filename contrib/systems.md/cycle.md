@@ -1,3 +1,9 @@
+Cycle
+=====
+
+These systems give very simple finite cycles for testing search algorithms with.
+
+```maude
 load ../tools/varsat/numbers.maude
 
 mod CYCLE is
@@ -20,7 +26,11 @@ mod EXT-CYCLE is
     rl [a2c] : g(a) => g(c) [narrowing] .
     rl [c2a] : g(c) => g(a) [narrowing] .
 endm
+```
 
+Though the following can have an arbitrarily large cycle, it will still always be finite.
+
+```maude
 mod BOUNDED-CYCLE is
    protecting NAT* .
 
@@ -38,3 +48,4 @@ mod BOUNDED-CYCLE is
             => { N           , M }
        [narrowing] .
 endm
+```
