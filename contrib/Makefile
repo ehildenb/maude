@@ -1,16 +1,36 @@
-.PHONY: all tools systems
+# Settings
+# --------
 
-all: \
-	tools \
-	systems
+meta_names:=cterms      foform     mconstruction metalevel-ext \
+            mtemplate   mtransform narrowing     structured-names \
+            unification variables
+meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
 
-# Tangler
-# -------
+system_names:=bakery bank-account caut choice \
+              cycle  dijkstra     imp  nim \
+              oc     qlock        rw   thermostat \
+              token  vending
+system_files:=$(patsubst %, systems/%.maude, $(system_names))
 
 tangler_repo=$(CURDIR)/pandoc-tangle
 tangler=$(tangler_repo)/tangle.lua
 LUA_PATH=$(tangler_repo)/?.lua;;
 export LUA_PATH
+
+# Main Targets
+# ------------
+
+.PHONY: all tools systems clean
+
+all: \
+	tools \
+	systems
+
+clean:
+	rm -rf $(meta_files) $(system_files)
+
+# Tangler
+# -------
 
 $(tangler):
 	git submodule update --init -- $(tangler_repo)
@@ -18,27 +38,11 @@ $(tangler):
 # Tangled Files
 # -------------
 
-tools: \
-	tools/meta/metalevel-ext.maude \
-	tools/meta/structured-names.maude \
-	tools/meta/cterms.maude \
-	tools/meta/foform.maude \
-	tools/meta/mtemplate.maude \
-	tools/meta/mtransform.maude \
-	tools/meta/mconstruction.maude \
-	tools/meta/unification.maude \
-	tools/meta/variables.maude \
-	tools/meta/narrowing.maude
-
-system_names:=bakery bank-account caut choice \
-              cycle  dijkstra     imp  nim \
-              oc     qlock        rw   thermostat \
-              token  vending
-systems: $(patsubst %, systems/%.maude, $(system_names))
-
+tools: $(meta_files)
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
+systems: $(system_files)
 systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@

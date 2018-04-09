@@ -29,6 +29,9 @@ build_clean() {
         || ( cd "$cvc4_dir"
              make distclean
            )
+    ( cd "$contrib_dir"
+      make clean
+    )
 }
 
 build_deps() {
