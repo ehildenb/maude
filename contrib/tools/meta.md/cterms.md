@@ -211,7 +211,7 @@ Right now we just take *any* maximal sort in `C1 /\ C2`, but we really need to t
     op joint-sort : Sort Module           Module           -> Sort .
     op joint-sort : Sort ModuleExpression ModuleExpression -> Sort .
     ----------------------------------------------------------------
-    eq joint-sort(S, ME,  ME')  = joint-sort(S, moduleIntersect(ME, ME'), moduleIntersect(ME, ME')) .
+    eq joint-sort(S, ME,  ME')  = joint-sort(S, upModule(ME), upModule(ME')) .
     eq joint-sort(S, MOD, MOD') = joint-sort(S, asTemplate(MOD), asTemplate(MOD')) .
 
     op #top-sort : ModuleDeclSet -> [Sort] .
