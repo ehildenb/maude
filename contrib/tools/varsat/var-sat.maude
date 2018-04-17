@@ -199,4 +199,5 @@ fmod VAR-SAT is
   eq fin-consistent?(FM,QL,end     ,NC) = false .
   eq inf-consistent?(FM,T != T' /\ NC)  = unequal(equalExt(ctor-sig(FM)),T,T') and-then inf-consistent?(FM,NC) .
   eq inf-consistent?(FM,T != T')        = unequal(equalExt(ctor-sig(FM)),T,T') .
+  eq inf-consistent?(FM, ff)            = false .
 endfm
