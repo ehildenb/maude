@@ -187,10 +187,7 @@ fmod NELSON-OPPEN-COMBINATION is
 --- Check that the basic purified formulae are satisfiable.
 
     eq $nosat.tagged((TF1, TF2))
-     = if check-sat(TF1) and-then check-sat(TF2)
-       then $nosat.basicSat(TF1, TF2)
-       else false
-       fi
+     = check-sat(TF1) and-then check-sat(TF2) and-then $nosat.basicSat(TF1, TF2)
      .
 
 --- Compute the list of possible equations between variables in the shared sorts
