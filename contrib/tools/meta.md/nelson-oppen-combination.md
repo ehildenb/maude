@@ -22,7 +22,7 @@ fmod TAGGED-FOFORM is
 
     op tagged : FOForm? Tags -> TaggedFormula .
     op empty : -> Tags [ctor] .
-    op _ , _ : Tags Tags     -> Tags [ctor assoc comm id: empty] .
+    op _ ; _ : Tags Tags     -> Tags [ctor assoc comm id: empty] .
     op _ > _ : Qid  Qid      -> Tag . --- TODO Genneralize to QidSet?
 
     op empty : -> TaggedFormulaSet [ctor] .
@@ -113,11 +113,11 @@ fmod NO-CHECK-HELPER is
     eq check-valid(tagged(PHI, TS)) = strictNot(check-sat(tagged(~ PHI, TS))) .
     eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS)) .
 
-    eq $check-sat.dnf       (tagged(PHI, (('mod > ME), ('check-sat > 'var-sat), TS)))
+    eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'var-sat); TS))
      = var-sat(upModule(ME, true), PHI)
      .
 
-    eq $check-sat.dnf       (tagged(PHI, (('mod > ME), ('check-sat > 'smt-sat), TS)))
+    eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'smt-sat); TS))
      = smt-sat(ME, PHI)
      .
 
@@ -156,8 +156,8 @@ fmod NELSON-OPPEN-COMBINATION is
     op tagWellFormed         : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
     op $tagWellFormed.filter : ModuleExpression EqConj? -> EqConj? .
     -----------------------------------------------------------------------------
-    eq tagWellFormed((tagged(PHI1, (('mod > ME1), TS1 )), TFS), CONJ)
-     = ( tagged(PHI1 /\ $tagWellFormed.filter(ME1, CONJ), (('mod > ME1), TS1))
+    eq tagWellFormed((tagged(PHI1, ('mod > ME1); TS1 ), TFS), CONJ)
+     = ( tagged(PHI1 /\ $tagWellFormed.filter(ME1, CONJ), ('mod > ME1) ; TS1)
        , tagWellFormed(TFS, CONJ)) .
     eq tagWellFormed(empty, CONJ) = empty .
     eq $tagWellFormed.filter(ME1, A:EqAtom /\ MCONJ2)
@@ -222,8 +222,8 @@ of one of the theories, and tagged with the appropriate information.
 ```{ .maude .njr-thesis }
    ceq $nosat.dnf(TFS , CONJ)
      = $nosat.purified(TFS, purify(ME1, ME2, CONJ))
-    if    ( tagged(tt, (('mod > ME1), TS1))
-          , tagged(tt, (('mod > ME2), TS2)))
+    if    ( tagged(tt, ('mod > ME1); TS1)
+          , tagged(tt, ('mod > ME2); TS2))
        := TFS
      .
     eq $nosat.purified(TFS, CONJ)
@@ -246,8 +246,8 @@ equalities that may be implied by the theories.
      = $nosat.ep( TFS
                 , make-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2)))
                 )
-    if ( tagged(PHI1, (('mod > ME1), _1:Tags))
-       , tagged(PHI2, (('mod > ME2), _2:Tags)))
+    if ( tagged(PHI1, ('mod > ME1); _1:Tags)
+       , tagged(PHI2, ('mod > ME2); _2:Tags))
        :=  TFS
      .
 ```
@@ -267,15 +267,15 @@ Next, if any identification of variables is implied by a theory, we propagate th
 the other theories.
 
 ```{ .maude .njr-thesis }
-   ceq $nosat.ep(( tagged(PHI1, (('mod > ME1), TS1))
-                 , tagged(PHI2, (('mod > ME2), TS2))), X1 ?= X2 \/ DISJ?)
-     = if check-sat(    tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
-       then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1))
-                      , tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
+   ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
+                 , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ DISJ?)
+     = if check-sat(    tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+       then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
+                      , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
                      , DISJ?)
        else false
        fi
-    if check-valid(tagged(PHI1 => (X1 ?= X2), (('mod > ME1), TS1))) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
+    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
 ```
 
 If, after checking each identification individually, there are none that are implied we apply the split
@@ -298,10 +298,10 @@ atleast one of them is satisfiable.
 ```{ .maude .njr-thesis }
    ceq $nosat.split(TFS, DISJ?)
      = $nosat.split.genEqs(TFS, DISJ?, DISJ?)
-    if    ( tagged(PHI1, (('mod > ME1), TS1))
-          , tagged(PHI2, (('mod > ME2), TS2)))
+    if    ( tagged(PHI1, ('mod > ME1) ; TS1)
+          , tagged(PHI2, ('mod > ME2) ; TS2))
        := TFS
-    /\ check-valid(tagged((PHI1) => (DISJ?), (('mod > ME1), TS1)))
+    /\ check-valid(tagged((PHI1) => (DISJ?), ('mod > ME1); TS1))
                                             [print "NO.S: " PHI1 " => " DISJ? ]
      .
 ```
@@ -316,20 +316,21 @@ are stably-infinite, the equation is satisfiable.
 We use `$nosat.split.genEqs` to generate this disequality of sat problems.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.split.genEqs((tagged(PHI1, (('mod > ME1), TS1)), tagged(PHI2, (('mod > ME2), TS2)))
+    eq $nosat.split.genEqs((tagged(PHI1, ('mod > ME1); TS1), tagged(PHI2, ('mod > ME2); TS2))
                           , X1 ?= X2 \/ DISJ?1, X1 ?= X2 \/ DISJ?2)
-     = (          check-sat(tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1)))
-         and-then check-sat(tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
-         and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1))
-                              , tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
+     =         if     check-sat(tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1))
+                  and check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+               then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
+                              , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
                              , DISJ?2)
-       ) or-else
-       $nosat.split.genEqs(( tagged(PHI1, (('mod > ME1), TS1))
-                           , tagged(PHI2, (('mod > ME2), TS2)))
-                          , DISJ?1, X1 ?= X2 \/ DISJ?2)
+               else false
+               fi
+       or-else $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
+                                   , tagged(PHI2, ('mod > ME2); TS2))
+                               , DISJ?1, X1 ?= X2 \/ DISJ?2)
      .
-    eq $nosat.split.genEqs(( tagged(PHI1, (('mod > ME1), TS1))
-                        , tagged(PHI2, (('mod > ME2), TS2)))
+    eq $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
+                           , tagged(PHI2, ('mod > ME2); TS2))
                        , mtForm, DISJ?2)
      = false
      .
