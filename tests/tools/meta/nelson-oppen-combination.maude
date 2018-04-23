@@ -33,8 +33,8 @@ fmod TEST-NO-NAT-LIST is
     op natListMod : -> Module   . eq natListMod   = upModule('MYLISTNAT*, true) .
 endfm
 
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*), 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'NAT*      ), 'check-sat > 'var-sat))),
+reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*); 'check-sat > 'var-sat))
+                        , tagged(tt, (('mod > 'NAT*      ); 'check-sat > 'var-sat))),
        ('tt.Bool* ?= ('_<Nat_ [ '_:+_['head['L':NeNatList*] , 'head['L':NeNatList*]]
                               , '_:+_['head[ 'L:NeNatList*] , 'head['L:NeNatList* ]]
                               ]))
@@ -45,8 +45,8 @@ reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*), 'check-sat > 'var-sa
     == true
     .
 
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*), 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'NAT*      ), 'check-sat > 'var-sat))),
+reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*); 'check-sat > 'var-sat))
+                        , tagged(tt, (('mod > 'NAT*      ); 'check-sat > 'var-sat))),
        (  'L:NeNatList* ?= 'L':NeNatList*
        /\ 'tt.Bool*     ?= '_<Nat_ ['head['L':NeNatList*] , 'head['L:NeNatList*]]
        ))
@@ -78,23 +78,23 @@ fmod TEST-NO-SMT-LIST is
     protecting META-LEVEL .
 endfm
 
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'INTEGER-LIST), ('check-sat > 'var-sat)))
-                        , tagged(tt, (('mod > 'INTEGER     ), ('check-sat > 'smt-sat)))),
+reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST); ('check-sat > 'var-sat))
+                        , tagged(tt, ('mod > 'INTEGER     ); ('check-sat > 'smt-sat))),
            '_-_ [ '_*_ [ '2.Integer , 'head[ 'L:NeIntegerList ] ]
                 , '_*_ [ '2.Integer , 'head[ 'M:NeIntegerList ] ] ]
         ?= '1.Integer)
      == false
      .
-reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST), 'check-sat > 'var-sat)
-                        , tagged(tt, ('mod > 'INTEGER     ), 'check-sat > 'smt-sat)),
+reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST); 'check-sat > 'var-sat)
+                        , tagged(tt, ('mod > 'INTEGER     ); 'check-sat > 'smt-sat)),
            '_-_ [ '_*_ [ '2.Integer , 'head[ 'L:NeIntegerList ] ]
                 , '_*_ [ '2.Integer , 'head[ 'M:NeIntegerList ] ] ]
         ?= '0.Integer)
      == true
      .
 
-reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST), 'check-sat > 'var-sat)
-                        , tagged(tt, ('mod > 'INTEGER     ), 'check-sat > 'smt-sat)),
+reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST); 'check-sat > 'var-sat)
+                        , tagged(tt, ('mod > 'INTEGER     ); 'check-sat > 'smt-sat)),
            '_-_ [ 'head[ 'L:NeIntegerList ]
                 , '_*_ [ '2.Integer , 'head[ 'M:NeIntegerList ] ] ]
         ?= '0.Integer)
@@ -102,8 +102,8 @@ reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST), 'check-sat > 'var-s
      .
 
 --- UNSAT, but requires split to prove
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'INTEGER-LIST), 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'INTEGER     ), 'check-sat > 'smt-sat))),
+reduce nelson-oppen-sat(( tagged(tt, (('mod > 'INTEGER-LIST); 'check-sat > 'var-sat))
+                        , tagged(tt, (('mod > 'INTEGER     ); 'check-sat > 'smt-sat))),
           '_<=_ [ '1.Integer , 'head[ 'L:NeIntegerList ] ] ?= 'true.Boolean
        /\ '_<=_ [ 'head[ 'L:NeIntegerList ] , '2.Integer ] ?= 'true.Boolean
        /\ 'X:Integer ?= '1.Integer
