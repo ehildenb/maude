@@ -318,16 +318,15 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
 ```{ .maude .njr-thesis }
     eq $nosat.split.genEqs((tagged(PHI1, (('mod > ME1), TS1)), tagged(PHI2, (('mod > ME2), TS2)))
                           , X1 ?= X2 \/ DISJ?1, X1 ?= X2 \/ DISJ?2)
-     =         if     check-sat(tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1)))
-                  and check-sat(tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
-               then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1))
+     = (          check-sat(tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1)))
+         and-then check-sat(tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
+         and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1))
                               , tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
                              , DISJ?2)
-               else false
-               fi
-       or-else $nosat.split.genEqs(( tagged(PHI1, (('mod > ME1), TS1))
-                                , tagged(PHI2, (('mod > ME2), TS2)))
-                               , DISJ?1, X1 ?= X2 \/ DISJ?2)
+       ) or-else
+       $nosat.split.genEqs(( tagged(PHI1, (('mod > ME1), TS1))
+                           , tagged(PHI2, (('mod > ME2), TS2)))
+                          , DISJ?1, X1 ?= X2 \/ DISJ?2)
      .
     eq $nosat.split.genEqs(( tagged(PHI1, (('mod > ME1), TS1))
                         , tagged(PHI2, (('mod > ME2), TS2)))
