@@ -269,12 +269,10 @@ the other theories.
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
                  , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ DISJ?)
-     = if check-sat(    tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-       then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
-                      , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-                     , DISJ?)
-       else false
-       fi
+     =          check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+       and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
+                          , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+                         , DISJ?)
     if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
 ```
 
@@ -318,17 +316,17 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
 ```{ .maude .njr-thesis }
     eq $nosat.split.genEqs((tagged(PHI1, ('mod > ME1); TS1), tagged(PHI2, ('mod > ME2); TS2))
                           , X1 ?= X2 \/ DISJ?1, X1 ?= X2 \/ DISJ?2)
-     =         if     check-sat(tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1))
-                  and check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-               then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
+     = (          check-sat(tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1))
+         and-then check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+         and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
                               , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
                              , DISJ?2)
-               else false
-               fi
+       )
        or-else $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
                                    , tagged(PHI2, ('mod > ME2); TS2))
                                , DISJ?1, X1 ?= X2 \/ DISJ?2)
      .
+
     eq $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
                            , tagged(PHI2, ('mod > ME2); TS2))
                        , mtForm, DISJ?2)
