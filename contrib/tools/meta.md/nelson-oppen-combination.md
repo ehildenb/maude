@@ -1,3 +1,13 @@
+Besides the names of the theories, `nelson-oppen-sat` requires additional information about theories
+such as which procedure to use for checking satisfiability. We use "tagged formulae" to represent
+this information. For example, the term
+`tagged('1.Nat ?= '2.Nat, (('mod > 'NAT), ('check-sat > 'var-sat)))` represents the formula
+"$1 = 2$" in the module of `NAT`, and that we should use the `var-sat` procedure to check its
+satisfiability. In the implementation in Maude, these tagged formula are represented by the sort
+`TaggedFormula` and sets of tagged formulae by the sort `TaggedFormulaSet`. For rewriting logic
+variables (not to be confused with variables part of the formula we are rewriting over) of the sort
+`TaggedFormula` we use the variables `TF1` and `TF2`, while for `TaggedFormulaSet` we use `TFS`.
+
 ```maude
 load foform.maude
 load cterms.maude
@@ -18,7 +28,9 @@ fmod TAGGED-FOFORM is
     op empty : -> TaggedFormulaSet [ctor] .
     op _,_ : TaggedFormulaSet TaggedFormulaSet -> TaggedFormulaSet [ctor comm assoc id: empty] .
 endfm
+```
 
+```maude
 fmod FOFORM-VARIABLES is
     protecting FOFORM .
     protecting VARIABLESET .
@@ -44,7 +56,9 @@ fmod FOFORM-VARIABLES is
     eq vars(X) = X .
     eq vars(T1) = none [owise] . --- TODO: Doable without owise?
 endfm
+```
 
+```maude
 fmod FOFORM-TO-SMT is
     protecting META-TERM .
     protecting FOFORM .
@@ -63,7 +77,9 @@ fmod FOFORM-TO-SMT is
     eq foform-to-smt('ff.Bool*)  = 'false.Boolean      .
     eq foform-to-smt(T1)         = T1          [owise] .
 endfm
+```
 
+```maude
 fmod NO-CHECK-HELPER is
     protecting FOFORM .
     protecting TAGGED-FOFORM .
@@ -108,7 +124,9 @@ fmod NO-CHECK-HELPER is
     eq smt-sat(ME, PHI) = metaCheck([ME], foform-to-smt(PHI))
      .
 endfm
+```
 
+```maude
 fmod NELSON-OPPEN-COMBINATION is
     protecting NO-CHECK-HELPER .
     protecting FOFORM-DEFINEDOPS .
@@ -120,7 +138,7 @@ fmod NELSON-OPPEN-COMBINATION is
 
     vars MCONJ1 MCONJ2 : Conj? .
     vars CONJ PHI1 PHI2 : Conj .
-    vars DISJ : QFForm .
+    vars PHI : QFForm .
     vars DISJ? DISJ?1 DISJ?2 : Disj? .
     vars M1 M2 : Module .
     vars ME1 ME2 : Qid . --- TODO: Wierd, Qids are a subsort of ModuleExpr s not the other way around
@@ -160,8 +178,17 @@ fmod NELSON-OPPEN-COMBINATION is
     -------------------------------------------------------
     eq var-intersect(X1 ; XS1, X1 ; XS2) = X1 ; var-intersect(XS1, XS2) .
     eq var-intersect(XS1, XS2)           = none [owise] .
+```
 
+The `nelson-oppen-sat` function that implements the algorithm, takes as input
+a `TaggedFormulaSet` and a quantifier free formula (of sort `QFForm`)
+and returns a `Bool`.
+
+```{.maude .njr-thesis}
     op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
+```
+
+```maude
     op $nosat.dnf          : TaggedFormulaSet QFForm                 -> Bool .
     op $nosat.purified     : TaggedFormulaSet EqConj                 -> Bool .
     op $nosat.tagged       : TaggedFormulaSet                        -> Bool .
@@ -170,11 +197,29 @@ fmod NELSON-OPPEN-COMBINATION is
     op $nosat.split        : TaggedFormulaSet PosEqDisj              -> Bool .
     op $nosat.split.genEqs : TaggedFormulaSet PosEqDisj PosEqDisj    -> Bool .
     --------------------------------------------------------------------------
-    eq nelson-oppen-sat(TFS, DISJ)
-     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(DISJ))))) .
-    eq $nosat.dnf(TFS, CONJ \/ DISJ)
-     =          $nosat.dnf(TFS, CONJ        )
-        or-else $nosat.dnf(TFS, DISJ        ) .
+```
+
+Given a quantifier free formula `PHI` in the set of theories `TFS` (each tagged with information
+regarding covexitivity, and information about which procedure to use for checking sat), we first
+convert it to the disjunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes
+$\bot$).
+
+```{ .maude .njr-thesis }
+    eq nelson-oppen-sat(TFS, PHI)
+     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(PHI))))) .
+```
+
+The algorithm then considers each disjunction separately.
+
+```{ .maude .njr-thesis }
+    eq $nosat.dnf(TFS, CONJ \/ PHI)
+     =  $nosat.dnf(TFS, CONJ) or-else $nosat.dnf(TFS, PHI) .
+```
+
+We then purify each disjunction into a disjunction of "pure" atoms each wellformed in the signature
+of one of the theories, and tagged with the appropriate information.
+
+```{ .maude .njr-thesis }
    ceq $nosat.dnf(TFS , CONJ)
      = $nosat.purified(TFS, purify(ME1, ME2, CONJ))
     if    ( tagged(tt, (('mod > ME1), TS1))
@@ -183,34 +228,45 @@ fmod NELSON-OPPEN-COMBINATION is
      .
     eq $nosat.purified(TFS, CONJ)
      = $nosat.tagged(tagWellFormed(TFS, CONJ)) .
+```
 
---- Check that the basic purified formulae are satisfiable.
+Next, we make sure each of the tagged formulae (`TF1`, `TF2`) are satisfiable on their own.
 
+```{ .maude .njr-thesis }
     eq $nosat.tagged((TF1, TF2))
      = check-sat(TF1) and-then check-sat(TF2) and-then $nosat.basicSat(TF1, TF2)
      .
+```
 
---- Compute the list of possible equations between variables in the shared sorts
+From the variables in the intersection of the two modules, we generate a list of the possible
+equalities that may be implied by the theories.
 
+```{ .maude .njr-thesis }
+   ceq $nosat.basicSat(TFS)
+     = $nosat.ep( TFS
+                , make-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2)))
+                )
+    if ( tagged(PHI1, (('mod > ME1), _1:Tags))
+       , tagged(PHI2, (('mod > ME2), _2:Tags)))
+       :=  TFS
+     .
+```
+
+```maude
     op make-equalities : VariableSet -> PosEqDisj .
     op make-equalities : Variable VariableSet VariableSet -> PosEqDisj .
+    ---------------------------------------------------------------------
     eq make-equalities(X ; XS1) = make-equalities(X, XS1, XS1) .
    ceq make-equalities(X, X1 ; XS1, XS2)   = X ?= X1 \/ make-equalities(X, XS1, XS2) if     getType(X) == getType(X1) .
    ceq make-equalities(X, X1 ; XS1, XS2)   =            make-equalities(X, XS1, XS2) if not getType(X) == getType(X1) .
     eq make-equalities(X, none, X2 ; XS2)  = make-equalities(X2, XS2, XS2) .
     eq make-equalities(X, none, none)      = ff .
+```
 
-   ceq $nosat.basicSat(TFS)
-     = $nosat.ep( TFS
-                , make-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2))
-                ))
-    if ( tagged(PHI1, (('mod > ME1), _1:Tags))
-       , tagged(PHI2, (('mod > ME2), _2:Tags)))
-       :=  TFS
-     .
+Next, if any identification of variables is implied by a theory, we propagate that identification to
+the other theories.
 
---- Equality Propagation
-
+```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, (('mod > ME1), TS1))
                  , tagged(PHI2, (('mod > ME2), TS2))), X1 ?= X2 \/ DISJ?)
      = if check-sat(    tagged(PHI2 /\ X1 ?= X2, (('mod > ME2), TS2)))
@@ -220,20 +276,26 @@ fmod NELSON-OPPEN-COMBINATION is
        else false
        fi
     if check-valid(tagged(PHI1 => (X1 ?= X2), (('mod > ME1), TS1))) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
+```
 
+If, after checking each identification individually, there are none that are implied we apply the split
+rule.
+
+```{ .maude .njr-thesis }
     eq $nosat.ep(TFS, DISJ?) = $nosat.split(TFS, DISJ?) [owise] .
+```
 
---- Split
+If there are no variables left to identify, then
 
---- If there are no additional variables that can be identified, since the tagged formulae are SATu
---- the original equation is satisfiable.
-
+```{ .maude .njr-thesis }
     eq $nosat.split(TFS, mtForm) = true .
+```
 
---- If either module implies a disjuntion of identification of variables
---- \(e.g. z = x /\ x = y), then we check that atleast one of them those
---- identifications are satisfiable.
+However, if there some disjunction of identifications implied, we "split".
+i.e. we try each of the possible identification left in turn and see if
+atleast one of them is satisfiable.
 
+```{ .maude .njr-thesis }
    ceq $nosat.split(TFS, DISJ?)
      = $nosat.split.genEqs(TFS, DISJ?, DISJ?)
     if    ( tagged(PHI1, (('mod > ME1), TS1))
@@ -242,14 +304,18 @@ fmod NELSON-OPPEN-COMBINATION is
     /\ check-valid(tagged((PHI1) => (DISJ?), (('mod > ME1), TS1)))
                                             [print "NO.S: " PHI1 " => " DISJ? ]
      .
+```
 
---- Otherwise, since there are no implied identifications and the theories
---- are stably-infinite, the problem is SAT.
+Otherwise, since there are no implied identifications and the theories
+are stably-infinite, the equation is satisfiable.
 
+```{ .maude .njr-thesis }
     eq $nosat.split(TFS, DISJ?) = true [owise] .
+```
 
---- We use `$nosat.split.genEqs` to generate this disequality of sat problems.
+We use `$nosat.split.genEqs` to generate this disequality of sat problems.
 
+```{ .maude .njr-thesis }
     eq $nosat.split.genEqs((tagged(PHI1, (('mod > ME1), TS1)), tagged(PHI2, (('mod > ME2), TS2)))
                           , X1 ?= X2 \/ DISJ?1, X1 ?= X2 \/ DISJ?2)
      =         if     check-sat(tagged(PHI1 /\ X1 ?= X2, (('mod > ME1), TS1)))
