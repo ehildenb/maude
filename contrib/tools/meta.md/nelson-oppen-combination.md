@@ -1,10 +1,12 @@
 Besides the names of the theories, `nelson-oppen-sat` requires additional information about theories
 such as which procedure to use for checking satisfiability. We use "tagged formulae" to represent
-this information.
-
-For example, the term `tagged('1.Nat ?= '2.Nat, (('mod > 'NAT), ('check-sat > 'var-sat)))`
-represents the formula "$1 = 2$" in the module of `NAT`, and we should use the `var-sat` procedure
-to check its satisfiability.
+this information. For example, the term
+`tagged('1.Nat ?= '2.Nat, (('mod > 'NAT), ('check-sat > 'var-sat)))` represents the formula
+"$1 = 2$" in the module of `NAT`, and that we should use the `var-sat` procedure to check its
+satisfiability. In the implementation in Maude, these tagged formula are represented by the sort
+`TaggedFormula` and sets of tagged formulae by the sort `TaggedFormulaSet`. For rewriting logic
+variables (not to be confused with variables part of the formula we are rewriting over) of the sort
+`TaggedFormula` we use the variables `TF1` and `TF2`, while for `TaggedFormulaSet` we use `TFS`.
 
 ```maude
 load foform.maude
@@ -136,7 +138,7 @@ fmod NELSON-OPPEN-COMBINATION is
 
     vars MCONJ1 MCONJ2 : Conj? .
     vars CONJ PHI1 PHI2 : Conj .
-    vars DISJ : QFForm .
+    vars PHI : QFForm .
     vars DISJ? DISJ?1 DISJ?2 : Disj? .
     vars M1 M2 : Module .
     vars ME1 ME2 : Qid . --- TODO: Wierd, Qids are a subsort of ModuleExpr s not the other way around
@@ -176,8 +178,17 @@ fmod NELSON-OPPEN-COMBINATION is
     -------------------------------------------------------
     eq var-intersect(X1 ; XS1, X1 ; XS2) = X1 ; var-intersect(XS1, XS2) .
     eq var-intersect(XS1, XS2)           = none [owise] .
+```
 
+The `nelson-oppen-sat` function that implements the algorithm, takes as input
+a `TaggedFormulaSet` and a quantifier free formula (of sort `QFForm`)
+and returns a `Bool`.
+
+```{.maude .njr-thesis}
     op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
+```
+
+```maude
     op $nosat.dnf          : TaggedFormulaSet QFForm                 -> Bool .
     op $nosat.purified     : TaggedFormulaSet EqConj                 -> Bool .
     op $nosat.tagged       : TaggedFormulaSet                        -> Bool .
@@ -188,23 +199,27 @@ fmod NELSON-OPPEN-COMBINATION is
     --------------------------------------------------------------------------
 ```
 
-Given a formula `DISJ` in the set of theories `TFS` (each tagged with information regarding
-covexitivity, and information about which procedure to use for checking sat), we first convert it to
-the dijunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes $\bot$).
+Given a quantifier free formula `PHI` in the set of theories `TFS` (each tagged with information
+regarding covexitivity, and information about which procedure to use for checking sat), we first
+convert it to the disjunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes
+$\bot$).
 
 ```{ .maude .njr-thesis }
-    eq nelson-oppen-sat(TFS, DISJ)
-     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(DISJ))))) .
+    eq nelson-oppen-sat(TFS, PHI)
+     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(PHI))))) .
 ```
 
-For each atom in the disjunction, we transform it into a conjunction of pure atoms each in the
-signature of one the theories, and all the atoms in a particular theory with the appropriate
-information.
+The algorithm then considers each disjunction separately.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.dnf(TFS, CONJ \/ DISJ)
-     =          $nosat.dnf(TFS, CONJ)
-        or-else $nosat.dnf(TFS, DISJ) .
+    eq $nosat.dnf(TFS, CONJ \/ PHI)
+     =  $nosat.dnf(TFS, CONJ) or-else $nosat.dnf(TFS, PHI) .
+```
+
+We then purify each disjunction into a disjunction of "pure" atoms each wellformed in the signature
+of one of the theories, and tagged with the appropriate information.
+
+```{ .maude .njr-thesis }
    ceq $nosat.dnf(TFS , CONJ)
      = $nosat.purified(TFS, purify(ME1, ME2, CONJ))
     if    ( tagged(tt, (('mod > ME1), TS1))
@@ -263,7 +278,7 @@ the other theories.
     if check-valid(tagged(PHI1 => (X1 ?= X2), (('mod > ME1), TS1))) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
 ```
 
-If, after checking each identification individually, there are no that are implied we apply the split
+If, after checking each identification individually, there are none that are implied we apply the split
 rule.
 
 ```{ .maude .njr-thesis }
