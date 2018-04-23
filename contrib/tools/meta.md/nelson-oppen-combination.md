@@ -74,7 +74,7 @@ fmod NO-CHECK-HELPER is
 
     op check-valid           : TaggedFormula -> Bool .
     op check-sat             : TaggedFormula -> Bool .
-    op $check-sat.simplified : TaggedFormula -> Bool .
+    op $check-sat.dnf        : TaggedFormula -> Bool .
 
     var ME  : ModuleExpression .
     var PHI : FOForm           .
@@ -95,13 +95,13 @@ fmod NO-CHECK-HELPER is
      .
 
     eq check-valid(tagged(PHI, TS)) = strictNot(check-sat(tagged(~ PHI, TS))) .
-    eq check-sat  (tagged(PHI, TS)) = $check-sat.simplified(tagged(simplify(PHI), TS)) .
+    eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS)) .
 
-    eq $check-sat.simplified(tagged(PHI, (('mod > ME), ('check-sat > 'var-sat), TS)))
+    eq $check-sat.dnf       (tagged(PHI, (('mod > ME), ('check-sat > 'var-sat), TS)))
      = var-sat(upModule(ME, true), PHI)
      .
 
-    eq $check-sat.simplified(tagged(PHI, (('mod > ME), ('check-sat > 'smt-sat), TS)))
+    eq $check-sat.dnf       (tagged(PHI, (('mod > ME), ('check-sat > 'smt-sat), TS)))
      = smt-sat(ME, PHI)
      .
 
@@ -162,7 +162,7 @@ fmod NELSON-OPPEN-COMBINATION is
     eq var-intersect(XS1, XS2)           = none [owise] .
 
     op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
-    op $nosat.simplified   : TaggedFormulaSet QFForm                 -> Bool .
+    op $nosat.dnf          : TaggedFormulaSet QFForm                 -> Bool .
     op $nosat.purified     : TaggedFormulaSet EqConj                 -> Bool .
     op $nosat.tagged       : TaggedFormulaSet                        -> Bool .
     op $nosat.basicSat     : TaggedFormulaSet                        -> Bool .
@@ -171,11 +171,11 @@ fmod NELSON-OPPEN-COMBINATION is
     op $nosat.split.genEqs : TaggedFormulaSet PosEqDisj PosEqDisj    -> Bool .
     --------------------------------------------------------------------------
     eq nelson-oppen-sat(TFS, DISJ)
-     = $nosat.simplified(TFS, simplify(toDNF(toNNF(simplify(DISJ))))) .
-    eq $nosat.simplified(TFS, CONJ \/ DISJ)
-     =          $nosat.simplified(TFS, CONJ)
-        or-else $nosat.simplified(TFS, DISJ) .
-   ceq $nosat.simplified(TFS , CONJ)
+     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(DISJ))))) .
+    eq $nosat.dnf(TFS, CONJ \/ DISJ)
+     =          $nosat.dnf(TFS, CONJ        )
+        or-else $nosat.dnf(TFS, DISJ        ) .
+   ceq $nosat.dnf(TFS , CONJ)
      = $nosat.purified(TFS, purify(ME1, ME2, CONJ))
     if    ( tagged(tt, (('mod > ME1), TS1))
           , tagged(tt, (('mod > ME2), TS2)))
