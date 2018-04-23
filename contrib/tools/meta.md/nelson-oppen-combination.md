@@ -153,19 +153,31 @@ fmod NELSON-OPPEN-COMBINATION is
 --- intersection of multiple theories are copied into each tag.
 --- TODO: Ill formed formulae are silently ignored.
 
-    op tagWellFormed         : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
-    op $tagWellFormed.filter : ModuleExpression EqConj? -> EqConj? .
+    op tagWellFormed           : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
+    op tagWellFormed.hasConvex : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
+    op $tagWellFormed.filter   : ModuleExpression EqConj? -> EqConj? .
     -----------------------------------------------------------------------------
-    eq tagWellFormed((tagged(PHI1, ('mod > ME1); TS1 ), TFS), CONJ)
+    eq tagWellFormed(TFS, CONJ) = tagWellFormed.hasConvex(addConvexTag(TFS), CONJ) .
+    eq tagWellFormed.hasConvex(empty, CONJ) = empty .
+    eq tagWellFormed.hasConvex((tagged(PHI1, ('mod > ME1); TS1 ), TFS), CONJ)
      = ( tagged(PHI1 /\ $tagWellFormed.filter(ME1, CONJ), ('mod > ME1) ; TS1)
        , tagWellFormed(TFS, CONJ)) .
-    eq tagWellFormed(empty, CONJ) = empty .
     eq $tagWellFormed.filter(ME1, A:EqAtom /\ MCONJ2)
-     = if A:EqAtom in upModule(ME1) then A:EqAtom /\ $tagWellFormed.filter(ME1, MCONJ2)
+     = if A:EqAtom in upModule(ME1, true) then A:EqAtom /\ $tagWellFormed.filter(ME1, MCONJ2)
                                     else             $tagWellFormed.filter(ME1, MCONJ2)
                                     fi
      .
     eq $tagWellFormed.filter(ME1, mtForm) = mtForm .
+
+    op addConvexTag : TaggedFormulaSet -> TaggedFormulaSet .
+    --------------------------------------------------------
+    eq addConvexTag((tagged(PHI1, ('convex > _:Qid ) ; TS1 ), TFS))
+     = tagged(PHI1, ('convex > _:Qid ) ; TS1 ), addConvexTag(TFS)
+     .
+    eq addConvexTag((tagged(PHI1,                      TS1 ), TFS))
+     = tagged(PHI1, ('convex > 'false) ; TS1 ), addConvexTag(TFS)
+     [owise] .
+    eq addConvexTag(empty) = empty .
 
     op in-module : Module VariableSet -> VariableSet .
     eq in-module(M1, X1 ; XS) = if wellFormed(M1, X1)
@@ -283,23 +295,23 @@ rule.
     eq $nosat.ep(TFS, DISJ?) = $nosat.split(TFS, DISJ?) [owise] .
 ```
 
-If there are no variables left to identify, then
+If there are no variables left to identify, then we are satisfiable
 
 ```{ .maude .njr-thesis }
     eq $nosat.split(TFS, mtForm) = true .
 ```
 
-However, if there some disjunction of identifications implied, we "split".
-i.e. we try each of the possible identification left in turn and see if
-atleast one of them is satisfiable.
+However, if there some disjunction of identifications implied and we are in a non-convex theory, we
+"split". i.e. we try each of the possible identification left in turn and see if atleast one of them
+is satisfiable.
 
 ```{ .maude .njr-thesis }
    ceq $nosat.split(TFS, DISJ?)
      = $nosat.split.genEqs(TFS, DISJ?, DISJ?)
-    if    ( tagged(PHI1, ('mod > ME1) ; TS1)
-          , tagged(PHI2, ('mod > ME2) ; TS2))
+    if    ( tagged(PHI1, ('mod > ME1) ; ('convex > 'false) ; TS1)
+          , tagged(PHI2, ('mod > ME2) ;                      TS2))
        := TFS
-    /\ check-valid(tagged((PHI1) => (DISJ?), ('mod > ME1); TS1))
+    /\ check-valid(tagged((PHI1) => (DISJ?), ('mod > ME1); ('convex > 'false) ; TS1))
                                             [print "NO.S: " PHI1 " => " DISJ? ]
      .
 ```
@@ -319,8 +331,8 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
      = (          check-sat(tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1))
          and-then check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
          and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
-                              , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-                             , DISJ?2)
+                            , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+                           , DISJ?2)
        )
        or-else $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
                                    , tagged(PHI2, ('mod > ME2); TS2))
