@@ -139,7 +139,7 @@ fmod NELSON-OPPEN-COMBINATION is
     vars MCONJ1 MCONJ2 : Conj? .
     vars CONJ PHI1 PHI2 : Conj .
     vars PHI : QFForm .
-    vars DISJ? DISJ?1 DISJ?2 : Disj? .
+    vars CANDEQ DISJ?1 DISJ?2 : Disj? .
     vars M1 M2 : Module .
     vars ME1 ME2 : Qid . --- TODO: Wierd, Qids are a subsort of ModuleExpr s not the other way around
     vars TFS : TaggedFormulaSet .
@@ -280,11 +280,11 @@ the other theories.
 
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
-                 , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ DISJ?)
+                 , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ CANDEQ)
      =          check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
        and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
                           , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-                         , DISJ?)
+                         , CANDEQ)
     if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
 ```
 
@@ -292,7 +292,7 @@ If, after checking each identification individually, there are none that are imp
 rule.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.ep(TFS, DISJ?) = $nosat.split(TFS, DISJ?) [owise] .
+    eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise] .
 ```
 
 If there are no variables left to identify, then we are satisfiable
@@ -306,13 +306,13 @@ However, if there some disjunction of identifications implied and we are in a no
 is satisfiable.
 
 ```{ .maude .njr-thesis }
-   ceq $nosat.split(TFS, DISJ?)
-     = $nosat.split.genEqs(TFS, DISJ?, DISJ?)
+   ceq $nosat.split(TFS, CANDEQ)
+     = $nosat.split.genEqs(TFS, CANDEQ, CANDEQ)
     if    ( tagged(PHI1, ('mod > ME1) ; ('convex > 'false) ; TS1)
           , tagged(PHI2, ('mod > ME2) ;                      TS2))
        := TFS
-    /\ check-valid(tagged((PHI1) => (DISJ?), ('mod > ME1); ('convex > 'false) ; TS1))
-                                            [print "NO.S: " PHI1 " => " DISJ? ]
+    /\ check-valid(tagged((PHI1) => (CANDEQ), ('mod > ME1); ('convex > 'false) ; TS1))
+                                            [print "NO.S: " PHI1 " => " CANDEQ ]
      .
 ```
 
@@ -320,7 +320,7 @@ Otherwise, since there are no implied identifications and the theories
 are stably-infinite, the equation is satisfiable.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.split(TFS, DISJ?) = true [owise] .
+    eq $nosat.split(TFS, CANDEQ) = true [owise] .
 ```
 
 We use `$nosat.split.genEqs` to generate this disequality of sat problems.
