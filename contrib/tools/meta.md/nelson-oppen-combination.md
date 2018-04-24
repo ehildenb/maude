@@ -256,7 +256,7 @@ equalities that may be implied by the theories.
 ```{ .maude .njr-thesis }
    ceq $nosat.basicSat(TFS)
      = $nosat.ep( TFS
-                , make-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2)))
+                , candidate-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2)))
                 )
     if ( tagged(PHI1, ('mod > ME1); _1:Tags)
        , tagged(PHI2, ('mod > ME2); _2:Tags))
@@ -265,14 +265,14 @@ equalities that may be implied by the theories.
 ```
 
 ```maude
-    op make-equalities : VariableSet -> PosEqDisj .
-    op make-equalities : Variable VariableSet VariableSet -> PosEqDisj .
+    op candidate-equalities : VariableSet -> PosEqDisj .
+    op candidate-equalities : Variable VariableSet VariableSet -> PosEqDisj .
     ---------------------------------------------------------------------
-    eq make-equalities(X ; XS1) = make-equalities(X, XS1, XS1) .
-   ceq make-equalities(X, X1 ; XS1, XS2)   = X ?= X1 \/ make-equalities(X, XS1, XS2) if     getType(X) == getType(X1) .
-   ceq make-equalities(X, X1 ; XS1, XS2)   =            make-equalities(X, XS1, XS2) if not getType(X) == getType(X1) .
-    eq make-equalities(X, none, X2 ; XS2)  = make-equalities(X2, XS2, XS2) .
-    eq make-equalities(X, none, none)      = ff .
+    eq candidate-equalities(X ; XS1) = candidate-equalities(X, XS1, XS1) .
+   ceq candidate-equalities(X, X1 ; XS1, XS2)   = X ?= X1 \/ candidate-equalities(X, XS1, XS2) if     getType(X) == getType(X1) .
+   ceq candidate-equalities(X, X1 ; XS1, XS2)   =            candidate-equalities(X, XS1, XS2) if not getType(X) == getType(X1) .
+    eq candidate-equalities(X, none, X2 ; XS2)  = candidate-equalities(X2, XS2, XS2) .
+    eq candidate-equalities(X, none, none)      = ff .
 ```
 
 Next, if any identification of variables is implied by a theory, we propagate that identification to
