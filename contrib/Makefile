@@ -10,7 +10,9 @@ system_names:=bakery bank-account caut choice \
               cycle  dijkstra     imp  nim \
               oc     qlock        rw   thermostat \
               token  vending
-system_files:=$(patsubst %, systems/%.maude, $(system_names))
+system_tests:=nelson-oppen/integer-list
+system_files:=$(patsubst %, systems/%.maude,          $(system_names)) \
+              $(patsubst %, ../tests/systems/%.maude, $(system_tests))
 
 tangler_repo=$(CURDIR)/pandoc-tangle
 tangler=$(tangler_repo)/tangle.lua
@@ -46,3 +48,6 @@ systems: $(system_files)
 systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
+../tests/systems/%.maude: systems.md/%.md $(tangler)
+	mkdir -p $(dir $@)
+	pandoc --from markdown --to $(tangler) --metadata=code:.test $< > $@

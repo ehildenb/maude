@@ -55,3 +55,4 @@ lib*.a
 /contrib/tools/meta/structured-names.maude
 /contrib/tools/meta/unification.maude
 /contrib/tools/meta/variables.maude
+/tests/systems/nelson-oppen/integer-list.maude
