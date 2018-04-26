@@ -392,10 +392,10 @@ contraints each pure in one of the theories, and forced to be (dis)equal via a `
 TODO: Abstract ?= vs !=
 
 ```maude
-    ceq purify(modulePair(M, M'), T1 ?= T2) = purify(modulePair(M, M'), purify(M, M', T1) ?= T2) if not wellFormed(M, T1) and not wellFormed(M', T1) .
-    ceq purify(modulePair(M, M'), T1 != T2) = purify(modulePair(M, M'), purify(M, M', T1) != T2) if not wellFormed(M, T1) and not wellFormed(M', T1) .
-    ceq purify(modulePair(M, M'), T1 ?= T2) = break-eqatoms(M, M', T1 ?= T2)                     if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
-    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                           if     wellFormed(M, T1) and wellFormed(M, T2) .
+    ceq purify(modulePair(M, M'), Q[TL] ?= T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) ?= T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
+    ceq purify(modulePair(M, M'), Q[TL] != T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) != T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
+    ceq purify(modulePair(M, M'), T1 ?= T2) = break-eqatoms(M, M', T1 ?= T2)                           if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
+    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                                 if     wellFormed(M, T1) and wellFormed(M, T2) .
 ```
 
 Purifying Terms
