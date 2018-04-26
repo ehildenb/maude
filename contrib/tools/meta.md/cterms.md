@@ -422,6 +422,8 @@ Otherwise, generate an equality constraint at the top and purify with respect to
 
 ```maude
     ceq purify(M, M', T)     = T                       if wellFormed(M, T) .
+    ceq purify(M, M', T)     = FV | (FV ?= T)          if wellFormed(M', T)
+                                                       /\ FV := joint-variable(M', M, T) .
     ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)]    if Q inO asTemplate(M) .
     ceq purify(M, M', Q[TL]) = FV | ((FV ?= T) /\ QFF) if (not Q inO asTemplate(M)) /\ Q inO asTemplate(M')
                                                        /\ T | QFF := purify(M', M, Q[TL])
