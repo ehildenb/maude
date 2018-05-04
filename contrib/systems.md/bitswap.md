@@ -9,6 +9,7 @@ md5sum of blocks they want, and their peers respond with any blocks they already
 - nodes malicious
 
 - turn based game
+- Game-theoretic POV
 
 Here, we model at a high level some stratergies available to us.
 
@@ -17,48 +18,54 @@ all the time.
 
 ```maude
 fmod BITSWAP-TURN-BASED-GAME is
-    protecting QID-SET . 
-    protecting QID-LIST . 
+    protecting QID-SET .
+    protecting QID-LIST .
     sort Node Strategy NodeId BlockSet WorldState .
 
     subsorts Qid < NodeId .
     subsorts QidSet < BlockSet .
     subsorts Node < WorldState .
-
     op nobody : -> NodeId                                               [ctor] .
- 
+```
+
+Each `Node` is associated with an ID, a set of blocks it has, and a set of block
+it wants. It also implements a "strategy" for chosing whom to allocate bandwidth
+to.
+
+```maude
     op [ _ _ _ _ ] : NodeId Strategy BlockSet BlockSet -> Node          [ctor] .
     eq [ A S1 (BLOCK, H1) (BLOCK, W1) ]
      = [ A S1 (BLOCK, H1) (W1)        ]
      .
+```
 
+Besides a function to inform the rewrite theory of the Node to send a block to
+next each `Strategy` implements a set of operations for record keeping.
+
+```maude
     op send-next-block-to    : Strategy QidSet       -> NodeId   .
     op record-block-sent     : Strategy NodeId       -> Strategy .
     op record-block-received : Strategy NodeId       -> Strategy .
+```
 
+The world state consists of a set of `Node`s.
+
+```maude
     op empty : -> WorldState                                            [ctor] .
     op _ _   : WorldState WorldState -> WorldState [ctor assoc comm id: empty] .
+```
 
+```maude
     vars NS : WorldState .
-    vars A B : Qid . vars IDS : QidSet . 
+    vars A B : Qid . vars IDS : QidSet .
     vars BLOCK : Qid . vars H1 W1 H2 W2 : BlockSet .
-    vars S1 S2 : Strategy . 
+    vars S1 S2 : Strategy .
     vars IDLIST IDLIST1 IDLIST2 : QidList .
-   
-    --- TODO: This is non-deterministic. Should become lists?
-    op take : BlockSet -> BlockSet .
-    eq take((A, IDS)) = A .
-    eq take(empty)    = empty .
+```
 
-    op get-ids : WorldState -> QidSet .
-    eq get-ids(empty) = empty .
-    eq get-ids([ A S1 H1 W1 ] NS) = A, get-ids(NS) .
+The core mechanism for describing the game is the next `tick` rule.
 
-    op could-send-to : BlockSet WorldState -> QidSet .
-    eq could-send-to(H1, empty) = empty .
-    eq could-send-to((BLOCK, H1), [B S2 H2 (BLOCK, W1)] NS) = B, could-send-to((BLOCK, H1), NS) .
-    eq could-send-to((BLOCK, H1), [B S2 H2        W1 ] NS) =    could-send-to((BLOCK, H1), NS) [owise] .
-
+```maude
     op tick : WorldState -> WorldState .
     eq tick(NS) = $tick.foreachNode(get-ids(NS), NS) .
     op $tick.foreachNode : QidSet WorldState -> WorldState .
@@ -78,12 +85,35 @@ fmod BITSWAP-TURN-BASED-GAME is
        [owise]
      .
 
+    --- TODO: This is non-deterministic. Should become lists?
+    op take : BlockSet -> BlockSet .
+    eq take((A, IDS)) = A .
+    eq take(empty)    = empty .
+
+    op get-ids : WorldState -> QidSet .
+    eq get-ids(empty) = empty .
+    eq get-ids([ A S1 H1 W1 ] NS) = A, get-ids(NS) .
+
+    op could-send-to : BlockSet WorldState -> QidSet .
+    eq could-send-to(H1, empty) = empty .
+    eq could-send-to((BLOCK, H1), [B S2 H2 (BLOCK, W1)] NS) = B, could-send-to((BLOCK, H1), NS) .
+    eq could-send-to((BLOCK, H1), [B S2 H2         W1 ] NS) =    could-send-to((BLOCK, H1), NS) [owise] .
+```
+
+The `naive` strategy simply send blocks to anyone it can:
+
+```maude
     op naive : -> Strategy                                              [ctor] .
     eq send-next-block-to(naive, (A, IDS)) = A                                 .
     eq send-next-block-to(naive,     IDS ) = nobody                    [owise] .
     eq record-block-sent    (naive, A) = naive .
     eq record-block-received(naive, A) = naive .
+```
 
+The `round-robin` strategy keeps track of how recently it has sent blocks to
+each node, and prioritizes the least recent node.
+
+```maude
     op round-robin : QidList -> Strategy                                [ctor] .
     eq send-next-block-to(round-robin((A IDLIST)), (A, IDS)) = A               .
     eq send-next-block-to(round-robin((A IDLIST)), IDS)
@@ -94,7 +124,9 @@ fmod BITSWAP-TURN-BASED-GAME is
     eq record-block-sent(round-robin(IDLIST), nobody) = round-robin(IDLIST) .
     eq record-block-received(round-robin(IDLIST), A     ) = round-robin(IDLIST) .
     eq record-block-received(round-robin(IDLIST), nobody) = round-robin(IDLIST) .
-    
+```
+
+```maude
 endfm
 
 reduce could-send-to(('p, 'q, 'r), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
@@ -105,7 +137,7 @@ reduce take(intersection(('a, 'b, 'c), ('b, 'c, 'd, 'e))) .
 reduce take(intersection(('a, 'b, 'c), ('d, 'e))) == empty .
 
 reduce tick(empty) .
-          
+
 reduce tick([ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
             [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
            ) .
