@@ -13,6 +13,8 @@ system_names:= bakery     bank-account bitswap  caut \
 
 system_files:=$(patsubst %, systems/%.maude, $(system_names))
 
+system_tests:=../tests/systems/bitswap.maude
+
 tangler_repo=$(CURDIR)/pandoc-tangle
 tangler=$(tangler_repo)/tangle.lua
 LUA_PATH=$(tangler_repo)/?.lua;;
@@ -43,7 +45,11 @@ tools: $(meta_files)
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
-systems: $(system_files)
+systems: $(system_files) $(system_tests)
 systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
+
+../tests/systems/%.maude: systems.md/%.md $(tangler)
+	mkdir -p $(dir $@)
+	pandoc --from markdown --to $(tangler) --metadata=code:.test $< > $@

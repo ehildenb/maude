@@ -121,14 +121,18 @@ efficiently and expeditely share blocks, reaching a state where they no longer
 need any more blocks.
 
 ```test
-TODO
+load ../../contrib/systems/bitswap.maude
+```
+
+```test
+--- TODO
 ```
 
 Further, when a "needy" node joins the network, with no blocks that others desire
 but in-need of blocks, it is able to get its feet of the ground.
 
 ```test
-TODO
+--- TODO
 ```
 
 However, things don't work out as well in the presence of a "selfish" node --
@@ -145,7 +149,7 @@ of the generosity of its peers.
 Other nodes may get starved in its presence.
 
 ```test
-TODO
+--- TODO
 ```
 
 The `round-robin` strategy offers a defence. We keep track of when we last
@@ -180,14 +184,12 @@ how often another node helps it out and tries to reciprocate.
 This seems to work great! The selfish node is quickly denied.
 
 ```test
-TODO
 ```
 
 But, wait. The needy node has been left in a tough situation. It has just got on to the network
 hand is not able to offer any blocks to its peers. It has been caught in the crossfire.
 
 ```test
-TODO
 ```
 
 To remedy this situation, we decide to become a little more lenient. We allow nodes to have a credit
@@ -203,7 +205,7 @@ This seems to work much better!
 endm
 ```
 
-```maude
+```test
 reduce could-send-to(('p, 'q, 'r), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
 reduce could-send-to(('x, 'p, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
 reduce could-send-to(('x, 'y, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == empty .
