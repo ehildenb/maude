@@ -6,10 +6,11 @@ meta_names:=cterms      foform     mconstruction metalevel-ext \
             unification variables
 meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
 
-system_names:=bakery bank-account caut choice \
-              cycle  dijkstra     imp  nim \
-              oc     qlock        rw   thermostat \
-              token  vending
+system_names:= bakery     bank-account bitswap  caut \
+               choice     cycle        dijkstra imp  \
+               nim        oc           qlock    rw   \
+               thermostat token        vending
+
 system_files:=$(patsubst %, systems/%.maude, $(system_names))
 
 tangler_repo=$(CURDIR)/pandoc-tangle
