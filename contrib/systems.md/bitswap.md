@@ -17,7 +17,7 @@ In this model, we assume that all nodes are aware of the wants of all other node
 all the time.
 
 ```maude
-fmod BITSWAP-TURN-BASED-GAME is
+mod BITSWAP-TURN-BASED-GAME is
     protecting QID-SET .
     protecting QID-LIST .
     sort Node Strategy NodeId BlockSet WorldState .
@@ -68,27 +68,27 @@ The core mechanism for describing the game is the next `tick` rule.
 ```maude
     op tick : WorldState -> WorldState .
     eq tick(NS) = $tick.foreachNode(get-ids(NS), NS) .
-    op $tick.foreachNode : QidSet WorldState -> WorldState .
+
+    op $tick.foreachNode        : QidSet WorldState -> WorldState .
+    op $tick.foreachNode.update : Qid Qid QidSet WorldState -> WorldState .
     eq $tick.foreachNode(empty, NS) = NS .
-   ceq $tick.foreachNode((A, IDS), [ A S1 H1 W1 ]
-                                   [ B S2 H2 W2 ]
-                                   NS            )
-     = $tick.foreachNode(IDS, [ A record-block-sent(S1, B) H1 W1 ]
+    rl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
+    => $tick.foreachNode.update(A, send-next-block-to(S1, could-send-to(H1, NS)), IDS, [A S1 H1 W1] NS)
+     .
+    rl $tick.foreachNode.update(A, B, IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
+    => $tick.foreachNode(IDS, [ A record-block-sent(S1, B) H1 W1 ]
                               [ B record-block-received(S2, A) (H2, take(intersection(H1, W2))) W2 ]
                               NS)
-      if send-next-block-to(S1, could-send-to(H1, [ B S2 H2 W2 ] NS)) == B
       [print A " sent block to " B]
      .
-
-    eq $tick.foreachNode((A, IDS), [ A S1 H1 W1 ]                                                                NS)
-     = $tick.foreachNode(IDS,      [ A record-block-sent(S1, nobody) H1 W1 ]                                     NS)
-       [owise]
+    rl $tick.foreachNode.update(A, nobody, IDS, [ A S1 H1 W1 ] NS)
+    => $tick.foreachNode(IDS, [ A record-block-sent(S1, nobody) H1 W1 ] NS)
+      [print A " did not send any blocks"]
      .
 
-    --- TODO: This is non-deterministic. Should become lists?
     op take : BlockSet -> BlockSet .
-    eq take((A, IDS)) = A .
-    eq take(empty)    = empty .
+    rl take((A, IDS)) => A .
+    rl take(empty)    => empty .
 
     op get-ids : WorldState -> QidSet .
     eq get-ids(empty) = empty .
@@ -110,6 +110,15 @@ The `naive` strategy simply send blocks to anyone it can:
     eq record-block-received(naive, A) = naive .
 ```
 
+The selfish strategy freeloads.
+
+```maude
+    op selfish : -> Strategy                                            [ctor] .
+    eq send-next-block-to(selfish,     IDS ) = nobody                          .
+    eq record-block-sent    (selfish, A)     = selfish .
+    eq record-block-received(selfish, A)     = selfish .
+```
+
 The `round-robin` strategy keeps track of how recently it has sent blocks to
 each node, and prioritizes the least recent node.
 
@@ -118,16 +127,17 @@ each node, and prioritizes the least recent node.
     eq send-next-block-to(round-robin((A IDLIST)), (A, IDS)) = A               .
     eq send-next-block-to(round-robin((A IDLIST)), IDS)
      = send-next-block-to(round-robin((IDLIST)), IDS)                  [owise] .
+    eq send-next-block-to(round-robin(nil), IDS) = nobody .
     eq record-block-sent(round-robin((IDLIST1 A IDLIST2)), A)
      =                   round-robin((IDLIST1 IDLIST2 A))
      .
-    eq record-block-sent(round-robin(IDLIST), nobody) = round-robin(IDLIST) .
+    eq record-block-sent(round-robin(IDLIST), nobody)     = round-robin(IDLIST) .
     eq record-block-received(round-robin(IDLIST), A     ) = round-robin(IDLIST) .
     eq record-block-received(round-robin(IDLIST), nobody) = round-robin(IDLIST) .
 ```
 
 ```maude
-endfm
+endm
 
 reduce could-send-to(('p, 'q, 'r), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
 reduce could-send-to(('x, 'p, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
@@ -136,17 +146,17 @@ reduce could-send-to(('x, 'y, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 
 reduce take(intersection(('a, 'b, 'c), ('b, 'c, 'd, 'e))) .
 reduce take(intersection(('a, 'b, 'c), ('d, 'e))) == empty .
 
-reduce tick(empty) .
+rewrite tick(empty) .
 
-reduce tick([ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
+rewrite tick([ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
             [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
            ) .
 
-reduce tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
-reduce tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
-            [ 'b round-robin(('a 'c)) ('p, 'q, 'r) ('x, 'y, 'z) ]
-           ) .
-reduce tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
-            [ 'b round-robin(('a 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
-           ) .
+rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
+rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+             [ 'b round-robin(('a 'c)) ('p, 'q, 'r) ('x, 'y, 'z) ]
+            ) .
+rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+             [ 'b round-robin(('a 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+            ) .
 ```
