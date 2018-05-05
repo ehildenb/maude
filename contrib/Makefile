@@ -58,4 +58,4 @@ systems/%.maude: systems.md/%.md $(tangler)
 # --------------------
 
 systems.md/bitswap.pdf: systems.md/bitswap.md systems/bitswap.maude Makefile
-	PATH=$$(pwd)/../src/Main:$$PATH pandoc --filter panpipe -t latex $< -o $@
+	PATH=$$(pwd)/../src/Main:$$PATH pandoc --filter panpipe -t latex $< -o $@ --filter pandoc-citeproc
