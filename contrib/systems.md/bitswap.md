@@ -5,11 +5,11 @@ the network would altruistically send the any block they have to a peer immediat
 bandwidth is a scarse resource, and some actors on the network may be malicious. We must thus be
 cautious about how freely we share the blocks we have available.
 
-While we could chose to model the bitswap protocol at a low level, defining the semantics
-of each low level message, the more interesting aspect for analysis the the game theoretic
-aspects of the various strategies that nodes can choose. Thus, we assume that
-all actors have full and instantanous knowledge about which blocks other nodes are interested
-in and that sharing this information has zero bandwidth cost.
+While we could chose to model the bitswap protocol at a low level, defining the semantics of each
+low level message, the more interesting aspect for analysis the the game theoretic aspects of the
+various strategies that nodes can choose. Thus, we assume that all actors have full and instantanous
+knowledge about which blocks other nodes are interested in and that sharing this information has
+zero bandwidth cost.
 
 ```maude
 mod BITSWAP-TURN-BASED-GAME is
@@ -76,27 +76,31 @@ picks a single peer to share a block with, and both sender and recipient update 
 record this transaction. This is implemented in the following block of code.
 
 ``` {.maude}
-    eq tick(0   , NS) = NS .
+    eq tick(0   , NS) = NS                .
     eq tick(s(N), NS) = tick(N, tick(NS)) .
 
     eq tick(NS) = $tick.foreachNode(get-ids(NS), NS)
        .
-    op $tick.foreachNode        : QidSet WorldState -> WorldState .
-    op $tick.foreachNode.update : Qid Qid QidSet WorldState -> WorldState .
-    eq $tick.foreachNode(empty, NS) = NS .
-   crl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
-    => $tick.foreachNode.update(A, B, IDS, [A S1 H1 W1] NS)
-    if B := send-next-block-to(S1, could-send-to(H1, NS))
-       [print A " -> " B]
-     .
-    rl $tick.foreachNode.update(A, B, IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
-    => $tick.foreachNode(IDS, [ A record-block-sent(S1, B) H1 W1 ]
-                              [ B record-block-received(S2, A) (H2, take(intersection(H1, W2))) W2 ]
+    op $tick.foreachNode                 :             QidSet WorldState -> WorldState .
+    op $tick.foreachNode.chooseRecepient : Qid Qid     QidSet WorldState -> WorldState .
+    op $tick.foreachNode.chooseBlock     : Qid Qid Qid QidSet WorldState -> WorldState .
+    rl $tick.foreachNode(empty, NS) => NS .
+    rl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
+    => $tick.foreachNode.chooseRecepient(A, send-next-block-to(S1, could-send-to(H1, NS)), IDS, [A S1 H1 W1] NS)
+       .
+    rl $tick.foreachNode.chooseRecepient(A, B,                             IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
+    => $tick.foreachNode.chooseBlock    (A, B, take(intersection(H1, W2)), IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
+       .
+
+    rl $tick.foreachNode.chooseRecepient(A, nobody, IDS, [ A S1 H1 W1 ] NS)
+    => $tick.foreachNode(IDS, [ A record-block-sent    (S1, nobody) H1 W1 ] NS)
+       .
+    rl $tick.foreachNode.chooseBlock(A, B, BLOCK, IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
+    => $tick.foreachNode(IDS, [ A record-block-sent    (S1, B)  H1         W1 ]
+                              [ B record-block-received(S2, A) (H2, BLOCK) W2 ]
                               NS)
-     .
-    rl $tick.foreachNode.update(A, nobody, IDS, [ A S1 H1 W1 ] NS)
-    => $tick.foreachNode(IDS, [ A record-block-sent(S1, nobody) H1 W1 ] NS)
-     .
+      [print A " sent block " BLOCK " to " B]
+       .
 
     op take : BlockSet -> BlockSet .
     rl take((A, IDS)) => A .
