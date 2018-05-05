@@ -67,7 +67,6 @@ The core mechanism for describing the game is next `tick` rule that defines the 
 one `WorldState` to the next.
 
 ``` {.maude}
-    op tick :     WorldState -> WorldState .
     op tick : Nat WorldState -> WorldState .
 ```
 
@@ -76,15 +75,18 @@ picks a single peer to share a block with, and both sender and recipient update 
 record this transaction. This is implemented in the following block of code.
 
 ``` {.maude}
-    eq tick(0   , NS) = NS                .
-    eq tick(s(N), NS) = tick(N, tick(NS)) .
+    eq tick(N, NS) = $tick.foreachNode(N, get-ids(NS), NS) .
 
-    eq tick(NS) = $tick.foreachNode(get-ids(NS), NS)
-       .
+    op $tick.foreachNode : Nat QidSet WorldState -> WorldState .
+    eq $tick.foreachNode(0   , IDS, NS) = NS                                       .
+    eq $tick.foreachNode(s(N), IDS, NS) = $tick.foreachNode(N, IDS, $tick.foreachNode(IDS, NS)) .
+
     op $tick.foreachNode                 :             QidSet WorldState -> WorldState .
     op $tick.foreachNode.chooseRecepient : Qid Qid     QidSet WorldState -> WorldState .
     op $tick.foreachNode.chooseBlock     : Qid Qid Qid QidSet WorldState -> WorldState .
-    rl $tick.foreachNode(empty, NS) => NS .
+    rl $tick.foreachNode(empty, NS) => NS
+       [print "---- Tick -----------------"]
+       .
     rl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
     => $tick.foreachNode.chooseRecepient(A, send-next-block-to(S1, could-send-to(H1, NS)), IDS, [A S1 H1 W1] NS)
        .
@@ -99,7 +101,7 @@ record this transaction. This is implemented in the following block of code.
     => $tick.foreachNode(IDS, [ A record-block-sent    (S1, B)  H1         W1 ]
                               [ B record-block-received(S2, A) (H2, BLOCK) W2 ]
                               NS)
-      [print A " sent block " BLOCK " to " B]
+      [print "    " A " sent block " BLOCK " to " B]
        .
 
     op take : BlockSet -> BlockSet .
@@ -165,15 +167,12 @@ of the generosity of its peers.
 For example, other nodes may get starved in its presence.
 
 ```test
---- TODO: Search space is very large
---- search [1] in BITSWAP-TURN-BASED-GAME :
-rewrite
-       tick(3, [ 'a naive   ('x, 'y, 'z) ('p, 'q, 'r) ]
+search tick(3, [ 'a naive   ('x, 'y, 'z) ('p, 'q, 'r) ]
                [ 'b selfish ('p, 'q, 'r) ('x, 'y, 'z) ]
                [ 'c naive   ('p, 'q, 'r) ('x, 'y, 'z) ]
            )
----   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
----       NS
+   =>* [ 'c naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+       NS
     .
 ```
 
@@ -196,18 +195,13 @@ have sent a block to a node and prioritize peer we least recently sent on to.
 
 Now, other nodes on the network aren't as suceptible to chance in the presence of a selfish node.
 
-For example, other nodes may get starved in its presence.
-
 ```test
---- TODO: Search space is very large
---- search [1] in BITSWAP-TURN-BASED-GAME :
-rewrite
-       tick(3, [ 'a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r) ]
+search tick(3, [ 'a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r) ]
                [ 'b selfish            ('p, 'q, 'r) ('x, 'y, 'z) ]
                [ 'c round-robin('a 'b) ('p, 'q, 'r) ('x, 'y, 'z) ]
            )
----   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
----       NS
+   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+       NS
     .
 ```
 
@@ -249,7 +243,7 @@ like structure to prevent starvation of other nodes.
     eq record-block-received(tit-for-tat(BS), nobody) = tit-for-tat(BS)        . 
 ```
 
-This seems to work great! The selfish node is quickly left out of the proceedings.
+This seems to work great!
 
 ```test
 rewrite tick(5, [ 'a tit-for-tat((('b |-> 0), ('c |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
@@ -286,13 +280,13 @@ reduce could-send-to(('x, 'y, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 
 reduce take(intersection(('a, 'b, 'c), ('b, 'c, 'd, 'e))) .
 reduce take(intersection(('a, 'b, 'c), ('d, 'e))) == empty .
 
-rewrite tick(empty) .
+rewrite tick(2, empty) .
 
-rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
-rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
-             [ 'b round-robin(('a 'c)) ('p, 'q, 'r) ('x, 'y, 'z) ]
+rewrite tick(2, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
+rewrite tick(4, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b round-robin(('a 'c)) ('p, 'q, 'r) ('x, 'y, 'z) ]
             ) .
-rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
-             [ 'b round-robin(('a 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+rewrite tick(2, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b round-robin(('a 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
             ) .
 ```
