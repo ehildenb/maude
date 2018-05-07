@@ -45,7 +45,7 @@ While we could choose to model the Bitswap protocol at a low level, defining the
 low level message, it is the analysis of the game theoretic aspects of the various strategies that
 nodes implement that is most interesting. Thus, we assume that all actors have full and
 instantaneous knowledge about which blocks their peers are interested in and that sharing this
-information has zero bandwidth cost. It is also convenient to model time descretely. Additionally,
+information has zero bandwidth cost. It is also convenient to model time discretely. Additionally,
 we force each node to take turns, as though sitting around a table playing a board game. This
 ignores the possiblity of races and other real-world situations. Below, we define in Maude a system
 module, `BITSWAP-TURN-BASED-GAME`, that does exactly this. Note that we elide some details, though
@@ -73,15 +73,15 @@ blocks and the blocks themselves.
     subsorts Node < WorldState .
 ```
 
-Sometimes a node decides to not send a block to any peer on a round of the game. The constructor
-`nobody` is used to represent that.
+Sometimes a node decides to *not* send a block to any peer on a round of the game. The constructor
+`nobody` is used to represent that case.
 
 ``` {.maude}
     op nobody : -> NodeId                                               [ctor] .
 ```
 
-We model each node as an identifier, the strategy it applies for interacting with the network,
-and a set of blocks it has, and another that it wants.
+We model each node as a four-tuple consisting of an identifier, the strategy it applies for
+interacting with the network, and a set of blocks it has, and another that it wants.
 
 ``` {.maude}
     op [ _ _ _ _ ] : NodeId Strategy BlockSet BlockSet -> Node          [ctor] .
@@ -205,7 +205,7 @@ rewrite tick(3, [ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
 ```
 
 Further, when a "needy" node joins the network, with no blocks that others desire
-but in-need of blocks, it is able to get its feet of the ground.
+but in-need of blocks, it is able to get its feet off the ground.
 
 ``` {.test pipe='maude -no-banner -no-wrap root/systems/bitswap.maude | grep -v "========\\|rewrites: \\|Bye" ' }
 rewrite tick(3, [ 'a     naive ('x, 'y, 'z) ('p, 'q, 'r) ]
@@ -236,8 +236,9 @@ search tick(3, [ 'a naive   ('x, 'y, 'z) ('p, 'q, 'r) ]
     .
 ```
 
-The `round-robin` strategy offers a defense. We keep track of when we last
-have sent a block to a node and prioritize peer we least recently sent on to.
+The `round-robin` strategy offers a defense. Here, we prioritize for the peers we have least
+recently sent a block to. For that we must mainain a list of `NodeId`s in order of how
+recently we sent them a block.
 
 ``` {.maude}
     op round-robin : QidList -> Strategy                                [ctor] .
@@ -267,7 +268,7 @@ search tick(3, [ 'a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r) ]
 
 However, it seems wrong that free-loaders can do as well on the network as other well meaning nodes
 actively trying to improve the state of the network. There must be a way to incentivize other peers
-to share. Thus we implement the "tit-for-tat" strategy where a node keeps track of how often another
+to share. Thus we implement the "tit-for-tat" strategy, where a node keeps track of how often another
 node helps it out and tries to reciprocate.
 
 ``` {.maude}
@@ -277,7 +278,7 @@ node helps it out and tries to reciprocate.
     op _,_ : BalanceSheet BalanceSheet -> BalanceSheet  [ctor assoc id: empty] .
 ```
 
-Notice that since `BalanceSheet`s are not commutative, since we still need to maintain a round-robin
+Notice that `BalanceSheet` is not commutative, since we still need to maintain a round-robin
 like structure to prevent starvation of other nodes.
 
 ``` {.maude}
@@ -378,10 +379,11 @@ network is bootstrapping and few nodes have built up a reputation amongst its pe
 
 Although this is similar to the traditional Iterative Prisoners Dilemma problem, it is muddied by
 the fact that there are multiple players and that these players can enter and leave the game at
-will. In the real world, a player can easily even change their identity mid-game, making it more
-difficult to subsidize young nodes that have just joint the network. There are many variations of
-these strategies that need to be explored. Fortunately, the expressiveness and simplicity of Maude
-make exploring these possibilities easy.
+will. In the real world, players can easily even change their identity mid-game, making it more
+difficult to subsidize young nodes that have just joint the network. These, and a myriad of other
+attacks, need to be taken into account. There are many variations of these strategies for doing
+exactly that. Fortunately, the expressiveness and simplicity of Maude make exploring these many
+possibilities easy.
 
 ``` {.maude pipe="cat > /dev/null"}
 endm
