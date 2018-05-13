@@ -15,6 +15,7 @@ in and that sharing this information has zero bandwidth cost.
 mod BITSWAP-TURN-BASED-GAME is
     protecting QID-SET .
     protecting QID-LIST .
+    protecting INT .
     sort Node Strategy NodeId BlockSet WorldState .
 
     subsorts Qid < NodeId .
@@ -53,8 +54,10 @@ We define the world state as simply a collection of `Node`s.
 ```
 
 ```maude
+    vars N : Int .
     vars NS : WorldState .
-    vars A B : Qid . vars IDS : QidSet .
+    vars A B ID : NodeId .
+    vars IDS : QidSet .
     vars BLOCK : Qid . vars H1 W1 H2 W2 : BlockSet .
     vars S1 S2 : Strategy .
     vars IDLIST IDLIST1 IDLIST2 : QidList .
@@ -64,7 +67,8 @@ The core mechanism for describing the game is next `tick` rule that defines the 
 one `WorldState` to the next.
 
 ``` {.maude}
-    op tick : WorldState -> WorldState .
+    op tick :     WorldState -> WorldState .
+    op tick : Nat WorldState -> WorldState .
 ```
 
 During each tick, from a list of candidate nodes (that have some block that ...) each in turn node
@@ -72,8 +76,11 @@ picks a single peer to share a block with, and both sender and recipient update 
 record this transaction. This is implemented in the following block of code.
 
 ``` {.maude}
-    eq tick(NS) = $tick.foreachNode(get-ids(NS), NS) .
+    eq tick(0   , NS) = NS .
+    eq tick(s(N), NS) = tick(N, tick(NS)) .
 
+    eq tick(NS) = $tick.foreachNode(get-ids(NS), NS)
+       .
     op $tick.foreachNode        : QidSet WorldState -> WorldState .
     op $tick.foreachNode.update : Qid Qid QidSet WorldState -> WorldState .
     eq $tick.foreachNode(empty, NS) = NS .
