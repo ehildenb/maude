@@ -184,6 +184,22 @@ have sent a block to a node and prioritize peer we least recently sent on to.
 ```
 
 Now, other nodes on the network aren't as suceptible to chance in the presence of a selfish node.
+
+For example, other nodes may get starved in its presence.
+
+```test
+--- TODO: Search space is very large
+--- search [1] in BITSWAP-TURN-BASED-GAME :
+rewrite
+       tick(3, [ 'a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r) ]
+               [ 'b selfish            ('p, 'q, 'r) ('x, 'y, 'z) ]
+               [ 'c round-robin('a 'b) ('p, 'q, 'r) ('x, 'y, 'z) ]
+           )
+---   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+---       NS
+    .
+```
+
 However, it seems wrong that free-loaders can do as well on the network as other well meaning nodes
 actively trying to improve the state of the network. There must be a way to incentivise other peers
 to share. Thus we implement the "tit-for-tat" strategy where a node keeps track of
