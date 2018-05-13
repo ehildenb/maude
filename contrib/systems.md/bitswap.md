@@ -77,18 +77,18 @@ record this transaction. This is implemented in the following block of code.
     op $tick.foreachNode        : QidSet WorldState -> WorldState .
     op $tick.foreachNode.update : Qid Qid QidSet WorldState -> WorldState .
     eq $tick.foreachNode(empty, NS) = NS .
-    rl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
-    => $tick.foreachNode.update(A, send-next-block-to(S1, could-send-to(H1, NS)), IDS, [A S1 H1 W1] NS)
+   crl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
+    => $tick.foreachNode.update(A, B, IDS, [A S1 H1 W1] NS)
+    if B := send-next-block-to(S1, could-send-to(H1, NS))
+       [print A " -> " B]
      .
     rl $tick.foreachNode.update(A, B, IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
     => $tick.foreachNode(IDS, [ A record-block-sent(S1, B) H1 W1 ]
                               [ B record-block-received(S2, A) (H2, take(intersection(H1, W2))) W2 ]
                               NS)
-      [print A " sent block to " B]
      .
     rl $tick.foreachNode.update(A, nobody, IDS, [ A S1 H1 W1 ] NS)
     => $tick.foreachNode(IDS, [ A record-block-sent(S1, nobody) H1 W1 ] NS)
-      [print A " did not send any blocks"]
      .
 
     op take : BlockSet -> BlockSet .
