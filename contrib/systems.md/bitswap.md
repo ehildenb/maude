@@ -122,17 +122,22 @@ need any more blocks.
 
 ```test
 load ../../contrib/systems/bitswap.maude
+set print attribute on .
 ```
 
 ```test
---- TODO
+rewrite tick(3, [ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+            ) .
 ```
 
 Further, when a "needy" node joins the network, with no blocks that others desire
 but in-need of blocks, it is able to get its feet of the ground.
 
 ```test
---- TODO
+rewrite tick(3, [ 'a     naive ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'needy naive empty        ('x, 'y, 'z) ]
+            ) .
 ```
 
 However, things don't work out as well in the presence of a "selfish" node --
@@ -146,10 +151,19 @@ of the generosity of its peers.
     eq record-block-received(selfish, A)     = selfish .
 ```
 
-Other nodes may get starved in its presence.
+For example, other nodes may get starved in its presence.
 
 ```test
---- TODO
+--- TODO: Search space is very large
+--- search [1] in BITSWAP-TURN-BASED-GAME :
+rewrite
+       tick(3, [ 'a naive   ('x, 'y, 'z) ('p, 'q, 'r) ]
+               [ 'b selfish ('p, 'q, 'r) ('x, 'y, 'z) ]
+               [ 'c naive   ('p, 'q, 'r) ('x, 'y, 'z) ]
+           )
+---   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+---       NS
+    .
 ```
 
 The `round-robin` strategy offers a defence. We keep track of when we last
@@ -214,10 +228,6 @@ reduce take(intersection(('a, 'b, 'c), ('b, 'c, 'd, 'e))) .
 reduce take(intersection(('a, 'b, 'c), ('d, 'e))) == empty .
 
 rewrite tick(empty) .
-
-rewrite tick([ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
-            [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
-           ) .
 
 rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
 rewrite tick([ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
