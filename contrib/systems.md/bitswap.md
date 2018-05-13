@@ -146,9 +146,9 @@ of the generosity of its peers.
 
 ``` {.maude}
     op selfish : -> Strategy                                            [ctor] .
-    eq send-next-block-to(selfish,     IDS ) = nobody                          .
-    eq record-block-sent    (selfish, A)     = selfish .
-    eq record-block-received(selfish, A)     = selfish .
+    eq send-next-block-to(selfish,    IDS ) = nobody                           .
+    eq record-block-sent    (selfish, A)    = selfish                          .
+    eq record-block-received(selfish, A)    = selfish                          .
 ```
 
 For example, other nodes may get starved in its presence.
