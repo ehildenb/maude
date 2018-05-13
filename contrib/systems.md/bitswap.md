@@ -209,18 +209,50 @@ rewrite
 
 However, it seems wrong that free-loaders can do as well on the network as other well meaning nodes
 actively trying to improve the state of the network. There must be a way to incentivise other peers
-to share. Thus we implement the "tit-for-tat" strategy where a node keeps track of
-how often another node helps it out and tries to reciprocate.
+to share. Thus we implement the "tit-for-tat" strategy where a node keeps track of how often another
+node helps it out and tries to reciprocate.
 
 ``` {.maude}
     sort BalanceSheet .
-    op tit-for-tat : BalanceSheet -> Strategy                           [ctor] .
-    --- TODO
+    op empty :           -> BalanceSheet                                [ctor] .
+    op _ |-> _ : Qid Int -> BalanceSheet                                [ctor] .
+    op _,_ : BalanceSheet BalanceSheet -> BalanceSheet  [ctor assoc id: empty] .
 ```
 
-This seems to work great! The selfish node is quickly denied.
+Notice that since `BalanceSheet`s are not commutative, since we still need to maintain a round-robin
+like structure to prevent starvation of other nodes.
+
+``` {.maude}
+    vars BS BS1 BS2 : BalanceSheet .
+
+    op tit-for-tat : BalanceSheet -> Strategy                           [ctor] .
+    eq send-next-block-to(tit-for-tat(((A |-> N), BS)), (IDS))
+     = if   N >= 0 and A in IDS
+       then A
+       else send-next-block-to(tit-for-tat((BS)), (IDS))
+       fi
+       .
+    eq send-next-block-to(tit-for-tat(empty), IDS) = nobody .
+
+    eq record-block-sent(tit-for-tat((BS1, (A |-> N), BS2)), A)
+     =                   tit-for-tat((BS1, BS2, (A |-> (N - 1))))
+     .
+    eq record-block-sent(tit-for-tat(BS), nobody) = tit-for-tat(BS)            .
+
+    eq record-block-received(tit-for-tat((BS1, (A |->  N     ), BS2)), A)
+     =                       tit-for-tat((BS1, (A |-> (N + 1)), BS2))
+     .
+    eq record-block-received(tit-for-tat(BS), nobody) = tit-for-tat(BS)        . 
+```
+
+This seems to work great! The selfish node is quickly left out of the proceedings.
 
 ```test
+rewrite tick(5, [ 'a tit-for-tat((('b |-> 0), ('c |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b selfish                               ('p, 'q, 'r) ('x, 'y, 'z) ]
+                [ 'c tit-for-tat((('b |-> 0), ('a |-> 0))) ('p, 'q, 'r) ('x, 'y, 'z) ]
+            )
+        .
 ```
 
 But, wait. The needy node has been left in a tough situation. It has just got on to the network
