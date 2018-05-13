@@ -53,3 +53,9 @@ systems/%.maude: systems.md/%.md $(tangler)
 ../tests/systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.test $< > $@
+
+# Papers and write-ups
+# --------------------
+
+systems.md/bitswap.pdf: systems.md/bitswap.md systems/bitswap.maude Makefile
+	PATH=$$(pwd)/../src/Main:$$PATH pandoc --filter panpipe -t latex $< -o $@
