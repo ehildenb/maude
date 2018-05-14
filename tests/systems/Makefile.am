@@ -1,11 +1,6 @@
-TESTS = \
-	nim \
-	bank-account \
-	bakery \
-	imp \
-    caut
+include ../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	nim.maude \
 	bank-account.maude \
 	bakery.maude \
@@ -19,4 +14,4 @@ RESULT_FILES = \
 	imp.expected \
     caut.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)

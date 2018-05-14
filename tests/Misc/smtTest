@@ -12,9 +12,6 @@ else
 fi
 fi
 
-MAUDE_LIB=$srcdir/../../src/Main
-export MAUDE_LIB
-
 ../../src/Main/maude \
   < $srcdir/smtTest.maude -no-banner -no-advise \
   > smtTest.out 2>&1

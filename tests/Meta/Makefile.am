@@ -1,34 +1,6 @@
-TESTS = \
-	metaApply \
-	metaUnify \
-	metaFrewrite \
-	metaMatch \
-	metaMeta \
-	metaModule \
-	metaParse \
-	metaPrettyPrint \
-	metaReduce \
-	metaRewrite \
-	metaSearch \
-	metaSort \
-	metaSpecial \
-	metaTerm \
-	metaUp \
-	metaWellFormed \
-	metaXapply \
-	metaXmatch \
-	metaUp2 \
-	metaUpModExp \
-	metaModExp \
-	metaPolymorph \
-	metaUpDown \
-	metaPrintAttr \
-	metaMetadata \
-	metaVariantUnify \
-	metaGetVariant \
-	metaNarrow
+include ../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	metaApply.maude \
 	metaUnify.maude \
 	metaFrewrite.maude \
@@ -56,7 +28,7 @@ MAUDE_FILES = \
 	metaMetadata.maude \
 	metaVariantUnify.maude \
 	metaGetVariant.maude \
-	metaNarrow.maude 
+	metaNarrow.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -90,4 +62,4 @@ RESULT_FILES = \
 	metaGetVariant.expected \
 	metaNarrow.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)
