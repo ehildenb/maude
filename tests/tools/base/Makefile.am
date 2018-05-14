@@ -1,10 +1,9 @@
-TESTS = \
-	preludeTests
+include ../../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	preludeTests.maude
 
 RESULT_FILES = \
 	preludeTests.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)

@@ -1,11 +1,6 @@
-TESTS = \
-	nat \
-	int \
-	rat \
-	string \
-	counters
+include ../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	nat.maude \
 	int.maude \
 	rat.maude \
@@ -19,4 +14,4 @@ RESULT_FILES = \
 	string.expected \
 	counters.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)

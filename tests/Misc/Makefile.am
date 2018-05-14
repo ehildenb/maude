@@ -1,26 +1,6 @@
-TESTS = \
-	dekker \
-	commands \
-	debug \
-	renaming \
-	dataStructures \
-	parameterization \
-	unification \
-	unification2 \
-	unification3 \
-	attributes \
-	diophantine \
-	variantUnification \
-	variantNarrowing \
-	meseguerFiniteVariant \
-	CU_Unification \
-	assocUnification \
-	sreduce \
-	smtTest \
-	narrow \
-	continue
+include ../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	dekker.maude \
 	commands.maude \
 	debug.maude \
@@ -64,4 +44,4 @@ RESULT_FILES = \
 	narrow.expected \
 	continue.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)

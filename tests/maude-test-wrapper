@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -eu
+
+test_maude="$1"
+test_base_name="$(dirname $test_maude)/$(basename $test_maude .maude)"
+test_alt_runner="$test_base_name"
+test_expected="$srcdir/$test_base_name.expected"
+test_actual="$test_base_name.out"
+
+# Some tests need to be run conditionally (e.g. tests/Misc/smtTest.maude needs
+# to be run only if maude has been compiled with an SMT solver.) For these
+# cases we allow tests to have their own executable file that we run instead of
+# this test.
+[[ ! -x "$test_alt_runner" ]] || exec "$test_alt_runner"
+
+rm -f "$test_actual"
+maude -no-banner -no-advise \
+    < "$test_maude"         \
+    > "$test_actual" 2>&1
+diff "$test_expected" "$test_actual" 2>&1

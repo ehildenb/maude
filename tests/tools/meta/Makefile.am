@@ -1,17 +1,6 @@
-TESTS = \
-	metalevel-ext \
-	structured-names \
-	cterms \
-	foform \
-	mtemplate \
-	mtransform \
-	mconstruction \
-	sort-ops \
-	unification \
-	variables \
-	narrowing
+include ../../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
 	metalevel-ext.maude \
 	structured-names.maude \
 	cterms.maude \
@@ -37,4 +26,4 @@ RESULT_FILES = \
 	variables.expected \
 	narrowing.expected
 
-EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
+EXTRA_DIST = $(TESTS) $(RESULT_FILES)
