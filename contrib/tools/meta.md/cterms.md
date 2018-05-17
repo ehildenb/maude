@@ -421,13 +421,11 @@ If the top symbol of the term is from the first module, purify the subterms.
 Otherwise, generate an equality constraint at the top and purify with respect to the second module.
 
 ```maude
-    ceq purify(M, M', T)     = T                       if wellFormed(M, T) .
-    ceq purify(M, M', T)     = FV | (FV ?= T)          if wellFormed(M', T)
-                                                       /\ FV := joint-variable(M', M, T) .
-    ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)]    if Q inO asTemplate(M) .
-    ceq purify(M, M', Q[TL]) = FV | ((FV ?= T) /\ QFF) if (not Q inO asTemplate(M)) /\ Q inO asTemplate(M')
-                                                       /\ T | QFF := purify(M', M, Q[TL])
-                                                       /\ FV      := joint-variable(M', M, T) .
+     eq purify(M, M', T | EqC) = purify(M, M', T) | EqC               .
+    ceq purify(M, M', T)       = T                                    if wellFormed(M, T) .
+    ceq purify(M, M', T)       = FV | (FV ?= T)                       if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
+    ceq purify(M, M', Q[TL])   = purify(M, M', purify(M', M, Q[TL]))  if Q inO asTemplate(M') /\ not (Q inO asTemplate(M)) .
+    ceq purify(M, M', Q[TL])   = Q[purify(M, M', TL)]                 if Q inO asTemplate(M) .
 ```
 
 Sometimes, we need to make sure that a term contains only symbols from a given subtheory.
