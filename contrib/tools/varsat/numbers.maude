@@ -67,13 +67,18 @@ fmod NAT* is
   eq max(n,n :+ m) = n :+ m [variant] .
 endfm
 
-fmod MULT-NAT* is
-  pr NAT* .
+fmod MULT-NAT*-NOORDER is
+  pr NAT*-CTOR .
   op _:*_ : Nat* Nat* -> Nat* [assoc comm] .
   var X : Nat* . var X' Y' : NzNat* .
   eq X :*  0        =  0 .
   eq X :*  1        =  1 .
   eq X :* (X' :+ Y') = (X :* X') :+ (X :* Y') .
+endfm
+
+fmod MULT-NAT* is
+  pr NAT* .
+  pr MULT-NAT*-NOORDER .
 endfm
 
 fmod MAYBENAT* is

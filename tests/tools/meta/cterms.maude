@@ -62,27 +62,50 @@ fmod TEST-PURIFY is
     protecting FOFORM .
     protecting FOFORMSET .
     protecting PURIFICATION .
-    op natMod     : -> Module   . eq natMod       = upModule('NAT*, true) .
-    op natListMod : -> Module   . eq natListMod   = upModule('MYLISTNAT*, true) .
+    op natMultMod  : -> Module . eq natMultMod  = upModule('MULT-NAT*-NOORDER, true) .
+    op natOrderMod : -> Module . eq natOrderMod = upModule('NAT*, true) .
+    op natListMod  : -> Module . eq natListMod  = upModule('MYLISTNAT*, true) .
+
+    op deepLeft : -> Term .
+    eq deepLeft = '_:*_ [ '1.Nat*
+                        , 'min[ '0.Nat*
+                              , '_:*_ [ '1.Nat*
+                                      , 'max[ '0.Nat*
+                                            , '_:*_ [ '1.Nat*
+                                                    , '1.Nat*
+                        ]     ]       ]     ]       ] .
+
+    op deepRight : -> Term .
+    eq deepRight = '_:*_ [ 'min[ '_:*_ [ 'max[ '_:*_ [ '1.Nat*
+                                                     , '1.Nat* ]
+                                             , '1.Nat* ]
+                                       , '1.Nat* ]
+                               , '1.Nat* ]
+                         , '1.Nat* ] .
 endfm
 
 --- Function `moduleIntersect`
 --- --------------------------
 
-reduce 'Foo      inS moduleIntersect(asTemplate(natMod), asTemplate(natListMod)) == false .
-reduce 'NatList* inS moduleIntersect(asTemplate(natMod), asTemplate(natListMod)) == false .
+reduce 'Foo      inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
+reduce 'NatList* inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
 
-reduce joint-variable(natListMod, natMod, 'head['L2:NeNatList*]) .
-reduce joint-variable(natMod, natListMod, 'head['L2:NeNatList*]) .
+reduce joint-variable(natListMod, natOrderMod, 'head['L2:NeNatList*]) .
+reduce joint-variable(natOrderMod, natListMod, 'head['L2:NeNatList*]) .
 
 --- Function Purify (Terms)
 --- -----------------------
 
-reduce purify(natMod, natListMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
-reduce purify(natListMod, natMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
-reduce purify(natListMod, natMod,
+reduce purify(natOrderMod, natListMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
+reduce purify(natListMod, natOrderMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
+reduce purify(natListMod, natOrderMod,
         '_<Nat_['_:+_['head['L':NeNatList*],'head['L':NeNatList*]]
                ,'_:+_['head['L:NeNatList*],'head['L:NeNatList*]]]) .
+
+reduce purify(natOrderMod, natMultMod, deepLeft ) .
+reduce purify(natMultMod, natOrderMod, deepLeft ) .
+reduce purify(natOrderMod, natMultMod, deepRight) .
+reduce purify(natOrderMod, natMultMod, 'min[ deepRight, deepLeft ] ) .
 
 --- Function Purify (EqConjs)
 --- -------------------------
