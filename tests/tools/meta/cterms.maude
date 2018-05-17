@@ -72,16 +72,19 @@ fmod TEST-PURIFY is
                               , '_:*_ [ '1.Nat*
                                       , 'max[ '0.Nat*
                                             , '_:*_ [ '1.Nat*
-                                                    , '1.Nat*
+                                                    , '_:+_[ '1.Nat*,  '1.Nat*]
                         ]     ]       ]     ]       ] .
 
     op deepRight : -> Term .
-    eq deepRight = '_:*_ [ 'min[ '_:*_ [ 'max[ '_:*_ [ '1.Nat*
+    eq deepRight = '_:*_ [ 'min[ '_:*_ [ 'max[ '_:*_ [ '_:+_[ '1.Nat*,  '1.Nat*]
                                                      , '1.Nat* ]
                                              , '1.Nat* ]
                                        , '1.Nat* ]
                                , '1.Nat* ]
                          , '1.Nat* ] .
+
+    op deepMixed : -> Term .
+    eq deepMixed = '_:+_[ deepRight, deepLeft ] .
 endfm
 
 --- Function `moduleIntersect`
@@ -105,7 +108,7 @@ reduce purify(natListMod, natOrderMod,
 reduce purify(natOrderMod, natMultMod, deepLeft ) .
 reduce purify(natMultMod, natOrderMod, deepLeft ) .
 reduce purify(natOrderMod, natMultMod, deepRight) .
-reduce purify(natOrderMod, natMultMod, 'min[ deepRight, deepLeft ] ) .
+reduce purify(natOrderMod, natMultMod, deepMixed) .
 
 --- Function Purify (EqConjs)
 --- -------------------------
