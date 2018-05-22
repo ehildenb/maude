@@ -1,9 +1,9 @@
 # Settings
 # --------
 
-meta_names:=cterms      foform     mconstruction metalevel-ext \
-            mtemplate   mtransform narrowing     structured-names \
-            unification variables
+meta_names:=cterms            foform      mconstruction metalevel-ext            \
+            mtemplate         mtransform  narrowing     nelson-oppen-combination \
+            structured-names  unification variables
 meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
 
 system_names:=bakery bank-account caut choice \

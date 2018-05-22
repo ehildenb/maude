@@ -8,6 +8,7 @@ TESTS = \
 	mtemplate.maude \
 	mtransform.maude \
 	mconstruction.maude \
+	nelson-oppen-combination.maude \
 	sort-ops.maude \
 	unification.maude \
 	variables.maude \
@@ -21,6 +22,7 @@ RESULT_FILES = \
 	mtemplate.expected \
 	mtransform.expected \
 	mconstruction.expected \
+	nelson-oppen-combination.expected \
 	sort-ops.expected \
 	unification.expected \
 	variables.expected \
