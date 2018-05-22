@@ -250,8 +250,12 @@ Next, we make sure each of the tagged formulae (`TF1`, `TF2`) are satisfiable on
      .
 ```
 
-From the variables in the intersection of the two modules, we generate a list of the possible
-equalities that may be implied by the theories.
+From the set of shared variables $\SharedVariables := \vars(\phi_1) \intersect \vars(\phi_2)$ we
+define a set of candidate equalities.
+
+$$\CandidateEqualities := \{ x_i = y_i | x_i, y_i \in \SharedVariables_{s_i}, x_i \not\equiv y_i \}$$
+
+where $\SharedVariables_{s_i}$ is the subset of shared variables in the connected component of sort $s_i$.
 
 ```{ .maude .njr-thesis }
    ceq $nosat.basicSat(TFS)
@@ -275,8 +279,20 @@ equalities that may be implied by the theories.
     eq candidate-equalities(X, none, none)      = ff .
 ```
 
-Next, if any identification of variables is implied by a theory, we propagate that identification to
-the other theories.
+Next, we apply the equality propagation inference rule. If any identification of variables is
+implied by a theory, we propagate that identification to the other theories.
+
+$$\infer[\text{Equality Propagation}]
+  { \begin{matrix*}[l]
+          & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
+    \land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E \land x_m = x_n, \CandidateEqualities \setminus \{x_m = x_n\})
+    \end{matrix*}
+  }
+  { x_m = x_n \in \CandidateEqualities
+  & T_i \models \phi_i \and \phi_E \implies x_m = x_n
+  & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+  }
+$$
 
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
@@ -324,6 +340,20 @@ are stably-infinite, the equation is satisfiable.
 ```
 
 We use `$nosat.split.genEqs` to generate this disequality of sat problems.
+
+$$\infer[\text{Split}]
+  {\Or_{x_m = x_n \in \CandidateEqualities}
+   \left(\begin{matrix*}[l]
+        &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
+        &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
+        &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
+   \end{matrix*}\right)
+  }
+  {
+  & T_i \models \phi_i \and \phi_E \implies \And \CandidateEqualities
+  & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+  }
+$$
 
 ```{ .maude .njr-thesis }
     eq $nosat.split.genEqs((tagged(PHI1, ('mod > ME1); TS1), tagged(PHI2, ('mod > ME2); TS2))
