@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAUDE_LIB=$srcdir/../../../src/Main
+export MAUDE_LIB
+
+../../../src/Main/maude \
+  < nelson-oppen-combination.maude -no-banner -no-advise \
+  > nelson-oppen-combination.out 2>&1
+
+diff nelson-oppen-combination.expected nelson-oppen-combination.out > /dev/null 2>&1
