@@ -28,6 +28,7 @@
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
 int dirMarkerStack[MAX_IN_DEPTH];
+string inFileNameStack[MAX_IN_DEPTH];
 Vector<char*> pendingFiles;
 int nrPendingRead = 0;
 bool rootInteractive = false;
@@ -191,9 +192,11 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
 {
   if (inStackPtr >= MAX_IN_DEPTH)
     {
-      IssueWarning(LineNumber(lineNr) <<
-		   ": ins nested too deeply - couldn't open file " <<
-		   QUOTE(fileName));
+      auto& warning = IssueWarning(LineNumber(lineNr)
+          << ": ins nested too deeply - couldn't open file " << QUOTE(fileName));
+      for (size_t i = 0; i < inStackPtr; i++) {
+          warning << i << ":\tfile: "      << inFileNameStack[i] << endl;
+      }
       return false;
     }
   int dirMarker = directoryManager.pushd(directory.c_str());
@@ -211,6 +214,7 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
       directoryManager.popd(dirMarker);
       return false;
     }
+  inFileNameStack[inStackPtr] = fileName;
   dirMarkerStack[inStackPtr] = dirMarker;
   inStack[inStackPtr] = YY_CURRENT_BUFFER;
   fakeNewlineStack[inStackPtr] = fakeNewline;
