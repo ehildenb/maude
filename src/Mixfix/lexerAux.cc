@@ -23,7 +23,7 @@
 //
 //	Auxiliary functions and data needed by lexical analyzer.
 //
-#define MAX_IN_DEPTH	10
+#define MAX_IN_DEPTH	20
 
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
