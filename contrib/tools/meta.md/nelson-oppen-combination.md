@@ -92,10 +92,12 @@ fmod NO-CHECK-HELPER is
     op check-valid           : TaggedFormula -> Bool .
     op check-sat             : TaggedFormula -> Bool .
     op $check-sat.dnf        : TaggedFormula -> Bool .
+    op $check-sat.print      : ModuleExpression FOForm Bool -> Bool .
 
-    var ME  : ModuleExpression .
-    var PHI : FOForm           .
-    vars TS : Tags .
+    var ME   : ModuleExpression .
+    var PHI  : FOForm           .
+    var SAT? : Bool             .
+    vars TS  : Tags             .
 
     --- strictNot gets stuck when it cannot evaluate further. This prevents
     --- `valid` from returning true if `sat` gets stuck
@@ -115,11 +117,17 @@ fmod NO-CHECK-HELPER is
     eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS)) .
 
     eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'var-sat); TS))
-     = var-sat(upModule(ME, true), PHI)
+     = $check-sat.print(ME, PHI, var-sat(upModule(ME, true), PHI))
+---    [print "var-sat? " ME ": " PHI]
      .
 
     eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'smt-sat); TS))
-     = smt-sat(ME, PHI)
+     = $check-sat.print(ME, PHI, smt-sat(ME, PHI))
+---    [print "smt-sat? " ME ": " PHI]
+     .
+
+    eq $check-sat.print(ME, PHI, SAT?) = SAT?
+---    [print "check-sat: " ME ": " PHI " is " SAT? ]
      .
 
     eq smt-sat(ME, PHI) = metaCheck([ME], foform-to-smt(PHI))
@@ -248,6 +256,7 @@ Next, we make sure each of the tagged formulae (`TF1`, `TF2`) are satisfiable on
 ```{ .maude .njr-thesis }
     eq $nosat.tagged((TF1, TF2))
      = check-sat(TF1) and-then check-sat(TF2) and-then $nosat.basicSat(TF1, TF2)
+       [print "Purified:\n\t" TF1 "\n\t" TF2]
      .
 ```
 
@@ -302,14 +311,14 @@ $$
        and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
                           , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
                          , CANDEQ)
-    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "NO: " PHI1 " => " X1 " ?= " X2 ] .
+    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
 ```
 
 If, after checking each identification individually, there are none that are implied we apply the split
 rule.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise] .
+    eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise print "=== Split? " TFS CANDEQ ] .
 ```
 
 If there are no variables left to identify, then we are satisfiable
@@ -329,7 +338,7 @@ is satisfiable.
           , tagged(PHI2, ('mod > ME2) ;                      TS2))
        := TFS
     /\ check-valid(tagged((PHI1) => (CANDEQ), ('mod > ME1); ('convex > 'false) ; TS1))
-                                            [print "NO.S: " PHI1 " => " CANDEQ ]
+                                            [print "===== Split : "  ME1 " : " PHI1 " => " CANDEQ ]
      .
 ```
 
