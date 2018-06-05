@@ -199,6 +199,14 @@ fmod NELSON-OPPEN-COMBINATION is
     eq var-intersect(XS1, XS2)           = none [owise] .
 ```
 
+The `nelson-oppen-valid` function converts a validity check into a satisfiability check:
+
+```{.maude .njr-thesis}
+    op nelson-oppen-valid  : TaggedFormulaSet QFForm -> Bool .
+    ----------------------------------------------------------
+    eq nelson-oppen-valid(TFS, PHI) = strictNot(nelson-oppen-sat(TFS, ~ PHI)) .
+```
+
 The `nelson-oppen-sat` function that implements the algorithm, takes as input
 a `TaggedFormulaSet` and a quantifier free formula (of sort `QFForm`)
 and returns a `Bool`.
