@@ -144,6 +144,7 @@ fmod NELSON-OPPEN-COMBINATION is
     protecting PURIFICATION .
     protecting TAGGED-FOFORM .
     protecting FOFORM-VARIABLES .
+    protecting FOFORM-SUBSTITUTION .
 
     vars MCONJ1 MCONJ2 : Conj? .
     vars CONJ PHI1 PHI2 : Conj .
@@ -308,9 +309,9 @@ $$
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
                  , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ CANDEQ)
      =          check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-       and-then $nosat.ep(( tagged(PHI1 /\ X1 ?= X2, ('mod > ME1); TS1)
-                          , tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
-                         , CANDEQ)
+       and-then $nosat.ep(( tagged(simplify(PHI1 << (X1 <- X2)), ('mod > ME1); TS1)
+                          , tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
+                         , simplify(CANDEQ << (X1 <- X2)))
     if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
 ```
 
