@@ -69,6 +69,7 @@ fmod FOFORM-TO-SMT is
     op foform-to-smt : FOForm -> Term .
     op foform-to-smt : Term   -> Term .
     ---------------------------------------------------------------------------------
+    eq foform-to-smt(tt)         = 'true.Boolean .
     eq foform-to-smt(FO1 /\ FO2) = '_and_  [foform-to-smt(FO1), foform-to-smt(FO2)] .
     eq foform-to-smt(FO1 \/ FO2) = '_or_   [foform-to-smt(FO1), foform-to-smt(FO2)] .
     eq foform-to-smt(T1  ?=  T2) = '_===_  [foform-to-smt(T1),  foform-to-smt(T2)]  .
