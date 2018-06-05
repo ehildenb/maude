@@ -62,7 +62,19 @@ VariableGenerator::VariableGenerator(const SMT_Info& smtInfo)
   if (nrUsers == 0)
     yices_init();
   ++nrUsers;
-  smtContext = yices_new_context(NULL);
+
+//  // Default config (Does not include Non-linear Real Arithmetic)
+//  smtContext = yices_new_context(NULL);
+
+  // Allows NRA
+  ctx_config_t *config = yices_new_config();
+//  int32_t ret = yices_default_config_for_logic(config, "QF_NRA");
+  int32_t ret = yices_default_config_for_logic(config, "QF_NIRA");
+  yices_set_config(config, "mode", "one-shot");
+  Assert(ret == 0 || ret == -1, // Success or unchanged.
+         "Yices logic unknown or unsupported");
+  smtContext = yices_new_context(config);
+  yices_free_config(config);
 }
 
 VariableGenerator::~VariableGenerator()
