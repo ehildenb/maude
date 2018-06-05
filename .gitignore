@@ -57,3 +57,4 @@ lib*.a
 /contrib/tools/meta/variables.maude
 /tests/systems/nelson-oppen/integer-list.maude
 /tests/systems/nelson-oppen/matrix-real.maude
+/tests/systems/nelson-oppen/matrix.maude
