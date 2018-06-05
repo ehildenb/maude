@@ -181,12 +181,9 @@ fmod NELSON-OPPEN-COMBINATION is
 
     op addConvexTag : TaggedFormulaSet -> TaggedFormulaSet .
     --------------------------------------------------------
-    eq addConvexTag((tagged(PHI1, ('convex > _:Qid ) ; TS1 ), TFS))
-     = tagged(PHI1, ('convex > _:Qid ) ; TS1 ), addConvexTag(TFS)
-     .
-    eq addConvexTag((tagged(PHI1,                      TS1 ), TFS))
-     = tagged(PHI1, ('convex > 'false) ; TS1 ), addConvexTag(TFS)
-     [owise] .
+    eq addConvexTag((tagged(PHI1, ('convex > 'true ) ; TS1 ), TFS)) = tagged(PHI1, ('convex > 'true ) ; TS1 ), addConvexTag(TFS)         .
+    eq addConvexTag((tagged(PHI1, ('convex > 'false) ; TS1 ), TFS)) = tagged(PHI1, ('convex > 'false) ; TS1 ), addConvexTag(TFS)         .
+    eq addConvexTag((tagged(PHI1,                      TS1 ), TFS)) = tagged(PHI1, ('convex > 'false) ; TS1 ), addConvexTag(TFS) [owise] .
     eq addConvexTag(empty) = empty .
 
     op in-module : Module VariableSet -> VariableSet .
