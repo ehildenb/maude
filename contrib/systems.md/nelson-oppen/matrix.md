@@ -1,7 +1,11 @@
-Here, we demonstrate Nelson Oppen combination method on $2\times 2$ real matrices.
-We define matrices using the following functional module:
+We define Matrices in terms of an undefined sort `X`, without any functions
+such as multiplication. This is because multiplication must be defined in
+terms of the underlying field's multiplication operator and Nelson-Oppen combination
+does not allow sharing of function symbols.
 
-```{ .maude .njr-thesis }
+```test
+set include BOOL off .
+
 fmod MATRIX-X is
     sort X Matrix .
     op matrix : X X X X -> Matrix [ctor] .
@@ -12,14 +16,16 @@ fmod MATRIX-X is
     op m21 : Matrix -> X .
     op m22 : Matrix -> X .
 
-    eq m11(matrix(A, B, C, D)) = A .
-    eq m12(matrix(A, B, C, D)) = B .
-    eq m21(matrix(A, B, C, D)) = C .
-    eq m22(matrix(A, B, C, D)) = D .
+    eq m11(matrix(A, B, C, D)) = A [variant] .
+    eq m12(matrix(A, B, C, D)) = B [variant] .
+    eq m21(matrix(A, B, C, D)) = C [variant] .
+    eq m22(matrix(A, B, C, D)) = D [variant] .
 endfm
 ```
 
-```{ .maude .njr-thesis }
+We the define parameterise this theory over the reals and the integers:
+
+```test
 fmod MATRIX-REAL is
     including MATRIX-X .
     sort Real .
@@ -30,7 +36,7 @@ fmod MATRIX-REAL is
 endfm
 ```
 
-```{ .maude .njr-thesis }
+```test
 fmod MATRIX-INTEGER is
     including MATRIX-X .
     sort Integer .
@@ -42,8 +48,12 @@ endfm
 
 ```
 
-```{ .maude .njr-thesis }
-load ../../contrib/tools/meta/nelson-oppen-combination.maude
+We define multiplciation and the calculation of the determinant as
+meta-functions defining them syntactically, in terms of the fields
+multiplication and addition operators.
+
+```test
+load ../../../contrib/tools/meta/nelson-oppen-combination.maude
 
 fmod TEST is
     protecting NELSON-OPPEN-COMBINATION .
@@ -58,59 +68,79 @@ fmod TEST is
                                      ] .
 
     op multiply : Term Term -> Term .
-    eq multiply(A, B) = 'matrix[ mulSum( 'm11[A], 'm11[B], 'm12[A], 'm21[B] )
-                                      , mulSum( 'm11[A], 'm12[B], 'm12[A], 'm22[B] )
-                                      , mulSum( 'm21[A], 'm11[B], 'm22[A], 'm21[B] )
-                                      , mulSum( 'm21[A], 'm12[B], 'm12[A], 'm22[B] )
-                                      ] .
+    eq multiply(A, B) = 'matrix[ mulSum('m11[A], 'm11[B], 'm12[A], 'm21[B])
+                               , mulSum('m11[A], 'm12[B], 'm12[A], 'm22[B])
+                               , mulSum('m21[A], 'm11[B], 'm22[A], 'm21[B])
+                               , mulSum('m21[A], 'm12[B], 'm22[A], 'm22[B])
+                               ] .
     op determinant : Term -> Term .
     eq determinant(A) = '_-_ [ '_*_ [ 'm11[A], 'm22[A] ]
                              , '_*_ [ 'm12[A], 'm21[A] ]
                              ] .
 
     op identity : Term Term -> Term .
-    eq identity(ZERO, ONE) = 'matrix[ ONE, ZERO, ZERO, ONE] .
+    eq identity(ZERO, ONE) = 'matrix[ONE, ZERO, ZERO, ONE] .
 endfm
 
 ```
 
-```maude
+```test
+reduce wellFormed(upModule('INTEGER, true), '1.Integer) .
+reduce wellFormed(upModule('REAL-INTEGER, true), '1.Integer) .
+reduce wellFormed(upModule('REAL, true), '1/1.Real) .
+reduce wellFormed(upModule('REAL, true), '_*_[ 'x:Real, 'x:Real ]) .
+reduce wellFormed(upModule('REAL, true), '0/1.Real) .
 
+reduce smt-sat('INTEGER, '1.Integer ?= '0.Integer) .
+reduce smt-sat('REAL,    '0/5.Real ?= '0/1.Real) .
+reduce smt-sat('REAL-INTEGER, '_*_[ 'x:Real, 'x:Real ] ?= '0/1.Real) .
+reduce smt-sat('REAL,
+                  '_*_[ 'X:Real, 'X:Real ] ?= '0/1.Real
+               /\ '_*_[ 'Y:Real, 'Y:Real ] ?= '0/1.Real
+               /\ 'X:Real != 'Y:Real
+              ) .
+reduce smt-sat('REAL,
+                  '_*_[ 'X:Real, 'X:Real ] ?= '1/1.Real
+               /\ '_*_[ 'Y:Real, 'Y:Real ] ?= '1/1.Real
+               /\ 'X:Real != 'Y:Real
+              ) .
 
---- reduce wellFormed(upModule('XXX, true), mulSum('m11['A:Matrix],'m11['A:Matrix],'m11['A:Matrix],'m11['A:Matrix])) .
---- reduce wellFormed(upModule('XXX, true), multiply('A:Matrix, 'B:Matrix)) .
---- reduce wellFormed(upModule('XXX, true), identity('0:Integer, '1:Integer)) .
---- reduce wellFormed(upModule('XXX, true), determinant('A:Matrix)) .
---- eof .
---- reduce purify(upModule('INTEGER, true), upModule('MATRIX-INTEGER, true)
----              , 'matrix['1:Integer,'0:Integer,'0:Integer,'1:Integer]) .
---- eof .
---- set break on .
---- break select wellFormed .
-set print conceal on .
-print conceal fmod_is_endfm .
+reduce smt-sat('INTEGER,
+                  ('_*_[ 'X:Integer, 'Y:Integer ] ?= '0.Integer)
+               => (  ('X:Integer ?= '0.Integer)
+                  \/ ('Y:Integer ?= '0.Integer))
+              ) .
+reduce purify( upModule('MATRIX-INTEGER, true), upModule('INTEGER, true)
+             , identity('0.Integer, '1.Integer)) .
 ```
 
-``` { .maude .njr-thesis}
----    ceq purify(M, M', Q[TL]) = FV | ((FV ?= T) /\ QFF) if (not Q inO asTemplate(M)) /\ Q inO asTemplate(M')
----                                                       /\ T | QFF := purify(M', M, Q[TL])
----                                                       /\ FV      := joint-variable(M', M, T) .
+```test
+set print attribute on .
+
 ---
---- reduce (not 'matrix inO asTemplate(upModule('INTEGER, true)))
----    and 'matrix inO asTemplate(upModule('MATRIX-INTEGER, true))
----     .
---- reduce wellFormed(upModule('MATRIX-INTEGER, true),
---- 'matrix['#makeVariable`(_+_`[_*_`[#makeVariable`(m11`[A:Matrix`]`):Integer`,#makeVariable`(m11`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m12`[A:Matrix`]`):Integer`,#makeVariable`(m21`[B:Matrix`]`):Integer`]`]`):Integer,'#makeVariable`(_+_`[_*_`[#makeVariable`(m11`[A:Matrix`]`):Integer`,#makeVariable`(m12`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m12`[A:Matrix`]`):Integer`,#makeVariable`(m22`[B:Matrix`]`):Integer`]`]`):Integer,'#makeVariable`(_+_`[_*_`[#makeVariable`(m21`[A:Matrix`]`):Integer`,#makeVariable`(m11`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m22`[A:Matrix`]`):Integer`,#makeVariable`(m21`[B:Matrix`]`):Integer`]`]`):Integer,'#makeVariable`(_+_`[_*_`[#makeVariable`(m21`[A:Matrix`]`):Integer`,#makeVariable`(m12`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m12`[A:Matrix`]`):Integer`,#makeVariable`(m22`[B:Matrix`]`):Integer`]`]`):Integer]
---- ) .
+--- --- Are there invertible (real) matrices whos determinants are two?
 ---
---- reduce purify(upModule('INTEGER, true), upModule('MATRIX-INTEGER, true),
---- 'matrix['_+_['_*_['m11['A:Matrix],'m11['B:Matrix]],'_*_['m12['A:Matrix],'m21['B:Matrix]]],'_+_['_*_['m11['A:Matrix],'m12['B:Matrix]],'_*_['m12['A:Matrix],'m22['B:Matrix]]],'_+_['_*_['m21[
----     'A:Matrix],'m11['B:Matrix]],'_*_['m22['A:Matrix],'m21['B:Matrix]]],'_+_['_*_['m21['A:Matrix],'m12['B:Matrix]],'_*_['m12['A:Matrix],'m22['B:Matrix]]]])
---- .
---- eof
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MATRIX-INTEGER); 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'INTEGER       ); 'check-sat > 'smt-sat))),
-          multiply('A:Matrix, 'B:Matrix) ?= identity('0:Integer, '1:Integer)
-       /\ determinant('A:Matrix) ?= '2.Integer
-       ) .
+--- reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MATRIX-REAL);  ('check-sat > 'var-sat); ('convex > 'true)))
+---                         , tagged(tt, (('mod > 'REAL);         ('check-sat > 'smt-sat); ('convex > 'false)))),
+---           multiply('A:Matrix, 'B:Matrix) ?= identity('0/1.Real, '1/1.Real)
+---        /\ determinant('A:Matrix) ?= '2/1.Real
+---        ) .
+
+--- Are there invertible (integer) matrices whos determinants are two?
+
+reduce smt-sat('INTEGER,
+           'V4:Integer ?= '1.Integer
+		/\ 'V4:Integer ?= '_+_['_*_['A11:Integer,'B11:Integer],'_*_['A12:Integer,'B21:Integer]]
+		/\ 'V3:Integer ?= '0.Integer
+		/\ 'V3:Integer ?= '_+_['_*_['A11:Integer,'B12:Integer],'_*_['A12:Integer,'B22:Integer]]
+		/\ 'V2:Integer ?= '_+_['_*_['A21:Integer,'B11:Integer],'_*_['A22:Integer,'B21:Integer]]
+		/\ 'V13:Integer ?= '_+_['_*_['A21:Integer,'B12:Integer],'_*_['A22:Integer,'B22:Integer]]
+		/\ 'V13:Integer != 'A22:Integer) .
+
+reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MATRIX-INTEGER);  ('check-sat > 'var-sat); ('convex > 'true)))
+                        , tagged(tt, (('mod > 'INTEGER       );  ('check-sat > 'smt-sat); ('convex > 'false)))),
+          multiply('A:Matrix, 'B:Matrix) ?= identity('0.Integer, '1.Integer)
+       /\ 'A:Matrix ?= identity('0.Integer, '1.Integer)
+       /\ 'B:Matrix ?= identity('0.Integer, '1.Integer)
+   ) .
 ```
