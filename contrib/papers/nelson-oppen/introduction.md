@@ -13,12 +13,12 @@ useful for a variety of applications including solving optimization problems, pr
 and automated theorem proving.
 
 Over the years, efficient algorithms were devised for linear real and integer arithmetic, non-linear
-arithmetic, arrays (partial functions from the naturals) amongst others, as well as theory generic
+arithmetic, arrays (partial functions from the naturals) amongst others, as well as theory-generic
 algorithms[@sat-modulo-nothing][@sat-modulo-ac]. Program verification and other applications,
 however, often involve working with a combination of two or more theories (e.g. verification of a
 sorting algorithm may involve using the combined theory of arrays and of total linear orders).
 Initially, solving satisfiability problems in a combination of theories involved manually working
-out the combined procedure and proving its correctness. In 1979, Greg Nelson and Derek Oppen
+out the combined procedure and proving their correctness[@XXX]. In 1979, Greg Nelson and Derek Oppen
 published a generic method for composing SMT solvers for two theories into one for the quantifier
 free fragment of their union [@nelson-oppen]. Today, most SMT solvers use the Nelson-Oppen algorithm
 at their core.
