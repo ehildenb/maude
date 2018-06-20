@@ -1,16 +1,26 @@
 Introduction
 ============
 
-In this thesis, we implement in rewriting logic the order-sorted Nelson-Oppen algorithm for
-composing satisfiability modulo theory (SMT) solvers for first order theories into an SMT solver for
-the quantifier-free fragment of their union.
+In 1928, David Hilbert posed the "Entscheidungsproblem" ("the decision problem") to the mathematical
+community -- a challenge to find an algorithm that takes as input any first-order logic statement
+and return whether it is satisfiable or not. Even though, in 1936, Alan Turing and Alonzo Church
+independently showed that such an algorithm is impossible, great progress has been made towards
+solving significant and profitable subsets of first-order logic formulae.
 
-SMT problems are decision problems for checking whether a first-order logic formula $\phi(\vec x)$
-is satisfiable in a theory $T$, i.e. that there is a model $M$ of $T$ such that
-$M \models \exists \vec x \phi(\vec x)$. Although in general SMT is undecidable (e.g. for
-non-linear integer arithmetic), there are subsets of theories that are decidable and immensely
-useful for a variety of applications including solving optimization problems, program verification
-and automated theorem proving.
+Given a theory and a first order logic formula in it's signature, the Satisfiability Modulo Theories
+decision problem is that of deciding whether there is an assigment of variables such that the
+interpretation of that forumla holds in some model of that theory. In this case, we say that the
+forumla is "satisfiable". Otherwise we say that the formula is "unsatisfiable". Validity, an
+important related concept, is the dual of satisfiability. A formula is "valid" in a theory, if in
+every model of the theory, and every possible assigment of variables the formula holds. For example,
+the statement "every natural number factorizers uniquely into a set of prime numbers" is valid,
+whereas the first order logic statement "Peano arithmetic is consistent", in the theory of Peano
+arithmetic, is not (Godel's Second Incompleteness Theorem means that there is a non-standard model
+where a where a non-standard number encodes a proof for the inconsistency of Peano Arithmetic).
+
+Although in general SMT is undecidable (e.g. for non-linear integer arithmetic), there are subsets
+of theories that are decidable and immensely useful for a variety of applications including solving
+optimization problems, program verification and automated theorem proving.
 
 Over the years, efficient algorithms were devised for linear real and integer arithmetic, non-linear
 arithmetic, arrays (partial functions from the naturals) amongst others, as well as theory-generic
@@ -23,9 +33,12 @@ published a generic method for composing SMT solvers for two theories into one f
 free fragment of their union [@nelson-oppen]. Today, most SMT solvers use the Nelson-Oppen algorithm
 at their core.
 
-In this work, building on the Tenelli's work on extending the algorithm to order-sorted logics
-[@tinelli-order-sorted] and refering to the notes of Meseguer [@cs576], we implement this algorithm
-as an order-sorted rewrite theory using the Maude System.
+In this thesis, we implement in rewriting logic the order-sorted Nelson-Oppen algorithm for
+composing satisfiability modulo theory (SMT) solvers for first order theories into an SMT solver for
+the quantifier-free fragment of their union. We build on the Tenelli's work of extending the
+Nelson-Oppen algorithm to order-sorted logics [@tinelli-order-sorted] and refer to the notes of
+Meseguer [@cs576], to implement this algorithm as an order-sorted rewrite theory using the Maude
+System.
 
 Implementing this as a rewrite theory is particularly attractive for several reasons. Firstly, the
 inference rules translate almost directly into axioms of the equational theory making the algorithm

@@ -2,8 +2,15 @@
 introduction.md
 ```
 
+Background
+==========
+
 ```include
-background.md
+smt.md
+```
+
+```include
+maude.md
 ```
 
 ```include

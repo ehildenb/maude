@@ -5,7 +5,7 @@ The examples above have demonstrated the usefulness of Nelson-Oppen combination 
 the tool is still a prototype. There are several avenues that need to be explored before fully
 exploiting its potential. An obvious generalization is to handle combinations of more than two
 theories. One obvious and simple generalization to make is to have the module take more than two
-theories. Another is to accept a wider variaty of theories. 
+theories. Another is to accept a wider variety of theories. 
 
 Stable infiniteness requires that the theory has infinite models. However, there are several
 important theories that are not stably infinite. For example, the theory of bit vectors

@@ -1,37 +1,93 @@
-Background
-==========
-
 Satisfiability Modulo Theories (SMT)
 ------------------------------------
 
-Given a first-order logic formula $\phi$ with variables in the signature of a theory $T$, a common
-problem is to find an assignment of variables for which the formula evaluate to true. The decision
-problem for checking whether such a satisfying assignment exists is called Satisfiability Modulo
-Theories (SMT). In the case of the theory of linear arithmetic, this problem is called linear
-programming, and the Simplex algorithm is a well-known algorithm for solving linear programming SMT
-problems.
+SMT problems are decision problems for checking whether a first-order logic formula $\phi(\vec x)$
+is satisfiable in a theory $T$, i.e. that there is a model $M$ of $T$ such that
+$M \models \exists \vec x \phi(\vec x)$.
 
-Several algorithms have been devised for efficiently solving SMT problems for different theories, as
-well as general methods for free algebras modulo axioms such as associativity with commutativity
-etc.
+Given a theory and a first order logic formula in it's signature, the Satisfiability Modulo Theories
+decision problem is of deciding whether there is an assigment of variables such that the
+interpretation of that forumla holds in some model of that theory. In this case, we say that the
+forumla is "satisfiable". Otherwise we say that the formula is "unsatisfiable". Validity, an
+important related concept, is the dual of satisfiability. A formula is "valid" in a theory, if in
+every model of the theory, there is no assignment of variables that satisfies the formula. For
+example, the statement "every natural number factorizers uniquely into a set of prime numbers" is
+valid, whereas the first order logic statement "Peano arithmetic is consistent", in the theory of
+Peano arithmetic, is not (by Godel's Second incompleteness theorem).
 
-However, when working with formulae spanning multiple such theories, these algorithms may not
-compose trivially, and additional work must be done to prove that the procedure for solving these
-combined formula are sound. Further, even if a general algorithm works for a specific theory, there
-may be more efficient algorithms for solving that problem.
+https://excape.cis.upenn.edu/documents/ClarkBarrettSlides.pdf
 
-In [@nelsonoppen], the first general algorithm for deciding the satisfiability of formulae in the
-union of two theories, provided they meet two conditions:
+The concept of "validity" is central to automated reasoning, and although Church and Turing have
+showed that the search for a general algorithm for checking validity (i.e. "automating mathematics")
+is futile,
 
-1.  The theories are "stably infinite"
-2.  Their signatures are disjoint.
+- effective quantifier elemenation
+- (1929) Persberger: linear arithmetic is decidable
+    - (although the general algorithm was later shown to be worst case doubly exponential on the length of the formula)
+      [@Fischer-and-rabin]
+    - (Simplex method)
+- 
 
-Later, in [@tinelliordersorted], this algorithm was generalized and formalized for order-sorted
-logics. This was further refined and concretized in [@cs576] into a
-system of inference rules.
+.   define
+    .   FOL formula describing constraints over a set of variables, and a theory T deciding if there
+        is an assignment of variables
+    .   Validity
+
+-   Examples
+    -   Linear and non-linear Programming
+    -   Boolean satisfiability
+
+-   Motivation
+    -   Automated theorem proving
+    -   Formal program verification
+    -   Optimization problems
+-   The importance of SMT to these applications has
+    -   led to the industry standardizing on an interface to solvers (the SMT2 format)
+    -   There is an annual competition SMT-COMP where implementations compete
+-   Quantifier free vs Quantified
+
+-   Historically
+    -   Methods for individual theories
+    -   Prior to 1979, when wanted combination, had to manually work it out
+    -   Nelson-Oppen combination changed that.
+        -   Although initially published as a general combination method for any QF FOL theories
+            later discovered that there were some basic criteria
+        -   Further work generalized the algorithm to work for "Shiney" and "Polite" theories.
+        -   Was also modified to work with Order-Sorted Logics
+
+Maude
+-----
+
+The Maude System is a programming and framework commonly used for modelling and reasoning about
+these models. Systems modelled using Maude include Biological Systems (Pathway Logic), Network
+Protocols (Maude NPA), Concensus Algorithms, and Programming Languages (K Framework).
+
+Maude's 
+
+-   Applications
+    -   as a theorem prover
+    -   model checker
+-   Modelling and verification
+    -   Biological (pathway logic)
+    -   Network Protocols (NPA)
+    -   Concensus algorithms
+    -   Programming languanges (KFramework)
+-   Why does Maude take well to this
+    -   Based in rewriting
+    -   Rewriting can be modeled as Kripke structs same as what model checkers use
+-   These tools can leverage SMT
+    -   So having a strong SMT architecture makes it Awesome Sauce
+-   reflective
+
+-   Maude's semantics based on
+    -  Initial model
+    -  Unsorted / Many Sorted / Order sorted logics
+    -  Equational Logic
+    -  Rewriting logic
 
 Logical Foundations of Maude
 ----------------------------
+
 
 Maude is based on two logics, one contained in the other. 
 
@@ -225,6 +281,8 @@ then satisfiability of quantifier free formulae in this theory are decidable by 
 satisfiablity. This has been implmented in Maude by Sherik and Meseguer[@metalevelvarsat]
 and will be used for demonstrating the order-sorted Nelson-Oppen combination method.
 
+#### Congruence Closure
+
 #### CVC4
 
 CVC4 is an industry-standard automatic theorem prover for SMT problems that supports many theories
@@ -232,3 +290,5 @@ including rational and integer linear arithmetic, array, bitvectors and a subset
 arithmetic. Although CVC4 allows defining algebraic data types it does not allow these user-defined
 types to have equations over them. Thus its power can clearly be augmented by combination with
 variant-based satisfiability.
+
+#### Yices 2
