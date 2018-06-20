@@ -1,6 +1,32 @@
 Order Sorted Nelson Oppen as a rewrite theory
 =============================================
 
+$$\infer[\text{Equality Propagation}]
+{ \begin{matrix*}[l]
+        & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
+  \land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E \land x_m = x_n, \CandidateEqualities \setminus \{x_m = x_n\})
+  \end{matrix*}
+}
+{ x_m = x_n \in \CandidateEqualities
+& T_i \models (\phi_i \land \phi_E) \limplies x_m = x_n
+& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+}
+$$
+
+$$\infer[\text{Split}]
+{\Or_{x_m = x_n \in \CandidateEqualities}
+ \left(\begin{matrix*}[l]
+      &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
+      &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
+      &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
+ \end{matrix*}\right)
+}
+{
+& T_i \models (\phi_i \land \phi_E) \limplies \Or \CandidateEqualities
+& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+}
+$$
+
 Conditions on the theories
 --------------------------
 
