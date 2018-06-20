@@ -249,6 +249,8 @@ If so, then it leaves it alone, otherwise more work is required on the equationa
 
     op purify : ModulePair Form -> [Form] .
     ---------------------------------------
+    eq purify(modulePair(M, M'), tt)      = tt .
+    eq purify(modulePair(M, M'), ff)      = ff .
    ceq purify(modulePair(M, M'), F)       = F if (F in M) .
     eq purify(modulePair(M, M'), ~ F)     = ~ purify(modulePair(M, M'), F) .
    ceq purify(modulePair(M, M'), F /\ F') = purify(modulePair(M, M'), F) /\ purify(modulePair(M, M'), F')
