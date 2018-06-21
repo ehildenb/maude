@@ -112,16 +112,16 @@ fmod NO-CHECK-HELPER is
      .
 
     eq check-valid(tagged(PHI, TS)) = strictNot(check-sat(tagged(~ PHI, TS))) .
-    eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS)) .
+    eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS))
+    .
 
     eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'var-sat); TS))
      = $check-sat.print(ME, PHI, var-sat(upModule(ME, true), PHI))
----    [print "var-sat? " ME ": " PHI]
+---       [print "check-sat? " PHI]
      .
 
     eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'smt-sat); TS))
      = $check-sat.print(ME, PHI, smt-sat(ME, PHI))
----    [print "smt-sat? " ME ": " PHI]
      .
 
     eq $check-sat.print(ME, PHI, SAT?) = SAT?
@@ -175,6 +175,7 @@ fmod NELSON-OPPEN-COMBINATION is
                                     else             $tagWellFormed.filter(ME1, MCONJ2)
                                     fi
      .
+    eq $tagWellFormed.filter(ME1, TA:TruthAtom) = TA:TruthAtom .
     eq $tagWellFormed.filter(ME1, mtForm) = mtForm .
 
     op addConvexTag : TaggedFormulaSet -> TaggedFormulaSet .
@@ -238,7 +239,8 @@ The algorithm then considers each disjunction separately.
 
 ```{ .maude .njr-thesis }
     eq $nosat.dnf(TFS, CONJ \/ PHI)
-     =  $nosat.dnf(TFS, CONJ) or-else $nosat.dnf(TFS, PHI) .
+     =  $nosat.dnf(TFS, CONJ) or-else $nosat.dnf(TFS, PHI)
+     .
 ```
 
 We then purify each disjunction into a disjunction of "pure" atoms each wellformed in the signature
@@ -296,6 +298,7 @@ where $\SharedVariables_{s_i}$ is the subset of shared variables in the connecte
 Next, we apply the equality propagation inference rule. If any identification of variables is
 implied by a theory, we propagate that identification to the other theories.
 
+<!--
 $$\infer[\text{Equality Propagation}]
   { \begin{matrix*}[l]
           & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
@@ -307,15 +310,16 @@ $$\infer[\text{Equality Propagation}]
   & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
   }
 $$
+--!>
 
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
                  , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ CANDEQ)
-     =          check-sat(tagged(PHI2 /\ X1 ?= X2, ('mod > ME2); TS2))
+     =          check-sat(tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
        and-then $nosat.ep(( tagged(simplify(PHI1 << (X1 <- X2)), ('mod > ME1); TS1)
                           , tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
                          , simplify(CANDEQ << (X1 <- X2)))
-    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
+    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [ print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
 ```
 
 If, after checking each identification individually, there are none that are implied we apply the split
@@ -355,19 +359,21 @@ are stably-infinite, the equation is satisfiable.
 
 We use `$nosat.split.genEqs` to generate this disequality of sat problems.
 
-$$\infer[\text{Split}]
-  {\Or_{x_m = x_n \in \CandidateEqualities}
-   \left(\begin{matrix*}[l]
-        &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
-        &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
-        &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
-   \end{matrix*}\right)
-  }
-  {
-  & T_i \models \phi_i \and \phi_E \implies \And \CandidateEqualities
-  & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
-  }
-$$
+<!--
+%$$\infer[\text{Split}]
+%  {\Or_{x_m = x_n \in \CandidateEqualities}
+%   \left(\begin{matrix*}[l]
+%        &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
+%        &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
+%        &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
+%   \end{matrix*}\right)
+%  }
+%  {
+%  & T_i \models \phi_i \and \phi_E \implies \And \CandidateEqualities
+%  & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+%  }
+%$$
+--!>
 
 ```{ .maude .njr-thesis }
     eq $nosat.split.genEqs((tagged(PHI1, ('mod > ME1); TS1), tagged(PHI2, ('mod > ME2); TS2))

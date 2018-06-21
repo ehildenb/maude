@@ -11,7 +11,8 @@ system_names:=bakery bank-account caut choice \
               oc     qlock        rw   thermostat \
               token  vending
 system_tests:=nelson-oppen/integer-list nelson-oppen/matrix-real \
-              nelson-oppen/uninterpreted-bijections 
+              nelson-oppen/uninterpreted-bijections nelson-oppen/matrix \
+              nelson-oppen/gaussian
 system_files:=$(patsubst %, systems/%.maude,          $(system_names)) \
               $(patsubst %, ../tests/systems/%.maude, $(system_tests))
 

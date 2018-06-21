@@ -1,7 +1,16 @@
-We define Matrices in terms of an undefined sort `X`, without any functions
-such as multiplication. This is because multiplication must be defined in
-terms of the underlying field's multiplication operator and Nelson-Oppen combination
-does not allow sharing of function symbols.
+\newcommand \R {\mathbb{R}}
+
+In this example, we define the theory of $2\times 2$ over $\R$ and prove that any invertible matrix
+must have a non-zero determinant. Unfortunately, CVC4 is not able to solve the non-linear arithmetic
+needed to prove this. We must instead use the Yices2, the other SMT solver available in Maude. Even
+so, the default configuration for Yices2 does not enable the solver for non-linear arithmetic
+(MCSAT), and running this example involved modifying the Maude source to enable that configuration.
+
+We define Matrices in terms of an unspecified sort `X`, which we later instantiate with the Reals.
+This module only defines accessors for each of the matrix's entries and does not define functions
+such as multiplication, determinant and identity. This is because these functions must be defined in
+terms of the underlying field's operators operator and Nelson-Oppen combination does not allow
+sharing of function symbols.
 
 ```test
 set include BOOL off .
@@ -23,39 +32,13 @@ fmod MATRIX-X is
 endfm
 ```
 
-We the define parameterise this theory over the reals and the integers:
-
-```test
-fmod MATRIX-REAL is
-    including MATRIX-X .
-    sort Real .
-    subsorts Real < X .
-    --- Convince var-sat that Real is an infinite sort.
-    op fake-zero :      -> Real [ctor] .
-    op fake-succ : Real -> Real [ctor] .
-endfm
-```
-
-```test
-fmod MATRIX-INTEGER is
-    including MATRIX-X .
-    sort Integer .
-    subsorts Integer < X .
-    --- Convince var-sat that Integer is an infinite sort.
-    op fake-zero :         -> Integer [ctor] .
-    op fake-succ : Integer -> Integer [ctor] .
-endfm
-
-```
-
-We define multiplciation and the calculation of the determinant as
-meta-functions defining them syntactically, in terms of the fields
-multiplication and addition operators.
+Next, we define multiplication, determinant and identify as meta-functions --
+functions over terms at the meta-level.
 
 ```test
 load ../../../contrib/tools/meta/nelson-oppen-combination.maude
 
-fmod TEST is
+fmod MATRIX-TEST is
     protecting NELSON-OPPEN-COMBINATION .
 
     vars A B A1 B1 A2 B2 ZERO ONE : Term .
@@ -81,66 +64,61 @@ fmod TEST is
     op identity : Term Term -> Term .
     eq identity(ZERO, ONE) = 'matrix[ONE, ZERO, ZERO, ONE] .
 endfm
+```
+
+Finally, we the define parameterise this theory over the reals:
+
+```test
+fmod MATRIX-REAL is
+    including MATRIX-X .
+    sort Real .
+    subsorts Real < X .
+    --- Convince var-sat that Real is an infinite sort.
+    op fake-zero :      -> Real [ctor] .
+    op fake-succ : Real -> Real [ctor] .
+endfm
+```
+
+Reducing this in via Nelson-Oppen yeilds:
+
+```test
+reduce in MATRIX-TEST : nelson-oppen-valid(
+    ( tagged(tt, (('mod > 'MATRIX-REAL); ('check-sat > 'var-sat)))
+    , tagged(tt, (('mod > 'REAL);        ('check-sat > 'smt-sat)))
+    ),
+         (multiply('A:Matrix, 'B:Matrix) ?= identity('0/1.Real, '1/1.Real))
+      => (determinant('A:Matrix) != '0/1.Real)
+    ) .
+```
+
+TODO: Explain output
+
+```test
+fmod MATRIX-INTEGER is
+    including MATRIX-X .
+    sort Integer .
+    subsorts Integer < X .
+    --- Convince var-sat that Integer is an infinite sort.
+    op fake-zero :         -> Integer [ctor] .
+    op fake-succ : Integer -> Integer [ctor] .
+endfm
 
 ```
 
-```test
-reduce wellFormed(upModule('INTEGER, true), '1.Integer) .
-reduce wellFormed(upModule('REAL-INTEGER, true), '1.Integer) .
-reduce wellFormed(upModule('REAL, true), '1/1.Real) .
-reduce wellFormed(upModule('REAL, true), '_*_[ 'x:Real, 'x:Real ]) .
-reduce wellFormed(upModule('REAL, true), '0/1.Real) .
-
-reduce smt-sat('INTEGER, '1.Integer ?= '0.Integer) .
-reduce smt-sat('REAL,    '0/5.Real ?= '0/1.Real) .
-reduce smt-sat('REAL-INTEGER, '_*_[ 'x:Real, 'x:Real ] ?= '0/1.Real) .
-reduce smt-sat('REAL,
-                  '_*_[ 'X:Real, 'X:Real ] ?= '0/1.Real
-               /\ '_*_[ 'Y:Real, 'Y:Real ] ?= '0/1.Real
-               /\ 'X:Real != 'Y:Real
-              ) .
-reduce smt-sat('REAL,
-                  '_*_[ 'X:Real, 'X:Real ] ?= '1/1.Real
-               /\ '_*_[ 'Y:Real, 'Y:Real ] ?= '1/1.Real
-               /\ 'X:Real != 'Y:Real
-              ) .
-
-reduce smt-sat('INTEGER,
-                  ('_*_[ 'X:Integer, 'Y:Integer ] ?= '0.Integer)
-               => (  ('X:Integer ?= '0.Integer)
-                  \/ ('Y:Integer ?= '0.Integer))
-              ) .
-reduce purify( upModule('MATRIX-INTEGER, true), upModule('INTEGER, true)
-             , identity('0.Integer, '1.Integer)) .
-```
+It turns out that if we combine this module with the Integers instead of the Reals, we can prove
+something stronger: that any invertible matrix must have determinant $\pm 1$.
 
 ```test
-set print attribute on .
-
----
---- --- Are there invertible (real) matrices whos determinants are two?
----
---- reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MATRIX-REAL);  ('check-sat > 'var-sat); ('convex > 'true)))
----                         , tagged(tt, (('mod > 'REAL);         ('check-sat > 'smt-sat); ('convex > 'false)))),
----           multiply('A:Matrix, 'B:Matrix) ?= identity('0/1.Real, '1/1.Real)
----        /\ determinant('A:Matrix) ?= '2/1.Real
----        ) .
-
---- Are there invertible (integer) matrices whos determinants are two?
-
-reduce smt-sat('INTEGER,
-           'V4:Integer ?= '1.Integer
-		/\ 'V4:Integer ?= '_+_['_*_['A11:Integer,'B11:Integer],'_*_['A12:Integer,'B21:Integer]]
-		/\ 'V3:Integer ?= '0.Integer
-		/\ 'V3:Integer ?= '_+_['_*_['A11:Integer,'B12:Integer],'_*_['A12:Integer,'B22:Integer]]
-		/\ 'V2:Integer ?= '_+_['_*_['A21:Integer,'B11:Integer],'_*_['A22:Integer,'B21:Integer]]
-		/\ 'V13:Integer ?= '_+_['_*_['A21:Integer,'B12:Integer],'_*_['A22:Integer,'B22:Integer]]
-		/\ 'V13:Integer != 'A22:Integer) .
-
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MATRIX-INTEGER);  ('check-sat > 'var-sat); ('convex > 'true)))
-                        , tagged(tt, (('mod > 'INTEGER       );  ('check-sat > 'smt-sat); ('convex > 'false)))),
-          multiply('A:Matrix, 'B:Matrix) ?= identity('0.Integer, '1.Integer)
-       /\ 'A:Matrix ?= identity('0.Integer, '1.Integer)
-       /\ 'B:Matrix ?= identity('0.Integer, '1.Integer)
-   ) .
+reduce in MATRIX-TEST : nelson-oppen-valid(
+       ( tagged(tt, (('mod > 'MATRIX-INTEGER);  ('check-sat > 'var-sat); ('convex > 'true)))
+       , tagged(tt, (('mod > 'INTEGER       );  ('check-sat > 'smt-sat); ('convex > 'false)))
+       ),
+           (    multiply('A:Matrix, 'B:Matrix) ?= identity('0.Integer, '1.Integer)
+             /\ 'm21['A:Matrix] ?= '0.Integer
+             /\ 'm21['B:Matrix] ?= '0.Integer
+           )
+        => (    determinant('A:Matrix) ?= '1.Integer
+             \/ determinant('A:Matrix) ?= '-_['1.Integer]
+           )
+     ) .
 ```

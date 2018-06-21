@@ -213,15 +213,19 @@ and *transitivity*.
 
 If $x \rewrites y$, we say "$x$ rewrites to $y$".
 
-This relation defines a Kripke structure -- a transition graph over the possible set of states of a
-system. It is over this structure that modal logics like Linear and Branching Temporal Logics are
-defined. Kripke Structures are commonly used in model checking and are the structures over which
-Linear and Branching Temporal Logics are defined. Again, this makes the representational distance
-between the specification of the model and the data structures we use to reason over it minimal,
-making verification of correctness of model checkers and other tools that reason over these
-structures easy.
+This relation defines a Kripke structure -- a transition graph over the possible set of states of a system.
 
-Rewrite theories are defined in maude through *system modules*. Since we implement the Nelson-Oppen
+Execution of a program in Maude -- reducing a concrete term via the rewrite relation $\rewrite$ --
+involves following the edges of this transition graph and terminates when the term it arrives at has
+no outward edges. Maude can also perform symbolic execution, i.e. reduce a term that has variables,
+as well as search the strucutre for terms matching a pattern or predeicate. It is over this
+structure that modal logics like Linear and Branching Temporal Logics are defined. Kripke Structures
+are commonly used in model checking and are the structures over which Linear and Branching Temporal
+Logics are defined. Again, this makes the representational distance between the specification of the
+model and the data structures we use to reason over it minimal, making verification of correctness
+of model checkers and other tools that reason over these structures easy.
+
+Rewrite theories are defined in Maude through *system modules*. Since we implement the Nelson-Oppen
 combination algorithm purely as a functional module, we do not go into the details of the syntax the
 syntax for system modules here.
 

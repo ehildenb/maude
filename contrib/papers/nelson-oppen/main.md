@@ -15,10 +15,6 @@ no-as-a-rewrite-theory.md
 ```
 
 ```include
-../../systems.md/nelson-oppen/matrix-real.md
-```
-
-```include
 ../../systems.md/nelson-oppen/matrix.md
 ```
 
