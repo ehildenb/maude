@@ -48,8 +48,6 @@ fmod TEST is
 
     vars A B A1 B1 A2 B2 ZERO ONE : Term .
 
-    --- Meta level function for generating term representing multiplciation of
-    --- matrices
     op mulSum : Term Term Term Term -> Term .
     eq mulSum(A1, B1, A2, B2) = '_+_ [ '_*_ [ A1 , B1 ]
                                      , '_*_ [ A2 , B2 ]
