@@ -6,45 +6,55 @@ is satisfiable in a theory $T$, i.e. whether there is a model $M$ of $T$ such t
 $M \models \exists \vec x \phi(\vec x)$. Similarly, a formula is said to be valid if its negations
 is unsatisfiable.
 
-Checking satisfiabilty and its dual validity have a wide range of applications,
-including logistics, optimization, software verification and program synthesis.
+Checking satisfiabilty and its dual validity have a wide range of applications, including logistics,
+optimization, software verification and program synthesis. In fact validity forms the core of
+automated theorem proving. It importance has led to the standardization of a language, SMT-LIB for
+describing sat problems, and the SMT-COMP competition where the foremost solvers compete against
+each other for fame. This has led to a positive feedback loop where the difficult real world SMT
+problems posed by industry and academia. The solvers compete to try solving it and everybody wins woot woot.
 
 SMT has come a long way since Hilbert posed his problem of "mechanising mathematics".
-
 In 1929, Persberger proved that linear integer arithmetic is indeed decidable, and although it was
 shown by Fischer and Rabin that algorithm must be worst case doubly exponential in the length of
 formulae, the Simplex Algorithm and its variations has proven to be an effective method of solving
-SMT for both real and integer quantifier free linear arithmetic.
+SMT for both real and integer quantifier free linear arithmetic efficiently.
 
-There are efficient solvers for the boolean satisfiability problem.
+It has since been shown that any recursive theory that admits effective quantifier free elemination
+if and only if it is decideable (xxx checking that in an aribitary group that two words are equal
+equiv to halting problem no?). Although this gives no gauranties on the efficiency of any such
+algorithm, efficient algorithms have been since been found for subsets of real and integer
+arithmetic, arrays... and boolean satisfiability.
 
-The concept of "validity" is central to automated reasoning, and although Church and Turing have
-showed that the search for a general algorithm for checking validity (i.e. "automating mathematics")
-is futile,
+SMT problems in automated theorem proving and programming verification commonly involve combinations
+of standard theories. For example, verifying a sorting algorithm may involve solving queries in the
+combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
+combined algorithm, and proving that it worked as promised. In 1979, Nelson and Oppen proposed a
+general algorithm for combining SMT solvers into one for the quantifier free fragment of the larger
+theory.
 
-- effective quantifier elemenation
-
-- (1929) Persberger: linear arithmetic is decidable
-    - (although the general algorithm was later shown to be worst case doubly exponential on the length of the formula)
+<!--
+* (1929) Persberger: linear arithmetic is decidable
+    * (although the general algorithm was later shown to be worst case doubly exponential on the length of the formula)
       [@Fischer-and-rabin]
-    - (Simplex method)
--   define
-    -   FOL formula describing constraints over a set of variables, and a theory T deciding if there
+    * (Simplex method)
+*   define
+    *   FOL formula describing constraints over a set of variables, and a theory T deciding if there
         is an assignment of variables
-    -   Validity
+    *   Validity
 
--   Examples
-    -   Linear and non-linear Programming
-    -   Boolean satisfiability
+*   Examples
+    *   Linear and non-linear Programming
+    *   Boolean satisfiability
 
--   Motivation
-    -   Automated theorem proving
-    -   Formal program verification
-    -   Optimization problems
--   The importance of SMT to these applications has
-    -   led to the industry standardizing on an interface to solvers (the SMT2 format)
-    -   There is an annual competition SMT-COMP where implementations compete
--   Quantifier free vs Quantified
+*   Motivation
+    *   Automated theorem proving
+    *   Formal program verification
+    *   Optimization problems
+
+*   The importance of SMT to these applications has
+    *   led to the industry standardizing on an interface to solvers (the SMT2 format)
+    *   There is an annual competition SMT*COMP where implementations compete
+*   Quantifier free vs Quantified
 
 -   Historically
     -   Methods for individual theories
@@ -54,6 +64,7 @@ is futile,
             later discovered that there were some basic criteria
         -   Further work generalized the algorithm to work for "Shiney" and "Polite" theories.
         -   Was also modified to work with Order-Sorted Logics
+--!>
 
 Maude
 -----
@@ -213,7 +224,8 @@ and *transitivity*.
 
 If $x \rewrites y$, we say "$x$ rewrites to $y$".
 
-This relation defines a Kripke structure -- a transition graph over the possible set of states of a system.
+This relation defines a Kripke structure -- a transition graph over the possible set of states of a
+system.
 
 Execution of a program in Maude -- reducing a concrete term via the rewrite relation $\rewrite$ --
 involves following the edges of this transition graph and terminates when the term it arrives at has

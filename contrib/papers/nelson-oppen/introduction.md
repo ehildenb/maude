@@ -15,8 +15,8 @@ important related concept, is the dual of satisfiability. A formula is "valid" i
 every model of the theory and for every possible assigment of variables, the formula holds. For example,
 the statement "every natural number factorizers uniquely into a set of prime numbers" is valid,
 whereas the first order logic statement "Peano arithmetic is consistent", in the theory of Peano
-arithmetic, is not (Godel's Second Incompleteness Theorem means that there is a non-standard model
-where a where a non-standard number encodes a proof for the inconsistency of Peano Arithmetic).
+arithmetic, is not (Godel's Second Incompleteness Theorem implies that there is a non-standard model
+where a non-standard number encodes a proof for the inconsistency of Peano Arithmetic).
 
 Although in general SMT is undecidable (e.g. for non-linear integer arithmetic), there are subsets
 of theories that are decidable and immensely useful for a variety of applications including solving
