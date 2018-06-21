@@ -19,5 +19,9 @@ no-as-a-rewrite-theory.md
 ```
 
 ```include
+../../systems.md/nelson-oppen/hereditarily-finite-set.md
+```
+
+```include
 conclusion.md
 ```
