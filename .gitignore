@@ -58,3 +58,4 @@ lib*.a
 /tests/systems/nelson-oppen/integer-list.maude
 /tests/systems/nelson-oppen/matrix.maude
 /tests/systems/nelson-oppen/hereditarily-finite-set.maude
+/tests/systems/nelson-oppen/lexical-trichotomy-law.maude
