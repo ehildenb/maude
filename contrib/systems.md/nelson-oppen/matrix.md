@@ -1,3 +1,5 @@
+## Matrices with real and integer entries
+
 \newcommand \R {\mathbb{R}}
 
 In this example, we define the theory of $2\times 2$ over $\R$ and prove that any invertible matrix
@@ -14,7 +16,10 @@ sharing of function symbols.
 
 ```test
 set include BOOL off .
+load ../../../contrib/tools/meta/nelson-oppen-combination.maude
+```
 
+```{.test .njr-thesis}
 fmod MATRIX-X is
     sort X Matrix .
     op matrix : X X X X -> Matrix [ctor] .
@@ -36,15 +41,13 @@ Next, we define multiplication, determinant and identify as meta-functions --
 functions over terms at the meta-level.
 
 ```test
-load ../../../contrib/tools/meta/nelson-oppen-combination.maude
-
 fmod MATRIX-TEST is
     protecting NELSON-OPPEN-COMBINATION .
 
     vars A B A1 B1 A2 B2 ZERO ONE : Term .
+```
 
-    --- Meta level function for generating term representing multiplciation of
-    --- matrices
+```{.test .njr-thesis}
     op mulSum : Term Term Term Term -> Term .
     eq mulSum(A1, B1, A2, B2) = '_+_ [ '_*_ [ A1 , B1 ]
                                      , '_*_ [ A2 , B2 ]
@@ -63,12 +66,15 @@ fmod MATRIX-TEST is
 
     op identity : Term Term -> Term .
     eq identity(ZERO, ONE) = 'matrix[ONE, ZERO, ZERO, ONE] .
+```
+
+```test
 endfm
 ```
 
-Finally, we the define parameterise this theory over the reals:
+Finally, we the parameterise this theory over the reals:
 
-```test
+``` {.test .njr-thesis}
 fmod MATRIX-REAL is
     including MATRIX-X .
     sort Real .
@@ -81,7 +87,7 @@ endfm
 
 Reducing this in via Nelson-Oppen yeilds:
 
-```test
+``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
     ( tagged(tt, (('mod > 'MATRIX-REAL); ('check-sat > 'var-sat)))
     , tagged(tt, (('mod > 'REAL);        ('check-sat > 'smt-sat)))
@@ -108,7 +114,7 @@ endfm
 It turns out that if we combine this module with the Integers instead of the Reals, we can prove
 something stronger: that any invertible matrix must have determinant $\pm 1$.
 
-```test
+``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
        ( tagged(tt, (('mod > 'MATRIX-INTEGER);  ('check-sat > 'var-sat); ('convex > 'true)))
        , tagged(tt, (('mod > 'INTEGER       );  ('check-sat > 'smt-sat); ('convex > 'false)))
