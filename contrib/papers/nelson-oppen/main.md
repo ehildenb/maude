@@ -10,8 +10,14 @@ background.md
 no-as-a-rewrite-theory.md
 ```
 
+## Implementation in Maude
+
 ```include
 ../../tools/meta.md/nelson-oppen-combination.md
+```
+
+```include
+../../systems.md/nelson-oppen/integer-list.md
 ```
 
 ```include

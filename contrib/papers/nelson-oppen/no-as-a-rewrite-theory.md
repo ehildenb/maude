@@ -1,39 +1,11 @@
 Order Sorted Nelson Oppen as a rewrite theory
 =============================================
 
-$$\infer[\text{Equality Propagation}]
-{ \begin{matrix*}[l]
-        & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
-  \land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E \land x_m = x_n, \CandidateEqualities \setminus \{x_m = x_n\})
-  \end{matrix*}
-}
-{ x_m = x_n \in \CandidateEqualities
-& T_i \models (\phi_i \land \phi_E) \limplies x_m = x_n
-& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
-}
-$$
-
-$$\infer[\text{Split}]
-{\Or_{x_m = x_n \in \CandidateEqualities}
- \left(\begin{matrix*}[l]
-      &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
-      &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
-      &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
- \end{matrix*}\right)
-}
-{
-& T_i \models (\phi_i \land \phi_E) \limplies \Or \CandidateEqualities
-& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
-}
-$$
-
-Conditions on the theories
---------------------------
-
-For the Nelson Oppen method to be viable, the order-sorted theories must meet the following conditions:
-
-1.  They must be stably infinite
-2.  They must be optimally intersecting.
+Given decision procedures for the quantifier free formulae in a set of theories the Order-Sorted
+Nelson-Oppen combination method gives us a decision procedure for the quantifier free fragment in
+the combination of these theories, provided that the theories are *stable infinite* for their shared
+sorts and *optimally intersecting*. In theories stably finite in a set of sorts, we can find models
+such that the cardinalities of the carrier sets of those sorts match.
 
 Stably Infinite
 
@@ -91,17 +63,13 @@ Optimally intersectable [@cs576]
              c.  (downward closure):
                  $\forall s \in [s_l]_l, \forall s' \in [s_k]_k, s\le_l s' \implies s\in [s_k]_k$
 
-Overview
---------
 
 Given two order-sorted, optimally intersecting, stably-infinite theories $T_1$ and $T_2$ with
 signatures $\Sigma_1$ and $\Sigma_2$ each with decision procedures for quantifier free
 $T_i$-satisfiability we want to derive a decision procedure for quantifier free $T_1 \union T_2$
-satisfiability.
-
-We can transform any formula $\phi$ into an *equisatisfiable* formula in disjunctive normal form.
-Further, for each atom in such a formula we can apply "purification" to obtain a formula where each
-atom is in the signature of one of the two theories.
+satisfiability. We can transform any formula $\phi$ into an *equisatisfiable* formula in disjunctive
+normal form. Further, for each atom in such a formula we can apply "purification" to obtain a
+formula where each atom is in the signature of one of the two theories.
 
 Now, our task has become to find a model $M_0$ and an assignment $a: \vars(\phi) \to M_0$ such that
 $M_0, a \models \purified$, where $\Sigma_0$ is the intersection of the two signatures. In general,
@@ -110,7 +78,7 @@ theories, the task is easier. With stable infiniteness, since every satisfiable 
 infinite model, if we need a value distinct from a witness we have infinite choices for either the
 value or the witness. i.e. $$T_1 \union T_2 \not\models \phi \land \vec t_k \ne \vec t'_k 
 \iff T_i \models \phi \limplies \vec t_k = \vec t'_k$$ This means that we do not need to find a
-specific arrangement, but just a satisfiable equivalence relation of the shared variables. For any
+specific assigment, but merely a satisfiable equivalence relation of the shared variables. For any
 formula, $\purified$, we have an equisatisfiable formula
 $\Or_{equiv\in \Equiv(\SharedVariables)}\{ \purified \land \phi_{\equiv}\}$, where
 $\Equiv(\SharedVariables)$ is the set of partitions on the shared variables $\SharedVariables$ and
@@ -120,32 +88,58 @@ the theories and check satisfiability.
 
 \begin{figure}
 $$\begin{matrix*}[l]
-                    &    &                        &     & T_{\union}  \models& \QF(\Sigma_1 \union \sigma_2)                                              \\
-\text{DNF}          &\iff&                        &     & T_{\union}  \models& \And \Lit(\Sigma_1 \union \sigma_2)                                        \\
-\text{Purification} &\iff&                        &     & T_{\union}  \models& \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2)                                \\
-\text{Arrangement}  &\iff&                        &     & T_{\union}  \models& \Or ( \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2) \land \And \phi_{\equiv} )\\
-\text{Projection}   &\iff& \exists \phi_{\equiv}, &     & T_1 \models        & \And \Lit(\Sigma_1) \land \And \phi_{\equiv}                                \\
-                    &    &                        &\text{and} & T_2 \models        & \And \Lit(\Sigma_2) \land \And \phi_{\equiv}
+                    &    &                        &           & T_{\union}  \models& \QF(\Sigma_1 \union \sigma_2)                                              \\
+\text{DNF}          &\iff&                        &           & T_{\union}  \models& \And \Lit(\Sigma_1 \union \sigma_2)                                        \\
+\text{Purification} &\iff&                        &           & T_{\union}  \models& \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2)                                \\
+\text{Arrangement}  &\iff& \exists \phi_{\equiv}, &           & T_{\union}  \models& \Or ( \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2) \land \And \phi_{\equiv} )\\
+\text{Projection}   &\iff& \exists \phi_{\equiv}, &           & T_1         \models& \And \Lit(\Sigma_1) \land \And \phi_{\equiv}                                \\
+                    &    &                        &\text{and} & T_2         \models& \And \Lit(\Sigma_2) \land \And \phi_{\equiv}
 \end{matrix*}$$
-\caption{Equisatisfiable formulae transformations on stably infinite theories we use for NO}
+\caption{Equisatisfiable formulae transformations on stably infinite theories we use for Nelson-Oppen combination.
+Note that projection on its own is not a valid transformation, but in combination with purification and arrangement it is.}
 \end{figure}
 
-Inference rules for Order-Sorted Nelson-Oppen
----------------------------------------------
+The question now becomes how do we find such a arrangement of variables? Checking each equivalence
+class for satisfiability is infeasable as the number of equivalence classes grows exponentially with
+the number of variables, even in the order sorted case where we can restrict ourselves to
+equivalences capatable with the sort structure of the signatures (e.g. we cannot have an equality
+between a boolean and an integer variable). Instead of checking each of the possible partitions on
+the shared variables, we choose a Darwinian approach, pruning classes of equivalences from the
+search space if an identification of a single pair of variables implied by one theory is not
+satisfiable in another (equality propagation). In the case of non-convex theories, we may have
+$\phi \limplies (x_1 = y \lor x_2 = y)$ without either $\phi \limplies x_1 = y$ or
+$\phi \limplies x_2 = y$ holding. Thus if any theory implies the disjunction of all remaining
+identifications we branch our search, checking if at least one of the remaining identifications is
+satisfiable (split). We can think of each step of the algorithm as splitting the search space into
+subsets where a single additional identification holds. If only a single identification is implied
+equality propagation causes the algorithm to decend into it. Otherwise, the split rule checks the
+satisfiability of each of the sets in the split subspaces, and decends into each satisfiable one.
 
-Note that up to this point, we have only found a mathematically sound way of finding satisfiability
-but do not yet have a viable efficient algorithm. Checking each equivalence class for satisfiability
-is infeasable as the number of equivalence classes grows exponentially with the number of variables,
-even in the order sorted case where we can restrict ourselves to equivalences capatable with the
-sort structure.
-
-Instead we choose a Darwinian approach, pruning classes of equivalences from the search space if
-an identification of a single pair of variables implied by one theory is not satisfiable in another.
-For the non-convex case, if any theory implies the disjunction of all remaining identifications
-we branch our search, checking if at least one of the remaining identifications is satisfiable.
-
-We can think of each step of the algorithm as splitting the search space into subsets where
-a single additional identification holds. If only a single identification is implied equality propagation
-causes the algorithm to decend into it. Otherwise, the split rule checks the satisfiability of each of the sets
-in the split subspaces, and decends into each satisfiable one.
+\begin{figure}
+$$\infer[\text{Equality Propagation}]
+{ \begin{matrix*}[l]
+        & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
+  \land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E \land x_m = x_n, \CandidateEqualities \setminus \{x_m = x_n\})
+  \end{matrix*}
+}
+{ x_m = x_n \in \CandidateEqualities
+& T_i \models (\phi_i \land \phi_E) \limplies x_m = x_n
+& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+}
+$$
+$$\infer[\text{Split}]
+{\Or_{x_m = x_n \in \CandidateEqualities}
+ \left(\begin{matrix*}[l]
+      &      &\CheckSat(\phi_1 \land \phi_E \land x_m = x_n) \\
+      &\land & \CheckSat(\phi_2 \land \phi_E \land x_m = x_n) \\
+      &\land & \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities \setminus \{x_m = x_n\})
+ \end{matrix*}\right)
+}
+{
+& T_i \models (\phi_i \land \phi_E) \limplies \Or \CandidateEqualities
+& \NelsonOppenSat(\phi_1 \land \phi_2 \land \phi_E, \CandidateEqualities)
+}
+$$
+\caption{Inference rules for the Nelson-Oppen algorithm}
+\end{figure}
 

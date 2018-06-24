@@ -3,33 +3,28 @@ Satisfiability Modulo Theories (SMT)
 
 SMT problems are decision problems for checking whether a first-order logic formula $\phi(\vec x)$
 is satisfiable in a theory $T$, i.e. whether there is a model $M$ of $T$ such that
-$M \models \exists \vec x \phi(\vec x)$. Similarly, a formula is said to be valid if its negations
+$M \models \exists \vec x \phi(\vec x)$. Similarly, a formula is said to be valid if its negation
 is unsatisfiable.
 
 Checking satisfiabilty and its dual validity have a wide range of applications, including logistics,
 optimization, software verification and program synthesis. In fact validity forms the core of
 automated theorem proving. It importance has led to the standardization of a language, SMT-LIB for
-describing sat problems, and the SMT-COMP competition where the foremost solvers compete against
-each other for fame. This has led to a positive feedback loop where the difficult real world SMT
-problems posed by industry and academia. The solvers compete to try solving it and everybody wins woot woot.
+describing SMT problems, and the SMT-COMP competition where the foremost solvers compete against
+each other for fame. This has created a virtuous cycle where difficult real world SMT problems posed
+by industry and academia and added to the benchmarks. The solvers compete at efficiently solving
+these problems.
 
-SMT has come a long way since Hilbert posed his problem of "mechanising mathematics".
-In 1929, Persberger proved that linear integer arithmetic is indeed decidable, and although it was
-shown by Fischer and Rabin that algorithm must be worst case doubly exponential in the length of
+SMT has come a long way since Hilbert posed his problem of "mechanising mathematics". In 1929,
+Persberger proved that linear integer arithmetic is indeed decidable, and although it was shown
+later by Fischer and Rabin that algorithm must be worst case doubly exponential in the length of
 formulae, the Simplex Algorithm and its variations has proven to be an effective method of solving
 SMT for both real and integer quantifier free linear arithmetic efficiently.
 
-It has since been shown that any recursive theory that admits effective quantifier free elemination
-if and only if it is decideable (xxx checking that in an aribitary group that two words are equal
-equiv to halting problem no?). Although this gives no gauranties on the efficiency of any such
-algorithm, efficient algorithms have been since been found for subsets of real and integer
-arithmetic, arrays... and boolean satisfiability.
-
 SMT problems in automated theorem proving and programming verification commonly involve combinations
-of standard theories. For example, verifying a sorting algorithm may involve solving queries in the
-combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
 combined algorithm, and proving that it worked as promised. In 1979, Nelson and Oppen proposed a
+combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
 general algorithm for combining SMT solvers into one for the quantifier free fragment of the larger
+of standard theories. For example, verifying a sorting algorithm may involve solving queries in the
 theory.
 
 <!--
@@ -84,41 +79,59 @@ robust and extensable ecosystem of cooperating SMT solvers.
 
 ### Logical Foundations of Maude
 
-Maude derives its semantics from order-sorted rewriting logic.
-In particular, the model used is the initial model XXX.
+The semantics of execution in Maude is based on the initial models of order-sorted rewriting logic
+theories. Rewriting logic contains as a sub-logic equational logic. Equational logic is the Horn
+logic fragment of order-sorted first-order logic with equality for signatures involving only
+function symbols. Rewriting logic defines over the elements of this model a transition system -- a
+directed graph over the elements of the initial model of an equational theory. These allow capturing
+non-deterministic behaviour in models, which the equational subset does not allow.
 
 #### Unsorted vs Many-Sorted vs Order-Sorted Logics
 
-Traditionally, first order logic has been used in an unsorted setting.
-This can however make representing some theories cumbersome. For example,
-in the theory of vector spaces there are two types of objects that are of interest
-to us: *vectors* and *scalars*. If we approach this by defining a signature
-whose terms can represent either vectors or scalars, along with predicates for checking
-whether an element is a vector or a scalar, functions on vectors would become partial.
-We could work around this by adding a third "type" of element to represent invalid results
-for these functions, but this quickly becomes annoying.
+Traditionally, first order logic has been used in an unsorted setting, i.e. there is a single set
+elements in the model that can be quantified over. This can however make
+representing some theories cumbersome. For example, in the theory of vector spaces there are two
+types of objects that are of interest to us: *vectors* and *scalars*. If we approach this by
+defining a signature whose terms can represent either vectors or scalars, along with predicates for
+checking whether an element is a vector or a scalar, functions on vectors would become partial. We
+could work around this by adding a third "type" of element to represent invalid results for these
+functions, but this quickly becomes cumbersome.
 
-Many sorted signatures offer a solution...
-- XXX define
+[@cs476]
 
-However, we run into another problem. Take the theory of lists. The head function
-takes a non-empty list and returns its first element. But, what happens when the list
-is empty? If we try to define a special value "undefined" that head returns when the
-list is empty...
+Many sorted logics offer a solution to this. A many sorted signature is a pair $\Sigma = (S, F)$
+where $S$ is a set of sorts, and $F$ is a $S^{*}\times S$-indexed set of function symbols
+$F = \{F_{a,r} : (a, r) \in S^{*}\times S\}$. If $f \in F_{s_1\times\ldots\times s_n, s}$, we write
+$f: s_1\times\ldots\times s_n \to s$. For a many-sorted signature $\Sigma$, a many-sorted
+$\Sigma$-algebra, is a pair $(A, \__{A})$, where $A = \{ A_s \}_{s\in S}$ is an $S$ indexed set, and
+$\__{A}$ is the interpretation map, mapping each function symbol
+$f: s_1\times\cdots\times s_n \to s$ to a function
+$f_A : A_{s_1}\times\cdots\times A_{s_n} \to S_s$. Terms, formulae and sentences are defined as they
+traditionally are in first order logic. Now, for the theory of vector spaces, we can define a
+signature with two sorts: one for vectors and another for scalars and use it to axiomatize vector
+spaces consicely.
 
-Order Sorted Logics add a partial order on sorts.
-- xxx define
-We can now define head as a total function from NeList to Elem
+However, we can do better than many-sorted logic. Take the theory of lists. The head function takes
+a non-empty list and returns its first element. But, what happens when the list is empty? What does
+the head function return in the case of an empty list? The head function must be partial.
+[@stacs] Order-sorted signatures allow formallizing such partiality. An order sorted signature
+$\Sigma = ((S, {\le_s}), F)$, where $(S, F)$ is a many-sorted signature, and ${\le_s}$ is a partial
+order on the set $S$.  Models of order-sorted theories are order-sorted $\Sigma-$algebras.
+For an order-sorted signature $\Sigma$ a order-sorted $\Sigma-$algebra is a pair $(A, \__A)$ where
+$A$ is an $S$-indexed set of elements, and
 
-#### Operates over the initial models of these theories
-
-#### Rewriting and equational logic
-
-Maude is based on two logics, one contained in the other. The first, equational logic, is the Horn
-logic fragment of order-sorted first-order logic with equality for signatures involving only
-function symbols. The second, rewriting logic, defines a directed graph over elements of models of
-an equational theory. These allow capturing non-deterministic behaviour in models, which the
-equational subset does not allow.
+1.  if $s {\le_s} s'$, then $A_s \subset A_{s'}$,
+2.  if $a : \emptyset \to s$ and $a : \emptyset \to s'$ where $s$ and $s'$ are in the same connected
+    component of sorts under ${\le_s}$,
+3.  if $f : s_1 \times \cdots \times s_n \to s$ and $f : s'_1 \times \cdots \times s'_n \to s'$ and
+    each $s_i$ and $s'_i$ are in the same connected component (i.e. $f$ is *subsort overloaded*)
+    then for each
+    $\vec a \in A_{s_1}\times\cdots\times S_{s_n} \intersect A_{s'_1}\times\cdots\times S_{s'_n}$
+    $f_{A, s_1 \times \cdots \times s_n} \to s = f_{A, s'_1 \times \cdots \times s'_n \to s'}$
+    (i.e. subsort-overloaded functions agree on common elements).
+    
+In an order-sorted setting, we can define lists with distinct sorted for the empty list and non-empty
+lists. The head function can then be defined as a total function with domain non-empty lists.
 
 #### Equational Logic
 
@@ -138,8 +151,8 @@ x + y                     &= y + x                 &\quad\quad& \text{Commutativ
 x + (-x)                  &= 0                     &\quad\quad& \text{Inverses}            \\
 \end{aligned}$$
 
-XXX: The trivial group also models this. Do we need to some how state that 0 != 1 or that it is
-the initial model?
+\colorbox{red}{ XXX: The trivial group also models this. Do we need to some how state that 0 != 1 or that it is the
+initial model?}
 
 This equational theory can be implemented as a Maude *functional module* as follows:
 
@@ -178,14 +191,14 @@ to define in a terminating manner (and also make implementation of Maude's match
 algorithms easier and more efficient.) Because of this directionality, the theories must be
 *confluent* for them to form a well-defined equational theory. i.e. the application of equations
 must yield the same final result irrespective of the order in which they are applied. Although tools
-such as the Church-Rosser Checker and the Maude Termination Tool are provided, the burden of making
-sure that functional modules are confluent and terminating is ultimately on the programmer defining
-them. This orientation on the equations means that we will sometimes have to define equations that
-would otherwise be mathematically deducible. For example, if we had defined the functional module
-with the same eqautions as the equational theory, Maude would not have been able to deduce that
-$-3 = 2$. However, it is trivial that each set of equations can be derived from the other. Inspite
-of this, we can be seen from the example above that the representational distance between an
-equational theory and its implementation in Maude very small.
+such as the Church-Rosser Checker and the Maude Termination Tool are provided to help check these,
+the burden of making sure that functional modules are confluent and terminating is ultimately on the
+programmer defining them. This orientation on the equations means that we will sometimes have to
+define equations that would otherwise be mathematically deducible. For example, if we had defined
+the functional module with the same eqautions as the equational theory, Maude would not have been
+able to deduce that $-3 = 2$. However, it is trivial that each set of equations can be derived from
+the other. Inspite of this, it can be seen from the example above that the representational distance
+between an equational theory and its implementation in Maude very small.
 
 Besides the syntax demonstrated above, Maude also supports conditional equations, i.e. an equation
 that holds when some predicate over the term holds, and also an "otherwise" clause -- an equation
@@ -197,10 +210,10 @@ A rewrite theory $\mathcal R$ is the triple $(\Sigma, E, R)$, where $(\Sigma, E)
 theory and $R$ the set of *one step rewrites* on the terms of the signature.
 
 The rewrite rules $R$ define a relation $\rewrite \subset \terms\times\terms$. This relation is
-obtained from the closure of $R$ under *reflexivity*, *$E-$equality* (equality under the set of axioms
-$E$), *congruence* (if a subterm rewrites, then the rewrite "lifts" to all terms containing that
-subterm; $t \rewrite t' \implies f(\ldots, t, \ldots) \rewrite f(\ldots, t', \ldots)$), *replacement*
-(for any substitution $\theta$, $t \rewrite t' \implies t\theta \rewrite t'\theta$)
+obtained from the closure of $R$ under *reflexivity*, *$E-$equality* (equality under the set of
+axioms $E$), *congruence* (if a subterm rewrites, then the rewrite "lifts" to all terms containing
+that subterm; $t \rewrite t' \implies f(\ldots, t, \ldots) \rewrite f(\ldots, t', \ldots)$),
+*replacement* (for any substitution $\theta$, $t \rewrite t' \implies t\theta \rewrite t'\theta$)
 and *transitivity*.
 
 <!--
@@ -230,7 +243,7 @@ system.
 Execution of a program in Maude -- reducing a concrete term via the rewrite relation $\rewrite$ --
 involves following the edges of this transition graph and terminates when the term it arrives at has
 no outward edges. Maude can also perform symbolic execution, i.e. reduce a term that has variables,
-as well as search the strucutre for terms matching a pattern or predeicate. It is over this
+as well as search the strucutre for terms matching a pattern or predicate. It is over this
 structure that modal logics like Linear and Branching Temporal Logics are defined. Kripke Structures
 are commonly used in model checking and are the structures over which Linear and Branching Temporal
 Logics are defined. Again, this makes the representational distance between the specification of the
@@ -238,7 +251,7 @@ model and the data structures we use to reason over it minimal, making verificat
 of model checkers and other tools that reason over these structures easy.
 
 Rewrite theories are defined in Maude through *system modules*. Since we implement the Nelson-Oppen
-combination algorithm purely as a functional module, we do not go into the details of the syntax the
+combination algorithm purely as a functional module, we do not go into the details of the
 syntax for system modules here.
 
 #### Reflective logic
@@ -271,15 +284,15 @@ https://www.sciencedirect.com/science/article/pii/S1571066105825538
 
 ### Decision Procedures in Maude
 
-Some satisfiability procedures have been been implemented in Maude using the `META-LEVEL`. We will
-use these solvers as the subsolvers for Nelson-Oppen.
+There are a few satisfiability procedures available in Maude, either implemented as in Maude at
+the meta level, or external tools made accessible through the C++ API. It these tools
+that we shall use as the base solvers for the Nelson-Oppen combination problem.
 
 #### Variant-based Satisfiability
 
 Variant-based satisfiability is a theory-generic procedure that applies to a large set of
 user-definable order-sorted signature. The equations of this theory must satisfy the *finite variant
-property* and may include axioms such as commutativity, associativity-commutativity or identity.
-Refer to [@varsat] for a more in-depth description.
+property* and may include axioms such as commutativity, associativity and commutativity or identity.
 
 Let $T = (\Sigma, E \union B)$ where the equations $E$ are confluent, terminating and $B$-coherent
 modulo axioms. A $E,B-$variant of a term $t$ is a pair $(u, \theta)$ such that
@@ -294,26 +307,24 @@ iff there is a substitution $\rho$ such that:
 A theory $T$ has the finite variant property (FVP) iff for each term $t$ there is a finite most
 general complete set of variants. If a theory $(\Sigma, E\union B)$ is FVP and $B$ has a finitary
 $B-$unification algorithm, then folding variant narrowing gives a finitary $E\union B$-unification
-algorithm [@XXX].
+algorithm [@varsat].
 
 Furthermore, if $(\Sigma, E \union B) \supseteq (\Omega, E_{\Omega} \union B_\Omega)$ is a
 subsignature of constructors and $(\Omega, E_{\Omega} \union B_\Omega)$ is OS-compact, then
 satisfiability of quantifier free formulae in this theory are decidable by variant-based
 satisfiablity. This has been implmented in Maude by Sherik and Meseguer[@metalevelvarsat] and will
 be used for demonstrating the order-sorted Nelson-Oppen combination method.
-
+Refer to [@varsat] for a more in-depth description.
 
 #### CVC4
 
 CVC4 is an industry-standard automatic theorem prover that supports many theories including rational
 and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic. Although
-CVC4 allows defining algebraic data types it does not allow these user-defined types to have
-equations over them. Thus its power can clearly be augmented by combination with variant-based
-satisfiability.
+CVC4 allows defining algebraic data types it does not allow these user-defined types it does not
+allow terms constructed from them to have additional axioms. Since variant based satisfiablilties
+[@cvc4]
 
 #### Yices 2
 
-Yices 2 is another industry-standard SMT solver that is handles queries non-linear arithmetic
-efficiently.
-
-XXX Find some sort of interpretation of SMT-COMP results to compare where Yices vs SMT are stronger
+Yices 2 is another industry-standard SMT solver that excels in non-linear real and integer
+arithmetic.[@yices2]
