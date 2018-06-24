@@ -3,17 +3,20 @@ Combining Integers with Lists
 
 \newcommand \head {\text{head}}
 
-This example demonstrates the behavior of Nelson-Oppen when one of the theories
-involved is not convex. We apply the algorithm on lists parameterized over
-the natural numbers. While lists are convex, the natural numbers are not.
+In this example we demonstrate the Nelson-Oppen combination where one of the theories involved is
+not convex and the split rule needs to be applied to get the correct result. Here, lists are a
+convex theory, but the integers with order are now.
 
 ```test
 load ../../../contrib/tools/meta/nelson-oppen-combination.maude
 ```
 
+We implement the lists as a theory that has the finite variant property and use variant based
+satisfiability to decide its formulae. Here, the head function returns the first element of the
+list.
+
 ```{.test .njr-thesis}
 fmod INTEGER-LIST is
-    protecting BOOLEAN .
     sort Integer .
 
     --- Convince var-sat we are infinite
@@ -31,6 +34,8 @@ fmod INTEGER-LIST is
     eq head(N L) = N [variant] .
 endfm
 ```
+
+For the integers, we use one of the external SMT solvers, CVC4 for checking satisfiability.
 
 ```test
 fmod TEST-NO-SMT-LIST is
@@ -64,19 +69,20 @@ reduce nelson-oppen-sat(( tagged(tt, ('mod > 'INTEGER-LIST); 'check-sat > 'var-s
      .
 ```
 
-We demonstrate the algorithm with the formula:
-$1 \le \head(L) \le 2
-\land x = 1 \land x \ne \head(L)
-\land y = 2 \land y \ne \head(L)$ .
+We use Nelson-Oppen to mechanically prove that
+$1 \le \head(L) \land
+\head(L) \le 2
+\limplies \head(L) = 1 \lor \head(L) = 2$
 
 ``` {.test .njr-thesis}
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'INTEGER-LIST); 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'INTEGER     ); 'check-sat > 'smt-sat))),
-          '_<=_ [ '1.Integer , 'head[ 'L:NeIntegerList ] ] ?= 'true.Boolean
-       /\ '_<=_ [ 'head[ 'L:NeIntegerList ] , '2.Integer ] ?= 'true.Boolean
-       /\ 'X:Integer ?= '1.Integer /\ 'X:Integer != 'head[ 'L:NeIntegerList ]
-       /\ 'Y:Integer ?= '2.Integer /\ 'Y:Integer != 'head[ 'L:NeIntegerList ])
-    == false
-    .
+reduce nelson-oppen-valid(( tagged(tt, (('mod > 'INTEGER-LIST); 'check-sat > 'var-sat))
+                          , tagged(tt, (('mod > 'INTEGER     ); 'check-sat > 'smt-sat))),
+           (  '_<=_ [ '1.Integer , 'head[ 'L:NeIntegerList ] ] ?= 'true.Boolean
+           /\ '_<=_ [ 'head[ 'L:NeIntegerList ] , '2.Integer ] ?= 'true.Boolean
+           )
+        => (  'head[ 'L:NeIntegerList ] ?= '1.Integer
+           \/ 'head[ 'L:NeIntegerList ] ?= '2.Integer
+           )
+       ) .
 ```
 
