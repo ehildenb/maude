@@ -3,20 +3,20 @@ Introduction
 
 In 1928, David Hilbert posed the "Entscheidungsproblem" ("the decision problem") to the mathematical
 community -- a challenge to find an algorithm that takes as input any first-order logic statement
-and return whether it is a true statement or not. Even though, in 1936, Alan Turing and Alonzo Church
-independently showed that such an algorithm is impossible, great progress has been made towards
-solving significant and profitable subsets of first-order logic formulae.
+and return whether it is a true statement or not. Even though, in 1936, Alan Turing and Alonzo
+Church independently showed that such an algorithm is impossible, great progress has been made
+towards solving significant and profitable subsets of first-order logic formulae.
 
 Given a theory and a first order logic formula in it's signature, the Satisfiability Modulo Theories
-problem is that of deciding whether there is an assigment of variables such that the
-interpretation of that forumla holds in some model of that theory. In this case, we say that the
-forumla is "satisfiable". Otherwise we say that the formula is "unsatisfiable". Validity, an
-important related concept, is the dual of satisfiability. A formula is "valid" in a theory, if in
-every model of the theory and for every possible assigment of variables, the formula holds. For example,
-the statement "every natural number factorizers uniquely into a set of prime numbers" is valid,
-whereas the first order logic statement "Peano arithmetic is consistent", in the theory of Peano
-arithmetic, is not (Godel's Second Incompleteness Theorem implies that there is a non-standard model
-where a non-standard number encodes a proof for the inconsistency of Peano Arithmetic).
+problem is that of deciding whether there is an assigment of variables such that the interpretation
+of that forumla holds in some model of that theory. In this case, we say that the forumla is
+"satisfiable". Otherwise we say that the formula is "unsatisfiable". Validity, an important related
+concept, is the dual of satisfiability. A formula is "valid" in a theory, if in every model of the
+theory and for every possible assigment of variables, the formula holds. For example, the statement
+"every natural number factorizers uniquely into a set of prime numbers" is valid, whereas any first
+order logic formulation of "Peano arithmetic is consistent" in the theory of Peano arithmetic is not
+(Godel's Second Incompleteness Theorem implies that there is a non-standard model where a
+non-standard number encodes a proof for the inconsistency of Peano Arithmetic).
 
 Although in general SMT is undecidable (e.g. for non-linear integer arithmetic), there are subsets
 of theories that are decidable and immensely useful for a variety of applications including solving

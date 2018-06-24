@@ -30,5 +30,5 @@ Work also needs to be done to expand the the implementation to handle more than 
 theories that share a sub-signature, though this work is mostly on the purification front.
 
 In general, one can envision incrementally building up towards a flexible, efficient and powerful
-SMT infrastructure in Maude delegating both to external solvers as well as tools that leverage the
+SMT infrastructure in Maude delegating both to external solvers as well as to tools that leverage the
 power and expressiveness of rewriting logic.

@@ -1,3 +1,6 @@
+Hereditarily Finite Sets
+------------------------
+
 Hereditarily finite sets (HFS) are a model of set theory without the axiom of
 infinity. Although hereditarily finite sets are expressive enough to encode
 constructs like integers and real numbers, it is often more convenient (and
@@ -17,14 +20,14 @@ fmod HEREDITARILY-FINITE-SET is
 
 We have three sorts, `X`, the parametric sort, `Set`s and `Magma`s
 
-```test
+``` {.test .njr-thesis}
     sorts X Set Magma .
     subsorts X Set < Magma .
 ```
 
 The empty set is a `Set`, as well as a `Magma` enclosed in braces.
 
-```test
+``` {.test .njr-thesis}
     op empty :             -> Set                                       [ctor] .
     op { _ } : Magma       -> Set                                       [ctor] .
 ```
@@ -36,16 +39,16 @@ The empty set is a `Set`, as well as a `Magma` enclosed in braces.
 
 The `Magma` union operator (different from the set union operator) is idemopotent.
 
-```test
+``` {.test .njr-thesis}
     op _ , _ : Magma Magma -> Magma                          [ctor assoc comm] .
     ----------------------------------------------------------------------------
     eq M , M , M' = M , M'                                           [variant] .
     eq M , M      = M                                                [variant] .
 ```
 
-We also have a subset operator:
+We also have a subset operator and the various equations defining it:
 
-```test
+``` {.test .njr-thesis}
     op _ C= _ : Magma Magma -> MyBool                                          .
 ```
 
@@ -106,7 +109,7 @@ reduce { empty, empty } C= { empty } .
 
 We instantiate this module  with `Real`s as a subsort of `X`:
 
-```test
+``` {.test .njr-thesis}
 fmod HFS-REAL is
     including HEREDITARILY-FINITE-SET .
     sorts Real .
@@ -161,7 +164,7 @@ reduce var-sat( upModule('HFS-REAL, true)
 
 Finally, we call `nelson-oppen-sat` on the formula $\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y \land y \ne z \land x \ne z$.
 
-```test
+``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
        nelson-oppen-sat(( tagged(tt, ('mod > 'REAL)    ; ('check-sat > 'smt-sat))
                         , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
@@ -181,7 +184,7 @@ reduce in NELSON-OPPEN-COMBINATION :
 As a control, we check that dropping the requirement that $x \ne z$ results in the formula being
 reported satisfiable.
 
-```test
+``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
        nelson-oppen-sat(( tagged(tt, ('mod > 'REAL)                        ; ('check-sat > 'smt-sat))
                         , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
@@ -196,3 +199,4 @@ reduce in NELSON-OPPEN-COMBINATION :
                          /\ 'Y:Real != 'Z:Real
                        ) .
 ```
+
