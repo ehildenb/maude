@@ -74,7 +74,11 @@ $1 \le \head(L) \land
 \head(L) \le 2
 \limplies \head(L) = 1 \lor \head(L) = 2$
 
+\colorbox{red}{XXX: This example has become trivial (has no equalities to propagate) since we made the change to
+the purification that added the extra equalities)
+
 ``` {.test .njr-thesis}
+set print attribute on .
 reduce nelson-oppen-valid(( tagged(tt, (('mod > 'INTEGER-LIST); 'check-sat > 'var-sat))
                           , tagged(tt, (('mod > 'INTEGER     ); 'check-sat > 'smt-sat))),
            (  '_<=_ [ '1.Integer , 'head[ 'L:NeIntegerList ] ] ?= 'true.Boolean
