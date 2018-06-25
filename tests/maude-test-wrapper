@@ -4,15 +4,30 @@ set -eu
 
 test_maude="$1"
 test_base_name="$(dirname $test_maude)/$(basename $test_maude .maude)"
-test_alt_runner="$test_base_name"
+test_check_should_run="$test_base_name.check"
 test_expected="$srcdir/$test_base_name.expected"
 test_actual="$test_base_name.out"
 
-# Some tests need to be run conditionally (e.g. tests/Misc/smtTest.maude needs
-# to be run only if maude has been compiled with an SMT solver.) For these
-# cases we allow tests to have their own executable file that we run instead of
-# this test.
-[[ ! -x "$test_alt_runner" ]] || exec "$test_alt_runner"
+# Conditionally running tests
+# ---------------------------
+
+# Some tests need to be run conditionally (e.g. tests/Misc/smtTest.maude needs to
+# be run only if maude has been compiled with an SMT solver.) For these cases, if
+# the "<test_name>.check" exists, we source it. If it returns a non-zero return
+# code we pass that on.
+
+env
+
+# This exit code indicates to the framework that the test should be skipped.
+exit_code_skip=77
+
+# Check if a macro is defined in config.in
+check_config_h() {
+  local macro=$1; shift
+  grep "#define $macro" "$top_builddir/config.h"
+}
+
+[[ ! -x "$test_check_should_run" ]] || source "$test_check_should_run"
 
 rm -f "$test_actual"
 maude -no-banner -no-advise \
