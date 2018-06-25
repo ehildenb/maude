@@ -87,6 +87,10 @@ endfm
 
 Reducing this in via Nelson-Oppen yeilds:
 
+```test
+set print attribute on .
+```
+
 ``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
     ( tagged(tt, (('mod > 'MATRIX-REAL); ('check-sat > 'var-sat)))
