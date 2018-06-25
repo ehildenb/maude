@@ -1,5 +1,7 @@
 include ../test.Makefile
 
+SUBDIRS = nelson-oppen
+
 TESTS = \
 	nim.maude \
 	bank-account.maude \
