@@ -162,7 +162,12 @@ reduce var-sat( upModule('HFS-REAL, true)
               ) == true .
 ```
 
-Finally, we call `nelson-oppen-sat` on the formula $\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y \land y \ne z \land x \ne z$.
+Finally, we call `nelson-oppen-sat` on the formula
+$\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y \land y \ne z \land x \ne z$.
+
+```test
+set print attribute on .
+```
 
 ``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
@@ -183,10 +188,6 @@ reduce in NELSON-OPPEN-COMBINATION :
 
 As a control, we check that dropping the requirement that $x \ne z$ results in the formula being
 reported satisfiable.
-
-```test
-set print attribute on .
-```
 
 ``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
