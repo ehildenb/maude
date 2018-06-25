@@ -1,12 +1,16 @@
-Besides the names of the theories, `nelson-oppen-sat` requires additional information about theories
-such as which procedure to use for checking satisfiability. We use "tagged formulae" to represent
-this information. For example, the term
-`tagged('1.Nat ?= '2.Nat, (('mod > 'NAT), ('check-sat > 'var-sat)))` represents the formula
-"$1 = 2$" in the module of `NAT`, and that we should use the `var-sat` procedure to check its
-satisfiability. In the implementation in Maude, these tagged formula are represented by the sort
-`TaggedFormula` and sets of tagged formulae by the sort `TaggedFormulaSet`. For rewriting logic
-variables (not to be confused with variables part of the formula we are rewriting over) of the sort
-`TaggedFormula` we use the variables `TF1` and `TF2`, while for `TaggedFormulaSet` we use `TFS`.
+The Nelson-Oppen algorithm is implemented in Maude as the function
+`nelson-oppen-sat`. Besides the names of the theories and the unpurified
+formulae, the algorithm also requires information about which function to use to
+check satisfiability, and whether the theory is convex. We use "tagged" formulae
+to represent this information. For example, the term
+`tagged('1.Nat ?= '2.Nat, (('mod > 'NAT), ('check-sat > 'var-sat)))` represents
+the formula "$1 = 2$" in the module of `NAT`, and that we should use the
+`var-sat` procedure to check its satisfiability. In the implementation in Maude,
+these tagged formula are represented by the sort `TaggedFormula` and sets of
+tagged formulae by the sort `TaggedFormulaSet`. For rewriting logic variables
+(not to be confused with variables part of the formula we are rewriting over) of
+the sort `TaggedFormula` we use the variables `TF1` and `TF2`, while for
+`TaggedFormulaSet` we use `TFS`.
 
 ```maude
 load foform.maude
@@ -198,6 +202,10 @@ fmod NELSON-OPPEN-COMBINATION is
     eq var-intersect(XS1, XS2)           = none [owise] .
 ```
 
+```{.maude .njr-thesis}
+    op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
+```
+
 The `nelson-oppen-valid` function converts a validity check into a satisfiability check:
 
 ```{.maude .njr-thesis}
@@ -206,13 +214,7 @@ The `nelson-oppen-valid` function converts a validity check into a satisfiabilit
     eq nelson-oppen-valid(TFS, PHI) = strictNot(nelson-oppen-sat(TFS, ~ PHI)) .
 ```
 
-The `nelson-oppen-sat` function that implements the algorithm, takes as input
-a `TaggedFormulaSet` and a quantifier free formula (of sort `QFForm`)
-and returns a `Bool`.
 
-```{.maude .njr-thesis}
-    op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
-```
 
 ```maude
     op $nosat.dnf          : TaggedFormulaSet QFForm                 -> Bool .
@@ -305,7 +307,8 @@ implied by a theory, we propagate that identification to the other theories.
        and-then $nosat.ep(( tagged(simplify(PHI1 << (X1 <- X2)), ('mod > ME1); TS1)
                           , tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
                          , simplify(CANDEQ << (X1 <- X2)))
-    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1)) [ print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
+    if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1))
+       [ print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
 ```
 
 If, after checking each identification individually, there are none that are implied we apply the split
@@ -315,7 +318,7 @@ rule.
     eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise print "=== Split? " TFS CANDEQ ] .
 ```
 
-If there are no variables left to identify, then we are satisfiable
+If there are no variables left to identify, then the formula is satisfiable
 
 ```{ .maude .njr-thesis }
     eq $nosat.split(TFS, mtForm) = true .
@@ -332,7 +335,7 @@ is satisfiable.
           , tagged(PHI2, ('mod > ME2) ;                      TS2))
        := TFS
     /\ check-valid(tagged((PHI1) => (CANDEQ), ('mod > ME1); ('convex > 'false) ; TS1))
-                                            [print "===== Split : "  ME1 " : " PHI1 " => " CANDEQ ]
+     [print "===== Split : "  ME1 " : " PHI1 " => " CANDEQ ]
      .
 ```
 
