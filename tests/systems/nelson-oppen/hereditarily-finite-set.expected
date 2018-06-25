@@ -1,1 +1,133 @@
-
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : M,M,M' == M,M' .
+rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {{empty},empty,{{empty}}} == {{
+    empty},empty,{{empty}}} .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : empty C= {empty} == tt .
+rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= empty .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result MyBool: ff
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty}} .
+rewrites: 0 in 0ms cpu (0ms real) (~ rewrites/second)
+result MyBool: {empty} C= {{empty}}
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {empty,{empty}} ==
+    tt .
+rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty},{{empty}}}
+    .
+rewrites: 0 in 0ms cpu (0ms real) (~ rewrites/second)
+result MyBool: {empty} C= {{empty},{{empty}}}
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {M,M'} C= {M,M'} .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result MyBool: tt
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty,empty} C= {empty} .
+rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+result MyBool: tt
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
+    C= {X:Real}) .
+rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+result Term: '_C=_['`{_`}['_`,_['Z:Real,'Y:Real]],'`{_`}['X:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
+    C= {A:Real}) .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result Term: '_C=_['`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]],'`{_`}['A:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real})
+    .
+rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+result Term: '`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty})) .
+rewrites: 1488 in 133ms cpu (134ms real) (11181 rewrites/second)
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty}) /\ 'empty.Set != upTerm(
+    M)) .
+rewrites: 339 in 219ms cpu (221ms real) (1544 rewrites/second)
+result Bool: (false).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty,M'})) .
+rewrites: 549 in 202ms cpu (205ms real) (2705 rewrites/second)
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), upTerm({X:Real}) ?= upTerm({X:Real,Z:Real,Y:Real})) == (true).Bool .
+rewrites: 224 in 76ms cpu (74ms real) (2927 rewrites/second)
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({X:Real,Z:Real,Y:Real} C= {X:Real})) == (
+    true).Bool .
+rewrites: 144 in 73ms cpu (73ms real) (1967 rewrites/second)
+result Bool: (true).Bool
+Warning: sort declarations for operator removeNonExecs failed preregularity
+    check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator $rmVariants failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 47 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'HFS-REAL), 'tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
+    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['A:Real]] /\ 'X:Real !=
+    'Y:Real /\ 'X:Real != 'Z:Real /\ 'Y:Real != 'Z:Real) .
+rewrites: 5092 in 558ms cpu (559ms real) (9110 rewrites/second)
+result Bool: (false).Bool
+==========================================
+reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'HFS-REAL), 'tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
+    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['A:Real]] /\ 'X:Real !=
+    'Y:Real /\ 'Y:Real != 'Z:Real) .
+Purified:
+	tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_[
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real,
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real,
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real]],'`{_`}['A:Real]] /\ 'X:Real
+    != 'Y:Real /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex >
+    'false) ; 'mod > 'HFS-REAL)
+	tagged('#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= '_*_['X:Real,
+    'X:Real] /\ '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= '_*_['Y:Real,
+    'Y:Real] /\ '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= '_*_['Z:Real,
+    'Z:Real] /\ 'X:Real != 'Y:Real /\ 'Y:Real != 'Z:Real, ('check-sat >
+    'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?=
+    'A:Real
+EqualityProp: 'REAL: => 'X:Real ?= 'Z:Real
+=== Split? tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_['A:Real,'A:Real,'A:Real]],
+    '`{_`}['A:Real]] /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex
+    > 'false) ; 'mod > 'HFS-REAL),tagged('A:Real ?= '_*_['Y:Real,'Y:Real] /\
+    'A:Real ?= '_*_['Z:Real,'Z:Real] /\ 'Y:Real != 'Z:Real, ('check-sat >
+    'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)'A:Real ?= 'Y:Real \/ 'A:Real
+    ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+rewrites: 21567 in 3723ms cpu (3730ms real) (5791 rewrites/second)
+result Bool: (true).Bool
+Bye.
