@@ -417,6 +417,7 @@ AC_CONFIG_FILES([Makefile
 		 tests/tools/lmc/Makefile
 		 tests/tools/varsat/Makefile
 		 tests/systems/Makefile
+		 tests/systems/nelson-oppen/Makefile
 ])
 
 AC_OUTPUT
