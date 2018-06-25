@@ -184,6 +184,10 @@ reduce in NELSON-OPPEN-COMBINATION :
 As a control, we check that dropping the requirement that $x \ne z$ results in the formula being
 reported satisfiable.
 
+```test
+set print attribute on .
+```
+
 ``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
        nelson-oppen-sat(( tagged(tt, ('mod > 'REAL)                        ; ('check-sat > 'smt-sat))
@@ -199,4 +203,3 @@ reduce in NELSON-OPPEN-COMBINATION :
                          /\ 'Y:Real != 'Z:Real
                        ) .
 ```
-
