@@ -55,29 +55,29 @@ result Term: '`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]]
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty})) .
-rewrites: 1488 in 133ms cpu (134ms real) (11181 rewrites/second)
+rewrites: 1488 in 139ms cpu (142ms real) (10652 rewrites/second)
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty}) /\ 'empty.Set != upTerm(
     M)) .
-rewrites: 339 in 219ms cpu (221ms real) (1544 rewrites/second)
+rewrites: 339 in 242ms cpu (243ms real) (1397 rewrites/second)
 result Bool: (false).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty,M'})) .
-rewrites: 549 in 202ms cpu (205ms real) (2705 rewrites/second)
+rewrites: 549 in 245ms cpu (246ms real) (2232 rewrites/second)
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), upTerm({X:Real}) ?= upTerm({X:Real,Z:Real,Y:Real})) == (true).Bool .
-rewrites: 224 in 76ms cpu (74ms real) (2927 rewrites/second)
+rewrites: 224 in 76ms cpu (76ms real) (2928 rewrites/second)
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({X:Real,Z:Real,Y:Real} C= {X:Real})) == (
     true).Bool .
-rewrites: 144 in 73ms cpu (73ms real) (1967 rewrites/second)
+rewrites: 144 in 76ms cpu (74ms real) (1882 rewrites/second)
 result Bool: (true).Bool
 Warning: sort declarations for operator removeNonExecs failed preregularity
     check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
@@ -90,44 +90,126 @@ Warning: sort declarations for operator resolveNames failed preregularity check
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
-reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-sat(tagged(tt, ('check-sat >
-    'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
-    'HFS-REAL), 'tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
-    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['A:Real]] /\ 'X:Real !=
-    'Y:Real /\ 'X:Real != 'Z:Real /\ 'Y:Real != 'Z:Real) .
-rewrites: 5092 in 558ms cpu (559ms real) (9110 rewrites/second)
-result Bool: (false).Bool
-==========================================
-reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-sat(tagged(tt, ('check-sat >
-    'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
-    'HFS-REAL), 'tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
-    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['A:Real]] /\ 'X:Real !=
-    'Y:Real /\ 'Y:Real != 'Z:Real) .
+reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-valid(tagged(tt, ('check-sat
+    > 'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'HFS-REAL), ('tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
+    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['_`,_['A:Real,'B:Real]]])
+    => ('X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real)) .
 Purified:
 	tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_[
     '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real,
     '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real,
-    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real]],'`{_`}['A:Real]] /\ 'X:Real
-    != 'Y:Real /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex >
-    'false) ; 'mod > 'HFS-REAL)
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real]],'`{_`}['_`,_['A:Real,
+    'B:Real]]] /\ 'X:Real != 'Y:Real /\ 'X:Real != 'Z:Real /\ 'Y:Real !=
+    'Z:Real, ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'HFS-REAL)
 	tagged('#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= '_*_['X:Real,
     'X:Real] /\ '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= '_*_['Y:Real,
     'Y:Real] /\ '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= '_*_['Z:Real,
-    'Z:Real] /\ 'X:Real != 'Y:Real /\ 'Y:Real != 'Z:Real, ('check-sat >
-    'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)
-EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    'Z:Real] /\ 'X:Real != 'Y:Real /\ 'X:Real != 'Z:Real /\ 'Y:Real != 'Z:Real,
+    ('check-sat > 'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)
+Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'A:Real ?=
+    'B:Real \/ 'A:Real ?= 'X:Real \/ 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real
+    \/ 'B:Real ?= 'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/
+    'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
     '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real
-EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?=
+Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'A:Real ?=
+    'B:Real \/ 'A:Real ?= 'X:Real \/ 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real
+    \/ 'B:Real ?= 'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/
+    'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
     '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
-EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?=
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'A:Real
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[Y:Real`,Y:Real`]`):Real ?=
     'A:Real
-EqualityProp: 'REAL: => 'X:Real ?= 'Z:Real
-=== Split? tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_['A:Real,'A:Real,'A:Real]],
-    '`{_`}['A:Real]] /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex
-    > 'false) ; 'mod > 'HFS-REAL),tagged('A:Real ?= '_*_['Y:Real,'Y:Real] /\
-    'A:Real ?= '_*_['Z:Real,'Z:Real] /\ 'Y:Real != 'Z:Real, ('check-sat >
-    'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)'A:Real ?= 'Y:Real \/ 'A:Real
-    ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
-rewrites: 21567 in 3723ms cpu (3730ms real) (5791 rewrites/second)
-result Bool: (true).Bool
+Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'A:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'A:Real ?=
+    'B:Real \/ 'A:Real ?= 'X:Real \/ 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real
+    \/ 'B:Real ?= 'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/
+    'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'X:Real
+EqualityProp: 'HFS-REAL: => 'A:Real ?= 'X:Real
+Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'B:Real ?=
+    'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real
+    \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real
+EqualityProp: 'HFS-REAL: => '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real
+Split: 'HFS-REAL : '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'B:Real
+Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'B:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?= 'Z:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'X:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Y:Real \/
+    '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'B:Real ?=
+    'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real
+    \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+rewrites: 564533 in 53152ms cpu (53368ms real) (10621 rewrites/second)
+result Bool: (false).Bool
 Bye.
