@@ -20,7 +20,7 @@ consideration. For example, in an extreme case the term
 Stable infiniteness requires that the theory has infinite models. However, there are several
 important theories that are not stably infinite. For example, the theory of bit vectors
 ($\Z / 2^n\Z$) can be used to model "machine integers" widely used in many programming languages. In
-[shiny], Tinelli and Zarba showed that this requirement can be reduced to the case where all but one
+[@shiny], Tinelli and Zarba showed that this requirement can be reduced to the case where all but one
 of the theories is "shiny". Further work by Ranise, Ringeissen and Zarba[@polite], and by Jovanovi
 and Barrett[@politerevisited] provided an easier to compute alternative called strongly "polite"
 theories. Extending this implementation to handle these cases would greatly expand the usefulness of

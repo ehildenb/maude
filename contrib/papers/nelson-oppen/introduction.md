@@ -30,13 +30,13 @@ sorting algorithm may involve using the combined theory of arrays and of total l
 Initially, solving satisfiability problems in a combination of theories involved manually working
 out the combined procedure and proving their correctness[@XXX]. In 1979, Greg Nelson and Derek Oppen
 published a generic method for composing SMT solvers for two theories into one for the quantifier
-free fragment of their union [@nelson-oppen]. Today, most SMT solvers use the Nelson-Oppen algorithm
+free fragment of their union [@nelsonoppen]. Today, most SMT solvers use the Nelson-Oppen algorithm
 at their core.
 
 In this thesis, we implement in rewriting logic the order-sorted Nelson-Oppen algorithm for
 composing satisfiability modulo theory (SMT) solvers for first order theories into an SMT solver for
 the quantifier-free fragment of their union. We build on the Tenelli's work of extending the
-Nelson-Oppen algorithm to order-sorted logics [@tinelli-order-sorted] and refer to the notes of
+Nelson-Oppen algorithm to order-sorted logics [@tinelliordersorted] and refer to the notes of
 Meseguer [@cs576], to implement this algorithm as an order-sorted rewrite theory using the Maude
 System.
 
@@ -45,19 +45,17 @@ inference rules translate almost directly into axioms of the equational theory m
 much clearer than it would be in, e.g. C++. Secondly, many first order logic theories can be defined
 as equational theories (a subset of rewrite theories). This, in combination with, rewriting logic
 being a reflective logic allows implementing theory generic SMT solvers such as Variant-Based
-Satisfiability[@var-sat] and congruence closure possible. In particular, these solvers have been
-implemented in Maude[@skerik-var-sat] taking advantage of reflection through Maude's `META-LEVEL`.
+Satisfiability[@varsat] and congruence closure possible. In particular, these solvers have been
+implemented in Maude[@metalevelvarsat] taking advantage of reflection through Maude's `META-LEVEL`.
 
-The Maude System is a programming language whos semantics are based in Rewriting Logic. As such,
-there is little to no representational distance between a rewriting theory and its implementation in
-Maude. It is often used for modeling and verification of systems. It has been used to verify a wide
-spectrum of systems, from biological systems (Pathway Logic [@pathwaylogic]), to Network Protocols
-(Maude NPA [@NPA]), to concensus algorithms, and programming languages (KFramework [@kmaude]). The
-capabilities of many of these formal verification tools can be substantially increased through
-leveraging the power of SMT solvers. Besides the SMT solvers mentioned previously, Maude also offers
-access to the CVC4[@BCD+11] solver as well as Yices2, both industry standard solvers. While both
-CVC4 and Yices2 themselves implement the Nelson-Oppen algorithm internally, it does not allow
-cooperation between the algorithms implemented in Maude as rewrite theories, or other solvers. Thus
-this implementation of the algorithm can be seen as a first step towards a rich, robust and
-extensable ecosystem of cooperating SMT solvers.
+The Maude System is a programming language often used for modeling and verification of systems. It
+has been used to verify a wide spectrum of systems, from biological systems (Pathway Logic
+[@pathwaylogic]), to Network Protocols (Maude NPA [@NPA]), to concensus algorithms, and programming
+languages (KFramework [@kmaude]). The capabilities of many of these formal verification tools can be
+substantially increased through leveraging the power of SMT solvers. Besides the SMT solvers
+mentioned previously, Maude also offers access to CVC4[@cvc4] as well as Yices 2, both industry
+standard solvers. While both CVC4 and Yices2 themselves implement the Nelson-Oppen algorithm
+internally, it does not allow cooperation between the algorithms implemented in Maude as rewrite
+theories, or other solvers. Thus this implementation of the algorithm can be seen as a first step
+towards a rich, robust and extensable ecosystem of cooperating SMT solvers.
 

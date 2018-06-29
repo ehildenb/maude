@@ -36,21 +36,17 @@ theory.
     *   FOL formula describing constraints over a set of variables, and a theory T deciding if there
         is an assignment of variables
     *   Validity
-
 *   Examples
     *   Linear and non-linear Programming
     *   Boolean satisfiability
-
 *   Motivation
     *   Automated theorem proving
     *   Formal program verification
     *   Optimization problems
-
 *   The importance of SMT to these applications has
     *   led to the industry standardizing on an interface to solvers (the SMT2 format)
     *   There is an annual competition SMT*COMP where implementations compete
 *   Quantifier free vs Quantified
-
 -   Historically
     -   Methods for individual theories
     -   Prior to 1979, when wanted combination, had to manually work it out
@@ -61,23 +57,13 @@ theory.
         -   Was also modified to work with Order-Sorted Logics
 --!>
 
-Maude
------
+Logical foundations of Maude
+----------------------------
 
 The Maude System is a programming language and framework whos semantics are based in Rewriting
-Logic. As such, there is little to no representational distance between a rewriting theory and its
-implementation in Maude. It is often used for modeling and verification of systems. It has been used
-to verify a wide spectrum of systems, from biological systems (Pathway Logic [@pathwaylogic]), to
-Network Protocols (Maude NPA [@NPA]), to concensus algorithms, and programming languages (KFramework
-[@kmaude]). The capabilities of many of these formal verification tools can be substantially
-increased through leveraging the power of SMT solvers. Besides the SMT solvers mentioned previously,
-Maude also offers access to the CVC4[@BCD+11] solver as well as Yices2, both industry standard
-solvers. While both CVC4 and Yices2 themselves implement the Nelson-Oppen algorithm internally, it
-does not allow cooperation between the algorithms implemented in Maude as rewrite theories, or other
-solvers. Thus this implementation of the algorithm can be seen as a first step towards a rich,
-robust and extensable ecosystem of cooperating SMT solvers.
-
-### Logical Foundations of Maude
+Logic. Rewriting logic theories have as their models Kripke structures, a data structure used
+in model checking. This along with other convenient features of rewriting logic, such as its reflective nature,
+make Maude a pwerful tool for implementing model checkers and related tools.
 
 The semantics of execution in Maude is based on the initial models of order-sorted rewriting logic
 theories. Rewriting logic contains as a sub-logic equational logic. Equational logic is the Horn
@@ -86,7 +72,7 @@ function symbols. Rewriting logic defines over the elements of this model a tran
 directed graph over the elements of the initial model of an equational theory. These allow capturing
 non-deterministic behaviour in models, which the equational subset does not allow.
 
-#### Unsorted vs Many-Sorted vs Order-Sorted Logics
+### Unsorted vs Many-Sorted vs Order-Sorted Logics
 
 Traditionally, first order logic has been used in an unsorted setting, i.e. there is a single set
 elements in the model that can be quantified over. This can however make
@@ -97,8 +83,6 @@ checking whether an element is a vector or a scalar, functions on vectors would 
 could work around this by adding a third "type" of element to represent invalid results for these
 functions, but this quickly becomes cumbersome.
 
-[@cs476]
-
 Many sorted logics offer a solution to this. A many sorted signature is a pair $\Sigma = (S, F)$
 where $S$ is a set of sorts, and $F$ is a $S^{*}\times S$-indexed set of function symbols
 $F = \{F_{a,r} : (a, r) \in S^{*}\times S\}$. If $f \in F_{s_1\times\ldots\times s_n, s}$, we write
@@ -106,10 +90,10 @@ $f: s_1\times\ldots\times s_n \to s$. For a many-sorted signature $\Sigma$, a ma
 $\Sigma$-algebra, is a pair $(A, \__{A})$, where $A = \{ A_s \}_{s\in S}$ is an $S$ indexed set, and
 $\__{A}$ is the interpretation map, mapping each function symbol
 $f: s_1\times\cdots\times s_n \to s$ to a function
-$f_A : A_{s_1}\times\cdots\times A_{s_n} \to S_s$. Terms, formulae and sentences are defined as they
-traditionally are in first order logic. Now, for the theory of vector spaces, we can define a
-signature with two sorts: one for vectors and another for scalars and use it to axiomatize vector
-spaces consicely.
+$f_A : A_{s_1}\times\cdots\times A_{s_n} \to S_s$. [@cs476] Terms, formulae and sentences are
+defined as they traditionally are in first order logic. Now, for the theory of vector spaces, we can
+define a signature with two sorts: one for vectors and another for scalars and use it to axiomatize
+vector spaces consicely.
 
 However, we can do better than many-sorted logic. Take the theory of lists. The head function takes
 a non-empty list and returns its first element. But, what happens when the list is empty? What does
@@ -133,7 +117,7 @@ $A$ is an $S$-indexed set of elements, and
 In an order-sorted setting, we can define lists with distinct sorted for the empty list and non-empty
 lists. The head function can then be defined as a total function with domain non-empty lists.
 
-#### Equational Logic
+### Equational Logic
 
 A *signature* $\Sigma$ is a set of function symbols and their arities. An *equational theory* is a
 pair $(\Sigma, E)$, where $E$ is a set of algebraic identities on the terms $\terms$ constructed
@@ -151,7 +135,7 @@ x + y                     &= y + x                 &\quad\quad& \text{Commutativ
 x + (-x)                  &= 0                     &\quad\quad& \text{Inverses}            \\
 \end{aligned}$$
 
-\colorbox{red}{ XXX: The trivial group also models this. Do we need to some how state that 0 != 1 or that it is the
+\colorbox{red}{ XXX: The trivial group, Z5 times Z5, ... also models this. Do we need to some how state that it is the
 initial model?}
 
 This equational theory can be implemented as a Maude *functional module* as follows:
@@ -204,7 +188,7 @@ Besides the syntax demonstrated above, Maude also supports conditional equations
 that holds when some predicate over the term holds, and also an "otherwise" clause -- an equation
 that will fire when no other equation holds.
 
-#### Rewriting Logic
+### Rewriting Logic
 
 A rewrite theory $\mathcal R$ is the triple $(\Sigma, E, R)$, where $(\Sigma, E)$ is an equational
 theory and $R$ the set of *one step rewrites* on the terms of the signature.
@@ -214,7 +198,7 @@ obtained from the closure of $R$ under *reflexivity*, *$E-$equality* (equality u
 axioms $E$), *congruence* (if a subterm rewrites, then the rewrite "lifts" to all terms containing
 that subterm; $t \rewrite t' \implies f(\ldots, t, \ldots) \rewrite f(\ldots, t', \ldots)$),
 *replacement* (for any substitution $\theta$, $t \rewrite t' \implies t\theta \rewrite t'\theta$)
-and *transitivity*.
+and *transitivity*. If $x \rewrites y$, we say "$x$ rewrites to $y$".
 
 <!--
 -   **Reflexitivity:** For each term $t \in \terms(X)$,
@@ -235,8 +219,6 @@ and *transitivity*.
     $$\infer{ t_1 \rewrites t_3 } {t_1 \rewrites t_2 & t_2 \rewrites t_3 }$$
 --!>
 
-If $x \rewrites y$, we say "$x$ rewrites to $y$".
-
 This relation defines a Kripke structure -- a labeled transition graph over the possible set of
 states of a system. Execution of a program in Maude -- reducing a concrete term via the rewrite
 relation $\rewrite$ -- involves following the edges of this transition graph and terminates when the
@@ -252,7 +234,7 @@ Rewrite theories are defined in Maude through *system modules*. Since we impleme
 combination algorithm purely as a functional module, we do not go into the details of the
 syntax for system modules here.
 
-#### Reflective logic
+### Reflective logic
 
 Rewriting logic is a *reflective logic* -- its meta theory can be represented at the object level in
 a consistent way. i.e. there is a *universal theory* $U$ and a function
@@ -280,13 +262,13 @@ other term.
 [Reflection in General Logics, Rewriting Logic and Maude]:
 https://www.sciencedirect.com/science/article/pii/S1571066105825538
 
-### Decision Procedures in Maude
+## Decision Procedures in Maude
 
 There are a few satisfiability procedures available in Maude, either implemented as in Maude at
 the meta level, or external tools made accessible through the C++ API. It these tools
 that we shall use as the base solvers for the Nelson-Oppen combination problem.
 
-#### Variant-based Satisfiability
+### Variant-based Satisfiability
 
 Variant-based satisfiability is a theory-generic procedure that applies to a large set of
 user-definable order-sorted signature. The equations of this theory must satisfy the *finite variant
@@ -314,7 +296,7 @@ satisfiablity. This has been implmented in Maude by Sherik and Meseguer[@metalev
 be used for demonstrating the order-sorted Nelson-Oppen combination method.
 Refer to [@varsat] for a more in-depth description.
 
-#### CVC4
+### CVC4
 
 CVC4 is an industry-standard automatic theorem prover that supports many theories including rational
 and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic. Although
@@ -322,7 +304,7 @@ CVC4 allows defining algebraic data types it does not allow these user-defined t
 allow terms constructed from them to have additional axioms. Since variant based satisfiablilties
 [@cvc4]
 
-#### Yices 2
+### Yices 2
 
 Yices 2 is another industry-standard SMT solver that excels in non-linear real and integer
 arithmetic.[@yices2]
