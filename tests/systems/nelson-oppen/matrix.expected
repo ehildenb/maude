@@ -53,7 +53,7 @@ EqualityProp: 'REAL: => '#makeVariable`(m11`[A:Matrix`]`):Real ?=
 EqualityProp: 'REAL: => '#makeVariable`(m12`[A:Matrix`]`):Real ?=
     '#makeVariable`(m22`[A:Matrix`]`):Real
 EqualityProp: 'MATRIX-REAL: => '#makeVariable`(_+_`[_*_`[#makeVariable`(m21`[A:Matrix`]`):Real`,#makeVariable`(m11`[B:Matrix`]`):Real`]`,_*_`[#makeVariable`(m22`[A:Matrix`]`):Real`,#makeVariable`(m21`[B:Matrix`]`):Real`]`]`):Real ?= '#makeVariable`(_+_`[_*_`[#makeVariable`(m21`[A:Matrix`]`):Real`,#makeVariable`(m12`[B:Matrix`]`):Real`]`,_*_`[#makeVariable`(m22`[A:Matrix`]`):Real`,#makeVariable`(m22`[B:Matrix`]`):Real`]`]`):Real
-rewrites: 73440 in 2790ms cpu (2801ms real) (26313 rewrites/second)
+rewrites: 73440 in 2801ms cpu (2814ms real) (26213 rewrites/second)
 result Bool: (true).Bool
 ==========================================
 reduce in MATRIX-TEST : nelson-oppen-valid(tagged(tt, (('check-sat > 'smt-sat)
@@ -118,6 +118,6 @@ EqualityProp: 'MATRIX-INTEGER: => '#makeVariable`(1.Integer`):Integer ?= '#makeV
 EqualityProp: 'INTEGER: => '#makeVariable`(m11`[A:Matrix`]`):Integer ?=
     '#makeVariable`(m11`[B:Matrix`]`):Integer
 EqualityProp: 'MATRIX-INTEGER: => '#makeVariable`(_+_`[_*_`[#makeVariable`(m11`[A:Matrix`]`):Integer`,#makeVariable`(m11`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m12`[A:Matrix`]`):Integer`,#makeVariable`(m21`[B:Matrix`]`):Integer`]`]`):Integer ?= '#makeVariable`(_+_`[_*_`[#makeVariable`(m21`[A:Matrix`]`):Integer`,#makeVariable`(m12`[B:Matrix`]`):Integer`]`,_*_`[#makeVariable`(m22`[A:Matrix`]`):Integer`,#makeVariable`(m22`[B:Matrix`]`):Integer`]`]`):Integer
-rewrites: 61607 in 1803ms cpu (1806ms real) (34162 rewrites/second)
+rewrites: 61607 in 1863ms cpu (1865ms real) (33065 rewrites/second)
 result Bool: (true).Bool
 Bye.

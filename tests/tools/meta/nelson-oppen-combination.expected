@@ -15,13 +15,13 @@ reduce in TEST-NO-NAT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
     'L':NeNatList*]],'_:+_['head['L:NeNatList*],'head['L:NeNatList*]]]) => (
     'tt.Bool* ?= '_<Nat_['head['L':NeNatList*],'head['L:NeNatList*]] /\
     'L':NeNatList* != 'L:NeNatList*)) == (true).Bool .
-rewrites: 13619 in 1070ms cpu (1073ms real) (12716 rewrites/second)
+rewrites: 13619 in 1062ms cpu (1075ms real) (12812 rewrites/second)
 result Bool: (true).Bool
 ==========================================
 reduce in TEST-NO-NAT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
     'var-sat) ; 'mod > 'MYLISTNAT*),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
     'NAT*), 'L':NeNatList* ?= 'L:NeNatList* /\ 'tt.Bool* ?= '_<Nat_['head[
     'L':NeNatList*],'head['L:NeNatList*]]) == (false).Bool .
-rewrites: 3369 in 678ms cpu (681ms real) (4964 rewrites/second)
+rewrites: 3369 in 674ms cpu (682ms real) (4997 rewrites/second)
 result Bool: (true).Bool
 Bye.
