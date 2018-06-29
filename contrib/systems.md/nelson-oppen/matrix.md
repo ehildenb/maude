@@ -103,6 +103,37 @@ reduce in MATRIX-TEST : nelson-oppen-valid(
 
 TODO: Explain output
 
+```njr-thesis
+Purified:
+tagged('0:Real ?= '0/1.Real 
+ /\ '1:Real ?= '1/1.Real 
+ /\ 'p11:Real ?= '_+_['_*_['a11:Real, 'b11:Real],'_*_[ 'a12:Real, 'b21:Real]] 
+ /\ 'p12:Real ?= '_+_['_*_['a11:Real, 'b12:Real],'_*_[ 'a12:Real, 'b22:Real]] 
+ /\ 'p21:Real ?= '_+_['_*_['a21:Real, 'b11:Real],'_*_[ 'a22:Real, 'b21:Real]] 
+ /\ 'p22:Real ?= '_+_['_*_['a21:Real, 'b12:Real],'_*_[ 'a22:Real, 'b22:Real]] 
+ /\ '0/1.Real ?= '_-_['_*_[ 'a11:Real, 'a22:Real],'_*_[ 'a12:Real, 'a21:Real]], ('check-sat > 'smt-sat) ; ( 'convex > 'false) ; 'mod > 'REAL)
+tagged('a11:Real ?= 'm11['A:Matrix] 
+ /\ 'b11:Real ?= 'm11['B:Matrix] 
+ /\ 'a12:Real ?= 'm12['A:Matrix] 
+ /\ 'b12:Real ?= 'm12['B:Matrix] 
+ /\ 'a21:Real ?= 'm21['A:Matrix] 
+ /\ 'b21:Real ?= 'm21['B:Matrix] 
+ /\ 'a22:Real ?= 'm22['A:Matrix] 
+ /\ 'b22:Real ?= 'm22['B:Matrix] 
+ /\ 'matrix[ '1:Real,'0:Real, '0:Real,'1:Real] ?= 'matrix['p11:Real,'p12:Real,'p21:Real,'p22:Real], ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'MATRIX-REAL)
+EqualityProp: 'MATRIX-REAL: => '0:Real ?= 'p12:Real
+EqualityProp: 'MATRIX-REAL: => '1:Real ?= 'p11:Real
+EqualityProp: 'REAL: => 'p12:Real ?= 'p22:Real
+EqualityProp: 'MATRIX-REAL: => 'p11:Real ?= 'p21:Real
+EqualityProp: 'REAL: => 'a11:Real ?= 'a21:Real
+EqualityProp: 'REAL: => 'a12:Real ?= 'a22:Real
+EqualityProp: 'MATRIX-REAL: => 'p21:Real ?= 'p22:Real
+result Bool: (true).Bool
+```
+
+It turns out that if we combine this module with the Integers instead of the Reals, we can prove
+something stronger: that any invertible matrix must have determinant $\pm 1$.
+
 ```test
 fmod MATRIX-INTEGER is
     including MATRIX-X .
@@ -112,11 +143,7 @@ fmod MATRIX-INTEGER is
     op fake-zero :         -> Integer [ctor] .
     op fake-succ : Integer -> Integer [ctor] .
 endfm
-
 ```
-
-It turns out that if we combine this module with the Integers instead of the Reals, we can prove
-something stronger: that any invertible matrix must have determinant $\pm 1$.
 
 ``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
@@ -132,3 +159,37 @@ reduce in MATRIX-TEST : nelson-oppen-valid(
            )
      ) .
 ```
+
+TODO: Explain/Format output
+
+```njr-thesis
+Purified:
+tagged('0:Integer ?= 'a21:Integer 
+ /\ '0:Integer ?= 'b21:Integer 
+ /\ '0:Integer ?= '0.Integer 
+ /\ '1:Integer ?= '1.Integer 
+ /\ 'p11:Integer ?= '_+_['_*_[ 'a11:Integer, 'b11:Integer],'_*_[ 'a12:Integer, 'b21:Integer]] 
+ /\ 'p12:Integer ?= '_+_['_*_[ 'a11:Integer, 'b12:Integer],'_*_[ 'a12:Integer, 'b22:Integer]] 
+ /\ 'p21:Integer ?= '_+_['_*_[ 'a21:Integer, 'b11:Integer],'_*_[ 'a22:Integer, 'b21:Integer]] 
+ /\ 'p22:Integer ?= '_+_['_*_[ 'a21:Integer, 'b12:Integer],'_*_[ 'a22:Integer, 'b22:Integer]] 
+ /\ '1.Integer != '_-_['_*_[ 'a11:Integer, 'a22:Integer],'_*_[ 'a12:Integer, 'a21:Integer]] 
+ /\ '-_['1.Integer] != '_-_[ '_*_['a11:Integer, 'a22:Integer],'_*_[ 'a12:Integer, 'a21:Integer]], ('check-sat > 'smt-sat) ; ( 'convex > 'false) ; 'mod > 'INTEGER) tagged('0:Integer ?= 'a21:Integer 
+ /\ '0:Integer ?= 'b21:Integer 
+ /\ 'a11:Integer ?= 'm11['A:Matrix] 
+ /\ 'b11:Integer ?= 'm11['B:Matrix] 
+ /\ 'a12:Integer ?= 'm12['A:Matrix] 
+ /\ 'b12:Integer ?= 'm12['B:Matrix] 
+ /\ 'a21:Integer ?= 'm21['A:Matrix] 
+ /\ 'b21:Integer ?= 'm21['B:Matrix] 
+ /\ 'a22:Integer ?= 'm22['A:Matrix] 
+ /\ 'b22:Integer ?= 'm22['B:Matrix] 
+ /\ 'matrix[ '1:Integer,'0:Integer, '0:Integer,'1:Integer] ?= 'matrix['p11:Integer,'p12:Integer,'p21:Integer,'p22:Integer], ( 'check-sat > 'var-sat) ; ('convex > 'true) ; 'mod > 'MATRIX-INTEGER)
+EqualityProp: 'INTEGER: => '0:Integer ?= 'p21:Integer
+EqualityProp: 'INTEGER: => 'p21:Integer ?= 'a21:Integer
+EqualityProp: 'INTEGER: => 'a21:Integer ?= 'b21:Integer
+EqualityProp: 'MATRIX-INTEGER: => '1:Integer ?= 'p11:Integer
+EqualityProp: 'INTEGER: => 'a11:Integer ?= 'b11:Integer
+EqualityProp: 'MATRIX-INTEGER: => 'p11:Integer ?= 'p22:Integer
+result Bool: (true).Bool
+```
+

@@ -75,7 +75,7 @@ $1 \le \head(L) \land
 \limplies \head(L) = 1 \lor \head(L) = 2$
 
 \colorbox{red}{XXX: This example has become trivial (has no equalities to propagate) since we made the change to
-the purification that added the extra equalities)
+the purification that added the extra equalities}
 
 ``` {.test .njr-thesis}
 set print attribute on .

@@ -204,3 +204,24 @@ reduce in NELSON-OPPEN-COMBINATION :
                          /\ 'Y:Real != 'Z:Real
                        ) .
 ```
+
+```njr-thesis
+Purified: tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_[ 'z2:Real, 'x2:Real, 'y2:Real]],'`{_`}['A:Real]] 
+ /\ 'X:Real != 'Y:Real 
+ /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'HFS-REAL)
+ tagged('x2:Real ?= '_*_['X:Real, 'X:Real] 
+ /\ 'y2:Real ?= '_*_['Y:Real, 'Y:Real] 
+ /\ 'z2:Real ?= '_*_['Z:Real, 'Z:Real] 
+ /\ 'X:Real != 'Y:Real 
+ /\ 'Y:Real != 'Z:Real, ('check-sat > 'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)
+
+EqualityProp: 'HFS-REAL: => 'x2:Real ?= 'y2:Real
+EqualityProp: 'HFS-REAL: => 'y2:Real ?= 'z2:Real
+EqualityProp: 'HFS-REAL: => 'z2:Real ?= 'A:Real
+EqualityProp: 'REAL: => 'X:Real ?= 'Z:Real
+
+=== Split? tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_['A:Real,'A:Real,'A:Real]], '`{_`}['A:Real]] 
+ /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'HFS-REAL),tagged('A:Real ?= '_*_['Y:Real,'Y:Real] 
+ /\ 'A:Real ?= '_*_['Z:Real,'Z:Real] 
+ /\ 'Y:Real != 'Z:Real, ('check-sat > 'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+```
