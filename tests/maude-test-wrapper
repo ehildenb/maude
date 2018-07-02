@@ -16,6 +16,7 @@ test_actual="$test_base_name.out"
 
 rm -f "$test_actual"
 maude -no-banner -no-advise \
+    <(echo 'set show timing off .') \
     < "$test_maude"         \
     > "$test_actual" 2>&1
 diff "$test_expected" "$test_actual" 2>&1
