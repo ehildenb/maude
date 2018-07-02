@@ -1,83 +1,83 @@
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : M,M,M' == M,M' .
-rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 2
 result Bool: true
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {{empty},empty,{{empty}}} == {{
     empty},empty,{{empty}}} .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 1
 result Bool: true
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : empty C= {empty} == tt .
-rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 2
 result Bool: true
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= empty .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 1
 result MyBool: ff
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty}} .
-rewrites: 0 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 0
 result MyBool: {empty} C= {{empty}}
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {empty,{empty}} ==
     tt .
-rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 2
 result Bool: true
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty},{{empty}}}
     .
-rewrites: 0 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 0
 result MyBool: {empty} C= {{empty},{{empty}}}
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {M,M'} C= {M,M'} .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 1
 result MyBool: tt
 ==========================================
 reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty,empty} C= {empty} .
-rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 2
 result MyBool: tt
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
     C= {X:Real}) .
-rewrites: 2 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 2
 result Term: '_C=_['`{_`}['_`,_['Z:Real,'Y:Real]],'`{_`}['X:Real]]
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
     C= {A:Real}) .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 1
 result Term: '_C=_['`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]],'`{_`}['A:Real]]
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real})
     .
-rewrites: 1 in 0ms cpu (0ms real) (~ rewrites/second)
+rewrites: 1
 result Term: '`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]]
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty})) .
-rewrites: 1488 in 139ms cpu (142ms real) (10652 rewrites/second)
+rewrites: 1488
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty}) /\ 'empty.Set != upTerm(
     M)) .
-rewrites: 339 in 242ms cpu (243ms real) (1397 rewrites/second)
+rewrites: 339
 result Bool: (false).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({empty,M} C= {empty,M'})) .
-rewrites: 549 in 245ms cpu (246ms real) (2232 rewrites/second)
+rewrites: 549
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), upTerm({X:Real}) ?= upTerm({X:Real,Z:Real,Y:Real})) == (true).Bool .
-rewrites: 224 in 76ms cpu (76ms real) (2928 rewrites/second)
+rewrites: 224
 result Bool: (true).Bool
 ==========================================
 reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
     true), 'tt.MyBool ?= upTerm({X:Real,Z:Real,Y:Real} C= {X:Real})) == (
     true).Bool .
-rewrites: 144 in 76ms cpu (74ms real) (1882 rewrites/second)
+rewrites: 144
 result Bool: (true).Bool
 Warning: sort declarations for operator removeNonExecs failed preregularity
     check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
@@ -210,6 +210,6 @@ Split? '#makeVariable`(_*_`[X:Real`,X:Real`]`):Real ?=
     '#makeVariable`(_*_`[Z:Real`,Z:Real`]`):Real ?= 'Z:Real \/ 'B:Real ?=
     'X:Real \/ 'B:Real ?= 'Y:Real \/ 'B:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real
     \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
-rewrites: 564533 in 53152ms cpu (53368ms real) (10621 rewrites/second)
+rewrites: 564533
 result Bool: (false).Bool
 Bye.
