@@ -1,13 +1,13 @@
-Hereditarily Finite Sets
-------------------------
+Hereditarily Finite Sets with Reals
+-----------------------------------
 
-Hereditarily finite sets (HFS) are a model of set theory without the axiom of
-infinity. Although hereditarily finite sets are expressive enough to encode
-constructs like integers and real numbers, it is often more convenient (and
-efficiency) to parameterize them with a more abstract representation of these
-constructs.
-
-In Maude, we implement HFS as the following functional module:
+In this example, we demonstrate the combination algorithm with an non-convex theory, non-linear real
+arithmetic. The other theory we use, hereditarily finite sets, is convex and is an example of a
+theory that cannot be implemented in CVC4 or Yices2 because of its use of recursive algebraic types
+with axioms on its constructors. Hereditarily finite sets (HFS) are a model of set theory without
+the axiom of infinity. Although hereditarily finite sets are expressive enough to encode constructs
+like integers and real numbers, it is often more convenient (and efficienct) to parameterize them
+with a more abstract representation of these constructs.
 
 ```test
 set include BOOL off .
@@ -18,18 +18,12 @@ fmod HEREDITARILY-FINITE-SET is
     op ff : -> MyBool [ctor] .
 ```
 
-We have three sorts, `X`, the parametric sort, `Set`s and `Magma`s
+We have three sorts, `X`, the parametric sort, `Set`s and `Magma`s.
+Both `X`s and `Set`s are `Magma`s.
 
 ``` {.test .njr-thesis}
     sorts X Set Magma .
     subsorts X Set < Magma .
-```
-
-The empty set is a `Set`, as well as a `Magma` enclosed in braces.
-
-``` {.test .njr-thesis}
-    op empty :             -> Set                                       [ctor] .
-    op { _ } : Magma       -> Set                                       [ctor] .
 ```
 
 ```test
@@ -37,13 +31,26 @@ The empty set is a `Set`, as well as a `Magma` enclosed in braces.
     vars S        : Set   .
 ```
 
-The `Magma` union operator (different from the set union operator) is idemopotent.
+The elements of a hereditarily finite set are constructed inductively from three constructors.
+First, `empty` is a `Set`:
+
+``` {.test .njr-thesis}
+    op empty :             -> Set                                       [ctor] .
+```
+
+Second, via the union operator, an associative, commutative and idemopotent operator:
 
 ``` {.test .njr-thesis}
     op _ , _ : Magma Magma -> Magma                          [ctor assoc comm] .
     ----------------------------------------------------------------------------
     eq M , M , M' = M , M'                                           [variant] .
     eq M , M      = M                                                [variant] .
+```
+
+Finally, any `Magma` can be enclosed in braces to form a `Set`.
+
+``` {.test .njr-thesis}
+    op { _ } : Magma       -> Set                                       [ctor] .
 ```
 
 We also have a subset operator and the various equations defining it:
@@ -162,8 +169,12 @@ reduce var-sat( upModule('HFS-REAL, true)
               ) == true .
 ```
 
-Finally, we call `nelson-oppen-sat` on the formula
-$\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y \land y \ne z \land x \ne z$.
+Finally, check the satisfiability the formula
+$\{ x^2 , y^2, z^2 \} \subseteq \{ a \}$.
+i.e. "is it possible for the set of squares of three distinct elements to be a subset
+of a set with a single element." Proving that this is not satisfiable requires
+understanding that sets are idemopotent and that at most two distinct reals can have
+the same square in the theory of reals.
 
 ```test
 set print attribute on .
@@ -171,57 +182,57 @@ set print attribute on .
 
 ``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
-       nelson-oppen-sat(( tagged(tt, ('mod > 'REAL)    ; ('check-sat > 'smt-sat))
-                        , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
-                        )
-                       ,    '_C=_[ '`{_`}['_`,_[ '_*_ [ 'Z:Real, 'Z:Real ]
-                                               , '_*_ [ 'X:Real, 'X:Real ]
-                                               , '_*_ [ 'Y:Real, 'Y:Real ]
-                                               ]]
-                                 , '`{_`}['A:Real]]
-                            ?= 'tt.MyBool
-                         /\ 'X:Real != 'Y:Real
-                         /\ 'Y:Real != 'Z:Real
-                         /\ 'X:Real != 'Z:Real
-                       ) .
+       nelson-oppen-sat( ( tagged(tt, ('mod > 'REAL)    ; ('check-sat > 'smt-sat))
+                           , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
+                           )
+                         , (  '_C=_[ '`{_`}['_`,_[ '_*_ [ 'Z:Real, 'Z:Real ]
+                                                 , '_*_ [ 'X:Real, 'X:Real ]
+                                                 , '_*_ [ 'Y:Real, 'Y:Real ]
+                                                 ]]
+                                   , '`{_`}['A:Real]]
+                              ?= 'tt.MyBool
+                           )
+                         ) .
 ```
 
-As a control, we check that dropping the requirement that $x \ne z$ results in the formula being
-reported satisfiable.
 
-``` {.test .njr-thesis}
-reduce in NELSON-OPPEN-COMBINATION :
-       nelson-oppen-sat(( tagged(tt, ('mod > 'REAL)                        ; ('check-sat > 'smt-sat))
-                        , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
-                        )
-                       ,    '_C=_[ '`{_`}['_`,_[ '_*_ [ 'Z:Real, 'Z:Real ]
-                                               , '_*_ [ 'X:Real, 'X:Real ]
-                                               , '_*_ [ 'Y:Real, 'Y:Real ]
-                                               ]]
-                                 , '`{_`}['A:Real]]
-                            ?= 'tt.MyBool
-                         /\ 'X:Real != 'Y:Real
-                         /\ 'Y:Real != 'Z:Real
-                       ) .
-```
+This purifies to:
 
 ```njr-thesis
-Purified: tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_[ 'z2:Real, 'x2:Real, 'y2:Real]],'`{_`}['A:Real]] 
- /\ 'X:Real != 'Y:Real 
- /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'HFS-REAL)
- tagged('x2:Real ?= '_*_['X:Real, 'X:Real] 
- /\ 'y2:Real ?= '_*_['Y:Real, 'Y:Real] 
- /\ 'z2:Real ?= '_*_['Z:Real, 'Z:Real] 
- /\ 'X:Real != 'Y:Real 
- /\ 'Y:Real != 'Z:Real, ('check-sat > 'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)
+'tt.MyBool ?= '_C=_['`{_`}['_`,_['z2:Real,'x2:Real,'y2:Real]],'`{_`}['A:Real]]
+``` 
 
-EqualityProp: 'HFS-REAL: => 'x2:Real ?= 'y2:Real
-EqualityProp: 'HFS-REAL: => 'y2:Real ?= 'z2:Real
-EqualityProp: 'HFS-REAL: => 'z2:Real ?= 'A:Real
-EqualityProp: 'REAL: => 'X:Real ?= 'Z:Real
+in the theory of the hereditarily finite sets, and to:
 
-=== Split? tagged('tt.MyBool ?= '_C=_['`{_`}['_`,_['A:Real,'A:Real,'A:Real]], '`{_`}['A:Real]] 
- /\ 'Y:Real != 'Z:Real, ('check-sat > 'var-sat) ; ('convex > 'false) ; 'mod > 'HFS-REAL),tagged('A:Real ?= '_*_['Y:Real,'Y:Real] 
- /\ 'A:Real ?= '_*_['Z:Real,'Z:Real] 
- /\ 'Y:Real != 'Z:Real, ('check-sat > 'smt-sat) ; ('convex > 'false) ; 'mod > 'REAL)'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+```njr-thesis
+    'x2:Real ?= '_*_['X:Real,'X:Real]
+ /\ 'y2:Real ?= '_*_['Y:Real,'Y:Real]
+ /\ 'z2:Real ?= '_*_['Z:Real,'Z:Real]
+```
+
+in the theory of the reals.
+
+Initially, a few equalities are propagated from the theory of hereditarily finite sets:
+
+```njr-thesis
+'HFS-REAL: => 'x2:Real ?= 'y2:Real
+'HFS-REAL: => 'y2:Real ?= 'z2:Real
+'HFS-REAL: => 'z2:Real ?= 'A:Real
+```
+
+Then, since the reals are not convex, the split rule must be applied. The algorithm searches through
+each of the remaining candidate equalities, and finds that adding both `'A:Real ?= 'X:Real` and
+`'A:Real ?= 'Y:Real` is still satisfiable in both theories, and further propagates the equality:
+`'X:Real ?= 'Y:Real`. At this point no further disjunctions of equalities are implied and the
+algorithm terminates returning *satisfiable*.
+
+```
+Split? 'A:Real ?= 'X:Real \/ 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : 'A:Real ?= 'X:Real
+Split? 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+Split: 'HFS-REAL : 'A:Real ?= 'Y:Real
+EqualityProp: 'HFS-REAL: => 'X:Real ?= 'Y:Real
+Split? 'A:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
+rewrites: 28717 in 4549ms cpu (4626ms real) (6311 rewrites/second)
+result Bool: (true).Bool
 ```

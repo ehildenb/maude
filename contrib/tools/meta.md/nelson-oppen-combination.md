@@ -315,7 +315,7 @@ If, after checking each identification individually, there are none that are imp
 rule.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise print "=== Split? " TFS CANDEQ ] .
+    eq $nosat.ep(TFS, CANDEQ) = $nosat.split(TFS, CANDEQ) [owise print "Split? " CANDEQ] .
 ```
 
 If there are no variables left to identify, then the formula is satisfiable
@@ -335,7 +335,6 @@ is satisfiable.
           , tagged(PHI2, ('mod > ME2) ;                      TS2))
        := TFS
     /\ check-valid(tagged((PHI1) => (CANDEQ), ('mod > ME1); ('convex > 'false) ; TS1))
-     [print "===== Split : "  ME1 " : " PHI1 " => " CANDEQ ]
      .
 ```
 
@@ -361,6 +360,7 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
        or-else $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
                                    , tagged(PHI2, ('mod > ME2); TS2))
                                , DISJ?1, X1 ?= X2 \/ DISJ?2)
+        [print "Split: "  ME1 " : " X1 " ?= " X2 ]
      .
 
     eq $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)

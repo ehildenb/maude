@@ -393,7 +393,8 @@ If so, then it leaves it alone, otherwise more work is required on the equationa
     eq purify(modulePair(M, M'), tt)           = tt .
     eq purify(modulePair(M, M'), ff)           = ff .
    ceq purify(modulePair(M, M'), EqC)          = EqC if (EqC in M) .
-    eq  purify(modulePair(M, M'), EqC /\ EqC') = purify(modulePair(M, M'), EqC) /\ purify(modulePair(M, M'), EqC') .
+    eq purify(modulePair(M, M'), EqC /\ QFF)  = purify(modulePair(M, M'), EqC) /\ purify(modulePair(M, M'), QFF) .
+    eq purify(modulePair(M, M'), EqC \/ QFF)  = purify(modulePair(M, M'), EqC) \/ purify(modulePair(M, M'), QFF) .
 ```
 
 If a term in a (dis)equality is not `wellFormed` in either `Module`, then we purify it.
