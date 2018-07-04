@@ -6,26 +6,31 @@ is satisfiable in a theory $T$, i.e. whether there is a model $M$ of $T$ such t
 $M \models \exists \vec x \phi(\vec x)$. Similarly, a formula is said to be valid if its negation
 is unsatisfiable.
 
-Checking satisfiabilty and its dual validity have a wide range of applications, including logistics,
-optimization, software verification and program synthesis. In fact validity forms the core of
-automated theorem proving. It importance has led to the standardization of a language, SMT-LIB for
-describing SMT problems, and the SMT-COMP competition where the foremost solvers compete against
-each other for fame. This has created a virtuous cycle where difficult real world SMT problems posed
-by industry and academia and added to the benchmarks. The solvers compete at efficiently solving
-these problems.
+Checking satisfiabilty and its dual, validity, have a wide range of applications, including
+logistics, optimization, software verification, program synthesis and automated theorem proving. In
+fact validity forms the core of automated theorem proving. It importance has led to the
+standardization of a language, SMT-LIB for describing SMT problems, and the SMT-COMP competition
+where the foremost solvers compete against each other for fame. This has created a virtuous cycle
+where difficult real world SMT problems posed by industry and academia are added to the benchmarks
+and the solvers compete at efficiently solving these problems, enabling furthur and more interesting
+applications.
 
 SMT has come a long way since Hilbert posed his problem of "mechanising mathematics". In 1929,
 Persberger proved that linear integer arithmetic is indeed decidable, and although it was shown
 later by Fischer and Rabin that algorithm must be worst case doubly exponential in the length of
 formulae, the Simplex Algorithm and its variations has proven to be an effective method of solving
-SMT for both real and integer quantifier free linear arithmetic efficiently.
+SMT for both real and integer quantifier free linear arithmetic efficiently. Efficient
+algorithms have also been found for a number of other theories, such as the theory of arrays, 
+uninterpreted functions and more.
 
 SMT problems in automated theorem proving and programming verification commonly involve combinations
-combined algorithm, and proving that it worked as promised. In 1979, Nelson and Oppen proposed a
-combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
-general algorithm for combining SMT solvers into one for the quantifier free fragment of the larger
 of standard theories. For example, verifying a sorting algorithm may involve solving queries in the
-theory.
+combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
+combined algorithm, and proving that it worked as promised. In 1979, Nelson and Oppen proposed a
+general algorithm for combining SMT solvers into one for the quantifier free fragment of the larger
+theory. Although it was later realised that this algorithm only applied to a class of theories,
+called stably infinite, many important theories fall into this class. The algorithm was later
+extended to work with "polite" theories.
 
 <!--
 * (1929) Persberger: linear arithmetic is decidable
@@ -61,9 +66,9 @@ Logical foundations of Maude
 ----------------------------
 
 The Maude System is a programming language and framework whos semantics are based in Rewriting
-Logic. Rewriting logic theories have as their models Kripke structures, a data structure used
-in model checking. This along with other convenient features of rewriting logic, such as its reflective nature,
-make Maude a pwerful tool for implementing model checkers and related tools.
+Logic. Rewriting logic theories have as their models Kripke structures, a data structure used in
+model checking. This along with other convenient features of rewriting logic, such as its reflective
+nature, make Maude a powerful tool for implementing model checkers and related tools.
 
 The semantics of execution in Maude is based on the initial models of order-sorted rewriting logic
 theories. Rewriting logic contains as a sub-logic equational logic. Equational logic is the Horn
@@ -74,14 +79,14 @@ non-deterministic behaviour in models, which the equational subset does not allo
 
 ### Unsorted vs Many-Sorted vs Order-Sorted Logics
 
-Traditionally, first order logic has been used in an unsorted setting, i.e. there is a single set
-elements in the model that can be quantified over. This can however make
-representing some theories cumbersome. For example, in the theory of vector spaces there are two
-types of objects that are of interest to us: *vectors* and *scalars*. If we approach this by
-defining a signature whose terms can represent either vectors or scalars, along with predicates for
-checking whether an element is a vector or a scalar, functions on vectors would become partial. We
-could work around this by adding a third "type" of element to represent invalid results for these
-functions, but this quickly becomes cumbersome.
+Traditionally, first order logic has been used in an unsorted setting, i.e. there is a single set
+elements in the model that can be quantified over. This can however make representing some theories
+cumbersome. For example, in the theory of vector spaces there are two types of objects that are of
+interest to us: *vectors* and *scalars*. If we approach this by defining a signature whose terms can
+represent either vectors or scalars, along with predicates for checking whether an element is a
+vector or a scalar, functions on vectors would become partial. We could work around this by adding a
+third "type" of element to represent invalid results for these functions, but this quickly becomes
+cumbersome.
 
 Many sorted logics offer a solution to this. A many sorted signature is a pair $\Sigma = (S, F)$
 where $S$ is a set of sorts, and $F$ is a $S^{*}\times S$-indexed set of function symbols
@@ -93,7 +98,7 @@ $f: s_1\times\cdots\times s_n \to s$ to a function
 $f_A : A_{s_1}\times\cdots\times A_{s_n} \to S_s$. [@cs476] Terms, formulae and sentences are
 defined as they traditionally are in first order logic. Now, for the theory of vector spaces, we can
 define a signature with two sorts: one for vectors and another for scalars and use it to axiomatize
-vector spaces consicely.
+vector spaces concisely.
 
 However, we can do better than many-sorted logic. Take the theory of lists. The head function takes
 a non-empty list and returns its first element. But, what happens when the list is empty? What does
@@ -114,7 +119,7 @@ $A$ is an $S$-indexed set of elements, and
     $f_{A, s_1 \times \cdots \times s_n} \to s = f_{A, s'_1 \times \cdots \times s'_n \to s'}$
     (i.e. subsort-overloaded functions agree on common elements).
     
-In an order-sorted setting, we can define lists with distinct sorted for the empty list and non-empty
+In an order-sorted setting, we can define lists with distinct subsorts for the empty list and non-empty
 lists. The head function can then be defined as a total function with domain non-empty lists.
 
 ### Equational Logic
@@ -135,8 +140,9 @@ x + y                     &= y + x                 &\quad\quad& \text{Commutativ
 x + (-x)                  &= 0                     &\quad\quad& \text{Inverses}            \\
 \end{aligned}$$
 
-\colorbox{red}{ XXX: The trivial group, Z5 times Z5, ... also models this. Do we need to some how state that it is the
-initial model?}
+\colorbox{red}{ XXX: The trivial group, Z5 times Z5, ... also models this. }
+
+\colorbox{red}{ Do we need to some how state that it is the initial model? }
 
 This equational theory can be implemented as a Maude *functional module* as follows:
 
@@ -156,10 +162,10 @@ endfm
 ```
 
 This program represents an equational theory $E = ((S, \le_S), \Sigma, E \union B)$.
-Here, $S = \braces{\tt Z5}\, \le_s = \braces{{\tt NzZ5}, {\tt Z5}}$ and
+Here, $S = \braces{\tt Z5}\, \le_s = \braces{}$ and
 $\Sigma = \braces{ {\tt 0}, {\tt 1}, {\tt \_ + \_}}$. The `fmod Z5 is ... endfm` construct defines a
-*functional module* and describes an equational theory. The signature of this theory has a single
-sort `Z5` The `op` declaration defines the terms and functions in the signature of that theory.
+*functional module* that describes an equational theory. The signature of this theory has a single
+sort `Z5`. The `op` declaration defines the terms and functions in the signature of that theory.
 These are of the form `op NAME : ARGUMENTS -> RESULT [ATTRIBUTES]`. For example, `_ + _` takes two
 terms of sort `Z5` and returns another of the same sort, while `0` and `1` are constants of sort
 `Z5`. The `ctor` attribute marks a term as part of the constructor signature of the theory. The
@@ -174,13 +180,13 @@ Attributes like `assoc` and `comm` allow specifying common axioms that would oth
 to define in a terminating manner (and also make implementation of Maude's matching and unification
 algorithms easier and more efficient.) Because of this directionality, the theories must be
 *confluent* for them to form a well-defined equational theory. i.e. the application of equations
-must yield the same final result irrespective of the order in which they are applied. Although tools
+must yield the same final result irrespective of the order in which eqautions are applied. Although tools
 such as the Church-Rosser Checker and the Maude Termination Tool are provided to help check these,
 the burden of making sure that functional modules are confluent and terminating is ultimately on the
 programmer defining them. This orientation on the equations means that we will sometimes have to
 define equations that would otherwise be mathematically deducible. For example, if we had defined
-the functional module with the same eqautions as the equational theory, Maude would not have been
-able to deduce that $-3 = 2$. However, it is trivial that each set of equations can be derived from
+the functional module with the same equations as the equational theory, Maude would not have been
+able to deduce that $-3 = 2$. However, it is trivial to show that each set of equations can be derived from
 the other. Inspite of this, it can be seen from the example above that the representational distance
 between an equational theory and its implementation in Maude very small.
 
@@ -223,7 +229,7 @@ This relation defines a Kripke structure -- a labeled transition graph over the 
 states of a system. Execution of a program in Maude -- reducing a concrete term via the rewrite
 relation $\rewrite$ -- involves following the edges of this transition graph and terminates when the
 term it arrives at has no outward edges. Maude can also perform symbolic execution, i.e. reduce a
-term that has variables, as well as search the strucutre for terms matching a pattern or predicate.
+term that has variables, as well as search the structure for terms matching a pattern or predicate.
 Kripke Structures are commonly used in the implementation of model checking and are the structures
 over which Linear and Branching Temporal Logics are defined. Again, this makes the representational
 distance between the specification of the model and the data structures we use to reason over it
@@ -241,23 +247,21 @@ a consistent way. i.e. there is a *universal theory* $U$ and a function
 $\overline { ( \_ \proves \_ ) }$ such that for any theory $T$,
 $T \proves \phi \iff U \proves \overline{ T \proves \phi }$.
 This is particularly interesting because it allows us to reason it allows us to implement both the
-models we work over and the model checking tools we use in the same langauge. In fact, the implementation
-of variant-based satisfiability by Stephen Sherik and of the Nelson-Oppen Combination Algorithm take
+models we work over and the model checking tools we use in the same language. In fact, the implementation
+of variant-based satisfiability by Stephen Sherik and of the Nelson-Oppen Combination Algorithm here take
 advantage of this.
 
 In Maude, the built-in module `META-LEVEL` is used to do this lifting. Terms are represented in the
 sort `Term`, and modules in the sort `Module`. The function
 `upModule : ModuleExpression Bool -> Module` takes a `ModuleExpression`, a quote followed by the
 module name (e.g. `'Z5`) and returns a term representing the module. Similarly, the function
-`upTerm : Universal -> Term` takes a term of any sort and returns a meta-term of sort `Term`. Terms
-at the meta-level are represented using quoted identifiers. Arguments to terms are placed in a comma
-separated list within square brackets. Constants and variables have their sorts annoted as part of
-the identifier. For example the term `1 + 1` is represented at the meta level as
-`'_+_[ '1.Z5, '1.Z5 ]`, while the variable `X` as `'X:Z5`. Meta-terms can be reduced using the
-`metaReduce` function.
-
-`META-LEVEL`'s `upModule` function allows us to lift a theory and perform rewrites with it like any
-other term.
+`upTerm : Universal -> Term` takes a term of any sort and returns a meta-term, i.e. a term of sort
+`Term`. Terms at the meta-level are represented using quoted identifiers. Arguments to terms are
+placed in a comma separated list within square brackets. Constants and variables have their sorts
+annoted as part of the identifier. For example the term `1 + 1` is represented at the meta level as
+`'_+_[ '1.Z5, '1.Z5 ]`, while the variable `X` of sort `Z5` as `'X:Z5`. Meta-terms can be reduced
+using the `metaReduce` function. `META-LEVEL`'s `upModule` function allows us to lift a theory and
+perform rewrites with it like any other term.
 
 [Reflection in General Logics, Rewriting Logic and Maude]:
 https://www.sciencedirect.com/science/article/pii/S1571066105825538
@@ -272,7 +276,7 @@ that we shall use as the base solvers for the Nelson-Oppen combination problem.
 
 Variant-based satisfiability is a theory-generic procedure that applies to a large set of
 user-definable order-sorted signature. The equations of this theory must satisfy the *finite variant
-property* and may include axioms such as commutativity, associativity and commutativity or identity.
+property* and may include axioms such as commutativity, associativity and commutativity, or identity.
 
 Let $T = (\Sigma, E \union B)$ where the equations $E$ are confluent, terminating and $B$-coherent
 modulo axioms. A $E,B-$variant of a term $t$ is a pair $(u, \theta)$ such that
@@ -292,19 +296,19 @@ algorithm [@varsat].
 Furthermore, if $(\Sigma, E \union B) \supseteq (\Omega, E_{\Omega} \union B_\Omega)$ is a
 subsignature of constructors and $(\Omega, E_{\Omega} \union B_\Omega)$ is OS-compact, then
 satisfiability of quantifier free formulae in this theory are decidable by variant-based
-satisfiablity. This has been implmented in Maude by Sherik and Meseguer[@metalevelvarsat] and will
+satisfiability. This has been implemented in Maude by Sherik and Meseguer[@metalevelvarsat] and will
 be used for demonstrating the order-sorted Nelson-Oppen combination method.
 Refer to [@varsat] for a more in-depth description.
 
 ### CVC4
 
 CVC4 is an industry-standard automatic theorem prover that supports many theories including rational
-and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic. Although
-CVC4 allows defining algebraic data types it does not allow these user-defined types it does not
-allow terms constructed from them to have additional axioms. Since variant based satisfiablilties
-[@cvc4]
+and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic [@cvc4].
+Although CVC4 allows defining algebraic data types it does not allow these user-defined types it
+does not allow terms constructed from them to have additional axioms. Variant based satisfiablilty
+allows this, and thus complements CVC4.
 
-### Yices 2
+### Yices2
 
 Yices 2 is another industry-standard SMT solver that excels in non-linear real and integer
 arithmetic.[@yices2]

@@ -83,10 +83,11 @@ formula, $\purified$, we have an equisatisfiable formula
 $\Or_{equiv\in \Equiv(\SharedVariables)}\{ \purified \land \phi_{\equiv}\}$, where
 $\Equiv(\SharedVariables)$ is the set of partitions on the shared variables $\SharedVariables$ and
 $\phi_\equiv$ is the formula defining this equivalence relation. Since for stably infinite theories
-we only care about the equivalence class being satisfiable, we can project this formula onto each of
+we only care about the equivalence class existing and not about particular assignments, we can project this formula onto each of
 the theories and check satisfiability.
 
 \begin{figure}
+\footnotesize
 $$\begin{matrix*}[l]
                     &    &                        &           & T_{\union}  \models& \QF(\Sigma_1 \union \sigma_2)                                              \\
 \text{DNF}          &\iff&                        &           & T_{\union}  \models& \And \Lit(\Sigma_1 \union \sigma_2)                                        \\
@@ -108,14 +109,14 @@ the shared variables, we choose a Darwinian approach, pruning classes of equival
 search space if an identification of a single pair of variables implied by one theory is not
 satisfiable in another (equality propagation). In the case of non-convex theories, we may have
 $\phi \limplies (x_1 = y \lor x_2 = y)$ without either $\phi \limplies x_1 = y$ or
-$\phi \limplies x_2 = y$ holding. Thus if any theory implies the disjunction of all remaining
-identifications we branch our search, checking if at least one of the remaining identifications is
-satisfiable (split). We can think of each step of the algorithm as splitting the search space into
-subsets where a single additional identification holds. If only a single identification is implied
-equality propagation causes the algorithm to decend into it. Otherwise, the split rule checks the
-satisfiability of each of the sets in the split subspaces, and decends into each satisfiable one.
+$\phi \limplies x_2 = y$ individually holding. Thus if any theory implies the disjunction of all
+remaining identifications we branch our search, checking if at least one of the remaining
+identifications is satisfiable (split). We can think of each equality propagation step of the
+algorithm as pruning the search space (of arrangements) of unsatisfiable ones, and the split step
+dividing the search space into a smaller groups where the split step can apply.
 
 \begin{figure}
+\footnotesize
 $$\infer[\text{Equality Propagation}]
 { \begin{matrix*}[l]
         & \CheckSat(\phi_j \land \phi_E \land x_m = x_n) \\
