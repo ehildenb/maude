@@ -1,6 +1,6 @@
-main.pdf: $(wildcard *.md) cite.bib
-	pandoc main.md -o $@ -H macros.tex                          \
+main.pdf: $(wildcard *.md) cite.bib template.latex
+	pandoc main.md -o $@ -H macros.tex --template template.latex        \
 	       --lua-filter ../../pandoc-tangle/include.lua         \
 	       --lua-filter ../../pandoc-tangle/njr-thesis.lua      \
 	       --filter pandoc-citeproc --bibliography=cite.bib     \
-	       --variable geometry:margin=1cm
+	       --pdf-engine=xelatex --top-level-division=chapter
