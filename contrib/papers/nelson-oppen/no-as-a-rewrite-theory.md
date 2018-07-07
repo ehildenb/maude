@@ -3,8 +3,8 @@ Order Sorted Nelson Oppen as a rewrite theory
 
 Given decision procedures for the quantifier free formulae in a set of theories the Order-Sorted
 Nelson-Oppen combination method gives us a decision procedure for the quantifier free fragment in
-the combination of these theories, provided that the theories are *stable infinite* for their shared
-sorts and *optimally intersecting*. In theories stably finite in a set of sorts, we can find models
+the combination of these theories, provided that the theories are *disjoint*, *stably infinite* for their shared
+sorts and *optimally intersecting*. In theories stably infinite in a set of sorts, we can find models for each theory
 such that the cardinalities of the carrier sets of those sorts match.
 
 Stably Infinite
@@ -17,7 +17,8 @@ Stably Infinite
     $T-$satisfiable formula $\phi \in \F$, is also satisfiable in a model
     $\mathcal B = (B, \__B) \in \model(T)$ such that $|B_{s_i}| \ge \chi_0, 1 \le i \le n$.
 
-    Intuitively, it means that we can always find models of both theories where the cardinalities
+    For Nelson-Oppen combinations, requiring that both theories $T_1$ and $T_2$ are stably infinite
+    intuitively means that we can always find models of both theories where the cardinalities
     of sorts $s_1, \ldots, s_n$ agree.
 
 Notation: For sort $s$ and signature $\Sigma_i$, let $[s]_i$ denote it's
@@ -65,13 +66,13 @@ Optimally intersectable [@cs576]
 
 
 Given two order-sorted, optimally intersecting, stably-infinite theories $T_1$ and $T_2$ with
-signatures $\Sigma_1$ and $\Sigma_2$ each with decision procedures for quantifier free
+disjoint signatures $\Sigma_1$ and $\Sigma_2$ each with decision procedures for quantifier free
 $T_i$-satisfiability we want to derive a decision procedure for quantifier free $T_1 \union T_2$
 satisfiability. We can transform any formula $\phi$ into an *equisatisfiable* formula in disjunctive
 normal form. Further, for each atom in such a formula we can apply "purification" to obtain a
 formula where each atom is in the signature of one of the two theories.
 
-Now, our task has become to find a model $M_0$ and an assignment $a: \vars(\phi) \to M_0$ such that
+Now, our task has become to find a $T_1 \union T_2$-model $M_0$ and an assignment $a: \vars(\phi) \to M_0$ such that
 $M_0, a \models \purified$, where $\Sigma_0$ is the intersection of the two signatures. In general,
 this requires knowing the semantics of each of the theories, but in the case of stably infinite
 theories, the task is easier. With stable infiniteness, since every satisfiable formula has an
