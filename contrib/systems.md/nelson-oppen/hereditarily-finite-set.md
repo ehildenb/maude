@@ -1,13 +1,13 @@
 Hereditarily Finite Sets with Reals
 -----------------------------------
 
-In this example, we demonstrate the combination algorithm with an non-convex theory, non-linear real
-arithmetic. The other theory we use, hereditarily finite sets, is convex and is an example of a
-theory that cannot be implemented in CVC4 or Yices2 because of its use of recursive algebraic types
-with axioms on its constructors. Hereditarily finite sets (HFS) are a model of set theory without
+In this example, we demonstrate the combination algorithm with non-convex theories -- non-linear
+real arithmetic and hereditarily finite sets. Hereditarily finite sets is an example of a theory
+that cannot be implemented in CVC4 or Yices2 because of its use of recursive algebraic data types with
+equations identifying terms. Hereditarily finite sets (HFS) are a model of set theory without
 the axiom of infinity. Although hereditarily finite sets are expressive enough to encode constructs
-like integers and real numbers, it is often more convenient (and efficienct) to parameterize them
-with a more abstract representation of these constructs.
+like the integers and the natural numbers, its initial model is a countable model and so cannot encode the real
+numbers.
 
 ```test
 set include BOOL off .
@@ -38,7 +38,7 @@ First, `empty` is a `Set`:
     op empty :             -> Set                                       [ctor] .
 ```
 
-Second, via the union operator, an associative, commutative and idemopotent operator:
+Second, the union operator is an associative, commutative and idemopotent operator:
 
 ``` {.test .njr-thesis}
     op _ , _ : Magma Magma -> Magma                          [ctor assoc comm] .
@@ -47,13 +47,13 @@ Second, via the union operator, an associative, commutative and idemopotent oper
     eq M , M      = M                                                [variant] .
 ```
 
-Finally, any `Magma` can be enclosed in braces to form a `Set`.
+Finally, a `Set` may be constructed from any `Magma` by enclosing it in braces.
 
 ``` {.test .njr-thesis}
     op { _ } : Magma       -> Set                                       [ctor] .
 ```
 
-We also have a subset operator and the various equations defining it:
+We also have a subset operator and the various equations (not detailed here) defining it:
 
 ``` {.test .njr-thesis}
     op _ C= _ : Magma Magma -> MyBool                                          .
@@ -169,22 +169,24 @@ reduce var-sat( upModule('HFS-REAL, true)
               ) == true .
 ```
 
-Finally, check the satisfiability the formula
-$\{ x^2 , y^2, z^2 \} \subseteq \{ a \}$.
-i.e. "is it possible for the set of squares of three distinct elements to be a subset
-of a set with a single element." Proving that this is not satisfiable requires
-understanding that sets are idemopotent and that at most two distinct reals can have
-the same square in the theory of reals.
+Finally we, check the satisfiability the formula $\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y$. i.e. "is
+it possible for the set of squares of three numbers, two of which must be distinct, to be a
+subset of a set with a single element." This is indeed possible, since every positive real number
+has two distinct square roots. Since set union is idemopotent, if the two distinct numbers are
+additive inverses of each other and the third is equal to either, then the proposition would indeed
+be satisfied.
 
 ```test
 set print attribute on .
 ```
 
+Our query is:
+
 ``` {.test .njr-thesis}
 reduce in NELSON-OPPEN-COMBINATION :
        nelson-oppen-sat( ( tagged(tt, ('mod > 'REAL)    ; ('check-sat > 'smt-sat))
-                           , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
-                           )
+                         , tagged(tt, ('mod > 'HFS-REAL); ('check-sat > 'var-sat))
+                         )
                          , (  '_C=_[ '`{_`}['_`,_[ '_*_ [ 'Z:Real, 'Z:Real ]
                                                  , '_*_ [ 'X:Real, 'X:Real ]
                                                  , '_*_ [ 'Y:Real, 'Y:Real ]
@@ -192,22 +194,25 @@ reduce in NELSON-OPPEN-COMBINATION :
                                    , '`{_`}['A:Real]]
                               ?= 'tt.MyBool
                            )
+                           /\ 'X:Real != 'Y:Real
                          ) .
 ```
-
 
 This purifies to:
 
 ```njr-thesis
-'tt.MyBool ?= '_C=_['`{_`}['_`,_['z2:Real,'x2:Real,'y2:Real]],'`{_`}['A:Real]]
+    'x2:Real ?= '_*_['X:Real,'X:Real] 
+ /\ 'y2:Real ?= '_*_['Y:Real,'Y:Real] 
+ /\ 'z2:Real ?= '_*_['Z:Real,'Z:Real] 
+ /\ 'X:Real != 'Y:Real,
 ``` 
 
 in the theory of the hereditarily finite sets, and to:
 
 ```njr-thesis
-    'x2:Real ?= '_*_['X:Real,'X:Real]
- /\ 'y2:Real ?= '_*_['Y:Real,'Y:Real]
- /\ 'z2:Real ?= '_*_['Z:Real,'Z:Real]
+    'tt.MyBool ?= '_C=_['`{_`}['_`,_['z2:Real,'x2:Real,'y2:Real]],'`{_`}['A:Real]] 
+ /\ 'X:Real != 'Y:Real
+
 ```
 
 in the theory of the reals.
@@ -220,19 +225,24 @@ Initially, a few equalities are propagated from the theory of hereditarily finit
 'HFS-REAL: => 'z2:Real ?= 'A:Real
 ```
 
-Then, since the reals are not convex, the split rule must be applied. The algorithm searches through
-each of the remaining candidate equalities, and finds that adding both `'A:Real ?= 'X:Real` and
-`'A:Real ?= 'Y:Real` is still satisfiable in both theories, and further propagates the equality:
-`'X:Real ?= 'Y:Real`. At this point no further disjunctions of equalities are implied and the
-algorithm terminates returning *satisfiable*.
+Since no more identifications of variables are implied on their own and the theories are convex, the
+algorithm must check whether a disjunction of identifications is implied by either of the theories,
+and indeed $x = z \lor y = z$ is implied. The algorithm splits the search space on the remaining
+candidate equalities ($a = x$, $a = y$, $a = z$, $x = y$, $z = z$ and $y = z$). It first tries the
+case where $a = x$ and finds that there are satisfiabile arrangements (this can happen when
+$a = x = 1$). It then splits the search space again, but finds that there are no arrangements
+$a = y$ possible (since that implies that $x = y$). However the case where $a = z$ is satisfiable.
+This causes the the equality $x = z$ to be propagated. Now, since no further equalities or
+disjunctions thereof hold, the algorithm concludes that the formula is satisfiable.
 
 ```
 Split? 'A:Real ?= 'X:Real \/ 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
 Split: 'HFS-REAL : 'A:Real ?= 'X:Real
 Split? 'A:Real ?= 'Y:Real \/ 'A:Real ?= 'Z:Real \/ 'X:Real ?= 'Y:Real \/ 'X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
 Split: 'HFS-REAL : 'A:Real ?= 'Y:Real
-EqualityProp: 'HFS-REAL: => 'X:Real ?= 'Y:Real
-Split? 'A:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real
-rewrites: 28717 in 4549ms cpu (4626ms real) (6311 rewrites/second)
+Split: 'HFS-REAL : 'A:Real ?= 'Z:Real
+EqualityProp: 'HFS-REAL: => 'X:Real ?= 'Z:Real
+Split? 'A:Real ?= 'Y:Real \/ 'Y:Real ?= 'Z:Real
+rewrites: 36007 in 4943ms cpu (4951ms real) (7284 rewrites/second)
 result Bool: (true).Bool
 ```

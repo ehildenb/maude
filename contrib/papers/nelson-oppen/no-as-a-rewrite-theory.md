@@ -72,34 +72,28 @@ satisfiability. We can transform any formula $\phi$ into an *equisatisfiable* fo
 normal form. Further, for each atom in such a formula we can apply "purification" to obtain a
 formula where each atom is in the signature of one of the two theories.
 
-Now, our task has become to find a $T_1 \union T_2$-model $M_0$ and an assignment $a: \vars(\phi) \to M_0$ such that
-$M_0, a \models \purified$, where $\Sigma_0$ is the intersection of the two signatures. In general,
-this requires knowing the semantics of each of the theories, but in the case of stably infinite
-theories, the task is easier. With stable infiniteness, since every satisfiable formula has an
-infinite model, if we need a value distinct from a witness we have infinite choices for either the
-value or the witness. i.e. $$T_1 \union T_2 \not\models \phi \land \vec t_k \ne \vec t'_k 
-\iff T_i \models \phi \limplies \vec t_k = \vec t'_k$$ This means that we do not need to find a
-specific assigment, but merely a satisfiable equivalence relation of the shared variables. For any
-formula, $\purified$, we have an equisatisfiable formula
-$\Or_{equiv\in \Equiv(\SharedVariables)}\{ \purified \land \phi_{\equiv}\}$, where
-$\Equiv(\SharedVariables)$ is the set of partitions on the shared variables $\SharedVariables$ and
-$\phi_\equiv$ is the formula defining this equivalence relation. Since for stably infinite theories
-we only care about the equivalence class existing and not about particular assignments, we can project this formula onto each of
-the theories and check satisfiability.
-
-\begin{figure}
-\footnotesize
-$$\begin{matrix*}[l]
-                    &    &                        &           & T_{\union}  \models& \QF(\Sigma_1 \union \sigma_2)                                              \\
-\text{DNF}          &\iff&                        &           & T_{\union}  \models& \And \Lit(\Sigma_1 \union \sigma_2)                                        \\
-\text{Purification} &\iff&                        &           & T_{\union}  \models& \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2)                                \\
-\text{Arrangement}  &\iff& \exists \phi_{\equiv}, &           & T_{\union}  \models& \Or ( \And \Lit(\Sigma_1) \land \And\Lit(\sigma_2) \land \And \phi_{\equiv} )\\
-\text{Projection}   &\iff& \exists \phi_{\equiv}, &           & T_1         \models& \And \Lit(\Sigma_1) \land \And \phi_{\equiv}                                \\
-                    &    &                        &\text{and} & T_2         \models& \And \Lit(\Sigma_2) \land \And \phi_{\equiv}
-\end{matrix*}$$
-\caption{Equisatisfiable formulae transformations on stably infinite theories we use for Nelson-Oppen combination.
-Note that projection on its own is not a valid transformation, but in combination with purification and arrangement it is.}
-\end{figure}
+Now, our task has become to find a $T_1 \union T_2$-model $M_0$ and an assignment
+$a: \vars(\phi) \to M_0$ such that such that $M,a \models \varphi$. How can we decompose this
+satisfiability problem into similar subproblems for the theories $T_{1}$ and $T_{2}$? What follows
+summarizes more detailed arguments in [@cs576] about the order-sorted Nelson-Oppen combination.
+Because of the stably infinite assumptions on the theories $T_{1},T_{2}$, as well as the assumption
+that the corresponding signatures are optimally intersectable and disjoint, if $\varphi$ is purified
+into an equisatisfiable conjunction $\varphi_{1} \wedge \varphi_{2}$ of formulas $\varphi_{1}$ and
+$\varphi_{2}$ in the theories $T_{1}$ and $T_{2}$, we can always choose $M$ so that the shared sorts
+in $M$ have infinite cardinalities, so that $M$ is the \emph{amalgamation} of models $M_1$ and $M_2$
+of theories $T_{1}$ and $T_{2}$ that satisfy $\varphi_{1}$ and $\varphi_{2}$, and that have the same
+cardinality for the shared sorts. The interesting question is the converse one: under what
+conditions, given models $M_1$ and $M_2$ with same cardinality in shared sorts, and assignments
+$a_{1}$ and $a_{2}$ such that $M_{i},a_{i} \models \varphi_{i}$, $1 \leq i \leq 2$ can we amalgamate
+$M_1$ and $M_2$ into a single $T_{1} \cup T_{2}$-model $M$ with an assignment $a$ such that
+$M,a \models \varphi$? The answer is that such an amalgamation $M$ and an assignment $a$ extending
+both $a_{1}$ and $a_{2}$ after a suitable bijective identification of the sets for the shared sorts
+will exist if and only if $a_{1}$ and $a_{2}$ generate the same equivalence relation among the
+variables of $\varphi_{1}$ and $\varphi_{2}$ that have shared sorts. Therefore, since the
+satisfaction of any such equivalence relation can be characterized by a conjuction $\psi$ of
+equalities and disequalities among shared variables (called an "arrangement"), a "naive"
+order-sorted Nelson-Oppen algorithm amounts to finding such a $\psi$ among all possible equivalence
+relations such that $\varphi_{i}\wedge \psi$ is $T_{i}$-satisfiable, $1 \leq i \leq 2$.
 
 The question now becomes how do we find such a arrangement of variables? Checking each equivalence
 class for satisfiability is infeasable as the number of equivalence classes grows exponentially with
@@ -114,7 +108,12 @@ $\phi \limplies x_2 = y$ individually holding. Thus if any theory implies the di
 remaining identifications we branch our search, checking if at least one of the remaining
 identifications is satisfiable (split). We can think of each equality propagation step of the
 algorithm as pruning the search space (of arrangements) of unsatisfiable ones, and the split step
-dividing the search space into a smaller groups where the split step can apply.
+dividing the search space into a smaller groups where the split step can apply. The inference rules
+for the Equality Propagation and Split rules are given in \ref{fig:proofrules} where $\phi_{E}$
+denotes the equalities between variables with shared sorts obtained so far by previous inference
+steps, and $\CandidateEqualities$ denotes the still uncommitted equalities between such shared
+sorts. These rules are similar to rules presented in [@mannaCombining] for the unsorted case and
+have a similar proof of correctness.
 
 \begin{figure}
 \footnotesize
@@ -143,5 +142,6 @@ $$\infer[\text{Split}]
 }
 $$
 \caption{Inference rules for the Nelson-Oppen algorithm}
+\label{fig:proofrules}
 \end{figure}
 

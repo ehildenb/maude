@@ -7,7 +7,9 @@
 \usepackage{hyperref}
 \usepackage{etoolbox}
 
-\BeforeBeginEnvironment{verbatim}{\footnotesize}
+\BeforeBeginEnvironment{verbatim}{\footnotesize\linespread{1.2}}
+\AfterEndEnvironment   {verbatim}{\normalsize  \linespread{1.5}}
+
 
 $for(header-includes)$
 $header-includes$

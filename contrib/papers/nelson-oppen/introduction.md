@@ -30,9 +30,12 @@ algorithms [@varsat]. Program verification and other applications, however, ofte
 with a combination of two or more theories (e.g. verification of a sorting algorithm may involve
 using the combined theory of arrays and of total linear orders). Initially, solving satisfiability
 problems in a combination of theories involved manually working out the combined procedure and
-proving their correctness [@arith-with-func-symbols][@presburger-array]. In 1979, Greg Nelson and Derek Oppen published a generic method for
-composing SMT solvers for two theories into one for the quantifier free fragment of their union
-[@nelsonoppen]. Today, most SMT solvers use the Nelson-Oppen algorithm at their core.
+proving their correctness [@arith-with-func-symbols][@presburger-array]. In 1979, Greg Nelson and
+Derek Oppen published a generic method for composing SMT solvers for two theories into one for the
+quantifier free fragment of their union [@nelsonoppen]. In [@shostakcombination], Shostak introduced
+a procedure for deciding combinations of "canonizable" and "solvable" theories, called Shostak
+theories. Today, most SMT solvers use the Nelson-Oppen algorithm, with refinements for handling
+Shostak, shiny, and polite theories, at their core.
 
 In this thesis, we implement in rewriting logic an order-sorted Nelson-Oppen algorithm for composing
 satisfiability modulo theory (SMT) solvers for first order theories into an SMT solver for the

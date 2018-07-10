@@ -4,7 +4,7 @@ author: Nishant Rodrigues
 department: Mathematics
 advisor: Prof. Jose Meseguer
 commiteename: Advisor
-committee: Prof. Jose Meseguer
+committee: Professor Jose Meseguer
 degreeyear: 2018
 ---
 

@@ -115,14 +115,23 @@ $\Sigma-$algebras. For an order-sorted signature $\Sigma$ an order-sorted $\Sigm
 $\Sigma-$algebra, $(A, \__A)$, and:
 
 1.  if $s {\le_s} s'$, then $A_s \subset A_{s'}$,
-2.  if $a : \emptyset \to s$ and $a : \emptyset \to s'$ where $s$ and $s'$ are sorts in the same
-    connected component of sorts under ${\le_s}$, then $a_{A} \in A_a$ and $a_{A} \in A_{s'}$ are
-    the same element,
-3.  if $f : s_1 \times \cdots \times s_n \to s$ and $f : s'_1 \times \cdots \times s'_n \to s'$ and
-    each $s_i$ and $s'_i$ are in the same connected component (i.e. $f$ is *subsort overloaded*)
-    then for each
-    $\vec a \in A_{s_1}\times\cdots\times A_{s_n} \intersect A_{s'_1}\times\cdots\times A_{s'_n}$
-    $f_{A, s_1 \times \cdots \times s_n \to s}  = f_{A, s'_1 \times \cdots \times s'_n \to s'}$
+
+2.  if constant symbols $c : \epsilon \to s$ and $c : \epsilon \to s'$ with $s$ and $s'$, sorts in
+    the same connected component under ${\le_s}$, then their interpretations,
+    $c^{\epsilon,s}_{A} \in A_a$ and $c^{\epsilon,s'}_{A} \in A_{s'}$, are the same element,
+
+3.  if  function symbols
+    $f : a  \to r$ and
+    $f : a' \to r'$
+    with $a' = s'_1 \times \cdots \times s'_n$
+    and  $a  = s _1 \times \cdots \times s _n$
+    and each $s_i$ and $s'_i$, and $r$ and $r'$ in the same connected component
+    (i.e. $f$ is *subsort overloaded*)
+    then 
+    for each $\vec a \in (A_{s_1} \times\cdots\times A_{s_n} )
+    \intersect           (A_{s'_1}\times\cdots\times A_{s'_n})$
+    we have
+    $f_{A, s_1 \times \cdots \times s_n \to s}(\vec a) = f_{A, s'_1 \times \cdots \times s'_n \to s'}(\vec a)$
     (i.e. subsort-overloaded functions agree on common elements).
 
 In an order-sorted setting, we can define lists with distinct subsorts for the empty list and
@@ -160,9 +169,10 @@ fmod Z5 is
     op   - _ : Z5    -> Z5                           .
 
     vars x y : Z5                        . --- x and y are variables of sort Z5
+    eq (-0)              = 0             . --- Inverse of 0
+    eq (-1)              = 1 + 1 + 1 + 1 . --- Inverse of 1
     eq 1 + 1 + 1 + 1 + 1 = 0             . --- Characteristic 5
     eq -(x + y)          = (-x) + (-y)   . --- Inverse distribute
-    eq (-1)              = 1 + 1 + 1 + 1 . --- Inverse of 1
 endfm
 ```
 
