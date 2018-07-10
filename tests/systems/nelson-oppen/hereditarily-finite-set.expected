@@ -89,10 +89,9 @@ Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 47 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
-Warning: <standard input>, line 191: didn't expect token `{_`}:
-nelson-oppen-valid ( ( tagged ( tt , ( 'mod > 'REAL ) ; ( 'check-sat > 'smt-sat
-    ) ) , tagged ( tt , ( 'mod > 'HFS-REAL ) ; ( 'check-sat > 'var-sat ) ) ) ,
-    ( '`{_`} [ '_`,_ [ '_*_ [ 'Z:Real , 'Z:Real ] , '_*_ [ 'X:Real , 'X:Real ]
-    , '_*_ [ 'Y:Real , 'Y:Real ] ] ] ?= `{_`} <---*HERE*
-Warning: <standard input>, line 184: no parse for term.
-Bye.
+==========================================
+reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-valid(tagged(tt, ('check-sat
+    > 'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'HFS-REAL), ('tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
+    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['_`,_['A:Real]]] /\ 'X:Real
+    != 'Y:Real) => ('X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real)) .
