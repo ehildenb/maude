@@ -278,7 +278,8 @@ where $\SharedVariables_{s_i}$ is the subset of shared variables in the connecte
 ```{ .maude .njr-thesis }
    ceq $nosat.basicSat(TFS)
      = $nosat.ep( TFS
-                , candidate-equalities(in-module(moduleIntersect(ME1, ME2), vars(PHI1) ; vars(PHI2)))
+                , candidate-equalities(in-module(moduleIntersect(ME1, ME2)
+                , vars(PHI1) ; vars(PHI2)))
                 )
     if ( tagged(PHI1, ('mod > ME1); _1:Tags)
        , tagged(PHI2, ('mod > ME2); _2:Tags))

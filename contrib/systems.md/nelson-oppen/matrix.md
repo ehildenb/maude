@@ -2,19 +2,110 @@
 
 \newcommand \R {\mathbb{R}}
 
-In this example, we define the theory of $2\times 2$ over $\R$ and prove that any invertible matrix
-must have a non-zero determinant. We define Matrices in terms of an unspecified sort `X`, which we later instantiate with the Reals.
-This module only defines accessors for each of the matrix's entries and does not define functions
-such as multiplication, determinant and identity. This is because these functions must be defined in
-terms of the underlying field's operators operator and Nelson-Oppen combination does not allow
-sharing of function symbols.
+The specification that follows is not exactly the one used in the experiments, but is equivalent to
+it. There are two somewhat subtle issues about this example, namely: (i) the use of
+parameterization, and (ii) the use of definitional extensions, that can best be explained using
+Maude parameter theories, parameterized modules, and parameter instantiation by views.
+
+We can define in Maude the theory of $2 \times 2$ matrices over a ring as the following module
+parameterized by the theory of rings as its parameter theory:
+
+\begin{verbatim}
+fth RING is
+    sort Ring .
+    op _+_ : Ring Ring -> Ring [assoc comm] .
+    op _*_ : Ring Ring -> Ring [assoc comm] .
+    op 0 : -> Ring .
+    op 1 : -> Ring .
+    op - : Ring -> Ring .
+    vars x y z : Ring .
+    eq x + 0 = x .
+    eq 1 * x = x .
+    eq x + -(x) = 0 .
+    eq x * (y + z) = (x * y) + (x * z) .
+endfth
+
+fmod MATRIX{R :: RING} is
+    sort Matrix .
+    op matrix : R$Ring R$Ring R$Ring R$Ring -> Matrix [ctor] .
+
+    vars A B C D : R$Ring .
+
+    op m11 : Matrix -> R$Ring .
+    op m12 : Matrix -> R$Ring .
+    op m21 : Matrix -> R$Ring .
+    op m22 : Matrix -> R$Ring .
+
+    eq m11(matrix(A, B, C, D)) = A [variant] .
+    eq m12(matrix(A, B, C, D)) = B [variant] .
+    eq m21(matrix(A, B, C, D)) = C [variant] .
+    eq m22(matrix(A, B, C, D)) = D [variant] .
+endfm
+\end{verbatim}
+
+Next, we define matrix multiplication, determinant and identity as \emph{definitional extensions} of
+the theory of matrices. That is, these new functions are fully defined in terms of the theory of
+matrices itself and can always be "evaluated away." This important to meet the Nelson-Oppen
+theory disjointness requirement, as explained below.
+
+\begin{verbatim}
+fmod MATRIX-OPS{R :: RING} is 
+    protecting MATRIX{R} .
+    
+    vars A1 B1 A2 B2 : R$Ring .
+    vars A B : Matrix .
+    
+    op mulSum : R$Ring R$Ring R$Ring R$Ring -> R$Ring .
+    eq mulSum(A1, B1, A2, B2) = (A1 * B1) + (A2 * B2) .
+    
+    op multiply : Matrix Matrix -> Matrix .
+    eq multiply(A, B)
+     = matrix(mulSum(m11(A),m11(B),m12(A),m21(B)),
+              mulSum(m11(A),m12(B),m12(A),m22(B)),
+              mulSum(m21(A),m11(B),m22(A),m21(B)),
+              mulSum(m21(A),m12(B),m22(A),m22(B))) .
+
+    op determinant : Matrix -> R*Ring .
+    eq determinant(A)
+     = (m11(A) * m22(A)) - (m12(A) * m21(A)) .
+
+    op identity : -> Matrix .
+    eq identity = matrix(1, 0, 0, 1) .
+endfm
+\end{verbatim}
+
+Next we instantiate the theory of rings to the module for the theory of Reals using a view:
+
+\begin{verbatim}
+view Real from RING to REAL is
+    sort Ring to Real .
+    op 0 to 0/1 .
+    op 1 to 1/1 .
+    op _+_ to _+_ .
+    op _-  to _- .
+    op _*_ to _*_ .
+endv
+
+fmod  MATRIX-REAL is 
+  protecting MATRIX-OPS{Real} .
+endfm
+\end{verbatim}
+
+What is crucial about this theory instantiation is that, since the operators in \texttt{MATRIX-OPS}
+are all definitional extensions, they can all be evaluated away to their righthand sides, i.e., to
+operators in the disjoint union of two theories: (i) the FVP theory \texttt{MATRIX} obtained by
+completely removing its \texttt{RING} parameter part, and (ii) the theory \texttt{REAL} to which the
+parameter theory \texttt{RING} is instantiated. Therefore, the order-sorted Nelson-Oppen algorithm
+can be invoked to decide validity and satisfiability of formulas in \texttt{MATRIX-REAL}, once we:
+(i) evaluate away all defined operations in \texttt{MATRIX-OPS} appearing in a formula, and (ii)
+purify the formula into its two disjoint parts.
 
 ```test
 set include BOOL off .
 load ../../../contrib/tools/meta/nelson-oppen-combination.maude
 ```
 
-```{.test .njr-thesis}
+```{.test}
 fmod MATRIX-X is
     sort X Matrix .
     op matrix : X X X X -> Matrix [ctor] .
@@ -30,19 +121,17 @@ fmod MATRIX-X is
     eq m21(matrix(A, B, C, D)) = C [variant] .
     eq m22(matrix(A, B, C, D)) = D [variant] .
 endfm
-```
 
-Next, we define multiplication, determinant and identify as meta-functions --
-functions over terms at the meta-level.
+--- Next, we define multiplication, determinant and identify as meta-functions --
+--- functions over terms at the meta-level.
 
-```test
 fmod MATRIX-TEST is
     protecting NELSON-OPPEN-COMBINATION .
 
     vars A B A1 B1 A2 B2 ZERO ONE : Term .
 ```
 
-```{.test .njr-thesis}
+```{.test}
     op mulSum : Term Term Term Term -> Term .
     eq mulSum(A1, B1, A2, B2) = '_+_ [ '_*_ [ A1 , B1 ]
                                      , '_*_ [ A2 , B2 ]
@@ -65,11 +154,9 @@ fmod MATRIX-TEST is
 
 ```test
 endfm
-```
 
-Finally, we the parameterise this theory over the reals:
+--- Finally, we the parameterise this theory over the reals:
 
-``` {.test .njr-thesis}
 fmod MATRIX-REAL is
     including MATRIX-X .
     sort Real .
@@ -78,13 +165,16 @@ fmod MATRIX-REAL is
     op fake-zero :      -> Real [ctor] .
     op fake-succ : Real -> Real [ctor] .
 endfm
-```
 
-Reducing this in via Nelson-Oppen yeilds:
+--- Reducing this in via Nelson-Oppen yeilds:
 
-```test
 set print attribute on .
 ```
+
+We cannot, at the moment, use this specification as is, because the Nelson-Oppen
+implementation does not support view yet. We execute the the following query
+against an equivalent specification of real matrices:
+
 
 ``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
@@ -96,8 +186,8 @@ reduce in MATRIX-TEST : nelson-oppen-valid(
     ) .
 ```
 
-The negation (we are checking validity) of this forumla purifies to the following the formula in the
-theory of reals:
+The negation of this forumla (since we are checking validity) purifies to the following the formula
+in the theory of reals:
 
 ```njr-thesis
     '0:Real ?= '0/1.Real 
@@ -158,8 +248,10 @@ endfm
 
 ``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
-       ( tagged(tt, (('mod > 'MATRIX-INTEGER);  ('check-sat > 'var-sat); ('convex > 'true)))
-       , tagged(tt, (('mod > 'INTEGER       );  ('check-sat > 'smt-sat); ('convex > 'false)))
+       ( tagged(tt, (('mod > 'MATRIX-INTEGER);
+            ('check-sat > 'var-sat); ('convex > 'true)))
+       , tagged(tt, (('mod > 'INTEGER       );
+            ('check-sat > 'smt-sat); ('convex > 'false)))
        ),
            (    multiply('A:Matrix, 'B:Matrix) ?= identity('0.Integer, '1.Integer)
              /\ 'm21['A:Matrix] ?= '0.Integer
@@ -176,12 +268,18 @@ In the theory of integers this purifies to:
 ```njr-thesis
     '0:Integer ?= 'a21:Integer /\ '0:Integer ?= 'b21:Integer 
  /\ '0:Integer ?= '0.Integer   /\ '1:Integer ?= '1.Integer 
- /\ 'p11:Integer ?= '_+_['_*_['a11:Integer, 'b11:Integer],'_*_['a12:Integer, 'b21:Integer]] 
- /\ 'p12:Integer ?= '_+_['_*_['a11:Integer, 'b12:Integer],'_*_['a12:Integer, 'b22:Integer]] 
- /\ 'p21:Integer ?= '_+_['_*_['a21:Integer, 'b11:Integer],'_*_['a22:Integer, 'b21:Integer]] 
- /\ 'p22:Integer ?= '_+_['_*_['a21:Integer, 'b12:Integer],'_*_['a22:Integer, 'b22:Integer]] 
- /\ '1.Integer != '_-_['_*_[ 'a11:Integer, 'a22:Integer],'_*_[ 'a12:Integer, 'a21:Integer]] 
- /\ '-_['1.Integer] != '_-_[ '_*_['a11:Integer, 'a22:Integer],'_*_[ 'a12:Integer, 'a21:Integer]]
+ /\ 'p11:Integer ?= '_+_[ '_*_['a11:Integer, 'b11:Integer]
+                        , '_*_['a12:Integer, 'b21:Integer]] 
+ /\ 'p12:Integer ?= '_+_[ '_*_['a11:Integer, 'b12:Integer]
+                        , '_*_['a12:Integer, 'b22:Integer]] 
+ /\ 'p21:Integer ?= '_+_[ '_*_['a21:Integer, 'b11:Integer]
+                        , '_*_['a22:Integer, 'b21:Integer]] 
+ /\ 'p22:Integer ?= '_+_[ '_*_['a21:Integer, 'b12:Integer]
+                        , '_*_['a22:Integer, 'b22:Integer]] 
+ /\ '1.Integer != '_-_['_*_[ 'a11:Integer, 'a22:Integer]
+                        ,'_*_[ 'a12:Integer, 'a21:Integer]] 
+ /\ '-_['1.Integer] != '_-_[ '_*_['a11:Integer, 'a22:Integer]
+                           , '_*_[ 'a12:Integer, 'a21:Integer]]
 ```
 
 and, in the theory of matrices to:
