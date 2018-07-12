@@ -17,13 +17,13 @@ further and more interesting applications.
 
 SMT has come a long way since Hilbert posed his problem of "mechanising mathematics". In 1929,
 Persburger proved that linear integer arithmetic is indeed decidable, and although it was shown
-later by Fischer and Rabin that algorithm must be worst case doubly exponential in the length of
+later by Fischer and Rabin that the algorithm must be worst case doubly exponential in the length of
 formulae, the Simplex Algorithm and its variations has proven to be an effective method of solving
 SMT for both real and integer quantifier free linear arithmetic efficiently. Efficient
 algorithms have also been found for a number of other theories, such as the theory of arrays, 
 uninterpreted functions and more.
 
-SMT problems in automated theorem proving and programming verification commonly involve combinations
+SMT problems in automated theorem proving and program verification commonly involve combinations
 of standard theories. For example, verifying a sorting algorithm may involve solving queries in the
 combined theories of lists and of total orders. Prior to 1979, this involved manually looking for a
 combined algorithm, and proving that it worked as promised. In 1979, Nelson and Oppen proposed a
@@ -67,11 +67,11 @@ important theories fall into this class or satisfy weaker requirements allowing 
 Logical foundations of Maude
 ----------------------------
 
-The Maude System is a programming language and framework whose semantics is based in Rewriting
+The Maude System is a programming language and framework whose semantics is based on Rewriting
 Logic. Rewrite theories model concurrent systems. In particular, for model checking purposes they provide a
 very high level formalism for axiomatizing possibly infinite Kripke structures. This is exploited in
 Maude for formal analysis purposes, since concurrent systems specified as rewrite theories can be
-analyzed using Maude's LTL model checker and other model checker's and theorem proving tools in
+analyzed using Maude's LTL model checker and other model checkers and theorem proving tools in
 Maude's formal environment.
 
 Since a rewrite theory is a triple $(\Sigma,E,R)$ with $(\Sigma,E)$ an equational theory with
@@ -109,18 +109,18 @@ a non-empty list and returns its first element. But, what happens when the list 
 the head function return in the case of an empty list? The head function must be partial.
 [@stacs] Order-sorted signatures allow formallizing such partiality.
 
-An order sorted signature $\Sigma = ((S, {\le_s}), F)$, where $(S, F)$ is a many-sorted signature,
+An order sorted signature $\Sigma = ((S, {\le_s}), F)$ is a triple where $(S, F)$ is a many-sorted signature,
 and ${\le_s}$ is a partial order on the set $S$. Models of order-sorted theories are order-sorted
 $\Sigma-$algebras. For an order-sorted signature $\Sigma$ an order-sorted $\Sigma-$algebra is a many-sorted
-$\Sigma-$algebra, $(A, \__A)$, and:
+$\Sigma-$algebra, $(A, \__A)$, satisfying the following additional conditions:
 
 1.  if $s {\le_s} s'$, then $A_s \subset A_{s'}$,
 
-2.  if constant symbols $c : \epsilon \to s$ and $c : \epsilon \to s'$ with $s$ and $s'$, sorts in
+2.  given constant symbols $c : \epsilon \to s$ and $c : \epsilon \to s'$ with $s$ and $s'$, sorts in
     the same connected component under ${\le_s}$, then their interpretations,
     $c^{\epsilon,s}_{A} \in A_a$ and $c^{\epsilon,s'}_{A} \in A_{s'}$, are the same element,
 
-3.  if  function symbols
+3.  given function symbols
     $f : a  \to r$ and
     $f : a' \to r'$
     with $a' = s'_1 \times \cdots \times s'_n$
@@ -194,27 +194,27 @@ Maude are only applied from left to right. This is to allow defining a terminati
 also, by choosing equations carefully so that they are confluent, to ensure a unique result for
 every terminating execution of a term. Attributes like `assoc` and `comm` allow specifying common
 axioms that would otherwise be difficult to define in a terminating manner (and also make
-implementation of Maude's matching and unification algorithms easier and more efficient.) Because of
-this directionality, the theories must be *confluent* for them to form a well-defined equational
-theory. i.e. the application of equations must yield the same final result irrespective of the order
-in which eqautions are applied. Although tools such as the Church-Rosser Checker and the Maude
-Termination Tool are provided to help check these, the burden of making sure that functional modules
-are confluent and terminating is ultimately on the programmer defining them. This orientation on the
-equations means that we will sometimes have to define equations that would otherwise be
-mathematically deducible. For example, if we had defined the functional module with the same
-equations as the equational theory, Maude would not have been able to deduce that $-3 = 2$. However,
-it is trivial to show that each set of equations can be derived from the other. Inspite of this, it
-can be seen from the example above that the representational distance between an equational theory
-and its implementation in Maude very small.
+computations using Maude's efficient matching algorithms modulo such axioms considerably more
+expressive, with very succinct specifications.) Because of this directionality, the theories must be
+*confluent* for them to form a well-defined equational theory. i.e. the application of equations
+must yield the same final result irrespective of the order in which eqautions are applied. Although
+tools such as the Church-Rosser Checker and the Maude Termination Tool are provided to help check
+these, the burden of making sure that functional modules are confluent and terminating is ultimately
+on the programmer defining them. This orientation on the equations means that we will sometimes have
+to define equations that would otherwise be mathematically deducible. For example, if we had defined
+the functional module with the same equations as the equational theory, Maude would not have been
+able to deduce that $-3 = 2$. However, it is trivial to show that each set of equations can be
+derived from the other. In spite of this, it can be seen from the example above that the
+representational distance between an equational theory and its implementation in Maude very small.
 
 Besides the syntax demonstrated above, Maude also supports conditional equations, i.e. an equation
-that holds when some predicate over the term holds, and also an "otherwise" clause -- an equation
-that will fire when no other equation holds.
+that fires only when some predicate expression holds for an equation's instance, and also an
+"otherwise" clause -- an equation that will fire when no other equation holds.
 
 ### Rewriting Logic
 
 A rewrite theory $\mathcal R$ is a triple $(\Sigma, E, R)$, where $(\Sigma, E)$ is an equational
-theory and $R$ the set of *one step rewrites* on the terms of the signature.
+theory and $R$ the set of *one step rewrite rules* on the terms of the signature.
 
 The rewrite rules $R$ define a relation $\rewrite \subset \terms\times\terms$. This relation is
 obtained from the closure of $R$ under *reflexivity*, *$E-$equality* (equality under the set of
@@ -254,7 +254,7 @@ in the implementation of model checking and are the structures over which Linear
 Temporal Logics are defined. Again, this makes the representational distance between the
 specification of the model and the data structures we use to reason over it minimal, making
 verification of correctness of model checkers and other tools that reason over these structures
-easy.
+easier than that of model checkers where systems are specified in some imperative langaugee
 
 Rewrite theories are defined in Maude through *system modules*. Since we implement the Nelson-Oppen
 combination algorithm purely as a functional module, we do not go into the details of the
@@ -265,11 +265,11 @@ syntax for system modules here.
 Rewriting logic is a *reflective logic* -- its meta theory can be represented at the object level in
 a consistent way. i.e. there is a *universal theory* $U$ and a function
 $\overline { ( \_ \proves \_ ) }$ such that for any theory $T$,
-$T \proves \phi \iff U \proves \overline{ T \proves \phi }$.
-This is particularly interesting because it allows us to implement both the
-models we work over and the model checking tools we use in the same language. In fact, the implementation
-of variant-based satisfiability by Stephen Sherik and of the Nelson-Oppen Combination Algorithm here take
-advantage of this.
+$T \proves \phi \iff U \proves \overline{ T \proves \phi }$. This is particularly interesting
+because it allows us to implement both the models we work over, and the theorem proving and the
+model checking tools we use in the same language. In fact, the implementation of variant-based
+satisfiability by Stephen Sherik and of the Nelson-Oppen Combination Algorithm here crucially take advantage
+of this.
 
 In Maude, the built-in module `META-LEVEL` is used to do this lifting. Terms are represented in the
 sort `Term`, and modules in the sort `Module`. The function
@@ -278,7 +278,7 @@ module name (e.g. `'Z5`) and returns a term representing the module. Similarly, 
 `upTerm : Universal -> Term` takes a term of any sort and returns a meta-term, i.e. a term of sort
 `Term`. Constants, function symbols and variables in a term are represented using quoted
 identifiers. Arguments of a function symbol in a term are placed in a comma separated list within
-square brackets. Constants and variables have their sorts annoted as part of the identifier. For
+square brackets. Constants and variables have their sorts annotated as part of the identifier. For
 example the term `1 + 1` is represented at the meta level as `'_+_[ '1.Z5, '1.Z5 ]`, while the
 variable `X` of sort `Z5` as `'X:Z5`. Meta-terms can be reduced in a reflective way
 by the reflected equations of a reflected functional module using the `metaReduce` function.
@@ -291,15 +291,15 @@ https://www.sciencedirect.com/science/article/pii/S1571066105825538
 ## Decision Procedures in Maude
 
 There are a several satisfiability procedures available in Maude, either implemented in Maude at the
-meta level, or in external tools and made accessible in Maude through the C++ API. It is these tools
+meta level, or in external tools and made accessible in Maude through their API. It is these tools
 that we shall use as the base solvers for the Nelson-Oppen combination method.
 
 ### Variant-based Satisfiability
 
 Variant-based satisfiability is a theory-generic procedure that applies to initial models of a large
 class of user-definable order-sorted equational theories. The equations of such theories must satisfy
-the *finite variant property* and may include axioms such as commutativity, associativity and
-commutativity, or identity.
+the *finite variant property* (FVP) [@variantnarrowing][@comon-delaune] and may include axioms such
+as commutativity, associativity-commutativity, or identity.
 
 Let $T = (\Sigma, E \union B)$ where the equations $E$ are confluent, terminating and $B$-coherent
 modulo axioms $B$. A $E,B-$variant of a term $t$ is a pair $(u, \theta)$ such that
@@ -320,22 +320,22 @@ Furthermore, if $(\Sigma, E \union B) \supseteq (\Omega, E_{\Omega} \union B_\Om
 subsignature of constructors and $(\Omega, E_{\Omega} \union B_\Omega)$ is OS-compact, then
 satisfiability of quantifier free formulae in the initial algebra of this theory is decidable by
 variant-based satisfiability. This has been implemented in Maude by Sherik and
-Meseguer[@metalevelvarsat] and will be used for demonstrating the order-sorted Nelson-Oppen
+Meseguer [@metalevelvarsat] and will be used for demonstrating the order-sorted Nelson-Oppen
 combination method. Refer to [@varsat] for a more in-depth description.
 
-### CVC4
+### CVC4 and Yices
 
 CVC4 is an industry-standard automatic theorem prover that supports many theories including rational
 and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic [@cvc4].
-Although CVC4 allows defining algebraic data types it does not allow these terms terms in these data
+Yices is another state of the art SMT solver that supports in addition tuples and scalar types and
+excels in non-linear real and integer arithmetic [@yices2]. Maude allows interaction with these solvers
+via their respective C APIs.
+
+Although CVC4 and Yices allow defining algebraic data types they do not allow terms in these data
 types to be identified by additional axioms or have any operations except term constructors and term
 selectors. Variant based satisfiablilty includes these simple algebraic data types as a special case,
 but it covers a much wider class of algebraic specifications: it allows user-defined functions
 (provided their equations are FVP), and structural axioms such as combinations of commutative,
-associative commutative, and identity axioms. Therefore, it complements CVC4 and other SMT solvers
+associative commutative, and identity axioms. Therefore, it complements CVC4, Yices and other SMT solvers
 by allowing a very wide range of user-definable decidable theories.
 
-### Yices2
-
-Yices 2 is another industry-standard SMT solver that excels in non-linear real and integer
-arithmetic.[@yices2]

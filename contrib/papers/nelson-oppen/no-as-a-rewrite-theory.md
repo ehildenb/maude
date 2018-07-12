@@ -1,7 +1,7 @@
 Order Sorted Nelson Oppen as a rewrite theory
 =============================================
 
-Given decision procedures for the quantifier free formulae in a set of theories the Order-Sorted
+Given decision procedures for the quantifier free formulae in several theories the Order-Sorted
 Nelson-Oppen combination method gives us a decision procedure for the quantifier free fragment in
 the combination of these theories, provided that the theories are *disjoint*, *stably infinite* for their shared
 sorts and *optimally intersecting*. In theories stably infinite in a set of sorts, we can find models for each theory
@@ -73,7 +73,7 @@ normal form. Further, for each atom in such a formula we can apply "purification
 formula where each atom is in the signature of one of the two theories.
 
 Now, our task has become to find a $T_1 \union T_2$-model $M_0$ and an assignment
-$a: \vars(\phi) \to M_0$ such that such that $M,a \models \varphi$. How can we decompose this
+$a: \vars(\phi) \to M_0$ such that $M,a \models \varphi$. How can we decompose this
 satisfiability problem into similar subproblems for the theories $T_{1}$ and $T_{2}$? What follows
 summarizes more detailed arguments in [@cs576] about the order-sorted Nelson-Oppen combination.
 Because of the stably infinite assumptions on the theories $T_{1},T_{2}$, as well as the assumption
@@ -95,21 +95,21 @@ equalities and disequalities among shared variables (called an "arrangement"), a
 order-sorted Nelson-Oppen algorithm amounts to finding such a $\psi$ among all possible equivalence
 relations such that $\varphi_{i}\wedge \psi$ is $T_{i}$-satisfiable, $1 \leq i \leq 2$.
 
-The question now becomes how do we find such a arrangement of variables? Checking each equivalence
-class for satisfiability is infeasable as the number of equivalence classes grows exponentially with
-the number of variables, even in the order sorted case where we can restrict ourselves to
-equivalences capatable with the sort structure of the signatures (e.g. we cannot have an equality
-between a boolean and an integer variable). Instead of checking each of the possible partitions on
-the shared variables, we choose a Darwinian approach, pruning classes of equivalences from the
-search space if an identification of a single pair of variables implied by one theory is not
-satisfiable in another (equality propagation). In the case of non-convex theories, we may have
+The question now becomes: how do we efficiently find such an arrangement of variables? Checking each
+equivalence class for satisfiability is infeasable as the number of equivalence classes grows
+exponentially with the number of variables, even in the order sorted case where we can restrict
+ourselves to equivalences compatible with the sort structure of the signatures (e.g. we cannot have
+an equality between a boolean and an integer variable). Instead of checking each of the possible
+partitions on the shared variables, we choose a Darwinian approach, pruning classes of equivalences
+from the search space if an identification of a single pair of variables implied by one theory is
+not satisfiable in another (equality propagation). In the case of non-convex theories, we may have
 $\phi \limplies (x_1 = y \lor x_2 = y)$ without either $\phi \limplies x_1 = y$ or
 $\phi \limplies x_2 = y$ individually holding. Thus if any theory implies the disjunction of all
 remaining identifications we branch our search, checking if at least one of the remaining
 identifications is satisfiable (split). We can think of each equality propagation step of the
 algorithm as pruning the search space (of arrangements) of unsatisfiable ones, and the split step
-dividing the search space into a smaller groups where the split step can apply. The inference rules
-for the Equality Propagation and Split rules are given in \ref{fig:proofrules} where $\phi_{E}$
+dividing the search space into smaller groups where the split step can apply. The inference rules
+for the Equality Propagation and Split rules are given in Figure \ref{fig:proofrules} where $\phi_{E}$
 denotes the equalities between variables with shared sorts obtained so far by previous inference
 steps, and $\CandidateEqualities$ denotes the still uncommitted equalities between such shared
 sorts. These rules are similar to rules presented in [@mannaCombining] for the unsorted case and

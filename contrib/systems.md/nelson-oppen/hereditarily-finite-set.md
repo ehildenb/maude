@@ -2,12 +2,12 @@ Hereditarily Finite Sets with Reals
 -----------------------------------
 
 In this example, we demonstrate the combination algorithm with non-convex theories -- non-linear
-real arithmetic and hereditarily finite sets. Hereditarily finite sets is an example of a theory
-that cannot be implemented in CVC4 or Yices2 because of its use of recursive algebraic data types with
-equations identifying terms. Hereditarily finite sets (HFS) are a model of set theory without
-the axiom of infinity. Although hereditarily finite sets are expressive enough to encode constructs
-like the integers and the natural numbers, its initial model is a countable model and so cannot encode the real
-numbers.
+real arithmetic and hereditarily finite sets. Hereditarily finite sets is an example of a theory not
+currently definable in CVC4 or Yices2 because of its use of algebraic data types modulo axioms like
+associativity-commutativity and having FVP equations. Hereditarily finite sets (HFS) are a model of
+set theory without the axiom of infinity. Although hereditarily finite sets are expressive enough to
+encode constructs like the integers and the natural numbers, its initial model is a countable model
+and so cannot encode the real numbers.
 
 ```test
 set include BOOL off .
@@ -31,8 +31,9 @@ Both `X`s and `Set`s are `Magma`s.
     vars S        : Set   .
 ```
 
-The elements of a hereditarily finite set are constructed inductively from three constructors.
-First, `empty` is a `Set`:
+The elements of a hereditarily finite set can be elements of the parameter sort `X` of "atomic
+elements", or can be other hereditarily constructed inductively from the following three
+constructors. First, `empty` is a `Set`:
 
 ``` {.test .njr-thesis}
     op empty :             -> Set                                       [ctor] .
@@ -169,10 +170,10 @@ reduce var-sat( upModule('HFS-REAL, true)
               ) == true .
 ```
 
-Finally we, check the satisfiability the formula $\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y$. i.e. "is
+Finally, we check the satisfiability of the formula $\{ x^2 , y^2, z^2 \} \subseteq \{ a \} \land x \ne y$. i.e. "is
 it possible for the set of squares of three numbers, two of which must be distinct, to be a
 subset of a set with a single element." This is indeed possible, since every positive real number
-has two distinct square roots. Since set union is idemopotent, if the two distinct numbers are
+has two distinct square roots. Since set union is idempotent, if the two distinct numbers are
 additive inverses of each other and the third is equal to either, then the proposition would indeed
 be satisfied.
 
@@ -225,12 +226,12 @@ Initially, a few equalities are propagated from the theory of hereditarily finit
 'HFS-REAL: => 'z2:Real ?= 'A:Real
 ```
 
-Since no more identifications of variables are implied on their own and the theories are convex, the
-algorithm must check whether a disjunction of identifications is implied by either of the theories,
-and indeed $x = z \lor y = z$ is implied. The algorithm splits the search space on the remaining
-candidate equalities ($a = x$, $a = y$, $a = z$, $x = y$, $z = z$ and $y = z$). It first tries the
-case where $a = x$ and finds that there are satisfiabile arrangements (this can happen when
-$a = x = 1$). It then splits the search space again, but finds that there are no arrangements
+Since no more identifications of variables are implied on their own and the theories are not convex,
+the algorithm must check whether a disjunction of identifications is implied by either of the
+theories, and indeed $x = z \lor y = z$ is implied. The algorithm splits the search space on the
+remaining candidate equalities ($a = x$, $a = y$, $a = z$, $x = y$, $z = z$ and $y = z$). It first
+tries the case where $a = x$ and finds that there are satisfiabile arrangements (this can happen
+when $a = x = 1$). It then splits the search space again, but finds that there are no arrangements
 $a = y$ possible (since that implies that $x = y$). However the case where $a = z$ is satisfiable.
 This causes the the equality $x = z$ to be propagated. Now, since no further equalities or
 disjunctions thereof hold, the algorithm concludes that the formula is satisfiable.

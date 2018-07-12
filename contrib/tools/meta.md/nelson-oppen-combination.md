@@ -229,7 +229,7 @@ The `nelson-oppen-valid` function converts a validity check into a satisfiabilit
 
 Given a quantifier free formula `PHI` in the set of theories `TFS` (each tagged with information
 regarding covexitivity, and information about which procedure to use for checking sat), we first
-convert it to the disjunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes
+convert it to disjunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes
 $\bot$).
 
 ```{ .maude .njr-thesis }
@@ -245,7 +245,7 @@ The algorithm then considers each disjunction separately.
      .
 ```
 
-We then purify each disjunction into a disjunction of "pure" atoms each wellformed in the signature
+We then purify each mixed disjunct into a conjunction of "pure" atoms each wellformed in the signature
 of one of the theories, and tagged with the appropriate information.
 
 ```{ .maude .njr-thesis }
@@ -299,7 +299,10 @@ where $\SharedVariables_{s_i}$ is the subset of shared variables in the connecte
 ```
 
 Next, we apply the equality propagation inference rule. If any identification of variables is
-implied by a theory, we propagate that identification to the other theories.
+implied by a theory, we propagate that identification to the other theories by replacing all
+occurrences of the variable in the left hand side with that on the right hand side in all formulae
+and the candidate equalities. Performing the substitution instead of merely adding the equality to
+the formula has the advantage of reducing the number of candidate equalities we need to try.
 
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
@@ -325,8 +328,8 @@ If there are no variables left to identify, then the formula is satisfiable
     eq $nosat.split(TFS, mtForm) = true .
 ```
 
-However, if there some disjunction of identifications implied and we are in a non-convex theory, we
-"split". i.e. we try each of the possible identification left in turn and see if atleast one of them
+However, if some disjunction of identifications is implied and we are in a non-convex theory, we
+"split". i.e. we try each of the possible identification left in turn and see if at least one of them
 is satisfiable.
 
 ```{ .maude .njr-thesis }
@@ -369,5 +372,9 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
                        , mtForm, DISJ?2)
      = false
      .
+```
+
+``` {.maude}
 endfm
 ```
+

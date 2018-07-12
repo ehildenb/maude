@@ -45,7 +45,7 @@ endfm
 
 Next, we define matrix multiplication, determinant and identity as \emph{definitional extensions} of
 the theory of matrices. That is, these new functions are fully defined in terms of the theory of
-matrices itself and can always be "evaluated away." This important to meet the Nelson-Oppen
+matrices itself and can always be "evaluated away." This is important to meet the Nelson-Oppen
 theory disjointness requirement, as explained below.
 
 \begin{verbatim}
@@ -171,10 +171,9 @@ endfm
 set print attribute on .
 ```
 
-We cannot, at the moment, use this specification as is, because the Nelson-Oppen
-implementation does not support view yet. We execute the the following query
-against an equivalent specification of real matrices:
-
+We cannot, at the moment, use this specification as is, because the Nelson-Oppen implementation does
+not support views yet. Instead, we execute the the following query against an equivalent
+specification of real matrices:
 
 ``` {.test .njr-thesis}
 reduce in MATRIX-TEST : nelson-oppen-valid(
@@ -196,7 +195,7 @@ in the theory of reals:
  /\ 'p12:Real ?= '_+_['_*_['a11:Real, 'b12:Real],'_*_[ 'a12:Real, 'b22:Real]] 
  /\ 'p21:Real ?= '_+_['_*_['a21:Real, 'b11:Real],'_*_[ 'a22:Real, 'b21:Real]] 
  /\ 'p22:Real ?= '_+_['_*_['a21:Real, 'b12:Real],'_*_[ 'a22:Real, 'b22:Real]] 
- /\ '0/1.Real ?= '_-_['_*_[ 'a11:Real, 'a22:Real],'_*_[ 'a12:Real, 'a21:Real]]
+ /\ '0/1.Real ?= '_-_['_*_['a11:Real, 'a22:Real],'_*_[ 'a12:Real, 'a21:Real]]
 ```
 
 and, in the theory of Matrices:
@@ -228,8 +227,8 @@ unsatisfiable and the original formula must be valid.
 
 It turns out that if we combine this module with the Integers instead of the Reals, we can prove
 something stronger: that any invertible matrix must have determinant $\pm 1$. Unfortunately, CVC4 is
-not able to solve the non-linear arithmetic needed to prove this. We must instead turn to the Yices2
-solver, the other SMT solver available in Maude. Even so, the default configuration for Yices2 does
+not able to solve the non-linear arithmetic needed to prove this. We must instead turn to the Yices
+solver, the other SMT solver available in Maude. Even so, the default configuration for Yices does
 not enable the solver for non-linear arithmetic (MCSAT), and running this example involved modifying
 the Maude C++ source code to enable that configuration. Even so, the computational difficulty
 involved in solving non-linear integer arithmetic forced us to restrict the proof to
@@ -305,5 +304,6 @@ Similar equalities are propagated:
 'MATRIX-INTEGER: => 'p11:Integer ?= 'p22:Integer
 ```
 
-leading to the same contradiction: that $0 = 1$, allowing us to conclude that
-the original formula is in fact valid.
+leading to a complex contradiction forcing some elements to be inverses of others in an impossible
+way, allowing us to conclude that the original formula is valid.
+

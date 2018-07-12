@@ -17,12 +17,12 @@ theory and for every possible assigment of variables, the formula holds. For exa
 "every natural number factorizers uniquely into a set of prime numbers" is valid in Peano
 arithmetic, whereas any first order logic formulation of "Peano arithmetic is consistent" in the
 theory of Peano arithmetic is not, due to Gödel's Incompleteness Theorems. An algorithmic check
-for validity of arbitary formulae was Hilbert's dream and forms the core of automated theorem
-proving.
+for validity of arbitary formulae was Hilbert's dream and forms the core of SMT solving.
 
-Although, alas, Hilbert's dream is impossible, and in general SMT is undecidable (e.g. for non-linear integer arithmetic), there are subsets
-of theories that are decidable and immensely useful for a variety of applications including solving
-optimization problems, program verification and automated theorem proving.
+Although, alas, Hilbert's dream is impossible, and in general satisfiability is undecidable
+(e.g. for non-linear integer arithmetic), there are subsets of theories that are decidable and
+immensely useful for a variety of applications including solving optimization problems, program
+verification and automated theorem proving.
 
 Over the years, efficient algorithms were devised for linear real and integer arithmetic, non-linear
 arithmetic, arrays (partial functions from the naturals) amongst others, as well as theory-generic
@@ -59,7 +59,7 @@ has been used to verify a wide spectrum of systems, from biological systems (Pat
 programming languages (KFramework [@kmaude]), and so on (see [@twentyears] for a comprehensive
 survey of such applications). The capabilities of many of these formal verification tools can be
 substantially increased through leveraging the power of SMT solvers. Besides the SMT solvers
-mentioned previously, Maude also offers access to CVC4 [@cvc4] as well as Yices2, both state of the
+mentioned previously, Maude also offers access to CVC4 [@cvc4] as well as Yices[@yices2], both state of the
 art solvers. While both CVC4 and Yices2 themselves implement the Nelson-Oppen algorithm internally,
 those implementations do not allow cooperation between the algorithms implemented in Maude as rewrite theories, or
 other solvers. Thus this implementation of the algorithm can be seen as a first step towards a rich,
