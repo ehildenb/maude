@@ -59,7 +59,7 @@ has been used to verify a wide spectrum of systems, from biological systems (Pat
 programming languages (KFramework [@kmaude]), and so on (see [@twentyears] for a comprehensive
 survey of such applications). The capabilities of many of these formal verification tools can be
 substantially increased through leveraging the power of SMT solvers. Besides the SMT solvers
-mentioned previously, Maude also offers access to CVC4 [@cvc4] as well as Yices[@yices2], both state of the
+mentioned previously, Maude also offers access to CVC4 [@cvc4] as well as Yices [@yices2], both state of the
 art solvers. While both CVC4 and Yices2 themselves implement the Nelson-Oppen algorithm internally,
 those implementations do not allow cooperation between the algorithms implemented in Maude as rewrite theories, or
 other solvers. Thus this implementation of the algorithm can be seen as a first step towards a rich,

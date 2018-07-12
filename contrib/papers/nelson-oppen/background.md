@@ -17,7 +17,7 @@ further and more interesting applications.
 
 SMT has come a long way since Hilbert posed his problem of "mechanising mathematics". In 1929,
 Persburger proved that linear integer arithmetic is indeed decidable, and although it was shown
-later by Fischer and Rabin that the algorithm must be worst case doubly exponential in the length of
+later by Fischer and Rabin that the algorithm must be worst case doubly exponential on the length of
 formulae, the Simplex Algorithm and its variations has proven to be an effective method of solving
 SMT for both real and integer quantifier free linear arithmetic efficiently. Efficient
 algorithms have also been found for a number of other theories, such as the theory of arrays, 
@@ -78,7 +78,7 @@ Since a rewrite theory is a triple $(\Sigma,E,R)$ with $(\Sigma,E)$ an equationa
 symbols $\Sigma$ and (possibly conditional) equations $E$, and $R$ the theory's rewrite rules
 axiomatizing system transitions, a rewrite theory defines over the elements of the initial algebra
 $T_{\Sigma/E}$ (which models the system states), a transition system. This transition system is
-intrinsically concurrent thanks to the logic's semantics, and captures naturally the no-determinism
+intrinsically concurrent thanks to the logic's semantics, and captures naturally the non-determinism
 present in such systems.
 
 ### Unsorted vs Many-Sorted vs Order-Sorted Logics
@@ -107,20 +107,20 @@ vector spaces concisely.
 However, we can do better than many-sorted logic. Take the theory of lists. The head function takes
 a non-empty list and returns its first element. But, what happens when the list is empty? What does
 the head function return in the case of an empty list? The head function must be partial.
-[@stacs] Order-sorted signatures allow formallizing such partiality.
+Order-sorted signatures allow formallizing such partiality [@stacs].
 
 An order sorted signature $\Sigma = ((S, {\le_s}), F)$ is a triple where $(S, F)$ is a many-sorted signature,
 and ${\le_s}$ is a partial order on the set $S$. Models of order-sorted theories are order-sorted
 $\Sigma-$algebras. For an order-sorted signature $\Sigma$ an order-sorted $\Sigma-$algebra is a many-sorted
 $\Sigma-$algebra, $(A, \__A)$, satisfying the following additional conditions:
 
-1.  if $s {\le_s} s'$, then $A_s \subset A_{s'}$,
+1.  If $s {\le_s} s'$, then $A_s \subset A_{s'}$.
 
-2.  given constant symbols $c : \epsilon \to s$ and $c : \epsilon \to s'$ with $s$ and $s'$, sorts in
+2.  Given constant symbols $c : \epsilon \to s$ and $c : \epsilon \to s'$ with $s$ and $s'$, sorts in
     the same connected component under ${\le_s}$, then their interpretations,
-    $c^{\epsilon,s}_{A} \in A_a$ and $c^{\epsilon,s'}_{A} \in A_{s'}$, are the same element,
+    $c^{\epsilon,s}_{A} \in A_a$ and $c^{\epsilon,s'}_{A} \in A_{s'}$, are the same element.
 
-3.  given function symbols
+3.  Given function symbols
     $f : a  \to r$ and
     $f : a' \to r'$
     with $a' = s'_1 \times \cdots \times s'_n$
@@ -243,7 +243,7 @@ and *transitivity*. If $x \rewrites y$, we say "$x$ rewrites to $y$".
 --!>
 
 This relation defines a transition system, where the system states are precisely the elements of the
-initial algebra $T_{\Sigma/E}$ assiated to the equational theory $(\Sigma, E)$. Execution of a
+initial algebra $T_{\Sigma/E}$ associated to the equational theory $(\Sigma, E)$. Execution of a
 program in Maude -- reducing a concrete term via the rewrite relation $\rewrite$ -- involves
 following the edges of this transition graph and terminates when the term it arrives at has no
 outward edges. Maude can also perform symbolic execution, i.e. reduce a term that has variables, as
@@ -326,7 +326,7 @@ combination method. Refer to [@varsat] for a more in-depth description.
 ### CVC4 and Yices
 
 CVC4 is an industry-standard automatic theorem prover that supports many theories including rational
-and integer linear arithmetic, array, bitvectors and a subset of non-linear arithmetic [@cvc4].
+and integer linear arithmetic, arrays, bitvectors and a subset of non-linear arithmetic [@cvc4].
 Yices is another state of the art SMT solver that supports in addition tuples and scalar types and
 excels in non-linear real and integer arithmetic [@yices2]. Maude allows interaction with these solvers
 via their respective C APIs.
