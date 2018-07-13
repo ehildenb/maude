@@ -23,7 +23,7 @@ logic theory. We implement this algorithm in the Maude System and instantiate it
 of real and integer matrices to demonstrate its use in automated theorem proving, and with
 hereditarily finite sets with reals to show its use with non-convex theories. This is done using
 both SMT solvers written in Maude itself via reflection (Variant-based satisfiability) and using
-external solvers (CVC4 and Yices2). This work can be considered a first step towards building a rich
+external solvers (CVC4 and Yices). This work can be considered a first step towards building a rich
 ecosystem of cooperating SMT solvers in Maude, that modeling and automated theorem proving tools
 typically written using the Maude System can leverage.
 
@@ -62,3 +62,5 @@ conclusion.md
 ```
 
 # References
+
+\sloppy
