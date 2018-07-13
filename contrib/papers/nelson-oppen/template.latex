@@ -1,5 +1,5 @@
 \documentclass[12pt,edeposit,fullpage]{uiucthesis2014}
-
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{fontspec,xltxtra,xunicode}
