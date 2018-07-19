@@ -86,7 +86,7 @@
 \def\msthesis{\def\@degree{Master of Science}
     \def\degree{M.S.}
     \def\@thesisname{THESIS}
-    \def\@committeename{Master's Committee:}
+    \def\@committeename{Advisor:}
     }
 \newcommand{\otherdoctorate}[2]{\def\@degree{#1}
     \def\degree{#2}
@@ -96,7 +96,7 @@
 \newcommand{\othermasters}[2]{\def\@degree{#1}
     \def\degree{#2}
     \def\@thesisname{THESIS}
-    \def\@committeename{Master's Committee:}
+    \def\@committeename{Advisor:}
     }
 \def\department#1{\def\@dept{#1}}
 \def\college#1{\def\@college{#1}}

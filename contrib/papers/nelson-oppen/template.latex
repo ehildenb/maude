@@ -17,7 +17,6 @@ $endfor$
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \begin{document}
-
 \msthesis
 \title{$title$}
 \author{$author$}
@@ -25,8 +24,17 @@ $endfor$
 \advisor{$advisor$}
 \degreeyear{$degreeyear$}
 \committee{$committee$}
+
 \maketitle
+
+\frontmatter
+
+\begin{abstract} $abstract$ \end{abstract}
+
 \tableofcontents
+
 \mainmatter
+
 $body$
+
 \end{document}
