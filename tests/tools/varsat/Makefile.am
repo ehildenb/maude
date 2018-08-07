@@ -1,7 +1,6 @@
-TESTS = \
-    var-sat
+include ../../test.Makefile
 
-MAUDE_FILES = \
+TESTS = \
     var-sat.maude
 
 RESULT_FILES = \
