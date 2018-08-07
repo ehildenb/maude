@@ -1,4 +1,4 @@
-set show timing off .
+
 
 *** order sorted free theory unification is not unitary
 fmod TEST is

@@ -1,7 +1,7 @@
 *** Unification problems where the order sorting interacts with collapse
 *** 9/14/10
 
-set show timing off .
+
 
 fmod FOO is
   sorts Small Big .

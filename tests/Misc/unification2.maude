@@ -1,7 +1,7 @@
 *** Tricky unification problems
 *** 8/12/10
 
-set show timing off .
+
 
 fmod TEST is
   sort Foo .

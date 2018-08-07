@@ -1,4 +1,4 @@
-set show timing off .
+
 
 *** check renaming instantiation
 *** trivial case: no parameterized sorts in renaming

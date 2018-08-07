@@ -1,7 +1,7 @@
 --- Load Systems and Prelude
 --- ------------------------
 
-set show timing off .
+
 
 load ../../../contrib/systems/cycle.maude
 load ../../../contrib/systems/bakery.maude

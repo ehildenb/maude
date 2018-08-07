@@ -1,4 +1,4 @@
-set show timing off .
+
 
 load ../../../contrib/systems/cycle.maude
 load ../../../contrib/systems/token.maude

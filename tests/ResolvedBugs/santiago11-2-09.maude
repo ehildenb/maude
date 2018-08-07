@@ -8,7 +8,7 @@ analysis phase of pattern compilation.
 Partly resolved in alpha92a.
 )
 
-set show timing off .
+
 
 red in META-LEVEL :
 metaMatch(mod 'STRAND-EXAMPLE-RULES-GENERATED-FLIPPEDRLS is

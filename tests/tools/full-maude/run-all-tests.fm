@@ -1,6 +1,6 @@
 set show stats off .
 set show loop stats off .
-set show timing off .
+
 set show loop timing off .
 
 load ../../AAM/sample-files-2.4/rew-seq-extended-rent-a-car-store.fm

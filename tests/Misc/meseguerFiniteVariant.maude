@@ -14,7 +14,7 @@ the finite variant property, which in turn are based on:
 
 )
 
-set show timing off .
+
 set include BOOL off .
 
 ****************************************

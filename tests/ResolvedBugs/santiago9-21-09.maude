@@ -9,7 +9,7 @@ the on demand computation of sort function BDDs introduced in alpha92.
 Resolved in alpha92a.
 )
 
-set show timing off .
+
 
 red in META-LEVEL : 
 metaUnify(mod 'STRAND-EXAMPLE-RULES-GENERATED-FLIPPEDRLS-ADDEDOPS-ADDEDOPS-ADDEDOPS-ADDEDOPS-ADDEDOPS-ADDEDOPS-CLEARFROZEN-EQS2RLS-REMOVED-ID-SYMBOLS is
