@@ -10,7 +10,7 @@ freshness.
 Resolved in alpha92a.
 )
 
-set show timing off .
+
 
 red in META-LEVEL :
 metaUnify(mod 'MINT-3-CLEARFROZEN-EQS2RLS-ADDEDRLS-REMOVED-ID-SYMBOLS-CLEARFROZEN-EQS2RLS-REMOVED-ID-SYMBOLS is

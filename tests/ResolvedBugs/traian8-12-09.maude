@@ -9,7 +9,7 @@ cache. Same bug as paco7-18-09.
 Resolved in alpha92.
 )
 
-set show timing off .
+
 
 mod MATHEMATICAL-OBJECT is
 --- ?M stands for bound symbolic mathematical objects

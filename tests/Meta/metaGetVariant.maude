@@ -1,4 +1,4 @@
-set show timing off .
+
 
 fmod XOR is
   sort XOR .

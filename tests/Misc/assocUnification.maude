@@ -1,4 +1,4 @@
-set show timing off .
+
 
 fmod A-UNIF is
   sorts List Elt .

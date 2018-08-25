@@ -1,4 +1,4 @@
-set show timing off .
+
 
 load ../../../contrib/tools/varsat/numbers.maude
 load ../../../contrib/tools/meta/cterms.maude

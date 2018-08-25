@@ -1,4 +1,4 @@
-set show timing off .
+
 
 fmod CONSTANTS is 
   sort Msg .

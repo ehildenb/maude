@@ -1,4 +1,4 @@
-set show timing off .
+
 set show advisories off .
 
 mod ATTR-TEST is
