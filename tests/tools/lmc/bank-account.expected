@@ -1,22 +1,22 @@
-Warning: "bank-account.maude", line 106 (mod BANK-ACCOUNT): variable m is used
+Warning: "bank-account.maude", line 127 (mod BANK-ACCOUNT): variable m is used
     before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs .
-Warning: "bank-account.maude", line 160 (mod BANK-ACCOUNT-CTOR): variable m is
+Warning: "bank-account.maude", line 185 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
-    ff > # msgs [narrowing] .
+    ff > # msgs [narrowing label deposit] .
 Warning: sort declarations for operator clearNonExec failed preregularity check
-    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 1 out of 28 sort tuples. First such tuple is (NullDeclSet).
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #M .
 rewrites: 605
 result SModule: mod 'BANK-ACCOUNT-CTOR is
-  protecting 'BANK-ACCOUNT-CONDITIONS .
+  protecting 'BANK-ACCOUNT-DEFINEDOPS .
   sorts 'Account ; 'CState ; 'Msg ; 'MsgConf ; 'Nat ; 'State ; 'StatePair ;
     'Truth .
   subsort 'Msg < 'MsgConf .
@@ -59,27 +59,30 @@ result SModule: mod 'BANK-ACCOUNT-CTOR is
   eq '~['tt.Truth] = 'ff.Truth [variant] .
   rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],'_`,_[
     'M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing label(
+    'overdraft)] .
   rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] .
   rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
     'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] .
   rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],
     'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] =>
     '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
-    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label('doWithdrawal1)] .
   rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
     'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing label('initWithdrawal)] .
 endm
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #MC .
 rewrites: 1
-result SModule: mod 'BANK-ACCOUNT-CONDITIONS is
+result SModule: mod 'BANK-ACCOUNT-DEFINEDOPS is
   nil
   sorts 'Account ; 'Msg ; 'MsgConf ; 'Nat ; 'State ; 'StatePair ; 'Truth .
   subsort 'Msg < 'MsgConf .
@@ -131,22 +134,22 @@ result SModule: mod 'BANK-ACCOUNT-CONDITIONS is
   rl '_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],'_`,_[
     'M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf] [
-    narrowing] .
+    narrowing label('overdraft)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],'msgs:MsgConf] =>
     '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf] [nonexec narrowing] .
+    'msgs:MsgConf] [nonexec narrowing label('deposit)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
     'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf] [
-    narrowing] .
+    narrowing label('doWithdrawal2)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
     'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf] [
-    narrowing] .
+    narrowing label('doWithdrawal1)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
     'ff.Truth],'msgs:MsgConf] => '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,
     '_+_['m:Nat,'x:Nat]],'_+_['m:Nat,'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,
-    'withdraw['m:Nat]]] [narrowing] .
+    'withdraw['m:Nat]]] [narrowing label('initWithdrawal)] .
 endm
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #MO .
@@ -194,22 +197,22 @@ result SModule: mod 'BANK-ACCOUNT-CTOR is
   rl '_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],'_`,_[
     'M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf] [
-    narrowing] .
+    narrowing label('overdraft)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],'msgs:MsgConf] =>
     '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf] [nonexec narrowing] .
+    'msgs:MsgConf] [nonexec narrowing label('deposit)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
     'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf] [
-    narrowing] .
+    narrowing label('doWithdrawal2)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
     'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]] => '_#_[
     '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf] [
-    narrowing] .
+    narrowing label('doWithdrawal1)] .
   rl '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
     'ff.Truth],'msgs:MsgConf] => '_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,
     '_+_['m:Nat,'x:Nat]],'_+_['m:Nat,'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,
-    'withdraw['m:Nat]]] [narrowing] .
+    'withdraw['m:Nat]]] [narrowing label('initWithdrawal)] .
 endm
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M) .
@@ -325,129 +328,36 @@ rewrites: 5
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : bfs(state(cinit(0))) .
-rewrites: 286
-result FLGraph: (0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>[
-    'N1:Nat,'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
+rewrites: 449
+result FLGraph: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
+    'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
     => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
     'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
-    [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'C:Truth <- '@1:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['@3:Nat,'@4:Nat]]] ; 
-  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
-  'X:Nat <- '@3:Nat)]-> 0[fold(
-  'C:Truth <- '@1:Truth ; 
-  'MSGS:MsgConf <- '@2:MsgConf ; 
-  'N:Nat <- '@5:Nat ; 
-  'X:Nat <- '0.Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'C:Truth <- '@1:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@5:MsgConf,'withdraw['@2:Nat]] ; 
-  'N:Nat <- '_+_['@2:Nat,'@4:Nat] ; 
-  'X:Nat <- '_+_['@2:Nat,'@3:Nat])]-> 0[fold(
-  'C:Truth <- '@1:Truth ; 
-  'MSGS:MsgConf <- '@5:MsgConf ; 
-  'N:Nat <- '@4:Nat ; 
-  'X:Nat <- '@3:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'C:Truth <- '@2:Truth ; 
-  'MSGS:MsgConf <- '@1:MsgConf ; 
-  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
-  'X:Nat <- '@5:Nat)]-> 0[fold(
-  'C:Truth <- '@2:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@4:Nat]] ; 
-  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
-  'X:Nat <- '_+_['@4:Nat,'@5:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    [narrowing label('overdraft)] ., 
   'C:Truth <- '@2:Truth ; 
   'MSGS:MsgConf <- '_`,_['@3:MsgConf,'withdraw['_+_['1.Nat,'@4:Nat,'@5:Nat]]] ;
     
   'N:Nat <- '@4:Nat ; 
-  'X:Nat <- '@1:Nat)]-> 8
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+  'X:Nat <- '@1:Nat)]-> 2
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],
+    '_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing label(
+    'overdraft)] ., 
+  'C:Truth <- '@5:Truth ; 
+  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['1.Nat,'@3:Nat,'@4:Nat]]] ;
+    
+  'N:Nat <- '@3:Nat ; 
+  'X:Nat <- '@1:Nat)]-> 2[fold(
+  '@1:Nat <- '@1:Nat ; 
+  '@2:Truth <- '@5:Truth ; 
+  '@3:MsgConf <- '@2:MsgConf ; 
+  '@4:Nat <- '@3:Nat)]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] ., 
   'C:Truth <- '@4:Truth ; 
   'MSGS:MsgConf <- '@3:MsgConf ; 
   'N:Nat <- '@1:Nat ; 
@@ -456,50 +366,11 @@ rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
   'MSGS:MsgConf <- '@3:MsgConf ; 
   'N:Nat <- '_+_['@1:Nat,'@5:Nat] ; 
   'X:Nat <- '@2:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'C:Truth <- '@5:Truth ; 
-  'MSGS:MsgConf <- '@1:MsgConf ; 
-  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
-  'X:Nat <- '@4:Nat)]-> 0[fold(
-  'C:Truth <- '@5:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@3:Nat]] ; 
-  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
-  'X:Nat <- '_+_['@3:Nat,'@4:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] ., 
   'C:Truth <- '@5:Truth ; 
   'MSGS:MsgConf <- '@3:MsgConf ; 
   'N:Nat <- '@1:Nat ; 
@@ -508,24 +379,46 @@ rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
   'MSGS:MsgConf <- '@3:MsgConf ; 
   'N:Nat <- '_+_['@1:Nat,'@4:Nat] ; 
   'X:Nat <- '@2:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_[
+    'N3:Nat,'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] ., 
+  'C:Truth <- '@1:Truth ; 
+  'MSGS:MsgConf <- '_`,_['@5:MsgConf,'withdraw['@2:Nat]] ; 
+  'N:Nat <- '_+_['@2:Nat,'@4:Nat] ; 
+  'X:Nat <- '_+_['@2:Nat,'@3:Nat])]-> 0[fold(
+  'C:Truth <- '@1:Truth ; 
+  'MSGS:MsgConf <- '@5:MsgConf ; 
+  'N:Nat <- '@4:Nat ; 
+  'X:Nat <- '@3:Nat)]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_[
+    'N3:Nat,'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] ., 
+  'C:Truth <- '@5:Truth ; 
+  'MSGS:MsgConf <- '_`,_['@4:MsgConf,'withdraw['@1:Nat]] ; 
+  'N:Nat <- '_+_['@3:Nat,'@1:Nat] ; 
+  'X:Nat <- '_+_['@2:Nat,'@1:Nat])]-> 0[fold(
+  'C:Truth <- '@5:Truth ; 
+  'MSGS:MsgConf <- '@4:MsgConf ; 
+  'N:Nat <- '@3:Nat ; 
+  'X:Nat <- '@2:Nat)]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,
+    'N4:Nat],'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,
+    'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label('doWithdrawal1)] ., 
+  'C:Truth <- '@1:Truth ; 
+  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['@3:Nat,'@4:Nat]]] ; 
+  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
+  'X:Nat <- '@3:Nat)]-> 0[fold(
+  'C:Truth <- '@1:Truth ; 
+  'MSGS:MsgConf <- '@2:MsgConf ; 
+  'N:Nat <- '@5:Nat ; 
+  'X:Nat <- '0.Nat)]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,
+    'N4:Nat],'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,
+    'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label('doWithdrawal1)] ., 
   'C:Truth <- '@5:Truth ; 
   'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['_+_['@2:Nat,'@3:Nat]]] ; 
   'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
@@ -534,62 +427,33 @@ rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
   'MSGS:MsgConf <- '@1:MsgConf ; 
   'N:Nat <- '@4:Nat ; 
   'X:Nat <- '0.Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],
+    'x:Nat,'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'C:Truth <- '@5:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['1.Nat,'@3:Nat,'@4:Nat]]] ;
-    
-  'N:Nat <- '@3:Nat ; 
-  'X:Nat <- '@1:Nat)]-> 8[fold(
-  '@1:Nat <- '@1:Nat ; 
-  '@2:Truth <- '@5:Truth ; 
-  '@3:MsgConf <- '@2:MsgConf ; 
-  '@4:Nat <- '@3:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing label('initWithdrawal)] ., 
+  'C:Truth <- '@2:Truth ; 
+  'MSGS:MsgConf <- '@1:MsgConf ; 
+  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
+  'X:Nat <- '@5:Nat)]-> 0[fold(
+  'C:Truth <- '@2:Truth ; 
+  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@4:Nat]] ; 
+  'N:Nat <- '_+_['@3:Nat,'@4:Nat,'@5:Nat] ; 
+  'X:Nat <- '_+_['@4:Nat,'@5:Nat])]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],
+    'x:Nat,'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing label('initWithdrawal)] ., 
   'C:Truth <- '@5:Truth ; 
-  'MSGS:MsgConf <- '_`,_['@4:MsgConf,'withdraw['@1:Nat]] ; 
-  'N:Nat <- '_+_['@3:Nat,'@1:Nat] ; 
-  'X:Nat <- '_+_['@2:Nat,'@1:Nat])]-> 0[fold(
+  'MSGS:MsgConf <- '@1:MsgConf ; 
+  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
+  'X:Nat <- '@4:Nat)]-> 0[fold(
   'C:Truth <- '@5:Truth ; 
-  'MSGS:MsgConf <- '@4:MsgConf ; 
-  'N:Nat <- '@3:Nat ; 
-  'X:Nat <- '@2:Nat)])
+  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@3:Nat]] ; 
+  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
+  'X:Nat <- '_+_['@3:Nat,'@4:Nat])])
 | 0 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
     'MSGS:MsgConf],'C:Truth])
-8 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@4:Nat,'@1:Nat,'tt.Truth],
+2 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@4:Nat,'@1:Nat,'tt.Truth],
     '@3:MsgConf],'@2:Truth])
 | 21
 ==========================================
@@ -598,324 +462,144 @@ Warning: unsafe variable name @1:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
-rewrites: 1257
-result FLGraph?: (0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>[
-    'N1:Nat,'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
+rewrites: 1517
+result FLGraph?: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
+    'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
     => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
     'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
-    [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+    [narrowing label('overdraft)] ., 
+  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['1.Nat,'%2:Nat,'%3:Nat]]] ;
+    
+  'N:Nat <- '%2:Nat ; 
+  'X:Nat <- '_+_['1.Nat,'%2:Nat,'%4:Nat])]-> 2
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],
+    '_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing label(
+    'overdraft)] ., 
+  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['1.Nat,'%2:Nat,'%3:Nat,
+    '%4:Nat]]] ; 
+  'N:Nat <- '_+_['%2:Nat,'%3:Nat] ; 
+  'X:Nat <- '%2:Nat)]-> 4
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'ff.Truth],
+    '_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing label(
+    'overdraft)] ., 
+  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['1.Nat,'@3:Nat,'@4:Nat]]] ;
+    
+  'N:Nat <- '@3:Nat ; 
+  'X:Nat <- '@1:Nat)]-> 6
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] ., 
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '%2:Nat ; 
   'X:Nat <- '_+_['1.Nat,'%2:Nat,'%3:Nat])]-> 0[fold(
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '_+_['%2:Nat,'%4:Nat] ; 
   'X:Nat <- '_+_['1.Nat,'%2:Nat,'%3:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] ., 
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '_+_['%2:Nat,'%3:Nat] ; 
   'X:Nat <- '%2:Nat)]-> 0[fold(
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '_+_['%2:Nat,'%3:Nat,'%4:Nat] ; 
   'X:Nat <- '%2:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
     'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '%2:MsgConf ; 
-  'N:Nat <- '_+_['%1:Nat,'%3:Nat,'%4:Nat] ; 
-  'X:Nat <- '%1:Nat)]-> 0[fold(
-  'MSGS:MsgConf <- '_`,_['%2:MsgConf,'withdraw['%3:Nat]] ; 
-  'N:Nat <- '_+_['%1:Nat,'%3:Nat,'%4:Nat] ; 
-  'X:Nat <- '_+_['%1:Nat,'%3:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '@1:MsgConf ; 
-  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
-  'X:Nat <- '@4:Nat)]-> 0[fold(
-  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@3:Nat]] ; 
-  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
-  'X:Nat <- '_+_['@3:Nat,'@4:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing label(
+    'deposit)] ., 
   'MSGS:MsgConf <- '@3:MsgConf ; 
   'N:Nat <- '@1:Nat ; 
-  'X:Nat <- '@2:Nat)]-> 10
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['%2:Nat,'%3:Nat]]] ; 
-  'N:Nat <- '_+_['%2:Nat,'%3:Nat,'%4:Nat] ; 
-  'X:Nat <- '%2:Nat)]-> 0[fold(
-  'MSGS:MsgConf <- '%1:MsgConf ; 
-  'N:Nat <- '%4:Nat ; 
-  'X:Nat <- '0.Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['1.Nat,'%2:Nat,'%3:Nat]]] ;
-    
-  'N:Nat <- '%2:Nat ; 
-  'X:Nat <- '_+_['1.Nat,'%2:Nat,'%4:Nat])]-> 14
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['1.Nat,'%2:Nat,'%3:Nat,
-    '%4:Nat]]] ; 
-  'N:Nat <- '_+_['%2:Nat,'%3:Nat] ; 
-  'X:Nat <- '%2:Nat)]-> 16
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+  'X:Nat <- '@2:Nat)]-> 12
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_[
+    'N3:Nat,'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] ., 
   'MSGS:MsgConf <- '_`,_['%4:MsgConf,'withdraw['%1:Nat]] ; 
   'N:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
   'X:Nat <- '_+_['1.Nat,'%1:Nat,'%2:Nat,'%3:Nat])]-> 0[fold(
   'MSGS:MsgConf <- '%4:MsgConf ; 
   'N:Nat <- '%2:Nat ; 
   'X:Nat <- '_+_['1.Nat,'%2:Nat,'%3:Nat])]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_[
+    'N3:Nat,'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] ., 
   'MSGS:MsgConf <- '_`,_['%4:MsgConf,'withdraw['%1:Nat]] ; 
   'N:Nat <- '_+_['%1:Nat,'%2:Nat,'%3:Nat] ; 
   'X:Nat <- '_+_['%1:Nat,'%2:Nat])]-> 0[fold(
   'MSGS:MsgConf <- '%4:MsgConf ; 
   'N:Nat <- '_+_['%2:Nat,'%3:Nat] ; 
   'X:Nat <- '%2:Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_[
+    'N3:Nat,'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
+    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label(
+    'doWithdrawal2)] ., 
+  'MSGS:MsgConf <- '_`,_['@4:MsgConf,'withdraw['@1:Nat]] ; 
+  'N:Nat <- '_+_['@3:Nat,'@1:Nat] ; 
+  'X:Nat <- '_+_['@2:Nat,'@1:Nat])]-> 18
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,
+    'N4:Nat],'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,
+    'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label('doWithdrawal1)] ., 
+  'MSGS:MsgConf <- '_`,_['%1:MsgConf,'withdraw['_+_['%2:Nat,'%3:Nat]]] ; 
+  'N:Nat <- '_+_['%2:Nat,'%3:Nat,'%4:Nat] ; 
+  'X:Nat <- '%2:Nat)]-> 0[fold(
+  'MSGS:MsgConf <- '%1:MsgConf ; 
+  'N:Nat <- '%4:Nat ; 
+  'X:Nat <- '0.Nat)]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,
+    'N4:Nat],'N3:Nat,'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,
+    'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],
+    'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing label('doWithdrawal1)] ., 
   'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['_+_['@2:Nat,'@3:Nat]]] ; 
   'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
   'X:Nat <- '@2:Nat)]-> 0[fold(
   'MSGS:MsgConf <- '@1:MsgConf ; 
   'N:Nat <- '@4:Nat ; 
   'X:Nat <- '0.Nat)]
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],
+    'x:Nat,'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '_`,_['@2:MsgConf,'withdraw['_+_['1.Nat,'@3:Nat,'@4:Nat]]] ;
-    
-  'N:Nat <- '@3:Nat ; 
-  'X:Nat <- '@1:Nat)]-> 24
-0 -[label(getRls(', rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,
-    'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],'M3:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'ff.Truth],
-    'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[n:Nat`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`):Truth] [nonexec narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
-    'N4:Nat],'ff.Truth],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'N4:Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`]`,_+_`[N3:Nat`,N4:Nat`]`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[N3:Nat`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N4:Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing] .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat,'N4:Nat],'N3:Nat,
-    'ff.Truth],'_`,_['M2:MsgConf,'withdraw['_+_['N3:Nat,'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] => '_|_['_#_[
-    '<`bal:_pend:_overdraft:_>['N1:Nat,'0.Nat,'ff.Truth],'M2:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[N1:Nat`,N3:Nat`,N4:Nat`]`,N3:Nat`,ff.Truth`]`,_`,_`[M2:MsgConf`,withdraw`[_+_`[N3:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,0.Nat`,ff.Truth`]`,M2:MsgConf`]`):Truth] [narrowing]
-    .
-rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],'x:Nat,
-    'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing label('initWithdrawal)] ., 
+  'MSGS:MsgConf <- '%2:MsgConf ; 
+  'N:Nat <- '_+_['%1:Nat,'%3:Nat,'%4:Nat] ; 
+  'X:Nat <- '%1:Nat)]-> 0[fold(
+  'MSGS:MsgConf <- '_`,_['%2:MsgConf,'withdraw['%3:Nat]] ; 
+  'N:Nat <- '_+_['%1:Nat,'%3:Nat,'%4:Nat] ; 
+  'X:Nat <- '_+_['%1:Nat,'%3:Nat])]
+0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat,'x:Nat],
+    'x:Nat,'ff.Truth],'msgs:MsgConf],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] => '_|_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'_+_['m:Nat,'x:Nat]],'_+_['m:Nat,
-    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing] .), 
-  'MSGS:MsgConf <- '_`,_['@4:MsgConf,'withdraw['@1:Nat]] ; 
-  'N:Nat <- '_+_['@3:Nat,'@1:Nat] ; 
-  'X:Nat <- '_+_['@2:Nat,'@1:Nat])]-> 26)
+    'x:Nat],'ff.Truth],'_`,_['msgs:MsgConf,'withdraw['m:Nat]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,m:Nat`,x:Nat`]`,x:Nat`,ff.Truth`]`,msgs:MsgConf`]`,_#_`[<`bal:_pend:_overdraft:_>`[_+_`[n:Nat`,_+_`[m:Nat`,x:Nat`]`]`,_+_`[m:Nat`,x:Nat`]`,ff.Truth`]`,_`,_`[msgs:MsgConf`,withdraw`[m:Nat`]`]`]`):Truth] [narrowing label('initWithdrawal)] ., 
+  'MSGS:MsgConf <- '@1:MsgConf ; 
+  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
+  'X:Nat <- '@4:Nat)]-> 0[fold(
+  'MSGS:MsgConf <- '_`,_['@1:MsgConf,'withdraw['@3:Nat]] ; 
+  'N:Nat <- '_+_['@2:Nat,'@3:Nat,'@4:Nat] ; 
+  'X:Nat <- '_+_['@3:Nat,'@4:Nat])])
 | 0 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],
     'MSGS:MsgConf],'_>=_['N:Nat,'X:Nat]])
-10 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat],
-    '@2:Nat,'ff.Truth],'@3:MsgConf],'_>=_['@1:Nat,'@2:Nat]])
-14 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['%2:Nat,'_+_['1.Nat,'%2:Nat,
+2 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['%2:Nat,'_+_['1.Nat,'%2:Nat,
     '%4:Nat],'tt.Truth],'%1:MsgConf],'ff.Truth])
-16 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat],
-    '%2:Nat,'tt.Truth],'%1:MsgConf],'tt.Truth])
-24 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@3:Nat,'@1:Nat,'tt.Truth],
+4 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['%2:Nat,'%3:Nat],'%2:Nat,
+    'tt.Truth],'%1:MsgConf],'tt.Truth])
+6 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@3:Nat,'@1:Nat,'tt.Truth],
     '@2:MsgConf],'_>=_['@3:Nat,'@1:Nat]])
-26 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@3:Nat,'@2:Nat,'ff.Truth],
+12 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat],
+    '@2:Nat,'ff.Truth],'@3:MsgConf],'_>=_['@1:Nat,'@2:Nat]])
+18 |-> state('_|_['_#_['<`bal:_pend:_overdraft:_>['@3:Nat,'@2:Nat,'ff.Truth],
     '@4:MsgConf],'_>=_['_+_['@3:Nat,'@1:Nat],'_+_['@2:Nat,'@1:Nat]]])
 | 27
-| 10 ; 14 ; 16 ; 24 ; 26
+| 2 ; 4 ; 6 ; 12 ; 18
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : state(pred(1)) <= state(pred(
     0)) .
@@ -951,7 +635,7 @@ rewrites: 86
 result Bool: false
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(0)) .
-rewrites: 281
+rewrites: 444
 result [Bool]: state('_|_['_#_['<`bal:_pend:_overdraft:_>['@4:Nat,'@1:Nat,
     'tt.Truth],'@3:MsgConf],'@2:Truth]) <= state('_|_['_#_[
     '<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf],
@@ -962,6 +646,6 @@ rewrites: 27
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(0 ; 2)) .
-rewrites: 307
+rewrites: 467
 result Bool: true
 Bye.
