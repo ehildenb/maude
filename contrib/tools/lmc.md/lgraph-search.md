@@ -281,27 +281,28 @@ Instantiation to Narrowing
 
 ```maude
 fmod FVP-NARROWING-GRAPH is
-   protecting NARROWING2 .
+   protecting NARROWING .
    protecting VARIABLE-NUMBERS .
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
 
     var TYPE : Type . vars T T' : Term . var M : Module . var SUB : Substitution .
-    vars SR SR' : StepResult . var SRS : StepResultSet . var RS : RuleSet .
+    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RS : RuleSet .
+    var RL : Qid .
 
-    op label : RuleSet Substitution -> Label .
-    ------------------------------------------
+    op label : Qid Substitution -> Label .
+    --------------------------------------
 
-    op transition : StepResultSet -> [TransitionSet] .
-    --------------------------------------------------
-    eq transition({T , TYPE , SUB / RS }) = < label(RS, SUB) , state(T) > .
-    eq transition(.StepResultSet)         = .TransitionSet .
-    eq transition(SR || SR' || SRS)       = transition(SR) , transition(SR') , transition(SRS) .
+    op transition : NarrowStepResults -> [TransitionSet] .
+    ------------------------------------------------------
+    eq transition({RL : T , SUB })     = < label(RL, SUB) , state(T) > .
+    eq transition(.NarrowStepResults)  = .TransitionSet .
+    eq transition(NSR || NSR' || NSRS) = transition(NSR) , transition(NSR') , transition(NSRS) .
 
     op state : Term         -> Node .
     op fold  : Substitution -> Fold .
     ---------------------------------
-    eq step(state(T))            = transition(metaNarrow2(#M, T)) .
+    eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
 
     --- Unification based intersection

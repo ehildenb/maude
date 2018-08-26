@@ -50,92 +50,37 @@ fmod VARIANT-SET is
 endfm
 ```
 
-Single Narrowing Steps
-----------------------
-
-```maude
-fmod NARROWING-STEP-SET is
-   protecting RESULT-CONTEXT-SET .
-
-    sorts StepResult StepResult? .
-    ------------------------------
-    subsort StepResult < StepResult? .
-
-    op failure   : -> StepResult? [ctor] .
-    op {_,_,_/_} : Term Type Substitution RuleSet -> StepResult [ctor] .
-    --------------------------------------------------------------------
-
-    sort StepResultSet .
-    --------------------
-    subsort StepResult < StepResultSet .
-
-    var M : Module . var N : Nat . vars S S' : Substitution .
-    vars T TS CtTS : Term . var TL : TermList . var TP : Type . var R : Rule .
-    var Tr : TraceNarrow . var B : Flags . vars Ct CtS : Context .
-    var SR : StepResult . var RTS : ResultContextSet . var SRS : StepResultSet .
-
-    op .StepResultSet :                             -> StepResultSet [ctor] .
-    op _||_           : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: .StepResultSet prec 65] .
-    ---------------------------------------------------------------------------------------------------------------
-    eq SR || SR = SR .
-
-    op to4Tuple : Module ResultContextSet -> StepResult .
-    -----------------------------------------------------
-    eq to4Tuple(M, empty) = .StepResultSet .
-    eq to4Tuple(M, {T,TP,S,S',Ct,CtS,TS,CtTS,N,Tr,B} | RTS )
-     = {CtTS, leastSort(M,CtTS), S .. S' / getRuleSet(Tr)} || to4Tuple(M, RTS) .
-
-    op _|>_ : StepResult TermList -> StepResult .
-    ---------------------------------------------
-    eq .StepResultSet        |> TL = .StepResultSet .
-    eq ({T,TP,S / R} || SRS) |> TL = {T,TP,S |> TL / R} || (SRS |> TL) .
-    eq (failure      || SRS) |> TL = failure || (SRS |> TL) .
-
-    op getRuleSet : TraceNarrow -> RuleSet .
-    ----------------------------------------
-    eq getRuleSet(nil)           = none .
-    eq getRuleSet({T,S,TP,R} Tr) = R getRuleSet(Tr) .
-endfm
-```
-
-Narrowing using Santiago Escobar's Code
----------------------------------------
-
-```maude
-fmod NARROWING is
-   protecting VARIANT-SET * ( op getTerms to getVariantTerms ) .
-   protecting NARROWING-STEP-SET .
-   protecting META-NARROWING-SEARCH .
-
-    vars N N' : Nat . var M : Module . var T : Term . var V : Variant .
-
-    op metaNarrow2 : Module Term -> StepResult .
-    --------------------------------------------
-    eq metaNarrow2(M,T) = to4Tuple(M,metaENarrowShowAll(M,T,1,full noStrategy BuiltIn-unify)) |> T .
-endfm
-```
-
 Narrowing using Core Maude
 --------------------------
 
 ```maude
-fmod NARROWING2 is
+fmod NARROWING is
    protecting VARIANT-SET .
-   protecting NARROWING-STEP-SET .
    protecting SUBSTITUTIONSET .
+
+    sorts NarrowStepResult NarrowStepResults .
+    ------------------------------------------
+    subsort NarrowStepResult < NarrowStepResults .
+
+    op .NarrowStepResults :                                     -> NarrowStepResults .
+    op _||_               : NarrowStepResults NarrowStepResults -> NarrowStepResults [assoc comm id: .NarrowStepResults] .
+    ----------------------------------------------------------------------------------------------------------------------
+
+    op {_:_,_} : Qid Term Substitution -> NarrowStepResult .
+    --------------------------------------------------------
 
     var N : Nat . vars Q RL : Qid .
     var TYPE : Type . var CTX : Context .
     var M : Module . vars T T' : Term . vars SUBST TSUBST RLSUBST : Substitution .
 
-    op allNarrowSteps : Module Term Nat -> [StepResultSet] .
-    --------------------------------------------------------
-    eq allNarrowSteps(M, T, N) = .StepResultSet [owise] .
-   ceq allNarrowSteps(M, T, N) = { T' , TYPE , TSUBST / getRls(RL, M) } || allNarrowSteps(M, T, N + 1)
+    op allNarrowSteps : Module Term Nat -> [NarrowStepResults] .
+    ------------------------------------------------------------
+    eq allNarrowSteps(M, T, N) = .NarrowStepResults [owise] .
+   ceq allNarrowSteps(M, T, N) = { RL : T' , TSUBST } || allNarrowSteps(M, T, N + 1)
     if { T' , TYPE , CTX , RL , TSUBST , RLSUBST , Q } := metaNarrowingApply(M, T, empty, '#, N) .
 
-    op metaNarrow2 : Module Term -> StepResult .
-    --------------------------------------------
-    eq metaNarrow2(M,T) = allNarrowSteps(M, T, 0) .
+    op narrowSteps : Module Term -> NarrowStepResults .
+    ---------------------------------------------------
+    eq narrowSteps(M, T) = allNarrowSteps(M, T, 0) .
 endfm
 ```
