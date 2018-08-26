@@ -7,24 +7,6 @@ load ../../../contrib/tools/meta/narrowing.maude
 --- Initial states and Conditions
 --- =============================
 
-mod BANK-ACCOUNT-CONDITIONS is
-   protecting BANK-ACCOUNT-CTOR .
-
-    var N : Nat . vars X Y : Truth . var MSGS : MsgConf .
-
-    op _->_ : Truth Truth -> Truth .
-    --------------------------------
-    eq X  -> X  = tt        [variant] .
-    eq ff -> X  = tt        [variant] .
-    eq X  -> tt = tt        [variant] .
-    eq X  -> Y  = ~(X) \/ Y [variant] .
-
-    op debts : MsgConf -> Nat .
-    ---------------------------
-    eq debts(mt)                 = 0 .
-    eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
-endm
-
 mod BANK-ACCOUNT-INIT-STATES is
     extending FVP-NARROWING-MODULO-T-GRAPH .
 
@@ -88,7 +70,7 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     eq #C  = 'Truth .
     eq #ST = '_|_   .
 
-    eq #MC = upModule('BANK-ACCOUNT-CONDITIONS, true) .
+    eq #MC = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
     eq #MO = upModule('BANK-ACCOUNT-CTOR,       true) .
 
    ceq implies?(C, C') = true  if {'tt.Truth, 'Truth} := metaReduce(#MC, '_->_[C, C']) .
@@ -167,6 +149,7 @@ reduce state(init(4)) <= state(init(5)) .
 reduce fold(state(init(4)), state(init(5))) == fold(sub(1)) .
 reduce implies?(pred(5) << sub(1), pred(6) << sub(1)) .
 reduce metaReduce(#MC, pred(7)) .
+
 
 --- ; The invariant satisfied by this protocol can be expressed as the constrained term:
 --- ;

@@ -196,7 +196,14 @@ The following operations help to specify claims about the bank account system.
 mod BANK-ACCOUNT-DEFINEDOPS is
    protecting BANK-ACCOUNT-CTOR .
 
-    var N : Nat . var MSGS : MsgConf .
+    vars X Y : Truth . var N : Nat . var MSGS : MsgConf .
+
+    op _->_ : Truth Truth -> Truth .
+    --------------------------------
+    eq X  -> X  = tt        [variant] .
+    eq ff -> X  = tt        [variant] .
+    eq X  -> tt = tt        [variant] .
+    eq X  -> Y  = ~(X) \/ Y [variant] .
 
     op debts : MsgConf -> Nat .
     ---------------------------
