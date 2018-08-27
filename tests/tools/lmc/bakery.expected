@@ -106,7 +106,7 @@ result Bool: true
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(0)), 0) .
 rewrites: 9
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> state('_;_;_['0.Name,'0.Name,'__['`[_`]['idle.ModeIdle],'`[_`][
     'idle.ModeIdle]]])
 | 1
@@ -114,7 +114,7 @@ result FLGraph?: .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1)), 0) .
 rewrites: 10
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> state('_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
     'idle.ModeIdle]]])
 | 1
@@ -122,7 +122,7 @@ result FLGraph?: .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(2)), 0) .
 rewrites: 10
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> state('_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],
     'PWS:ProcWaitSet]])
 | 1
@@ -130,7 +130,7 @@ result FLGraph?: .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(3)), 0) .
 rewrites: 10
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> state('_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,
     'X:Name]]],'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],
     'PWS:ProcWaitSet]])
@@ -139,7 +139,7 @@ result FLGraph?: .LGraph
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(0)), 2) .
 rewrites: 157
-result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., none)]-> 2
 2 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`]['idle.ModeIdle]]] =>
@@ -161,7 +161,7 @@ result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1)), 2) .
 rewrites: 158
-result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., 
   'X:Name <- '@1:Name)]-> 2
@@ -186,7 +186,7 @@ result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(2)), 2) .
 rewrites: 433
-result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., 
   'PWS:ProcWaitSet <- '@3:ProcWaitSet ; 
@@ -260,7 +260,7 @@ result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(3)), 2) .
 rewrites: 789
-result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., 
   'PWS:ProcWaitSet <- '@2:ProcWaitSet ; 
@@ -371,7 +371,7 @@ result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1))) .
 rewrites: 446
-result FLGraph: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., 
   'X:Name <- '@1:Name)]-> 2
@@ -415,7 +415,7 @@ result FLGraph: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(4)), 10) .
 rewrites: 1533
-result FLGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
+result FoldedLabeledGraph?: (0 -[label(rl '_;_;_['N:Name,'M:Name,'__['PS:ProcSet,'`[_`][
     'idle.ModeIdle]]] => '_;_;_['__['s.Name,'N:Name],'M:Name,'__['PS:ProcSet,
     '`[_`]['wait['N:Name]]]] [narrowing label('wake)] ., 
   'X:Name <- '@1:Name ; 
@@ -811,7 +811,7 @@ result Bool: false
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(1)) .
 rewrites: 939
-result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+result FoldedLabeledGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
 rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
@@ -982,7 +982,7 @@ rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(2)) .
 rewrites: 936
-result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+result FoldedLabeledGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
 rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>
@@ -1149,7 +1149,7 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(3)) .
 rewrites: 4820
-result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
+result FoldedLabeledGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.NzNat>,
     'X:Nat>]] [narrowing label('p2_sleep)] ., 
   'X0:Nat> <- '@1:Nat>)]-> 2
@@ -1337,7 +1337,7 @@ rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(1 ; 2)) .
 rewrites: 2180
-result FLGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
+result FoldedLabeledGraph: (0 -[label(rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,
     'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [narrowing
     label('p2_wait)] .
 rl '<_`,_`,_`,_>['P:Mode,'_+_['V1:Nat>,'V2:NzNat>],'wait.NcMode,'V1:Nat>] =>

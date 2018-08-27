@@ -18,10 +18,10 @@ set include BOOL off .
 
 ### Data Structures
 
-Sort `LGraph` is an edge-labelled graph between `Node`s.
+Sort `LabeledGraph` is an edge-labelled graph between `Node`s.
 
 ```maude
-fmod LABELLED-GRAPH is
+fmod LABELED-GRAPH is
 
     sorts Node NeNodeSet NodeSet .
     ------------------------------
@@ -36,19 +36,19 @@ fmod LABELLED-GRAPH is
     ------------------------------------------------------
     eq NeNS ; NeNS = NeNS .
 
-    sorts Label LEdge NeLGraph LGraph .
-    subsorts LEdge < NeLGraph < LGraph .
-    ------------------------------------
-    var L : Label . var NeLG : NeLGraph .
+    sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
+    subsorts LabeledEdge < NeLabeledGraph < LabeledGraph .
+    ------------------------------------------------------
+    var L : Label . var NeLG : NeLabeledGraph .
 
-    op .LGraph : -> LGraph .
-    op __      :   LGraph LGraph ->   LGraph [assoc comm id: .LGraph prec 55 format(d n d)] .
-    op __      : NeLGraph LGraph -> NeLGraph [ditto] .
-    --------------------------------------------------
+    op .LabeledGraph :                             ->   LabeledGraph .
+    op __            :   LabeledGraph LabeledGraph ->   LabeledGraph [assoc comm id: .LabeledGraph prec 55 format(d n d)] .
+    op __            : NeLabeledGraph LabeledGraph -> NeLabeledGraph [ditto] .
+    --------------------------------------------------------------------------
     eq NeLG NeLG = NeLG .
 
-    op _-[_]->_ : Node Label Node -> LEdge [prec 50] .
-    --------------------------------------------------
+    op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
+    --------------------------------------------------------
 
     sorts Transition NeTransitionSet TransitionSet .
     ------------------------------------------------
@@ -56,16 +56,16 @@ fmod LABELLED-GRAPH is
 
     var TS : TransitionSet . vars NeTS NeTS' : NeTransitionSet .
 
-    op .TransitionSet : -> TransitionSet .
-    op _,_ :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
-    op _,_ : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
-    -------------------------------------------------------------------
+    op .TransitionSet :                               ->   TransitionSet .
+    op _,_            :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
+    op _,_            : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
+    ------------------------------------------------------------------------------
     eq NeTS , NeTS = NeTS .
 
     op <_,_> : Label Node -> Transition .
-    op _->_  : Node TransitionSet -> LGraph [prec 50] .
-    ---------------------------------------------------
-    eq N -> .TransitionSet = .LGraph .
+    op _->_  : Node TransitionSet -> LabeledGraph [prec 50] .
+    ---------------------------------------------------------
+    eq N -> .TransitionSet = .LabeledGraph .
     eq N -> < L , N' >     = N -[ L ]-> N' .
     eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
 endfm
@@ -78,12 +78,12 @@ fmod GRAPH-FOLDING-SEARCH is
    protecting NAT .
    protecting EXT-BOOL .
    protecting BOUND .
-    extending LABELLED-GRAPH .
+    extending LABELED-GRAPH .
 
     vars D D' : Depth . var B : Bound .
     vars NS NS' NS'' : NodeSet . vars NeNS NeNS' NeNS'' : NeNodeSet .
     vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
-    var L : Label . vars LG LG' LG'' LG''' : LGraph . vars NeLG NeLG' : NeLGraph .
+    var L : Label . vars LG LG' LG'' LG''' : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
 
     sort Fold .
     -----------
@@ -97,10 +97,10 @@ fmod GRAPH-FOLDING-SEARCH is
     op step : Node -> [TransitionSet] .
     -----------------------------------
 
-    op all-step : NodeSet -> [LGraph] .
-    -----------------------------------
+    op all-step : NodeSet -> [LabeledGraph] .
+    -----------------------------------------
     eq all-step(ND)           = ND -> step(ND) .
-    eq all-step(.NodeSet)     = .LGraph .
+    eq all-step(.NodeSet)     = .LabeledGraph .
     eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
 
     sort NodeId .
@@ -176,37 +176,37 @@ fmod GRAPH-FOLDING-SEARCH is
                                                  fi
                                               if F? := fold(ND, ND') .
 
-    sorts FLGraph FLGraph? .
-    ------------------------
-    subsort FLGraph < FLGraph? .
+    sorts FoldedLabeledGraph FoldedLabeledGraph? .
+    ----------------------------------------------
+    subsort FoldedLabeledGraph < FoldedLabeledGraph? .
 
-    var FLG : FLGraph . var FLG? : FLGraph? .
+    var FLG : FoldedLabeledGraph . var FLG? : FoldedLabeledGraph? .
 
-    op .FLGraph :                    -> FLGraph .
-    op _|_|_    : LGraph NodeMap Nat -> FLGraph [format(d n d n d d)] .
-    -------------------------------------------------------------------
-    eq .FLGraph = .LGraph | .NodeMap | 0 .
+    op .FoldedLabeledGraph :                          -> FoldedLabeledGraph .
+    op _|_|_               : LabeledGraph NodeMap Nat -> FoldedLabeledGraph [format(d n d n d d)] .
+    -----------------------------------------------------------------------------------------------
+    eq .FoldedLabeledGraph = .LabeledGraph | .NodeMap | 0 .
 
-    op _|_ : FLGraph NodeSet -> FLGraph? [right id: .NodeSet format(d n d d)] .
-    ---------------------------------------------------------------------------
+    op _|_ : FoldedLabeledGraph NodeSet -> FoldedLabeledGraph? [right id: .NodeSet format(d n d d)] .
+    -------------------------------------------------------------------------------------------------
     eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
 
-    op nodes    : FLGraph? -> [NodeSet] .
-    op frontier : FLGraph? -> [NodeSet] .
-    -------------------------------------
+    op nodes    : FoldedLabeledGraph? -> [NodeSet] .
+    op frontier : FoldedLabeledGraph? -> [NodeSet] .
+    ------------------------------------------------
     eq nodes   (LG | NM | N | NS) = nodes(NM) .
     eq frontier(LG | NM | N | NS) = NM [ NS ] .
 
-    op insert : NodeSet FLGraph? -> FLGraph? .
-    op insert : LGraph  FLGraph? -> FLGraph? .
-    ------------------------------------------
+    op insert : NodeSet      FoldedLabeledGraph? -> FoldedLabeledGraph? .
+    op insert : LabeledGraph FoldedLabeledGraph? -> FoldedLabeledGraph? .
+    ---------------------------------------------------------------------
     eq insert(.NodeSet,     FLG?)        = FLG? .
     eq insert(NeNS ; NeNS', FLG?)        = insert(NeNS, insert(NeNS', FLG?)) .
     eq insert(NeNS,         FLG | NeNS') = insert(NeNS, FLG) | NeNS' .
 
-    eq insert(.LGraph,    FLG?)        = FLG? .
-    eq insert(NeLG NeLG', FLG?)        = insert(NeLG, insert(NeLG', FLG?)) .
-    eq insert(NeLG,       FLG | NeNS') = insert(NeLG, FLG) | NeNS' .
+    eq insert(.LabeledGraph, FLG?)        = FLG? .
+    eq insert(NeLG NeLG',    FLG?)        = insert(NeLG, insert(NeLG', FLG?)) .
+    eq insert(NeLG,          FLG | NeNS') = insert(NeLG, FLG) | NeNS' .
 
    ceq insert(ND, LG | NM | N) = LG | NM' | s N | NS
                               if { NM' , NID , NS } := insert(N |-> ND, NM) .
@@ -215,13 +215,13 @@ fmod GRAPH-FOLDING-SEARCH is
                                            if { NM'  , NID'  , NS'  } := insert(  N |-> ND,  NM)
                                            /\ { NM'' , NID'' , NS'' } := insert(s N |-> ND', NM') .
 
-    op flgraph : NodeSet -> FLGraph? .
-    ----------------------------------
-    eq flgraph(NS) = insert(NS, .FLGraph) .
+    op flgraph : NodeSet -> FoldedLabeledGraph? .
+    ---------------------------------------------
+    eq flgraph(NS) = insert(NS, .FoldedLabeledGraph) .
 
-    op extend : NodeSet  -> [FLGraph?] .
-    op extend : FLGraph? -> [FLGraph?] .
-    ------------------------------------
+    op extend : NodeSet             -> [FoldedLabeledGraph?] .
+    op extend : FoldedLabeledGraph? -> [FoldedLabeledGraph?] .
+    ----------------------------------------------------------
     eq extend(NS) = extend(flgraph(NS)) .
 
     eq extend(FLG)                = FLG .
@@ -238,12 +238,12 @@ fmod GRAPH-ANALYSIS is
 
     var N : Nat . var B : Bound .
     vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet .
-    var FLG : FLGraph . var FLG? : FLGraph? .
+    var FLG : FoldedLabeledGraph . var FLG? : FoldedLabeledGraph? .
 
-    op  bfs : NodeSet       -> [FLGraph] .
-    op  bfs : NodeSet Bound -> [FLGraph] .
-    op #bfs : Bound FLGraph -> [FLGraph] .
-    --------------------------------------
+    op  bfs : NodeSet                  -> [FoldedLabeledGraph] .
+    op  bfs : NodeSet Bound            -> [FoldedLabeledGraph] .
+    op #bfs : Bound FoldedLabeledGraph -> [FoldedLabeledGraph] .
+    ------------------------------------------------------------
     eq bfs(NS)    = bfs(NS, unbounded) .
     eq bfs(NS, B) = #bfs(B, flgraph(NS)) .
 
@@ -261,10 +261,10 @@ fmod GRAPH-ANALYSIS is
     eq check NS stable in NS' = NS <= NS' and-then invariant(NS') .
 
     --- TODO: produce a `ReachPath` instead of a `Bool`
-    op _=>*_   : NodeSet       NodeSet -> Bool .
-    op _=>[_]_ : NodeSet Bound NodeSet -> Bool .
-    op _=>[_]_ : FLGraph Bound NodeSet -> Bool .
-    --------------------------------------------
+    op _=>*_   : NodeSet                  NodeSet -> Bool .
+    op _=>[_]_ : NodeSet            Bound NodeSet -> Bool .
+    op _=>[_]_ : FoldedLabeledGraph Bound NodeSet -> Bool .
+    -------------------------------------------------------
     eq NS =>*     NS' = NS =>[ unbounded ] NS' .
     eq NS =>[ B ] NS' = intersect(NS, NS') or-else extend(NS) =>[ decrement(B) ] NS' .
 

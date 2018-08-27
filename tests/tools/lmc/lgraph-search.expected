@@ -1,7 +1,7 @@
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : ((B -[y]-> C
 C -[z]-> D)
-A -[x]-> B) :: NeLGraph .
+A -[x]-> B) :: NeLabeledGraph .
 rewrites: 1
 result Bool: true
 ==========================================
@@ -11,11 +11,11 @@ result NeTransitionSet: < x,A >,< y,B >
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : B -> < x,A > .
 rewrites: 1
-result LEdge: B -[x]-> A
+result LabeledEdge: B -[x]-> A
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : B -> < x,A >,< y,D > .
 rewrites: 3
-result NeLGraph: B -[x]-> A
+result NeLabeledGraph: B -[x]-> A
 B -[y]-> D
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : 3 < 4 .
@@ -124,7 +124,7 @@ result NeTransitionSet: < y,C >,< z,G >
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : all-step(E ; D ; F ; G) .
 rewrites: 17
-result NeLGraph: D -[y]-> C
+result NeLabeledGraph: D -[y]-> C
 D -[z]-> G
 E -[x]-> E
 F -[x]-> E
@@ -132,17 +132,17 @@ G -[y]-> D
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : all-step(E ; D ; D) .
 rewrites: 10
-result NeLGraph: D -[y]-> C
+result NeLabeledGraph: D -[y]-> C
 D -[z]-> G
 E -[x]-> E
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : all-step(E) .
 rewrites: 3
-result LEdge: E -[x]-> E
+result LabeledEdge: E -[x]-> E
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : all-step(.NodeSet) .
 rewrites: 1
-result LGraph: .LGraph
+result LabeledGraph: .LabeledGraph
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : (0 |-> A
 1 |-> B
@@ -204,15 +204,15 @@ result NodeMap?: {4 |-> A
 1 |-> D
 5 |-> E,5,5}
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.NodeSet, .FLGraph) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.NodeSet, .FoldedLabeledGraph) .
 rewrites: 2
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | .NodeMap
 | 0
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A ; B ; C, .FLGraph) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A ; B ; C, .FoldedLabeledGraph) .
 rewrites: 25
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 1 |-> B
 2 |-> C
@@ -220,9 +220,9 @@ result FLGraph?: .LGraph
 | 0 ; 1 ; 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A ; B ; C ; D ; E ; F ; G,
-    .FLGraph) .
+    .FoldedLabeledGraph) .
 rewrites: 103
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 1 |-> B
 2 |-> C
@@ -233,82 +233,83 @@ result FLGraph?: .LGraph
 | 7
 | 0 ; 1 ; 2 ; 3 ; 4 ; 5 ; 6
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.NodeSet, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.NodeSet, .LabeledGraph
 | 0 |-> E
 | 1) .
 rewrites: 1
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | 0 |-> E
 | 1
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A, .LabeledGraph
 | 0 |-> A
 | 1) .
 rewrites: 6
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | 0 |-> A
 | 2
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(D, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(D, .LabeledGraph
 | 0 |-> E
 | 1) .
 rewrites: 6
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | 0 |-> E
 | 2
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(D, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(D, .LabeledGraph
 | 0 |-> D
 1 |-> A
 | 2) .
 rewrites: 6
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | 0 |-> D
 1 |-> A
 | 3
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(E, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(E, .LabeledGraph
 | 0 |-> D
 1 |-> A
 | 2) .
 rewrites: 9
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> D
 1 |-> A
 2 |-> E
 | 3
 | 2
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A ; C ; D, .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A ; C ; D, .LabeledGraph
 | 0 |-> A
 1 |-> E
 | 2) .
 rewrites: 27
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 1 |-> E
 3 |-> C
 | 5
 | 3
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.LGraph, .FLGraph) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.LabeledGraph,
+    .FoldedLabeledGraph) .
 rewrites: 2
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | .NodeMap
 | 0
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A -[y]-> D, .FLGraph) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A -[y]-> D, .FoldedLabeledGraph) .
 rewrites: 9
-result FLGraph?: (0 -[y]-> 1)
+result FoldedLabeledGraph?: (0 -[y]-> 1)
 | 0 |-> A
 1 |-> D
 | 2
 | 0 ; 1
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A -[y]-> D
-E -[z]-> B, .FLGraph) .
+E -[z]-> B, .FoldedLabeledGraph) .
 rewrites: 32
-result FLGraph?: (0 -[y]-> 1
+result FoldedLabeledGraph?: (0 -[y]-> 1
 2 -[z]-> 3)
 | 0 |-> A
 1 |-> D
@@ -317,13 +318,13 @@ result FLGraph?: (0 -[y]-> 1
 | 4
 | 0 ; 1 ; 2 ; 3
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.LGraph, (0 -[x]-> 2)
+reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.LabeledGraph, (0 -[x]-> 2)
 | 0 |-> A
 2 |-> B
 | 3
 | 2) .
 rewrites: 1
-result FLGraph?: (0 -[x]-> 2)
+result FoldedLabeledGraph?: (0 -[x]-> 2)
 | 0 |-> A
 2 |-> B
 | 3
@@ -335,7 +336,7 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : insert(A -[y]-> D, (0 -[x]-> 2)
 | 3
 | 2) .
 rewrites: 16
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4)
 | 0 |-> A
 2 |-> B
@@ -350,7 +351,7 @@ E -[z]-> B, (0 -[x]-> 2)
 | 3
 | 2) .
 rewrites: 32
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[z]-> 2
 3 -[y]-> 0[<])
 | 0 |-> E
@@ -366,7 +367,7 @@ D -[x]-> B, (0 -[x]-> 2)
 | 3
 | 2) .
 rewrites: 38
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 4[<] -[x]-> 2)
 | 0 |-> A
@@ -377,13 +378,13 @@ result FLGraph?: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.NodeSet) .
 rewrites: 5
-result FLGraph: .LGraph
+result FoldedLabeledGraph: .LabeledGraph
 | .NodeMap
 | 0
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : extend(A) .
 rewrites: 64
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
 | 0 |-> A
@@ -394,7 +395,7 @@ result FLGraph?: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : extend(A ; B ; C) .
 rewrites: 155
-result FLGraph?: (0 -[x]-> 1
+result FoldedLabeledGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
 1 -[y]-> 1
@@ -406,22 +407,22 @@ result FLGraph?: (0 -[x]-> 1
 | 13
 | 6
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : .LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : .LabeledGraph
 | 0 |-> A
 | 1
 | 0 .
 rewrites: 0
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 | 1
 | 0
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.LabeledGraph
 | 0 |-> A
 | 1
 | 0) .
 rewrites: 58
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
 | 0 |-> A
@@ -430,12 +431,12 @@ result FLGraph?: (0 -[x]-> 2
 | 7
 | 2 ; 4
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : extend(extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(extend(.LabeledGraph
 | 0 |-> A
 | 1
 | 0)) .
 rewrites: 154
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
 2 -[y]-> 2
@@ -449,14 +450,14 @@ result FLGraph?: (0 -[x]-> 2
 | 13
 | 10 ; 12
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(.LabeledGraph
 | 0 |-> A
 1 |-> B
 2 |-> C
 | 3
 | 0 ; 1 ; 2) .
 rewrites: 128
-result FLGraph?: (0 -[x]-> 1
+result FoldedLabeledGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
 1 -[y]-> 1
@@ -468,9 +469,10 @@ result FLGraph?: (0 -[x]-> 1
 | 13
 | 6
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : extend(insert(A ; B ; C, .FLGraph)) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : extend(insert(A ; B ; C,
+    .FoldedLabeledGraph)) .
 rewrites: 153
-result FLGraph?: (0 -[x]-> 1
+result FoldedLabeledGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
 1 -[y]-> 1
@@ -482,28 +484,28 @@ result FLGraph?: (0 -[x]-> 1
 | 13
 | 6
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(.LabeledGraph
 | 0 |-> A
 | 1
 | 0) .
 rewrites: 2
 result Node: A
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LabeledGraph
 | 0 |-> A
 | 1
 | 0)) .
 rewrites: 64
 result NeNodeSet: A ; B ; D
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(extend(.LabeledGraph
 | 0 |-> A
 | 1
 | 0))) .
 rewrites: 164
 result NeNodeSet: A ; B ; C ; D ; G
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LGraph
+reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(.LabeledGraph
 | 0 |-> A
 1 |-> B
 2 |-> C
@@ -513,11 +515,11 @@ rewrites: 136
 result NeNodeSet: A ; B ; C ; D
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : nodes(extend(insert(A ; B ; C,
-    .FLGraph))) .
+    .FoldedLabeledGraph))) .
 rewrites: 161
 result NeNodeSet: A ; B ; C ; D
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(.FLGraph) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : frontier(.FoldedLabeledGraph) .
 rewrites: 3
 result NodeSet: .NodeSet
 ==========================================
@@ -540,14 +542,14 @@ result NodeSet: .NodeSet
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 0) .
 rewrites: 7
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 | 1
 | 0
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 1) .
 rewrites: 67
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
 | 0 |-> A
@@ -558,7 +560,7 @@ result FLGraph?: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, 2) .
 rewrites: 165
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
 2 -[y]-> 2
@@ -574,7 +576,7 @@ result FLGraph?: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A) .
 rewrites: 254
-result FLGraph: (0 -[x]-> 2
+result FoldedLabeledGraph: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4
 2 -[y]-> 2
@@ -595,7 +597,7 @@ result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 1) .
 rewrites: 27
-result FLGraph?: (0 -[x]-> 2)
+result FoldedLabeledGraph?: (0 -[x]-> 2)
 | 0 |-> C
 2 |-> A
 | 3
@@ -603,7 +605,7 @@ result FLGraph?: (0 -[x]-> 2)
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 2) .
 rewrites: 97
-result FLGraph?: (0 -[x]-> 2
+result FoldedLabeledGraph?: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
 2 -[z]-> 6)
@@ -615,7 +617,7 @@ result FLGraph?: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C) .
 rewrites: 200
-result FLGraph: (0 -[x]-> 2
+result FoldedLabeledGraph: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
 2 -[z]-> 6
@@ -630,7 +632,7 @@ result FLGraph: (0 -[x]-> 2
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, 0) .
 rewrites: 28
-result FLGraph?: .LGraph
+result FoldedLabeledGraph?: .LabeledGraph
 | 0 |-> A
 1 |-> B
 2 |-> C
@@ -639,7 +641,7 @@ result FLGraph?: .LGraph
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, 1) .
 rewrites: 158
-result FLGraph?: (0 -[x]-> 1
+result FoldedLabeledGraph?: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
 1 -[y]-> 1
@@ -653,7 +655,7 @@ result FLGraph?: (0 -[x]-> 1
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C, unbounded) .
 rewrites: 287
-result FLGraph: (0 -[x]-> 1
+result FoldedLabeledGraph: (0 -[x]-> 1
 0 -[y]-> 6
 0 -[z]-> 6
 1 -[y]-> 1
@@ -670,7 +672,7 @@ result FLGraph: (0 -[x]-> 1
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(B ; F, unbounded) .
 rewrites: 103
-result FLGraph: (0 -[y]-> 0
+result FoldedLabeledGraph: (0 -[y]-> 0
 1 -[x]-> 5
 5 -[x]-> 5)
 | 0 |-> B
@@ -680,7 +682,7 @@ result FLGraph: (0 -[y]-> 0
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; D, unbounded) .
 rewrites: 260
-result FLGraph: (0 -[x]-> 3
+result FoldedLabeledGraph: (0 -[x]-> 3
 0 -[y]-> 1
 0 -[z]-> 1
 1 -[y]-> 9
@@ -697,7 +699,7 @@ result FLGraph: (0 -[x]-> 3
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, 1) .
 rewrites: 504
-result FLGraph: (0 -[x]-> 1
+result FoldedLabeledGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3
 1 -[y]-> 1
@@ -719,7 +721,7 @@ result FLGraph: (0 -[x]-> 1
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A ; B ; C ; D ; E ; F ; G, unbounded)
     .
 rewrites: 504
-result FLGraph: (0 -[x]-> 1
+result FoldedLabeledGraph: (0 -[x]-> 1
 0 -[y]-> 3
 0 -[z]-> 3
 1 -[y]-> 1

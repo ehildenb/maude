@@ -37,7 +37,7 @@ endfm
 --- Test Module LABELLED-GRAPH
 --- --------------------------
 
-reduce (A -[x]-> B B -[y]-> C C -[z]-> D) :: NeLGraph .
+reduce (A -[x]-> B B -[y]-> C C -[z]-> D) :: NeLabeledGraph .
 
 reduce < x , A > , < y , B > , < x , A > .
 
@@ -95,43 +95,43 @@ reduce insert( 3 |-> D , 2 |-> E  ) .
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
 reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
-reduce insert( .NodeSet  ,                .FLGraph) .
-reduce insert( A ; B ; C ,                .FLGraph) .
-reduce insert( A ; B ; C ; D ; E ; F ; G, .FLGraph) .
+reduce insert( .NodeSet  ,                .FoldedLabeledGraph) .
+reduce insert( A ; B ; C ,                .FoldedLabeledGraph) .
+reduce insert( A ; B ; C ; D ; E ; F ; G, .FoldedLabeledGraph) .
 
-reduce insert( .NodeSet  , .LGraph | 0 |-> E         | 1 ) .
-reduce insert( A         , .LGraph | 0 |-> A         | 1 ) .
-reduce insert( D         , .LGraph | 0 |-> E         | 1 ) .
-reduce insert( D         , .LGraph | 0 |-> D 1 |-> A | 2 ) .
-reduce insert( E         , .LGraph | 0 |-> D 1 |-> A | 2 ) .
-reduce insert( A ; D ; C , .LGraph | 0 |-> A 1 |-> E | 2 ) .
+reduce insert( .NodeSet  , .LabeledGraph | 0 |-> E         | 1 ) .
+reduce insert( A         , .LabeledGraph | 0 |-> A         | 1 ) .
+reduce insert( D         , .LabeledGraph | 0 |-> E         | 1 ) .
+reduce insert( D         , .LabeledGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( E         , .LabeledGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( A ; D ; C , .LabeledGraph | 0 |-> A 1 |-> E | 2 ) .
 
-reduce insert( .LGraph               , .FLGraph ) .
-reduce insert( A -[y]-> D            , .FLGraph ) .
-reduce insert( A -[y]-> D E -[z]-> B , .FLGraph ) .
+reduce insert( .LabeledGraph         , .FoldedLabeledGraph ) .
+reduce insert( A -[y]-> D            , .FoldedLabeledGraph ) .
+reduce insert( A -[y]-> D E -[z]-> B , .FoldedLabeledGraph ) .
 
-reduce insert( .LGraph ,              (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
-reduce insert( A -[y]-> D ,           (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
-reduce insert( A -[y]-> D E -[z]-> B, (0 -[x]-> 2) | 0 |-> E 2 |-> B | 3 | 2 ) .
-reduce insert( A -[y]-> E D -[x]-> B, (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( .LabeledGraph         , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D            , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D E -[z]-> B , (0 -[x]-> 2) | 0 |-> E 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> E D -[x]-> B , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
 
 reduce extend( .NodeSet  ) .
 reduce extend( A         ) .
 reduce extend( A ; B ; C ) .
 
-reduce              ( .LGraph | 0 |-> A                 | 1 | 0         ) .
-reduce extend(        .LGraph | 0 |-> A                 | 1 | 0         ) .
-reduce extend(extend( .LGraph | 0 |-> A                 | 1 | 0         )) .
-reduce extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 ) .
-reduce extend(insert(A ; B ; C, .FLGraph)) .
+reduce              ( .LabeledGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(        .LabeledGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(extend( .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce extend(        .LabeledGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 ) .
+reduce extend(insert(A ; B ; C, .FoldedLabeledGraph)) .
 
-reduce nodes(             ( .LGraph | 0 |-> A                 | 1 | 0         )) .
-reduce nodes(extend(        .LGraph | 0 |-> A                 | 1 | 0         )) .
-reduce nodes(extend(extend( .LGraph | 0 |-> A                 | 1 | 0         ))) .
-reduce nodes(extend(        .LGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
-reduce nodes(extend(insert(A ; B ; C, .FLGraph))) .
+reduce nodes(             ( .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(        .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(extend( .LabeledGraph | 0 |-> A                 | 1 | 0         ))) .
+reduce nodes(extend(        .LabeledGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
+reduce nodes(extend(insert(A ; B ; C, .FoldedLabeledGraph))) .
 
-reduce frontier( .FLGraph | .NodeSet ) .
+reduce frontier( .FoldedLabeledGraph | .NodeSet ) .
 reduce frontier(extend(A)) .
 reduce frontier(extend(E)) .
 reduce frontier(extend(A ; B ; C)) .

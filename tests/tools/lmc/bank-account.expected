@@ -327,7 +327,7 @@ result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : bfs(state(cinit(0))) .
 rewrites: 449
-result FLGraph: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
+result FoldedLabeledGraph: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
     'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
     => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
@@ -461,7 +461,7 @@ Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 rewrites: 1517
-result FLGraph?: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
+result FoldedLabeledGraph?: (0 -[label(rl '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
     'N2:Nat,'ff.Truth],'_`,_['M3:MsgConf,'withdraw['_+_['1.Nat,'N1:Nat,
     'N4:Nat]]]],'#makeVariable`(_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,ff.Truth`]`,_`,_`[M3:MsgConf`,withdraw`[_+_`[1.Nat`,N1:Nat`,N4:Nat`]`]`]`]`,_#_`[<`bal:_pend:_overdraft:_>`[N1:Nat`,N2:Nat`,tt.Truth`]`,M3:MsgConf`]`):Truth]
     => '_|_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,'N2:Nat,'tt.Truth],
