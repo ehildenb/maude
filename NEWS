@@ -1,3 +1,31 @@
+Overview of Changes in alpha117
+===============================
+* fixed syntax error location bug in new parser
+* fixed show view bug
+* fixed symmetric upView() bug
+* fixed showModule bug in the meta-interpreter where imports
+  and parameters were omitted
+* fixed hang when doing an abort from erewrite
+* fixed crash caused by object-message rewriting with the
+  set clear rules off command
+* fixed bug where rewriteTerm()/frewriteTerm() in the
+  meta-interpreter did not reset next rule pointers
+* fixed a bug where modules cached by the metalevel functional
+  metalevel would be incorrectly used by by the meta-interpreter
+* fixed bug where using the functional metalevel from within
+  the meta-interpreter would pull imports from object level
+  interpreter
+* fixed bug where using the ascent functions from within
+  the meta-interpreter would pull modules from object level
+  interpreter
+* added insertView and showView messages to meta-interpreter
+* meta-interpreter now supports erewriteTerm message
+* erewrite will check for external events even when internal
+  rewrites are possible
+* fixed memory leak triggered by bad unify command
+* loop-mode/pipe edge case reverted to old behavior for IOP
+* status report in response to SIGINFO (SIGUSR1 on Linux)
+
 Overview of Changes in alpha116
 ===============================
 * fixed bug in ctor calculations for associative operators;
@@ -10,7 +38,7 @@ Overview of Changes in alpha116
 
 Overview of Changes in alpha115
 ===============================
-* fixed bug show mod command output empty parentheses
+* fixed bug where show mod command output empty parentheses
 * fixed bug where maude wouldn't compile without SMT support
 * support for file i/o
 * support for standard streams

@@ -1,5 +1,5 @@
 fmod BAR is
-  inc FOO * (sort Foo to Baz, sort Bar to Quux) .
+  including FOO * (sort Foo to Baz, sort Bar to Quux) .
 endfm
 fmod BAR is
   sorts Bool Baz Quux .
@@ -39,7 +39,7 @@ fmod BAR is
   eq A:Bool implies B:Bool = not (A:Bool xor A:Bool and B:Bool) .
 endfm
 fmod THREE is
-  inc TWO * (sort Foo to Foo', sort Baz to Baz', sort Quux to Quux') .
+  including TWO * (sort Foo to Foo', sort Baz to Baz', sort Quux to Quux') .
   sorts Jaz .
   subsorts Jaz < Baz' .
 endfm
@@ -82,7 +82,7 @@ fmod THREE is
   eq A:Bool implies B:Bool = not (A:Bool xor A:Bool and B:Bool) .
 endfm
 fmod BAR is
-  inc FOO * (sort Foo to Baz, op a to b) .
+  including FOO * (sort Foo to Baz, op a to b) .
 endfm
 fmod BAR is
   sorts Bool Baz Bar .
@@ -123,9 +123,9 @@ fmod BAR is
   eq A:Bool implies B:Bool = not (A:Bool xor A:Bool and B:Bool) .
 endfm
 fmod BAR' is
-  inc FOO' * (sort Foo to Quux, op _+_ : [Foo] [Foo] -> [Foo] to _*_ [prec 29
-    gather (E e)], op _+_ : [Baz] [Baz] -> [Foo] to _._ [prec 27 gather (E e)])
-    .
+  including FOO' * (sort Foo to Quux, op _+_ : [Foo] [Foo] -> [Foo] to _*_ [
+    prec 29 gather (E e)], op _+_ : [Baz] [Baz] -> [Foo] to _._ [prec 27 gather
+    (E e)]) .
 endfm
 fmod BAR' is
   sorts Bool Quux Bar Baz .
@@ -172,7 +172,7 @@ reduce in BAR' : a . a * a . a .
 rewrites: 0
 result Quux: a . a * a . a
 fmod BAR'' is
-  inc FOO' * (sort Foo to Quux, op _+_ to _*_ [prec 29 gather (E E)]) .
+  including FOO' * (sort Foo to Quux, op _+_ to _*_ [prec 29 gather (E E)]) .
 endfm
 fmod BAR'' is
   sorts Bool Quux Bar Baz .
@@ -223,7 +223,7 @@ reduce in BAR'' : a * a * a * a .
 rewrites: 0
 result Quux: a * a * a * a
 fmod TEST is
-  inc BASH * (op f : [Foo] -> [Foo] to g) .
+  including BASH * (op f : [Foo] -> [Foo] to g) .
 endfm
 fmod TEST is
   sorts Bool Foo Bar .

@@ -28,7 +28,8 @@ libmeta_a_SOURCES = \
 	metaOpCache.cc \
 	metaModule.cc \
 	metaLevelOpSymbol.cc \
-	metaPreModule.cc
+	metaPreModule.cc \
+	metaView.cc
 
 EXTRA_DIST = \
 	metaDown.cc \
@@ -50,7 +51,9 @@ EXTRA_DIST = \
 	descentSignature.cc \
 	interpreterSignature.cc \
 	metaUpView.cc \
-	metaVariant.cc
+	metaDownView.cc \
+	metaVariant.cc \
+	metaDownSignature.cc
 
 noinst_HEADERS = \
 	meta.hh \
@@ -60,5 +63,5 @@ noinst_HEADERS = \
 	metaModule.hh \
 	metaModuleCache.hh \
 	metaOpCache.hh \
-	metaPreModule.hh
-
+	metaPreModule.hh \
+	metaView.hh

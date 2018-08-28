@@ -207,8 +207,18 @@ public:
   bool downPrintOptionSet(DagNode* metaPrintOptionSet, int& printFlags) const;
   bool downBool(DagNode* metaBool, bool& value);
   bool downQid(DagNode* metaQid, int& id);
+  bool downToken(DagNode* metaQid, Token& token);
   bool downOpName(DagNode* metaQid, int& id);
-  MetaModule* downModule(DagNode* metaModule, bool cacheMetaModule = true, Interpreter* owner = 0);
+  MetaModule* downModule(DagNode* metaModule);
+  View* downView(DagNode* metaView, Interpreter* owner);
+
+  MetaModule* downSignature(DagNode* metaModule, Interpreter* owner);
+  bool downHeader(DagNode* metaHeader, int& id, DagNode*& metaParameterDeclList);
+  bool downParameterDeclList2(DagNode* metaParameterDeclList, MetaPreModule* pm);
+  bool downParameterDecl2(DagNode* metaParameterDecl, MetaPreModule* pm);
+  bool downImports2(DagNode* metaImports, MetaPreModule* pm);
+  bool downImport2(DagNode* metaImport, MetaPreModule* pm);
+
   bool downTermAndSort(DagNode* metaTerm ,
 		       DagNode* metaSort , 
 		       Term*& term ,
@@ -250,7 +260,11 @@ public:
 		      MixfixModule* m,
 		      Vector<Term*>& variables,
 		      Vector<Term*>& values);
-
+  bool downOpTermMappings(DagNode* metaOpMappings,
+			  MixfixModule* fromTheory,
+			  MixfixModule* toModule,
+			  Vector<Term*>& fromTerms,
+			  Vector<Term*>& toTerms);
 
 private:
   enum Implementation
@@ -425,18 +439,24 @@ private:
 				 PointerMap& qidMap,
 				 PointerMap& dagNodeMap);
 
-  bool downHeader(DagNode* metaHeader, int& id, DagNode*& metaParameterDeclList);
-  bool downParameterDeclList(DagNode* metaParameterDeclList, ImportModule* m);
-  bool downParameterDecl(DagNode* metaParameterDecl, ImportModule* m);
+  bool downParameterDeclList(DagNode* metaParameterDeclList, MetaModule* m);
+  bool downParameterDecl(DagNode* metaParameterDecl, MetaModule* m);
 
-  bool downModuleExpression(DagNode* metaExpr, ImportModule* enclosingModule, ImportModule*& m);
+  bool downModuleExpression(DagNode* metaExpr, MetaModule* enclosingModule, ImportModule*& m);
   bool downRenamings(DagNode* metaRenamings, Renaming* renaming);
   bool downRenaming(DagNode* metaRenaming, Renaming* renaming);
   bool downRenamingTypes(DagNode* metaTypes, Renaming* renaming);
   bool downRenamingType(DagNode* metaType, Renaming* renaming);
   bool downRenamingAttributes(DagNode* metaRenamingAttributes, Renaming* renaming);
   bool downRenamingAttribute(DagNode* metaRenamingAttribute, Renaming* renaming);
-  
+
+  ModuleExpression* downModuleExpression(DagNode* metaExpr);
+  bool downInstantiationArguments(DagNode* metaArguments, Vector<Token>& arguments);
+  bool downSortMappingSet(DagNode* metaSortMappings, View* view);
+  bool downSortMapping(DagNode* metaSortMapping, View* view);
+  bool downOpMappingSet(DagNode* metaOpMappings, View* view);
+  bool downOpMapping(DagNode* metaOpMapping, View* view);
+
   bool downVariable(DagNode* metaVariable, MixfixModule* m, Symbol*& vs);
   bool downPolymorphTypeList(DagNode* metaTypeList,
 			     MixfixModule* m,
@@ -485,7 +505,11 @@ private:
 		      MixfixModule* m,
 		      Vector<Symbol*>& variables,
 		      Vector<Term*>& values);
-
+  bool downOpTermMapping(DagNode* metaOpMapping,
+			 MixfixModule* fromTheory,
+			 MixfixModule* toModule,
+			 Vector<Term*>& fromTerms,
+			 Vector<Term*>& toTerms);
   bool downFixUps(MetaModule* m);
 
   bool handleIdentity(DagNode* metaIdentity, MetaModule* m, BinarySymbol* s);

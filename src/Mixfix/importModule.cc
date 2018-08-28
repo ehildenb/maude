@@ -62,12 +62,33 @@
 #include "renameModule.cc"
 #include "parameterization.cc"
 
+ImportModule::ImportModule(int name, ModuleType moduleType)
+  : MixfixModule(name, moduleType),
+    origin(TEXT)
+{
+  //
+  //	This version is for modules created as subclass VisibleModule, either from
+  //	object level syntax or meta-syntax, both of which are considered TEXT.
+  //
+  importPhase = UNVISITED;
+  nrSortsFromParameters = 0;
+  nrSymbolsFromParameters = 0;
+  nrPolymorphsFromParameters = 0;
+  protectCount = 0;
+  canonicalRenaming = 0;
+  baseModule = 0;
+}
+
 ImportModule::ImportModule(int name, ModuleType moduleType, Origin origin, Entity::User* parent)
   : MixfixModule(name, moduleType),
     origin(origin)
 {
-  if (parent != 0)
-    addUser(parent);  // HACK
+  //
+  //	This version is for modules created from ModuleExpressions or for View op->term mappings.
+  //	In particular we take an origin so we know where we came from and a parent to
+  //	send a regretToInform() message when we are deleted.
+  //
+  addUser(parent);
   importPhase = UNVISITED;
   nrSortsFromParameters = 0;
   nrSymbolsFromParameters = 0;

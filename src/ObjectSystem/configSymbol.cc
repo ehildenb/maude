@@ -151,6 +151,10 @@ ConfigSymbol::compileRules()
 	    leftOver.rules.append(rl);
 	}
     }
+  //
+  //	Just in case resetRules() is not called before first rewriting happens.
+  //
+  resetRules();
 }
 
 void
@@ -169,7 +173,7 @@ ConfigSymbol::resetRules()
 DagNode*
 ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
 {
-  //cerr << "ruleRewrite() " << subject << endl;
+  DebugAdvisory("ConfigSymbol::ruleRewrite() " << subject);
   ObjectSystemRewritingContext* rc = safeCast(ObjectSystemRewritingContext*, &context);
   ObjectSystemRewritingContext::Mode mode = rc->getObjectMode();
   if (mode == ObjectSystemRewritingContext::STANDARD)
@@ -292,8 +296,7 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
 	    }
 	  else
 	    {
-	      //cerr << "unresolved message " << *j << endl;
-	      //  cerr << "external = " << external << endl;
+	      DebugAdvisory("unresolved message " << *j <<  "  external = " << external);
 	      if (external && rc->offerMessageExternally(i->first, *j))
 		{
 		  delivered = true;  // make sure we do a rewrite

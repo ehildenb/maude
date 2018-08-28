@@ -28,7 +28,12 @@ TESTS = \
 	metaMetadata.maude \
 	metaVariantUnify.maude \
 	metaGetVariant.maude \
-	metaNarrow.maude
+	metaNarrow.maude \
+	metaIntPrelude.maude \
+	metaIntReplace.maude \
+	metaIntReplace2.maude \
+	russianDollsFlat.maude \
+	russianDollsNonFlat.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -60,6 +65,11 @@ RESULT_FILES = \
 	metaMetadata.expected \
 	metaVariantUnify.expected \
 	metaGetVariant.expected \
-	metaNarrow.expected
+	metaNarrow.expected \
+	metaIntPrelude.expected \
+	metaIntReplace.expected \
+	metaIntReplace2.expected \
+	russianDollsFlat.expected \
+	russianDollsNonFlat.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

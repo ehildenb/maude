@@ -327,3 +327,49 @@ parse start a b c d e f .
 
 *** too many tokens (MSCP10 reports wrong error position)
 parse start a b c d e f g .
+
+
+**** unbound tree of empty bubbles possible ****
+
+fmod INFINITE-EMPTY-BUBBLES is
+  including QID-LIST .
+  sorts Tokens Foo .
+
+  op __ : Tokens Foo -> Foo .
+  op end : -> Foo .
+
+  op tokens : QidList -> Tokens [special(
+    id-hook Bubble (0 -1 < >) 
+    id-hook Exclude (start)
+
+    op-hook qidSymbol (<Qids> : ~> Qid)
+    op-hook nilQidListSymbol (nil : ~> QidList)
+    op-hook qidListSymbol (__ : QidList QidList ~> QidList)
+  )] .
+endfm
+
+*** ambiguous (MSCP10 only finds one parse)
+parse end .
+
+*** force at least one empty bubble
+
+fmod EMPTY-BUBBLE is
+  including QID-LIST .
+  sorts Tokens Foo Bar .
+
+  op start_ : Foo -> Bar [prec 0 gather (E)] .
+  op __ : Tokens Foo -> Foo [prec 0 gather (& &)].
+  op e n d : -> Foo [prec 10].
+
+  op tokens : QidList -> Tokens [special(
+    id-hook Bubble (0 -1 < >) 
+    id-hook Exclude (start)
+
+    op-hook qidSymbol (<Qids> : ~> Qid)
+    op-hook nilQidListSymbol (nil : ~> QidList)
+    op-hook qidListSymbol (__ : QidList QidList ~> QidList)
+  )] .
+endfm
+
+*** ambiguous (MSCP10 infinite recursion in ScpParser::setAmbNode())
+parse start e n d .

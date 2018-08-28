@@ -1,3 +1,225 @@
+2018-06-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaPreModule.hh (PreModule): updated decl for getAutoImports()
+
+	* metaUpModule.cc (upImports): use new getAutoImports convention
+
+	* metaPreModule.cc (getAutoImports): moved here; return
+	null pointer
+
+2018-06-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaPreModule.cc (MetaPreModule): set module type; this was
+	a UMR bug
+
+2018-06-20  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.hh (M): added decls for downParameterDeclList2(),
+	downParameterDecl2()
+	(M): made downHeader() public
+
+	* interpreterManagerSymbol.cc (insertModule): use
+	downParameterDeclList2()
+
+	* metaDownSignature.cc (downParameterDeclList2)
+	(downParameterDecl2): added
+
+	* interpreterManagerSymbol.cc (insertModule): call downImports2()
+
+	* metaUpModule.cc (upImports): deal with new getImportMode()
+	convention
+
+	* metaLevel.hh (M): added decls for downImports2(),
+	downImport2()
+
+	* metaDownSignature.cc (downImports2, downImport2): added
+
+	* metaPreModule.hh (PreModule): delete getNrParameters(),
+	getParameterName(), getParameter(), getNrImports(),
+	getImportMode(), getImport() stubs
+
+2018-06-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* ascentFunctions.cc (getPreModule): added DebugAdvisory()s
+
+2018-06-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevelOpSymbol.cc: remove access to global variables
+
+	* metaLevelOpSymbol.hh (FreeSymbol): added decl for
+	getPreModule()
+
+	* ascentFunctions.cc (getPreModule): added
+	(metaUpView): determine owner rather than use global
+	interpreter variable
+	(metaUpModule, metaUpImports, metaUpSorts, metaUpSubsortDecls)
+	(metaUpOpDecls, metaUpEqs, metaUpMbs, metaUpRls): use
+	getPreModule()
+
+2018-06-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.cc: remove access to global variables
+
+	* metaDown.cc (downModule): call
+	owner->destructUnusedModules() rather than
+	interpreter.destructUnusedModules() (2 places)
+
+	* metaDownSignature.cc (downSignature): call
+	owner->destructUnusedModules() rather than
+	interpreter.destructUnusedModules()
+
+	* metaLevel.hh (M): updated decls for downModuleExpression(),
+	downParameterDeclList(), downParameterDecl()
+
+	* metaDown.cc (downParameterDecl, downParameterDeclList): take
+	MetaModule* rather than ImportModule*
+
+	* metaDownRenamings.cc (downModuleExpression): take MetaModule*
+	rather than ImportModule*
+
+	* metaLevel.hh (M): updated decl for downModule()
+
+	* metaDown.cc (downModule): don't take cacheMetaModule and
+	owner arguments
+	(downModule): rewritten to extract owner Interpreter via
+	the top symbol of meta-module
+
+2018-06-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaPreModule.cc (getFlatSignature): don't pass parent to
+	downSignature()
+
+	* metaDown.cc (downModule): don't pass parent to MetaModule()
+
+	* interpreterManagerSymbol.cc (insertModule): don't pass parent to
+	downSignature()
+
+	* metaLevel.hh (M): updated decl for downSignature()
+
+	* metaDownSignature.cc (downSignature): don't pass parent to
+	MetaModule()
+	(downSignature): don't take parent argument
+
+	* metaModule.cc (MetaModule): don't take or pass parent; pass owner;
+	don't initialize owner
+
+	* metaModule.hh (MetaOpCache): deleted data member owner
+	(getOwner): deleted
+	(MetaOpCache): ctor no longer takes parent
+
+2018-06-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaDown.cc (downModule): call addUser() here; pass null parent
+	to MetaModule()
+
+	* interpreterManagerSymbol.cc (insertModule): don't call addUser()
+	here
+
+	* metaPreModule.cc (regretToInform): more detailed DebugAdvisory()
+	(MetaPreModule): call addUser() here
+
+	* interpreterManagerSymbol.cc (insertModule): use downSignature()
+
+	* metaPreModule.hh (PreModule): deleted inline definition
+	for getFlatSignature()
+
+	* metaPreModule.cc (getFlatSignature): added
+	(getFlatModule): rewritten to use getFlatSignature()
+
+	* metaLevel.hh (M): added decl for downSignature()
+
+	* metaDownSignature.cc: created
+
+2018-06-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (erewriteTerm): fix nasty bug where
+	safeCast() macro was duplicating makeSubcontext() call
+
+2018-05-31  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (erewriteTerm): set mode to
+	ObjectSystemRewritingContext::EXTERNAL
+	(rewriteTerm, frewriteTerm, erewriteTerm): call resetRules()
+	before using module
+
+2018-05-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for erewriteTerm()
+
+	* interpreterSignature.cc: added erewriteTermMsg, erewroteTermMsg
+
+	* interpreterManagerSymbol.cc (erewriteTerm): added
+	(handleMessage): support erewriteMsg
+
+2018-05-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaUpModule.cc (upModule): handle MetaPreModules correctly
+	in the unflattened case
+
+	* metaPreModule.hh (getMetaRepresentation): added
+
+2018-05-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaView.cc (handleOpTermMappings): implemented
+
+	* metaLevel.hh (M): added decls for downOpTermMappings(),
+	downOpTermMapping()
+
+	* metaDownView.cc (downOpTermMappings): added
+	(downOpTermMapping): added
+
+2018-05-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (insertView): implemented
+
+	* metaDownView.cc (downView): make sure we have an actual
+	viewSymbol dag node before we downcast it
+
+	* metaLevel.hh (M): added decls for downSortMapping(),
+	downOpMapping()
+
+	* metaDownView.cc (downModuleExpression): use downToken()
+	(downInstantiationArguments): use downToken() (2 places)
+	(downSortMapping): added
+	(downSortMappingSet): implemented
+	(downOpMapping): added
+	(downOpMappingSet): implemented
+
+	* metaLevel.hh (M): added decl for downToken()
+
+	* metaDown.cc (downToken): added
+
+2018-05-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* meta.hh: added class MetaView
+
+	* metaLevel.hh (M): added decls for downSortMappingSet(),
+	downOpMappingSet()
+
+	* metaDownView.cc (downSortMappingSet, downOpMappingSet): added stubs
+
+	* metaLevel.hh (M): added decls for view version of downModuleExpression()
+	and downInstantiationArguments(); added decl for downView()
+
+	* metaDownView.cc: created
+
+2018-05-04  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaView.hh: created
+
+	* metaView.cc: created
+
+2018-04-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaUpView.cc (upView): call View::evaluate()
+
+2018-04-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (showView): implemented
+
+===================================Maude117===========================================
+
 2017-07-11  Steven Eker  <eker@install.csl.sri.com>
 
 	* metaSearch.cc (makeSMT_RewriteSequenceSearch): check for
@@ -1524,7 +1746,7 @@
 
 	* metaDownRenamings.cc: IssueAdvisory()s in the case of an
 	unusable or nonexistent module
-	
+
 ===================================Maude88c===========================================
 
 2006-10-26  Steven Eker  <eker@goo.csl.sri.com>
@@ -1681,7 +1903,7 @@
 
 	* metaDownRenamings.cc (downRenamingType): new addType() calling
 	convention
-	
+
 ===================================Maude86b===========================================
 
 2005-04-27  Steven Eker  <eker@goo.csl.sri.com>
@@ -1844,7 +2066,7 @@
 
 	* metaDown.cc: print the metaterm in the "could not find an
 	operator" advisory
-	
+
 ===================================Maude84d===========================================
 
 2004-06-14  Steven Eker  <eker@goo.csl.sri.com>
@@ -1859,7 +2081,7 @@
 	* descentFunctions.cc (metaRewrite): use saveHiddenState() and
 	restoreHiddenState()
 	(metaFrewrite): use saveHiddenState() and restoreHiddenState()
-	
+
 ===================================Maude84c===========================================
 
 2004-05-24  Steven Eker  <eker@goo.csl.sri.com>
@@ -1882,14 +2104,14 @@
 	(downImport): handle import modes and new addImport() conventions
 
 	* metaLevelSignature.cc (MACRO): added fthSymbol and thSymbol
-	
+
 ===================================Maude84b===========================================
 
 2004-04-27  Steven Eker  <eker@goo.csl.sri.com>
 
 	* metaUpModule.cc (upImports): use getAutoImports() and handle
 	protecting/extending
-	
+
 ===================================Maude84a===========================================
 
 2004-02-27  Steven Eker  <eker@goo.csl.sri.com>
@@ -1903,7 +2125,7 @@
 	* metaLevel.cc: removed moduleCache hack
 
 	* metaDown.cc (downImport): removed old commented out code
-	
+
 ===================================Maude84===========================================
 
 2004-02-23  Steven Eker  <eker@goo.csl.sri.com>

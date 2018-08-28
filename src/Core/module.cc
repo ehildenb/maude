@@ -230,7 +230,7 @@ Module::closeTheory()
 	      {
 		c->errorSortSeen();
 		changed = true;
-		//	      cout << c->sort(0) << " corrupted by " << s << '\n';
+		DebugAdvisory("sort " << c->sort(0) << " corrupted by " << s);
 	      }
 	  }
       }
@@ -268,7 +268,6 @@ Module::closeTheory()
       s->compileSortConstraints();
       s->compileEquations();
       s->compileRules();
-      // s->finalizeSymbol();
     }
 }
 
@@ -479,7 +478,6 @@ Module::insertLateSymbol(Symbol*s)
   s->compileSortConstraints();
   s->compileEquations();
   s->compileRules();
-  // s->finalizeSymbol();
 }
 
 void

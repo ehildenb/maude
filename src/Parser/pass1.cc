@@ -2,133 +2,83 @@
 //	First pass: construct a compact representation of all parses.
 //
 
-void
-Parser::processBubble(int tokenNr, int bubbleNr, const Vector<int>& sentence)
+Parser::IntPair
+Parser::chaseDeterministicReductionPath(int ruleNr, int startTokenNr)
 {
-  Bubble b = bubbles[bubbleNr];
-  int ruleNr = b.ruleNr;
-  ParserLog("processBubble tokenNr=" << tokenNr << " ruleNr=" << ruleNr << " bubbleNr=" << bubbleNr);
+  //
+  //	Find the DRP starting at (ruleNr, startTokenNr) and return the top return
+  //	Use existing memo items to short-circuit this search where possible.
+  //	Made a place holder memo item for the lhs (nonterminal, prec) of the rule
+  //	for any pair encounters that isn't the top return.
+  //
+  ParserLog("chaseDeterministicReductionPath() called for ruleNr " << ruleNr <<
+	    "  startTokenNr = " << startTokenNr);
 
-  int openParens = 0;
-  int last = sentence.size();
-
-  for (int i = tokenNr; i < last;)
+  for (;;)
     {
-      int token = sentence[i];
-      if (b.upperBound != NONE)
+      Rule* rule = rules[ruleNr];
+      int nonTerminal = rule->nonTerminal;
+      int prec = rule->prec;
+      //
+      //	If we have a memo item that takes us to the top of the DRP,
+      //	return the ruleNr and startTokenNr for the top return.
+      //
+      for (int i = firstMemoItems[startTokenNr]; i != NONE;)
 	{
+	  MemoItem& m = memoItems[i];
+	  i = m.nextMemoItem;
 	  //
-	  //	Check for syntax errors caused by hitting upper bound.
+	  //	We require an exact match for precs. Clearly we couldn't use a
+	  //	memo item with a lower prec since our rule simply doesn't satisfy it.
+	  //	Less obviously, using a memo item with a higher prec means we
+	  //	could lose behavior available with the lower prec that isn't
+	  //	captured by the memo item.
 	  //
-	  int tokensLeft = b.upperBound - (i - tokenNr);
-	  if (tokensLeft == 0)
-	    return;
-	  if (token != b.rightParen)
+	  if (m.nonTerminal == nonTerminal && m.maxPrec == prec)
 	    {
-	      //
-	      //	Need to check for syntax errors arising from insufficient upperBounds to
-	      //	close parentheses.
-	      //
-	      int tokensLeft = b.upperBound - (i - tokenNr);
-	      if (tokensLeft == openParens)
-		return;  // not enough tokens left to close open parens
-	      if (tokensLeft == openParens + 1 && token == b.leftParen)
-		return;  // no enough tokens left to close parens if we open one more
+	      ParserLog("vvvvvvvvvvvvvvvvvvvvvvvvvv" <<
+			"\n   Using memo item in set " << startTokenNr <<
+			" when looking for nonterminal " << nonTerminal << " at prec " << prec <<
+			" we saw a DRP that ends at rule " << m.ruleNr << " to set " << m.startTokenNr <<
+			"\n^^^^^^^^^^^^^^^^^^^^^");
+	      return IntPair(m.ruleNr, m.startTokenNr);
 	    }
+	  //
+	  //	It's possible (with colliding DRPs) that nonterminals are equal
+	  //	while precs differ, with both m.maxPrec < prec and m.maxPrec > prec
+	  //	possible since we don't know which order returns will be encountered in.
+	  //
 	}
       //
-      //	Match tokens, keeping in mind that left and right paren could be the same.
+      //	See if we can extend DRP upwards by one step.
       //
-      if (token == b.rightParen)
-	{
-	  if (openParens > 0)
-	    --openParens;
-	  else if (token == b.leftParen)
-	    openParens = 1;
-	  else
-	    return;  // unmatched closing paren
-	}
-      else if (token == b.leftParen)
-	++openParens;
-      else
+      IntPair p = extractOneStepOfDeterministicReductionPath(ruleNr, startTokenNr);
+      if (p.first == NONE)
 	{
 	  //
-	  //	Regular token, check if it is allowed.
+	  //	No, so what we have corresponds to the top return.
 	  //
-	  const Vector<int>& excluded = b.excludedTerminals;
-	  FOR_EACH_CONST(i, Vector<int>, excluded)
-	    {
-	      if (*i == token)
-		return;  // exluded token
-	    }
+	  break;
 	}
       //
-      //	Token was part of a bubble with a valid continuation.
+      //	Yes, so what we have is not the top return. We will require a
+      //	memo item that maps (nonTerminal, prec) to the top return. We create
+      //	a place holder now in the parse list for startTokenNr and leave
+      //	it to the caller to fill in the top return.
       //
-      ++i;
-      if (i > badTokenIndex)
-	badTokenIndex = i;
-      if (openParens == 0 &&
-	  (b.lowerBound == NONE || b.lowerBound <= i - tokenNr))
-	{
-	  //
-	  //	Bubble is big enough and has no unclosed parens, so it's
-	  //	a valid place to end the bubble.
-	  //
-	  ParserLog("returning bubble at token " << i);
-	  makeReturn(i, ruleNr, tokenNr);
-	}
+      firstMemoItems[startTokenNr] = makeMemoItem(nonTerminal,
+						  prec,  // must be the same as we're looking for to be effective
+						  NONE,  // dummy
+						  NONE,  // dummy
+						  firstMemoItems[startTokenNr]);
+      ParserLog("################" <<
+		"\n   made memo item place holder in set " << startTokenNr <<
+		" when looking for nonterminal " << nonTerminal << " at prec " << prec <<
+		"\n###################");
+      ruleNr = p.first;
+      startTokenNr = p.second;
     }
-}
-
-void
-Parser::doBubbles(int tokenNr, const Vector<int>& sentence)
-{
-  ParserLog(Tty(Tty::RED) << "doBubble() at token " << tokenNr << Tty(Tty::RESET));
-  //
-  //	Look at each call for a nonterminal.
-  //
-  for (int i = firstCalls[tokenNr]; i != NONE;)
-    {
-      Call& call = calls[i];
-      i = call.nextCall;
-      //
-      //	Look at each bubble that can parse to that nonterminal.
-      //
-      for (int j = firstBubbles[flip(call.nonTerminal)]; j != NONE; j = bubbles[j].nextBubble)
-	processBubble(tokenNr, j, sentence);
-    }
-}
-
-void
-Parser::doEmptyBubbles(int tokenNr)
-{
-  ParserLog(Tty(Tty::RED) << "doEmptyBubble() at token " << tokenNr << Tty(Tty::RESET));
-  //
-  //	Look at each call for a nonterminal.
-  //
-  for (int i = firstCalls[tokenNr]; i != NONE;)
-    {
-      Call& call = calls[i];
-      i = call.nextCall;
-      //
-      //	Look at each bubble that can parse to that nonterminal.
-      //
-      for (int j = firstBubbles[flip(call.nonTerminal)]; j != NONE;)
-	{
-	  Bubble& b = bubbles[j];
-	  j = b.nextBubble;
-	  if (b.lowerBound == 0)
-	    {
-	      //
-	      //	We have the possibility of this nonterminal going to an empty bubble.
-	      //	This generates an immediate return in the same parse list.
-	      //
-	      ParserLog("did empty bubble return for rule " << b.ruleNr);
-	      makeReturn(tokenNr, b.ruleNr, tokenNr);
-	    }
-	}
-    }
+  return IntPair(ruleNr, startTokenNr);
 }
 
 void
@@ -139,12 +89,12 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
   //
   ParserLog("processReturn() tokenNr=" << tokenNr << " startTokenNr=" << startTokenNr <<
 	    " ruleNr=" << ruleNr);
-  Rule& rule = rules[ruleNr];
+  Rule* rule = rules[ruleNr];
   //
   //	Get the (nonterminal, prec) we recognized.
   //
-  int nonTerminal = rule.nonTerminal;
-  int prec = rule.prec;
+  int nonTerminal = rule->nonTerminal;
+  int prec = rule->prec;
   ParserLog("nonterminal=" << nonTerminal << " prec=" << prec);
   //
   //	See if we handled this (nonterminal, prec) at startToken before and
@@ -164,8 +114,9 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
   //
   //	No memo applied so we now look for calls satisfied by (nonterminal, prec).
   //
-  bool seenContinuationBranch = false;
-  Vector<DeferredReturn> deferredReturns;  // FIXME: inefficient
+  int drpPossible = true;
+  int deferredReturnRuleNr = NONE;
+  int deferredReturnStartTokenNr = NONE;
   //
   //	We look at all the calls at startTokenNr.
   //
@@ -184,33 +135,47 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
 	    {
 	      Continuation& cont = continuations[k];
 	      int ruleNr2 = cont.ruleNr;
+	      int startTokenNr2 = cont.startTokenNr;
 	      int pos = cont.rhsPosition;
 	      k = cont.nextContinuation;
-	      Rule& rule2 = rules[ruleNr2];
-	      if (rule2.rhs[pos].prec >= prec)
+	      Rule* rule2 = rules[ruleNr2];
+	      if (rule2->rhs[pos].prec >= prec)
 		{
-		  int rhsRemaining = rule2.rhs.length() - (pos + 1);
+		  int rhsRemaining = rule2->rhs.length() - (pos + 1);
 		  if (rhsRemaining == 0)
 		    {
 		      ParserLog("right recursive return for rule=" << ruleNr2);
 		      //
 		      //	This continuation immediately generates a return.
-		      //	We defer processing these until we know if they are unique
-		      //	(i.e. a deterministic reduction).
 		      //
-		      int nrDeferredReturns = deferredReturns.size();
-		      deferredReturns.expandBy(1);
-		      deferredReturns[nrDeferredReturns].ruleNr = ruleNr2;
-		      deferredReturns[nrDeferredReturns].startTokenNr = cont.startTokenNr;
+		      if (drpPossible && deferredReturnRuleNr == NONE)
+			{
+			  //
+			  //	We haven't seem a mid-production user nor have we
+			  //	put another right recursive user aside. Thus we may
+			  //	have the start of a DRP and we put this right recursive
+			  //	user aside.
+			  //
+			  deferredReturnRuleNr = ruleNr2;
+			  deferredReturnStartTokenNr = startTokenNr2;
+			}
+		      else
+			{
+			  //
+			  //	DRP not possible - do standard processing.
+			  //
+			  drpPossible = false;
+			  makeReturn(tokenNr, ruleNr2, startTokenNr2);
+			}
 		    }
 		  else
 		    {
 		      ParserLog("continuation for rule=" << ruleNr2);
-		      seenContinuationBranch = true;
+		      drpPossible = false;
 		      //
 		      //	This continuation has more to match.
 		      //
-		      advanceRule(ruleNr2, pos + 1, cont.startTokenNr, tokenNr, sentence);
+		      advanceRule(ruleNr2, pos + 1, startTokenNr2, tokenNr, sentence);
 		    }
 		}
 	    }
@@ -223,16 +188,16 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
       int r = nonTerminalDecisionTrees[flip(nonTerminal2)];
       while (r != NONE)
 	{
-	  Rule& rule2 = rules[r];
-	  int t = nonTerminal - rule2.rhs[0].symbol;
+	  Rule* rule2 = rules[r];
+	  int t = nonTerminal - rule2->rhs[0].symbol;
 	  if (t == 0)
 	    break;
-	  r = (t > 0) ? rule2.bigger : rule2.smaller;
+	  r = (t > 0) ? rule2->bigger : rule2->smaller;
 	}
       while (r != NONE)
 	{
-	  Rule& rule2 = rules[r];
-	  if (rule2.prec > maxPrec)
+	  Rule* rule2 = rules[r];
+	  if (rule2->prec > maxPrec)
 	    {
 	      //
 	      //	rule2 didn't have small enough prec to satisfy call. Rules in the equals path
@@ -240,39 +205,49 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
 	      //
 	      break;
 	    }
-	  if (rule2.rhs[0].prec < prec)
+	  if (rule2->rhs[0].prec < prec)
 	    {
 	      //
 	      //	rule2 required a smaller prec than our return provided.
 	      //
-	      r = rule2.equal;
+	      r = rule2->equal;
 	      continue;
 	    }
 	  ParserLog("saw implied call by rule=" << r);
 	  //
 	  //	Normal processesing.
 	  //
-	  int rhsRemaining = rule2.rhs.length() - 1;
+	  int rhsRemaining = rule2->rhs.length() - 1;
 	  if (rhsRemaining == 0)
 	    {
 	      ParserLog("implied right recursive return for rule=" << r);
-	      //
-	      //	This continuation immediately generates a return.
-	      //	We defer processing these until we know if they are unique
-	      //	(i.e. a deterministic reduction).
-	      //
-	      int nrDeferredReturns = deferredReturns.size();
-	      deferredReturns.expandBy(1);
-	      deferredReturns[nrDeferredReturns].ruleNr = r;
-	      deferredReturns[nrDeferredReturns].startTokenNr = startTokenNr;
+	      if (drpPossible && deferredReturnRuleNr == NONE)
+		{
+		  //
+		  //	We haven't seem a mid-production user nor have we
+		  //	put another right recursive user aside. Thus we may
+		  //	have the start of a DRP and we put this right recursive
+		  //	user aside.
+		  //
+		  deferredReturnRuleNr = r;
+		  deferredReturnStartTokenNr = startTokenNr;
+		}
+	      else
+		{
+		  //
+		  //	DRP not possible - do standard processing.
+		  //
+		  drpPossible = false;
+		  makeReturn(tokenNr, r, startTokenNr);
+		}
 	    }
 	  else
 	    {
 	      ParserLog("implied continuation for rule=" << r);
-	      seenContinuationBranch = true; 
+	      drpPossible = false;
 	      advanceRule(r, 1, startTokenNr, tokenNr, sentence);
 	    }
-	  r = rule2.equal;
+	  r = rule2->equal;
 	}
     }
   //
@@ -281,7 +256,7 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
   //
   ParserLog("After processing callers seenContinuationBranch=" << seenContinuationBranch <<
 	    " deferredReturns.size()=" << deferredReturns.size());
-  if (!seenContinuationBranch && deferredReturns.size() == 1)
+  if (drpPossible && deferredReturnRuleNr != NONE)
     {
       //
       //	When looking for continuations of (nonTerminal, prec) in calls from
@@ -296,15 +271,26 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
       //
       ParserLog("deterministic reduction seen in set " << tokenNr <<
 		" from rule " << ruleNr << " starting  at " << startTokenNr <<
-		" to rule " << deferredReturns[0].ruleNr <<
-		" starting at " << deferredReturns[0].startTokenNr);
+		" to rule " << deferredReturnRuleNr <<
+		" starting at " << deferredReturnStartTokenNr);
 
-      IntPair topMost = chaseDeterministicReductionPath(deferredReturns[0].ruleNr, deferredReturns[0].startTokenNr);
+      int firstNewMemoNr = memoItems.size();
       firstMemoItems[startTokenNr] = makeMemoItem(nonTerminal,
 						  prec,
-						  topMost.first,
-						  topMost.second,
+						  NONE,
+						  NONE,
 						  firstMemoItems[startTokenNr]);
+      IntPair topMost = chaseDeterministicReductionPath(deferredReturnRuleNr, deferredReturnStartTokenNr);
+      //
+      //	Fix up all the dummy memo items we created.
+      //
+      int nrMemoItems = memoItems.size();
+      for (int i = firstNewMemoNr; i < nrMemoItems; ++i)
+	{
+	  MemoItem& m = memoItems[i];
+	  m.ruleNr = topMost.first;
+	  m.startTokenNr = topMost.second;
+	}
       ParserLog("made memo item in set " << startTokenNr <<
 		" when looking for nonterminal " << nonTerminal << " at prec " << prec <<
 		" we saw a DRP that ends at rule " << topMost.first << " to set " << topMost.second);
@@ -317,10 +303,10 @@ Parser::processReturn(int tokenNr, int startTokenNr, int ruleNr, const Vector<in
 		"  seenContinuationBranch = " << seenContinuationBranch <<
 		"  deferredReturns.size() = " << deferredReturns.size());
       //
-      //	Process deferred returns normally.
+      //	If we deferred a return, process it normally.
       //
-      FOR_EACH_CONST(i, Vector<DeferredReturn>, deferredReturns)
-	makeReturn(tokenNr, i->ruleNr, i->startTokenNr);
+      if (deferredReturnRuleNr != NONE)
+	makeReturn(tokenNr, deferredReturnRuleNr, deferredReturnStartTokenNr);
     }
 }
 
@@ -340,233 +326,95 @@ Parser::doReturns(int tokenNr, const Vector<int>& sentence)
 }
 
 void
-Parser::doEmptyBubbleReturns(int tokenNr, const Vector<int>& sentence)
-{
-  //
-  //	We redo old empty bubble returns in case they have more continuations
-  //
-  int i = firstReturns[tokenNr];
-  if (lastReturnProcessed != NONE)
-    {
-      //
-      //	We have already processed some returns. We need to redo any
-      //	old empty bubble returns in case they have more continuations.
-      //
-      for (;; i = returns[i].nextReturn)
-	{
-	  Return& ret = returns[i];
-	  if (tokenNr == ret.startTokenNr)
-	    processReturn(tokenNr, ret.startTokenNr, ret.ruleNr, sentence);
-	  if (i == lastReturnProcessed)
-	    break;  // this was the last of the already processed returns
-	}
-      i = returns[i].nextReturn;  // first new return
-    }
-  //
-  //	We then do new returns which maybe empty bubble returns or
-  //	have arose from processing empty bubble returns.
-  //
-  for (; i != NONE; i = returns[i].nextReturn)
-    {
-      lastReturnProcessed = i;
-      Return& ret = returns[i];
-      processReturn(tokenNr, ret.startTokenNr, ret.ruleNr, sentence);
-    }
-}
-
-Parser::IntPair
-Parser::chaseDeterministicReductionPath(int ruleNr, int startTokenNr)
-{
-  Rule& rule = rules[ruleNr];
-  int nonTerminal = rule.nonTerminal;
-  int prec = rule.prec;
-
-  ParserLog("    chaseDeterministicReductionPath() called for ruleNr " << ruleNr <<
-	    "  startTokenNr = " << startTokenNr <<
-	    "  nonTerminal = " << nonTerminal <<
-	    "  prec = " << prec);
-  int nextRuleNr = NONE;
-  int nextStartTokenNr = NONE;
-
-  for (int i = firstMemoItems[startTokenNr]; i != NONE;)
-    {
-      MemoItem& m = memoItems[i];
-      i = m.nextMemoItem;
-      //
-      //	We require an exact match for precs. Clearly we couldn't use a
-      //	memo item with a lower prec since our rule simply doesn't satisfy it.
-      //	Less obviously, using a memo item with a higher prec means we
-      //	could lose behavior available with the lower prec that isn't
-      //	captured by the memo item.
-      //
-      if (m.nonTerminal == nonTerminal && m.maxPrec == prec)
-	{
-	  ParserLog("vvvvvvvvvvvvvvvvvvvvvvvvvv" <<
-		    "\n   Using memo item in set " << startTokenNr <<
-		    " when looking for nonterminal " << nonTerminal << " at prec " << prec <<
-		    " we saw a DRP that ends at rule " << m.ruleNr << " to set " << m.startTokenNr <<
-		    "\n^^^^^^^^^^^^^^^^^^^^^");
-	  return IntPair(m.ruleNr, m.startTokenNr);
-	}
-      /* perhaps user could be the same
-      Assert(m.nonTerminal != nonTerminal || m.maxPrec < prec,
-	     "startTokenNr = " << startTokenNr <<
-	     " memo item for " << nonTerminal <<
-	     " with prec  " << m.maxPrec <<
-	     " should not exist since we have a rule returning prec " << prec <<
-	     " which must have some other user, making the memo item not a DRP");
-      */
-    }
-	
-  for (int j = firstCalls[startTokenNr]; j != NONE;)
-    {
-      Call& call = calls[j];
-      int nonTerminal2 = call.nonTerminal;
-      int maxPrec = call.maxPrec;
-      j = call.nextCall;
-      if (nonTerminal2 == nonTerminal)
-	{
-	  if (maxPrec == UNBOUNDED)
-	    {
-	      ParserLog("----> end of DRP seen because of root object is a caller");
-	      return IntPair(ruleNr, startTokenNr);
-	    }
-	  //
-	  //	Handle explicit continuations.
-	  //
-	  for (int k = call.firstContinuation; k != NONE;)
-	    {
-	      Continuation& cont = continuations[k];
-	      int ruleNr2 = cont.ruleNr;
-	      int pos = cont.rhsPosition;
-	      k = cont.nextContinuation;
-	      Rule& rule2 = rules[ruleNr2];
-	      if (rule2.rhs[pos].prec >= prec)
-		{
-		  //
-		  //	Found a continutation.
-		  //
-		  if (nextRuleNr != NONE)
-		    {
-		      ParserLog("----> end of DRP seen because of multiple continuations");
-		      return IntPair(ruleNr, startTokenNr);
-		    }
-		  int rhsRemaining = rule2.rhs.length() - (pos + 1);
-		  if (rhsRemaining != 0)
-		    {
-		      ParserLog("----> end of DRP seen because of non return event");
-		      return IntPair(ruleNr, startTokenNr);
-		    }
-		  //
-		  //	It generates a return that potentially continues the DRP.
-		  //
-		  nextRuleNr = ruleNr2;
-		  nextStartTokenNr = cont.startTokenNr;
-		}
-	    }
-	}
-      //
-      //	Check for implied start ups.
-      //
-      int r = nonTerminalDecisionTrees[flip(nonTerminal2)];
-      while (r != NONE)
-	{
-	  Rule& rule2 = rules[r];
-	  int t = nonTerminal - rule2.rhs[0].symbol;
-	  if (t == 0)
-	    break;
-	  r = (t > 0) ? rule2.bigger : rule2.smaller;
-	}
-
-      while (r != NONE)
-	{
-	  Rule& rule2 = rules[r];
-	  if (rule2.prec > maxPrec)
-	    break;
-	  if (rule2.rhs[0].prec >= prec)
-	    {
-	      //
-	      //	Found a continutation.
-	      //
-	      
-	      if (nextRuleNr != NONE)
-		{
-		  ParserLog("----> end of DRP seen because of multiple continuations - implied start up");
-		  return IntPair(ruleNr, startTokenNr);
-		}
-	      int rhsRemaining = rule2.rhs.length() - 1;
-	      if (rhsRemaining != 0)
-		{
-		  ParserLog("----> end of DRP seen because of non return event - implied start up");
-		  return IntPair(ruleNr, startTokenNr);
-		}
-	      //
-	      //	It generates a return that potentially continues the DRP.
-	      //	Can only happen for a <nonterminal> ::= <nonterminal> production.
-	      //
-	      nextRuleNr = r;
-	      nextStartTokenNr = startTokenNr;
-	    }
-	  r = rule2.equal;
-	}
-    }
-  Assert(nextRuleNr != NONE, "didn't find caller for rule " << ruleNr << " at position " << startTokenNr);
-  ParserLog("*********** continuing DRP chase with rule " << nextRuleNr << " at position " << nextStartTokenNr);
-
-  IntPair topMost = chaseDeterministicReductionPath(nextRuleNr, nextStartTokenNr);
-  firstMemoItems[startTokenNr] = makeMemoItem(nonTerminal,
-					      prec,  // must be the same as we're looking for to be effective
-					      topMost.first,
-					      topMost.second,
-					      firstMemoItems[startTokenNr]);
-  ParserLog("################" <<
-	    "\n   made memo item in set " << startTokenNr <<
-	    " when looking for nonterminal " << nonTerminal << " at prec " << prec <<
-	    " we saw a DRP that ends at rule " << topMost.first << " to set " << topMost.second <<
-	    "\n###################");
-  return topMost;
-}
-
-void
 Parser::expandCalls(int tokenNr)
 {
   int firstCall = firstCalls[tokenNr];
-  for (int i = firstCall; i != NONE;)
+  if (firstCall == NONE)
+    return;
+  if (calls[firstCall].nextCall == NONE && !haveEmptyBubbles)
     {
-      Call& call = calls[i];
+      //
+      //	Single call case, with no empty bubbles so we can
+      //	safely use the expansion list itself.
+      //
+      Call& call = calls[firstCall];
       int nonTerminal = call.nonTerminal;
       int maxPrec = call.maxPrec;
-      i = call.nextCall;
+
       Vector<Expansion>& exs = expansions[flip(nonTerminal)];
       for (int j = exs.length() - 1; j >= 0; j--)
 	{
 	  Expansion& ex = exs[j];
 	  if (ex.prec <= maxPrec)
 	    {
-	      int nrPairs = ex.expansion.length();
-	      for (int k = 0; k < nrPairs; k++)
+	      //
+	      //	We've found the largest prec expansion that we can use.
+	      //
+	      int firstExpansionCall = ex.firstExpansionCall;
+	      Call& call2 = calls[firstExpansionCall];
+	      if (call2.nonTerminal == nonTerminal)
 		{
-		  int nt2 = ex.expansion[k].symbol;
-		  int prec = ex.expansion[k].prec;
+		  if (call2.maxPrec > call.maxPrec)
+		    call.maxPrec = call2.maxPrec;  //  increase prec of single call
+		  call.nextCall = call2.nextCall;  // pick up any calls to other nonterminals
+		}
+	      else
+		call.nextCall = firstExpansionCall;  // pick up all the expansion calls
+	      return;
+	    }
+	}
+      return;  // no expansion for this call
+    }
+  //
+  //	General case with multiple calls in list.
+  //
+  for (int i = firstCall; i != NONE;)
+    {
+      Call& call = calls[i];
+      i = call.nextCall;
+      int nonTerminal = call.nonTerminal;
+      int maxPrec = call.maxPrec;
+      Vector<Expansion>& exs = expansions[flip(nonTerminal)];
+      for (int j = exs.length() - 1; j >= 0; j--)
+	{
+	  Expansion& ex = exs[j];
+	  if (ex.prec <= maxPrec)
+	    {
+	      //
+	      //	We've found the largest prec expansion that we can use.
+	      //
+	      for (int k = ex.firstExpansionCall; k != NONE;)
+		{
+		  Call& call2 = calls[k];
+		  k = call2.nextCall;
+		  int nt2 = call2.nonTerminal;
+		  int prec2 = call2.maxPrec;
+		  //
+		  //	See if we should increase the prec on an existing call.
+		  //
 		  for (int l = firstCall; l != NONE;)
 		    {
-		      Call& call2 = calls[l];
-		      if (call2.nonTerminal == nt2)
+		      Call& call3 = calls[l];
+		      l = call3.nextCall;
+		      if (call3.nonTerminal == nt2)
 			{
-			  if (call2.maxPrec < prec)
-			    call2.maxPrec = prec;
+			  if (call3.maxPrec < prec2)
+			    call3.maxPrec = prec2;
 			  goto nextPair;
 			}
-		      l = call2.nextCall;
 		    }
 		  {
+		    //
+		    //	Add a new call, and push it on the front so we don't visit it
+		    //	in the outer loop (since it's fully expanded).
+		    //
 		    int nrCalls = calls.length();
 		    calls.expandBy(1);
-		    Call& call2 = calls[nrCalls];
-		    call2.nonTerminal = nt2;
-		    call2.maxPrec = prec;
-		    call2.firstContinuation = NONE;
-		    call2.nextCall = firstCall;
+		    Call& call4 = calls[nrCalls];
+		    call4.nonTerminal = nt2;
+		    call4.maxPrec = prec2;
+		    call4.firstContinuation = NONE;
+		    call4.nextCall = firstCall;
 		    firstCall = nrCalls;
 		    ParserLog("created call for " << nt2 << " from " << nonTerminal);
 		  }
@@ -593,27 +441,27 @@ Parser::scanCalls(int tokenNr, const Vector<int>& sentence)
       int r = terminalDecisionTrees[flip(call.nonTerminal)];
       while (r != NONE)
 	{
-	  Rule& rule = rules[r];
-	  int t = currentToken - rule.rhs[0].symbol;
+	  Rule* rule = rules[r];
+	  int t = currentToken - rule->rhs[0].symbol;
 	  if (t == 0)
-	    break;
-	  r = (t > 0) ? rule.bigger : rule.smaller;
-	}
-      if (r != NONE)
-	{
-	  //
-	  //	Implied match can move the badTokenIndex.
-	  //
-	  if (nextTokenNr > badTokenIndex)
-	    badTokenIndex = nextTokenNr;
-	}
-      while (r != NONE)
-	{
-	  Rule& rule = rules[r];
-	  if (rule.prec > maxPrec)
-	    break;
-	  advanceRule(r, 1, tokenNr, nextTokenNr, sentence);
-	  r = rule.equal;
+	    {
+	      if (rule->prec <= maxPrec)
+		{
+		  if (nextTokenNr > badTokenIndex)
+		    badTokenIndex = nextTokenNr;
+		  do
+		    {
+		      advanceRule(r, 1, tokenNr, nextTokenNr, sentence);
+		      r = rule->equal;
+		      if (r == NONE)
+			break;
+		      rule = rules[r];
+		    }
+		  while (rule->prec <= maxPrec);
+		}
+	      break;
+	    }
+	  r = (t > 0) ? rule->bigger : rule->smaller;
 	}
     }
 }
@@ -625,13 +473,13 @@ Parser::advanceRule(int ruleNr,
 		    int tokenNr,
 		    const Vector<int>& sentence)
 {
-  Rule& r = rules[ruleNr];
-  int end = r.rhs.length();
+  Rule* rule = rules[ruleNr];
+  int end = rule->rhs.size();
   int nrTokens = sentence.size();
   Assert(tokenNr <= nrTokens, "tokenNr past last parse list");
   for (; pos < end; pos++)
     {
-      int symbol = r.rhs[pos].symbol;
+      int symbol = rule->rhs[pos].symbol;
       if (symbol < 0)
 	{
 	  makeCall(tokenNr, ruleNr, pos, startTokenNr);
@@ -661,8 +509,8 @@ Parser::advanceRule(int ruleNr,
 void
 Parser::makeCall(int tokenNr, int ruleNr, int rhsPosition, int startTokenNr)
 {
-  int nonTerminal = rules[ruleNr].rhs[rhsPosition].symbol;
-  int prec = rules[ruleNr].rhs[rhsPosition].prec;
+  int nonTerminal = rules[ruleNr]->rhs[rhsPosition].symbol;
+  int prec = rules[ruleNr]->rhs[rhsPosition].prec;
   for (int i = firstCalls[tokenNr]; i != NONE;)
     {
       Call& call = calls[i];

@@ -36,6 +36,7 @@ libmixfix_a_SOURCES = \
 	syntaxContainer.cc \
 	renaming.cc \
 	view.cc \
+	syntacticView.cc \
 	entity.cc \
 	moduleCache.cc \
 	moduleExpression.cc \
@@ -156,6 +157,7 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	renaming.hh \
 	view.hh \
+	syntacticView.hh \
 	entity.hh \
 	moduleCache.hh \
 	moduleExpression.hh \

@@ -53,6 +53,11 @@ IO_Manager::IO_Manager()
   contFlag = false;
   wrapOut = 0;
   wrapErr = 0;
+
+  firstUnused = 0;
+  bufferEnd = 0;
+  bufferSize = 0;
+  buffer = 0;
 }
 
 void
@@ -151,51 +156,75 @@ IO_Manager::getInput(char* buf, size_t maxSize, FILE* stream)
       if (!contFlag)
 	{
 	  fputs(prompt.c_str(), stdout);  // HACK: bypass line wrapper 
-	  //fputs(contFlag ? contPrompt.c_str() : prompt.c_str(), stdout);  // HACK: bypass line wrapper
 	  fflush(stdout);
 	  contFlag = true;
 	}
     }
-  return boundedGetLine(buf, maxSize, stdin);
+  return readFromStdin(buf, maxSize);
 }
 
 ssize_t
-IO_Manager::boundedGetLine(char* buf, size_t maxSize, FILE* stream)
+IO_Manager::readFromStdin(char* buf, size_t maxSize)
 {
   //
-  //	This is a hybrid between read() that reads a bounded number
-  //	of characters but will read past \n, and getline() that only
-  //	reads up to \n but will reallocate() (requiring that buf was
-  //	malloc()'d) to return any number of characters, and null
-  //	terminating.
+  //	We bypass stdlib because we want to get whatever is available
+  //	from a pipe without waiting for a \n to avoid breaking IOP.
   //
-  //	We read up to and including the \n OR the bound, which ever
-  //	is reached first. Null termination is not added to we can
-  //	read nulls OK.
+  //	But we can't use read() in place of this function because
+  //	we don't want lexer swallowing characters past \n since they
+  //	may be wanted by the object system standard stream functionality.
   //
-  size_t index = 0;
+  //	Instead we keep a local buffer. We return whatever is in the
+  //	local buffer up to \n, maxSize, or the end of the buffer.
+  //	If the local buffer is empty, we refill it with whatever
+  //	is available from read(), and we don't make another call to
+  //	read() (which could block on a pipe or socket) until the local
+  //	buffer is empty.
+  //
+  if (firstUnused >= bufferEnd)
+    {
+      //
+      //	No buffered characters, need to do a read() and maybe block.
+      //
+      if (bufferSize < maxSize)
+	{
+	  //
+	  //	Need to reallocate our buffer first.
+	  //
+	  delete [] buffer;
+	  buffer = new char[maxSize];
+	  bufferSize = maxSize;
+	}
+
+      firstUnused = 0;
+      bufferEnd = read(STDIN_FILENO, buffer, maxSize);
+      if (bufferEnd <= 0)
+	return bufferEnd;  // EOF or error
+    }
+  //
+  //	Return the buffered characters, up to \n, maxSize or end of local buffer.
+  //
+  size_t  i = 0;
   for (;;)
     {
-      int c = getc(stream);
-      if (c == EOF)
-	return (index > 0) ? index : EOF;
-      buf[index] = c;
-      ++index;
-      if (c == '\n' || index == maxSize)
+      char c = buffer[firstUnused];
+      buf[i] = c;
+      ++firstUnused;
+      ++i;
+      if (c == '\n' || i == maxSize || firstUnused == bufferEnd)
 	break;
     }
-  return index;
+  return i;
 }
 
 Rope
-IO_Manager::getLine(const Rope& prompt, FILE* stream)
+IO_Manager::getLineFromStdin(const Rope& prompt)
 {
-  //cerr << "getLine() prompt = " << prompt << endl;
   //
   //	Get a line as a Rope, possibly using Tecla.
   //
 #ifdef USE_TECLA
-  if (gl != 0 && isatty(fileno(stream)))
+  if (gl != 0 && isatty(STDIN_FILENO))
     {
       char* promptString = prompt.makeZeroTerminatedString();
       line = gl_get_line(gl, promptString, NULL, -1);  //  ignore any partial line left in line
@@ -207,28 +236,29 @@ IO_Manager::getLine(const Rope& prompt, FILE* stream)
       return result;
     }
 #endif
-  //cerr << "Non tecla case" << endl;
   //
   //	Non-Tecla case. Either Tecla not compiled it, or disabled or
-  //	we are getting the line from a file.
+  //	we are getting the line from a file or pipe.
+  //	We keep reading, respecting buffered characters, until we get to \n or EOF.
   //
   char* promptString = prompt.makeZeroTerminatedString();
   fputs(promptString, stdout);  // HACK: bypass line wrapper
   fflush(stdout);
   delete [] promptString;
-
-  char* localLine = 0;
-  size_t n = 0;
-  ssize_t nrRead = getline(&localLine, &n, stream);
-  //cerr << "nrRead = " << nrRead << endl;
-  if (nrRead == -1)
+  //
+  //	We keep reading and accumulating characters until we hit \n, EOF or error.
+  //
+  Rope result;
+  for (;;)
     {
-      if (localLine != 0)
-	free(localLine);  // getline() might have realloc()'d memory
-      return Rope();  // return empty rope on error or eof
+      char buf[BUFFER_SIZE];
+      ssize_t nrRead = readFromStdin(buf, BUFFER_SIZE);
+      if (nrRead <= 0)
+	break;
+      Rope t(buf, nrRead);
+      result += t;
+      if (buf[nrRead - 1] == '\n')
+	break;
     }
-  Rope result(localLine, nrRead);
-  if (localLine != 0)
-    free(localLine);
   return result;
 }

@@ -21,7 +21,7 @@
 */
 
 //
-//      Implementation for class PreModule.
+//      Implementation for class SyntacticPreModule.
 //
 
 //      utility stuff
@@ -70,25 +70,23 @@
 #include "syntacticPreModule.hh"
 #include "interpreter.hh"
 #include "maudemlBuffer.hh"
-#include "global.hh"  // HACK shouldn't be accessing global variables
 
 #ifdef QUANTIFY_PROCESSING
 #include "quantify.h"
 #endif
 
 //	our stuff
-//#include "import.cc"
 #include "process.cc"
 #include "fixUp.cc"
 #include "ops.cc"
 #include "command.cc"
 
-SyntacticPreModule::SyntacticPreModule(Token startToken, Token moduleName)
-  : PreModule(moduleName.code(), &interpreter /* HACK */),
+SyntacticPreModule::SyntacticPreModule(Token startToken, Token moduleName, Interpreter* owner)
+  : PreModule(moduleName.code(), owner),
     LineNumber(moduleName.lineNumber()),
     startTokenCode(startToken.code())
 {
-  MixfixModule::ModuleType moduleType =  MixfixModule::FUNCTIONAL_MODULE;
+  MixfixModule::ModuleType moduleType = MixfixModule::FUNCTIONAL_MODULE;
   if (startTokenCode == th)
     moduleType = MixfixModule::SYSTEM_THEORY;
   else if (startTokenCode == fth)
@@ -106,14 +104,6 @@ SyntacticPreModule::~SyntacticPreModule()
 {
   if (flatModule != 0)
     flatModule->deepSelfDestruct();
-  {
-    FOR_EACH_CONST(i, Vector<Import>, imports)
-      i->expr->deepSelfDestruct();
-  }
-  {
-    FOR_EACH_CONST(i, Vector<Parameter>, parameters)
-      i->theory->deepSelfDestruct();
-  }
 }
 
 void
@@ -122,7 +112,7 @@ SyntacticPreModule::regretToInform(Entity* doomedEntity)
   Assert(doomedEntity == flatModule, "module pointer error");
   flatModule = 0;
 #ifdef COMPILER
-  interpreter.invalidate(this);
+  getOwner()->invalidate(this);
 #endif
 }
 
@@ -198,46 +188,45 @@ SyntacticPreModule::finishModule(Token endToken)
 		   QUOTE(Token::name(startTokenCode)) << " ends with "
 		   << QUOTE(endToken) << '.');
     }
-  autoImports = interpreter.getAutoImports(); // deep copy
+  autoImports = getOwner()->getAutoImports(); // deep copy
   isCompleteFlag = true;
-  interpreter.insertModule(id(), this);
+  getOwner()->insertModule(id(), this);
   process();
   //
   //	House keeping.
   //
-  interpreter.destructUnusedModules();
+  getOwner()->destructUnusedModules();
+}
+
+void
+SyntacticPreModule::addImport(Token modeToken, ModuleExpression* expr)
+{
+  ImportModule::ImportMode mode;
+  LineNumber lineNumber(modeToken.lineNumber());
+  int code = modeToken.code();
+  if (code == pr || code == protecting)
+    mode = ImportModule::PROTECTING;
+  else if (code == ex || code == extending)
+    mode = ImportModule::EXTENDING;
+  else if (code == inc || code == including)
+    mode = ImportModule::INCLUDING;
+  else
+    {
+      Assert(code == us || code == usingToken, "unknown importation mode");
+
+      IssueWarning(lineNumber <<
+		   ": importation mode " << QUOTE("using") <<
+		   " not supported - treating it like " <<
+		   QUOTE("including") << '.');
+      mode = ImportModule::INCLUDING;
+    }
+  PreModule::addImport(lineNumber, mode, expr);
 }
 
 SyntacticPreModule::OpDef::OpDef()
 {
   prec = DEFAULT;
   metadata = NONE;
-}
-
-void
-SyntacticPreModule::addParameter(Token name, ModuleExpression* theory)
-{
-  if (MixfixModule::isTheory(getModuleType()))
-    {
-      IssueWarning(LineNumber(name.lineNumber()) <<
-		   ": parmaeterized theories are not supported; recovering by ignoring parameter " <<
-		   QUOTE(name) << '.');
-      delete theory;
-      return;
-    }
-  int nrParameters = parameters.length();
-  parameters.resize(nrParameters + 1);
-  parameters[nrParameters].name = name;
-  parameters[nrParameters].theory = theory;
-}
-
-void
-SyntacticPreModule::addImport(Token mode, ModuleExpression* expr)
-{
-  int nrImports = imports.length();
-  imports.resize(nrImports + 1);
-  imports[nrImports].mode = mode;
-  imports[nrImports].expr = expr;
 }
 
 void

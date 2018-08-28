@@ -93,4 +93,18 @@ Foo: start tokens('a 'b 'c) tokens('d 'e 'f)
 Warning: <standard input>, line 329: didn't expect token g:
 start a b c d e f g <---*HERE*
 Warning: <standard input>, line 329: no parse for term.
+Warning: <standard input>, line 352: ambiguous term, two parses are:
+Foo : end
+-versus-
+Foo : tokens(nil) end
+
+Arbitrarily taking the first as correct.
+Foo: end
+Warning: <standard input>, line 375: ambiguous term, two parses are:
+Bar : start tokens(nil) e n d
+-versus-
+Bar : start tokens(nil) tokens(nil) e n d
+
+Arbitrarily taking the first as correct.
+Bar: start tokens(nil) e n d
 Bye.

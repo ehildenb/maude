@@ -45,7 +45,7 @@
 //	front end class definitions
 #include "token.hh"
 #include "renaming.hh"
-#include "view.hh"
+#include "syntacticView.hh"
 #include "moduleExpression.hh"
 #include "fileTable.hh"
 #include "directoryManager.hh"

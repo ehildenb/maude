@@ -35,12 +35,12 @@ class IO_Manager
 
 public:
   enum Defaults
-  {
-    MAX_LINE_LENGTH = 1024,
-    MAX_HISTORY_LENGTH = 4096,
-    DEFAULT_COLUMNS = 80,
-    DEFAULT_LINES = 25
-  };
+    {
+      MAX_LINE_LENGTH = 1024,
+      MAX_HISTORY_LENGTH = 4096,
+      DEFAULT_COLUMNS = 80,
+      DEFAULT_LINES = 25
+    };
 
   IO_Manager();
 
@@ -52,10 +52,16 @@ public:
   void setContPrompt(const string& newContPrompt);
   void startCommand();
   ssize_t getInput(char* buf, size_t maxSize, FILE* stream);
-  Rope getLine(const Rope& prompt, FILE* stream);
-  ssize_t boundedGetLine(char* buf, size_t maxSize, FILE* stream);
+  Rope getLineFromStdin(const Rope& prompt);
 
 private:
+  enum Sizes
+    {
+      BUFFER_SIZE = 4096
+    };
+
+  ssize_t readFromStdin(char* buf, size_t maxSize);
+
   GetLine* gl;
   const char* line;
   bool usePromptsAnyway;  // use prompts even if command line editing disabled
@@ -64,6 +70,11 @@ private:
   string contPrompt;
   AutoWrapBuffer* wrapOut;
   AutoWrapBuffer* wrapErr;
+
+  ssize_t firstUnused;
+  ssize_t bufferEnd;
+  size_t bufferSize;
+  char* buffer;
 };
 
 inline void

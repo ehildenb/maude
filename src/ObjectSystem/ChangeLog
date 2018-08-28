@@ -1,3 +1,38 @@
+2018-07-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* streamManagerSymbol.cc (getLine): use getLineFromStdin()
+
+2018-05-31  Steven Eker  <eker@install.csl.sri.com>
+
+	* configSymbol.cc (compileRules): call resetRules() for safety
+
+	* objectSystemRewritingContext.cc (offerMessageExternally): turned
+	commented out print statement into DebugAdvisory()
+
+	* socketManagerSymbol.cc (handleManagerMessage, handleMessage): turned
+	commented out print statement into DebugAdvisory()
+
+	* configSymbol.cc (ruleRewrite): turned commented out print statement
+	into DebugAdvisory()
+
+2018-05-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* objectSystemRewritingContext.hh (RewritingContext): added decl
+	for externalRewrite()
+
+	* objectSystemRewritingContext.cc (externalRewrite): added
+
+2018-05-24  Steven Eker  <eker@install.csl.sri.com>
+
+	* pseudoThread.hh (P): added NOTHING_HAPPENED to enum ReturnStatus
+	(P): updated decl for eventLoop()
+
+	* pseudoThread.cc (processFds): support wait = 0 for non-blocking
+	poll of active file descriptors
+	(eventLoop): take block argument
+
+===================================Maude117===========================================
+
 2017-08-18  Steven Eker  <eker@install.csl.sri.com>
 
 	* configSymbol.cc (ruleRewrite): added comments to explain

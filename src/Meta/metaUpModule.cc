@@ -2,7 +2,7 @@
 
     This file is part of the Maude 2 interpreter.
 
-    Copyright 1997-2003 SRI International, Menlo Park, CA 94025, USA.
+    Copyright 1997-2018 SRI International, Menlo Park, CA 94025, USA.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,6 +23,19 @@
 DagNode*
 MetaLevel::upModule(bool flat, PreModule* pm, PointerMap& qidMap)
 {
+  /*
+  if (!flat)
+    {
+      //
+      //	If we have a MetaPreModule then we won't have ModuleExpresssion 
+      //	representations of parameters and imports but we will have a checked
+      //	meta-representation of the whole unflattened module.
+      //
+      if (MetaPreModule* mpm = dynamic_cast<MetaPreModule*>(pm))
+	return mpm->getMetaRepresentation();
+    }
+  */
+
   static Vector<DagNode*> args;
   args.clear();
 
@@ -85,19 +98,19 @@ MetaLevel::upImports(PreModule* pm, PointerMap& qidMap)
   //
   //	Handle automatic imports.
   //
-  {
-    const ModuleDatabase::ImportMap& autoImports = pm->getAutoImports();
-    FOR_EACH_CONST(i, ModuleDatabase::ImportMap, autoImports)
-      {
-	args2[0] = upQid(i->first, qidMap);
-	Symbol* s = includingSymbol;
-	if (i->second == ImportModule::PROTECTING)
-	  s = protectingSymbol;
-	else if (i->second == ImportModule::EXTENDING)
-	  s = extendingSymbol;
-	args.append(s->makeDagNode(args2));
-      }
-  }
+  if (const ModuleDatabase::ImportMap* autoImports = pm->getAutoImports())
+    {
+      FOR_EACH_CONST(i, ModuleDatabase::ImportMap, *autoImports)
+	{
+	  args2[0] = upQid(i->first, qidMap);
+	  Symbol* s = includingSymbol;
+	  if (i->second == ImportModule::PROTECTING)
+	    s = protectingSymbol;
+	  else if (i->second == ImportModule::EXTENDING)
+	    s = extendingSymbol;
+	  args.append(s->makeDagNode(args2));
+	}
+    }
   //
   //	Handle explicit imports.
   //
@@ -106,11 +119,11 @@ MetaLevel::upImports(PreModule* pm, PointerMap& qidMap)
     for (int i = 0; i < nrImports; i++)
       {
 	args2[0] = upModuleExpression(pm->getImport(i), qidMap);
-	int mode = pm->getImportMode(i);
+	ImportModule::ImportMode mode = pm->getImportMode(i);
 	Symbol* s = includingSymbol;
-	if ((mode == Token::encode("pr")) || (mode == Token::encode("protecting")))
+	if (mode == ImportModule::PROTECTING)
 	  s = protectingSymbol;
-	else if ((mode == Token::encode("ex")) || (mode == Token::encode("extending")))
+	else if (mode == ImportModule::EXTENDING)
 	  s = extendingSymbol;
 	args.append(s->makeDagNode(args2));
       }

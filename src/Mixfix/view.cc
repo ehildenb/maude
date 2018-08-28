@@ -50,21 +50,16 @@
 //	front end class definitions
 #include "token.hh"
 #include "moduleExpression.hh"
-#include "syntacticPreModule.hh"
 #include "interpreter.hh"
-//#include "maudemlBuffer.hh"
-#include "global.hh"  // HACK shouldn't be accessing global variables
-
 #include "view.hh"
 
-View::View(Token viewName)
+View::View(Token viewName, Interpreter* owner)
   : NamedEntity(viewName.code()),
-    LineNumber(viewName.lineNumber())
+    LineNumber(viewName.lineNumber()),
+    owner(owner)
 {
   fromTheory = 0;
   toModule = 0;
-  newFromTheory = 0;
-  newToModule = 0;
   status = INITIAL;
 }
 
@@ -75,10 +70,6 @@ View::~View()
     fromTheory->removeUser(this);
   if (toModule != 0)
     toModule->removeUser(this);
-  if (newFromTheory != 0)
-    newFromTheory->deepSelfDestruct();
-  if (newToModule != 0)
-    newToModule->deepSelfDestruct();
   fromExpr->deepSelfDestruct();
   toExpr->deepSelfDestruct();
   informUsers();
@@ -96,46 +87,12 @@ View::clearOpTermMap()
 }
 
 void
-View::addVarDecl(Token varName)
-{
-  varDecls.push_back(VarDecl());
-  varDecls.back().varName = varName;
-  varDecls.back().lastWithCurrentDef = false;
-}
-
-void
-View::addType(bool kind, const Vector<Token>& tokens)
-{
-  if (varDecls.empty() || varDecls.back().lastWithCurrentDef)
-    Renaming::addType(kind, tokens);  // not ours
-  else
-    {
-      varDecls.back().lastWithCurrentDef = true;
-      varDefs.push_back(Type());
-      varDefs.back().kind = kind;
-      varDefs.back().tokens = tokens;
-    }
-}
-
-void
-View::addOpTermMapping(const Vector<Token>& fromOp, const Vector<Token>& toTerm)
-{
-  opTermList.push_back(BubblePair());
-  opTermList.back().fromBubble = fromOp;  // deep copy
-  opTermList.back().toBubble = toTerm;  // deep copy
-}
-
-void
 View::regretToInform(Entity* doomedEntity)
 {
   if (doomedEntity == fromTheory)
     fromTheory = 0;
-  else if (doomedEntity == newFromTheory)
-    newFromTheory = 0;
   else if(doomedEntity == toModule)
     toModule = 0;
-  else if(doomedEntity == newToModule)
-    newToModule = 0;
   else
     CantHappen("unexpected regretToInform()");
   //
@@ -147,20 +104,10 @@ View::regretToInform(Entity* doomedEntity)
       fromTheory->removeUser(this);
       fromTheory = 0;
     }
-  if (newFromTheory != 0)
-    {
-      newFromTheory->deepSelfDestruct();
-      newFromTheory = 0;
-    }
   if (toModule != 0)
     {
       toModule->removeUser(this);
       toModule = 0;
-    }
-  if (newToModule != 0)
-    {
-      newToModule->deepSelfDestruct();
-      newToModule = 0;
     }
   status = STALE;
 }
@@ -171,43 +118,6 @@ View::mapComponent(const ConnectedComponent* component, ImportModule* module) co
   Sort* sort = module->findSort(renameSort(component->sort(1)->id()));
   Assert(sort != 0, "translation for sort failed");
   return sort->component();
-}
-
-Sort*
-View::mapSort(const Sort* sort, ImportModule* module) const
-{
-  if (sort->index() == Sort::KIND)
-    return mapComponent(sort->component(), module)->sort(Sort::KIND);
-  Sort* transSort = module->findSort(renameSort(sort->id()));
-  Assert(transSort != 0, "translation for sort failed");
-  return transSort;
-}
-
-void
-View::finishView()
-{
-  evaluate();
-}
-
-void
-View::finishModule1(ImportModule* module)
-{
-  module->importSorts();
-  module->closeSortSet();
-  Assert(!(module->isBad()), "copy of a non-bad theory bad");
-  module->importOps();
-  Assert(!(module->isBad()), "copy of a non-bad theory bad");
-}
-
-void
-View::finishModule2(ImportModule* module)
-{
-  module->closeSignature();
-  module->fixUpImportedOps();
-  Assert(!(module->isBad()), "copy of a non-bad theory bad");
-  module->closeFixUps();
-  module->localStatementsComplete();
-  module->resetImports();
 }
 
 bool
@@ -285,87 +195,6 @@ View::checkSorts()
   return true;
 }
 
-bool
-View::handleVarDecls()
-{
-  Sort* fromSort = 0;
-  Sort* toSort = 0;
-  TypeList::const_iterator j = varDefs.begin();
-  FOR_EACH_CONST(i, VarDeclList, varDecls)
-    {
-      if (fromSort == 0)
-	{
-	  int code = j->tokens[0].code();
-	  fromSort = newFromTheory->findSort(code);
-	  if (fromSort == 0)
-	    {
-	      IssueWarning(LineNumber(j->tokens[0].lineNumber()) <<
-			   ": failed to find sort " << QUOTE(Token::sortName(code)) <<
-			   " in " << QUOTE(newFromTheory) << '.');
-	      return false;
-	    }
-	  toSort = newToModule->findSort(renameSort(code));
-	  Assert(toSort != 0, "couldn't find translation of sort");
-	  if (j->kind)
-	    {
-	      int nrTokens = j->tokens.size();
-	      for (int k = 1; k < nrTokens; ++k)
-		{
-		  int code = j->tokens[k].code();
-		  Sort* extraSort = newFromTheory->findSort(code);
-		  if (extraSort == 0)
-		    {
-		      IssueWarning(LineNumber(j->tokens[k].lineNumber()) <<
-				   ": failed to find sort " << QUOTE(Token::sortName(code)) <<
-				   " in " << QUOTE(newFromTheory) << '.');
-		      return false;
-		    }
-		  if (extraSort->component() != fromSort->component())
-		    {
-		      IssueWarning(LineNumber(j->tokens[k].lineNumber()) <<
-				   ": sorts " << QUOTE(fromSort) << " and " <<
-				   QUOTE(extraSort) << " are in different components.");
-		      return false;
-		    }
-		}
-	      fromSort = fromSort->component()->sort(Sort::KIND);
-	      toSort = toSort->component()->sort(Sort::KIND);
-	    }
-	  ++j;
-	}
-      newFromTheory->addVariableAlias(i->varName, fromSort);
-      newToModule->addVariableAlias(i->varName, toSort);
-      if (i->lastWithCurrentDef)
-	fromSort = 0;
-    }
-  return true;
-}
-
-bool
-View::indexRhsVariables(Term* term, const VarMap& varMap, int lineNr)
-{
-  if (VariableTerm* vt = dynamic_cast<VariableTerm*>(term))
-    {
-      const VarMap::const_iterator i = varMap.find(vt->id());
-      if (i == varMap.end() || i->second.first != vt->getSort())
-	{
-	  IssueWarning(LineNumber(lineNr) <<
-		       ": rhs of operator mapping contains a variable " <<
-		       QUOTE(term) << " which is not the mapping of a lhs variable.");
-	  return false;
-	}
-      vt->setIndex(i->second.second);
-    }
-  else
-    { 
-      for (ArgumentIterator i(*term); i.valid(); i.next())
-	{
-	  if (!indexRhsVariables(i.argument(), varMap, lineNr))
-	    return false;
-	}
-    }
-  return true;
-}
 
 bool
 View::typeMatch(const ConnectedComponent* c1, const ConnectedComponent* c2)
@@ -413,107 +242,6 @@ View::getOpMapTerm(Symbol* symbol) const
 	return i->second.second;
     }
   return 0;
-}
-
-bool
-View::handleOpTermMappings()
-{
-  LineNumber lineNumber(FileTable::AUTOMATIC);
-  //
-  //	Because we have op->term mappings we need to make new modules to parse
-  //	these mappings in, in order to exclude any existing variable aliases and
-  //	add any new ones.
-  //
-  newFromTheory = new ImportModule(fromTheory->id(),
-				   fromTheory->getModuleType(),
-				   ImportModule::VIEW_LOCAL,
-				   this);
-  newFromTheory->addImport(fromTheory, ImportModule::INCLUDING, lineNumber);
-  finishModule1(newFromTheory);
-  
-  newToModule = new ImportModule(toModule->id(),
-				 toModule->getModuleType(),
-				 ImportModule::VIEW_LOCAL,
-				 this);
-  newToModule->addImport(toModule, ImportModule::INCLUDING, lineNumber);
-  finishModule1(newToModule);
-  
-  if (!varDecls.empty() && !handleVarDecls())
-    {
-      //
-      //	Need to reset the importPhase for any imported modules we touched.
-      //
-      newFromTheory->resetImports();
-      newToModule->resetImports();
-      return false;
-    }
-  finishModule2(newFromTheory);
-  finishModule2(newToModule);
-  //
-  //
-  //	Now deal with op->term mappings.
-  //
-  FOR_EACH_CONST(i, OpTermList, opTermList)
-    {
-      Term* from = newFromTheory->parseTerm(i->fromBubble);
-      if (from == 0)
-	return false;
-      int argNr = 0;
-      VarMap varMap;
-      for (ArgumentIterator j(*from); j.valid(); j.next())
-	{
-	  VariableTerm* vt = dynamic_cast<VariableTerm*>(j.argument());
-	  if (vt == 0)
-	    {
-	      IssueWarning(LineNumber(i->fromBubble[0].lineNumber()) <<
-			   ": lhs of operator mapping has non-variable argument " <<
-			   QUOTE(j.argument()) << '.');
-	      from->deepSelfDestruct();
-	      return false;
-	    }
-	  int base = vt->id();
-	  Sort* sort = mapSort(vt->getSort(), newToModule);
-	  pair<VarMap::iterator, bool> p = varMap.insert(VarMap::value_type(base, make_pair(sort, argNr)));
-	  if (!p.second)
-	    {
-	      IssueWarning(LineNumber(i->fromBubble[0].lineNumber()) <<
-			   ": using the same variable base name " << QUOTE(Token::name(base)) <<
-			   " for two left hand side variables in an operator mapping is not allowed.");
-	      from->deepSelfDestruct();
-	      return false;
-	    }
-	  ++argNr;
-	}
-      Symbol* fromSymbol = from->symbol();
-      if (fromSymbol->arity() != argNr)
-	{
-	  Assert(fromSymbol->arity() < argNr, "too few args");
-	  IssueWarning(LineNumber(i->fromBubble[0].lineNumber()) <<
-		       ": lhs of operator mapping has too many arguments.");
-	  from->deepSelfDestruct();
-	  return false;
-	}
-      
-     Term* to = newToModule->parseTerm(i->toBubble, mapComponent(fromSymbol->rangeComponent(), newToModule), 1);
-      if (to == 0)
-	{
-	  from->deepSelfDestruct();
-	  return false;
-	}
-      if (!indexRhsVariables(to, varMap, i->toBubble[1].lineNumber()))
-	{
-	  from->deepSelfDestruct();
-	  to->deepSelfDestruct();
-	  return false;
-	}
-      opTermMap.insert(OpTermMap::value_type(from->symbol()->id(), make_pair(from, to)));
-    }
-  //
-  //	Dispense with bulky parsers.
-  //
-  newFromTheory->economize();
-  newToModule->economize();
-  return true;
 }
 
 bool
@@ -667,9 +395,9 @@ View::evaluate()
       }
     }
   //
-  //	Evaluate from part.
+  //	Evaluate "from" part.
   //
-  fromTheory = interpreter.makeModule(fromExpr);
+  fromTheory = owner->makeModule(fromExpr);
   if (fromTheory != 0)
     {
       fromTheory->addUser(this);
@@ -685,9 +413,9 @@ View::evaluate()
       status = BAD;
     }
   //
-  //	Evaluate to part.
+  //	Evaluate "to" part.
   //
-  toModule = interpreter.makeModule(toExpr);
+  toModule = owner->makeModule(toExpr);
   if (toModule != 0)
     {
       toModule->addUser(this);
@@ -705,49 +433,128 @@ View::evaluate()
   if (status == BAD)
     return false;
 
+  status = GOOD;  // until proven otherwise
+
   if (!checkSorts() ||
-      (!opTermList.empty() && !handleOpTermMappings()) ||
+      !handleOpTermMappings() ||
       !checkOps() ||
       !checkPolymorphicOps())
     {
       status = BAD;
       return false;
     }
-  status = GOOD;
   return true;
 }
 
-void
-View::showView(ostream& s)
+Sort*
+View::mapSort(const Sort* sort, ImportModule* module) const
 {
-  s << "view " << static_cast<NamedEntity*>(this) << " from " <<
-    fromExpr << " to " << toExpr << " is\n";
-  printRenaming(s, "  ", " .\n  ");
-  if (getNrSortMappings() > 0 || getNrOpMappings() > 0)
-    s << " .\n";
-  if (!varDecls.empty())
+  if (sort->index() == Sort::KIND)
+    return mapComponent(sort->component(), module)->sort(Sort::KIND);
+  Sort* transSort = module->findSort(renameSort(sort->id()));
+  Assert(transSort != 0, "translation for sort failed");
+  return transSort;
+}
+
+bool
+View::indexRhsVariables(Term* term, const VarMap& varMap, int lineNr)
+{
+  //
+  //	We recurse through term, looking up each variable we encounter
+  //	in varMap, and setting its index to the corresponding argument
+  //	index obtained from varMap.
+  //
+  if (VariableTerm* vt = dynamic_cast<VariableTerm*>(term))
     {
-      bool startNew = true;
-      TypeList::const_iterator j = varDefs.begin();
-      FOR_EACH_CONST(i, VarDeclList, varDecls)
+      //
+      //	We look the variable up by name.
+      //
+      const VarMap::const_iterator i = varMap.find(vt->id());
+      if (i == varMap.end() || i->second.first != vt->getSort())
 	{
-	  if (startNew)
-	    {
-	      s << "  var";
-	      if (!(i->lastWithCurrentDef))
-		s << 's';
-	      startNew = false;
-	    }
-	  s << ' ' << i->varName;
-	  if (i->lastWithCurrentDef)
-	    {
-	      s << " : " << *j << " .\n";
-	      ++j;
-	      startNew = true;
-	    }
+	  IssueWarning(LineNumber(lineNr) <<
+		       ": rhs of operator mapping contains a variable " <<
+		       QUOTE(term) << " which is not the mapping of a lhs variable.");
+	  return false;
+	}
+      vt->setIndex(i->second.second);
+    }
+  else
+    { 
+      for (ArgumentIterator i(*term); i.valid(); i.next())
+	{
+	  if (!indexRhsVariables(i.argument(), varMap, lineNr))
+	    return false;
 	}
     }
-  FOR_EACH_CONST(i, OpTermMap, opTermMap)
-    s << "  op " << i->second.first << " to term " << i->second.second << " .\n";
-  s << "endv\n";
+  return true;
+}
+
+bool
+View::insertOpToTermMapping(int fromLineNumber,
+			    Term* fromTerm,
+			    int toLineNumber,
+			    Term* toTerm,
+			    ImportModule* targetModule)
+{
+  VarMap varMap;
+  //
+  //	First we check the arguments under fromTerm so see that
+  //	they are all variables, and for X:Foo at index p, we make an entry
+  //	X |-> (Bar, p) in varMap.
+  //
+  int argNr = 0;
+  for (ArgumentIterator i(*fromTerm); i.valid(); i.next())
+    {
+      VariableTerm* vt = dynamic_cast<VariableTerm*>(i.argument());
+      if (vt == 0)
+	{
+	  IssueWarning(LineNumber(fromLineNumber) <<
+		       ": lhs of operator mapping has non-variable argument " <<
+		       QUOTE(i.argument()) << '.');
+	  fromTerm->deepSelfDestruct();
+	  toTerm->deepSelfDestruct();
+	  return false;
+	}
+      int base = vt->id();
+      Sort* sort = mapSort(vt->getSort(), targetModule);
+      pair<VarMap::iterator, bool> p = varMap.insert(VarMap::value_type(base, make_pair(sort, argNr)));
+      if (!p.second)
+	{
+	  IssueWarning(LineNumber(fromLineNumber) <<
+		       ": using the same variable base name " << QUOTE(Token::name(base)) <<
+		       " for two left hand side variables in an operator mapping is not allowed.");
+	  fromTerm->deepSelfDestruct();
+	  toTerm->deepSelfDestruct();
+	  return false;
+	}
+      ++argNr;
+    }
+  //
+  //	It could be that fromTerm parses but has to many arguements because of flattening.
+  //
+  Symbol* fromSymbol = fromTerm->symbol();
+  if (fromSymbol->arity() != argNr)
+    {
+      Assert(fromSymbol->arity() < argNr, "too few args");
+      IssueWarning(LineNumber(fromLineNumber) << ": lhs of operator mapping has too many arguments.");
+      fromTerm->deepSelfDestruct();
+      toTerm->deepSelfDestruct();
+      return false;
+    }
+  //
+  //	Check that each variable in toTerm has a matching entry in varMap. 
+  //
+  if (!indexRhsVariables(toTerm, varMap, toLineNumber))
+    {
+      fromTerm->deepSelfDestruct();
+      toTerm->deepSelfDestruct();
+      return false;
+    }
+  //
+  //	For op f(...) to term g(...) we insert
+  //	f |-> (f(...), g(...)) into opTermMap.
+  //
+  OpTermMap::iterator i = opTermMap.insert(OpTermMap::value_type(fromSymbol->id(), make_pair(fromTerm, toTerm)));
+  return true;
 }

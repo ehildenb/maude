@@ -58,6 +58,8 @@
 #include "floatOpSymbol.hh"
 #include "bindingMacros.hh"
 
+#define isNaN(f) isnan(f)
+
 FloatOpSymbol::FloatOpSymbol(int id, int arity)
   : FreeSymbol(id, arity)
 {
@@ -377,7 +379,7 @@ FloatOpSymbol::eqRewrite(DagNode* subject, RewritingContext& context)
 	      }
 	    }
 	}
-      if (!isnan(r))
+      if (!isNaN(r))
 	return floatSymbol->rewriteToFloat(subject, context, r);  
     }
   else if (nrArgs == 1)
@@ -435,12 +437,12 @@ double
 FloatOpSymbol::safePow(double a1, double a2, bool& defined)
 {
   defined = true;
-  if (isnan(a1))
+  if (isNaN(a1))
     {
       defined = false;
       return a1;
     }
-  if (isnan(a2))
+  if (isNaN(a2))
     {
       defined = false;
       return a2;
@@ -490,7 +492,7 @@ FloatOpSymbol::safePow(double a1, double a2, bool& defined)
       return 0.0;
     }
   double r = pow(a1, a2);
-  if (isnan(r))
+  if (isNaN(r))
     defined = false;
   else if (a1 < 0.0 && r != 0.0)
     {

@@ -171,7 +171,7 @@ view		:	KW_VIEW			{ lexerIdMode(); }
 			token KW_FROM moduleExpr
 			{
 			  fileTable.beginModule($1, $3);
-			  interpreter.setCurrentView(new View($3));
+			  interpreter.setCurrentView(new SyntacticView($3, &interpreter));
 			  currentSyntaxContainer = CV;
 			  CV->addFrom(moduleExpressions.top());
 			  moduleExpressions.pop();
@@ -191,7 +191,7 @@ view		:	KW_VIEW			{ lexerIdMode(); }
 		;
 
 viewDecList	:	viewDecList viewDeclaration
-		|
+		|	{}
 		;
 
 skipStrayArrow	:	KW_ARROW
@@ -199,7 +199,7 @@ skipStrayArrow	:	KW_ARROW
 			  IssueWarning(LineNumber($1.lineNumber()) <<
 				       ": skipping " << QUOTE("->") << " in variable declaration.");
 			}
-		|
+		|	{}
 		;
 
 viewDeclaration	:	KW_SORT sortName KW_TO sortDot
@@ -292,7 +292,7 @@ parenBubble	:	'(' 			{ lexBubble(BAR_RIGHT_PAREN, 1); }
 module		:	startModule		{ lexerIdMode(); }
 			token
 			{
-			  interpreter.setCurrentModule(new SyntacticPreModule($1, $3));
+			  interpreter.setCurrentModule(new SyntacticPreModule($1, $3, &interpreter));
 			  currentSyntaxContainer = CM;
 			  fileTable.beginModule($1, $3);
 			}
@@ -315,7 +315,7 @@ dot		:	'.' {}
 		;
 
 parameters	:	'{' parameterList '}' {}
-		|
+		|	{}
 		;
 
 parameterList	:	parameterList ',' parameter
@@ -356,7 +356,7 @@ startModule	:	KW_MOD | KW_OMOD
 		;
 
 decList		:	decList declaration
-		|
+		|	{}
 		;
 
 declaration	:	KW_IMPORT moduleExprDot
@@ -477,7 +477,7 @@ skipStrayColon 	:	':'
 				       ": skipping stray " << QUOTE(":") << " in operator declaration.");
 
 			}
-		|
+		|	{}
 		;
 
 dra2		:	skipStrayColon rangeAttr
@@ -509,7 +509,7 @@ arrow		:	KW_ARROW      		{ $$ = false; }
 		;
 
 typeList	:	typeList typeName
-		|
+		|	{}
 		;
 
 typeName	:	sortName
@@ -529,7 +529,7 @@ sortNames	:	sortNames ',' sortName		{ store($3); }
 		;
 
 attributes	:	'[' attributeList ']'	{}
-		|
+		|	{}
 		;
 
 attributeList	:	attributeList attribute
@@ -622,15 +622,15 @@ attribute	:	KW_ASSOC
  *	bubble corresponding to the identity. We never see a FORCE_LOOKAHEAD token.
  */
 identity	:	FORCE_LOOKAHEAD
-		|
+		|	{}
 		;
 
 idList		:	idList IDENTIFIER	{ store($2); }
 		|	IDENTIFIER		{ store($1); }
 		;
 
-hookList	:	hookList hook
-		|	hook
+hookList	:	hookList hook		{}
+		|	hook	 		{}
 		;
 
 hook		:	KW_ID_HOOK token		{ clear(); CM->addHook(SyntacticPreModule::ID_HOOK, $2, tokenSequence); }
@@ -661,7 +661,7 @@ expectedDot	:	'.' {}
  *	Sort and subsort lists.
  */
 sortNameList	:	sortNameList sortName	{ store($2); }
-		|
+		|	{}
 		;
 
 subsortList	:	subsortList sortName	{ store($2); }
