@@ -1,3 +1,30 @@
+2018-03-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* configure.ac: remove ref to MSCP10
+
+2018-03-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* src/Makefile.am (SUBDIRS): remove MSCP10
+
+	* tests/Misc/Makefile.am: added parse and bubble tests
+
+	* tests/Misc/bubble (MAUDE_LIB): created
+
+	* tests/Misc/parse.maude: created
+
+	* tests/Misc/parse (MAUDE_LIB): created
+
+2018-02-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Misc/bubble.maude: created
+
+2017-12-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaWellFormed.maude: fix issue where none is ambiguous;
+	it can be (none).EmptyTypeSet or (none).Substitution
+
+===================================Maude116===========================================
+
 2017-07-12  Steven Eker  <eker@install.csl.sri.com>
 
 	* tests/Misc/smtTest.maude: added tests for violations

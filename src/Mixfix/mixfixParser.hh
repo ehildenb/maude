@@ -112,9 +112,12 @@ public:
     MAKE_ITERATION,
     MAKE_BRANCH,
     MAKE_TEST,
+    MAKE_REW,
     MAKE_STRATEGY_LIST,
 
     MAKE_SUBSTITUTION,
+    MAKE_USING_PAIR,
+    MAKE_USING_LIST,
 
     MAKE_PRINT_LIST
   };
@@ -216,6 +219,8 @@ private:
 			 const Vector<Sort*>& printSorts);
   void makeTermList(int node, Vector<Term*>& termList);
   void makeStrategyList(int node, Vector<StrategyExpression*>& strategies);
+  void appendUsingPair(int node, Vector<Term*>& terms, Vector<StrategyExpression*>& strategies);
+  void makeUsingList(int node, Vector<Term*>& terms, Vector<StrategyExpression*>& strategies);
 
   int translateSpecialToken(int code);
 

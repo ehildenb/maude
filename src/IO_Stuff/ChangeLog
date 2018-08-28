@@ -1,3 +1,8 @@
+2017-12-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* IO_Manager.cc (getInput): don't generate continuation
+	prompts in the usePromptsAnyway case
+
 2017-08-01  Steven Eker  <eker@install.csl.sri.com>
 
 	* IO_Manager.cc (IO_Manager): clear usePromptsAynway flag

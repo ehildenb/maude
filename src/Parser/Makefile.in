@@ -79,10 +79,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = maude$(EXEEXT)
-subdir = src/Main
+subdir = src/Parser
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/mkinstalldirs $(top_srcdir)/depcomp ChangeLog
+	$(top_srcdir)/mkinstalldirs $(top_srcdir)/depcomp \
+	$(noinst_HEADERS) ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -91,28 +91,17 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_maude_OBJECTS = maude-main.$(OBJEXT)
-maude_OBJECTS = $(am_maude_OBJECTS)
-am__DEPENDENCIES_1 =
-maude_DEPENDENCIES = ../Mixfix/libmixfix.a \
-	../StrategyLanguage/libstrategyLanguage.a ../Meta/libmeta.a \
-	../ObjectSystem/libobjectSystem.a ../BuiltIn/libbuiltIn.a \
-	../SMT/libSMT.a ../Higher/libhigher.a \
-	../FreeTheory/libfreeTheory.a ../AU_Theory/libAU_Theory.a \
-	../AU_Persistent/libAU_Persistent.a \
-	../ACU_Theory/libACU_Theory.a \
-	../ACU_Persistent/libACU_Persistent.a \
-	../CUI_Theory/libCUI_Theory.a ../S_Theory/libS_Theory.a \
-	../NA_Theory/libNA_Theory.a ../Variable/libvariable.a \
-	../Interface/libinterface.a ../Core/libcore.a \
-	../Parser/libparser.a ../Temporal/libtemporal.a \
-	../IO_Stuff/libIO_Stuff.a $(FULL_COMPILER_LIB) \
-	../Utility/libutility.a $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
+ARFLAGS = cru
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libparser_a_AR = $(AR) $(ARFLAGS)
+libparser_a_LIBADD =
+am_libparser_a_OBJECTS = libparser_a-parser.$(OBJEXT)
+libparser_a_OBJECTS = $(am_libparser_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -146,41 +135,14 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(maude_SOURCES)
-DIST_SOURCES = $(maude_SOURCES)
+SOURCES = $(libparser_a_SOURCES)
+DIST_SOURCES = $(libparser_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-DATA = $(data_DATA)
+HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -310,89 +272,21 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUILD_COMPILER_TRUE@FULL_COMPILER_LIB = ../FullCompiler/libfullCompiler.a
-maude_CPPFLAGS = \
-	-I$(top_srcdir)/src/Utility \
-	-I$(top_srcdir)/src/Temporal \
-	-I$(top_srcdir)/src/Interface \
-	-I$(top_srcdir)/src/Core \
-	-I$(top_srcdir)/src/Variable \
-	-I$(top_srcdir)/src/FullCompiler \
-	-I$(top_srcdir)/src/Higher \
-	-I$(top_srcdir)/src/CUI_Theory \
-	-I$(top_srcdir)/src/S_Theory \
-	-I$(top_srcdir)/src/NA_Theory \
-	-I$(top_srcdir)/src/FreeTheory \
-	-I$(top_srcdir)/src/ObjectSystem \
-	-I$(top_srcdir)/src/Mixfix \
-	-I$(top_srcdir)/src/BuiltIn \
-	-I$(top_srcdir)/src/SMT \
-	-I$(top_srcdir)/src/IO_Stuff \
-	-I$(top_srcdir)/src/ACU_Persistent \
-	-I$(top_srcdir)/src/ACU_Theory \
-	-I$(top_srcdir)/src/AU_Persistent \
-	-I$(top_srcdir)/src/AU_Theory \
-	-I$(top_srcdir)/src/Meta \
-	-I$(top_srcdir)/src/3rdParty \
-	-I$(top_srcdir)/src/FullCompiler \
-	-I$(top_srcdir)/src/StrategyLanguage \
-	-I$(top_srcdir)/src/Mixfix
+noinst_LIBRARIES = libparser.a
+libparser_a_CPPFLAGS = \
+	-I$(top_srcdir)/src/Utility
 
-maude_LDADD = \
-	../Mixfix/libmixfix.a \
-	../StrategyLanguage/libstrategyLanguage.a \
-	../Meta/libmeta.a \
-	../ObjectSystem/libobjectSystem.a \
-	../BuiltIn/libbuiltIn.a \
-	../SMT/libSMT.a \
-	../Higher/libhigher.a \
-	../FreeTheory/libfreeTheory.a \
-	../AU_Theory/libAU_Theory.a \
-	../AU_Persistent/libAU_Persistent.a \
-	../ACU_Theory/libACU_Theory.a \
-	../ACU_Persistent/libACU_Persistent.a \
-	../CUI_Theory/libCUI_Theory.a \
-	../S_Theory/libS_Theory.a \
-	../NA_Theory/libNA_Theory.a \
-	../Variable/libvariable.a \
-	../Interface/libinterface.a \
-	../Core/libcore.a \
-	../Parser/libparser.a \
-	../Temporal/libtemporal.a \
-	../IO_Stuff/libIO_Stuff.a \
-	$(FULL_COMPILER_LIB) \
-	../Utility/libutility.a \
-	$(CVC4_LIB) \
-	$(YICES2_LIB) \
-	$(GMP_LIBS) \
-	$(BUDDY_LIB) \
-	$(TECLA_LIBS) \
-	$(LIBSIGSEGV_LIB)
-
-maude_SOURCES = \
-	main.cc
-
-data_DATA = \
-	prelude.maude \
-	model-checker.maude \
-	socket.maude \
-	linear.maude \
-	machine-int.maude \
-	term-order.maude \
-	metaInterpreter.maude \
-	smt.maude \
-	file.maude
+libparser_a_SOURCES = \
+	parser.cc
 
 EXTRA_DIST = \
-	prelude.maude \
-	model-checker.maude \
-	socket.maude \
-	linear.maude \
-	machine-int.maude \
-	term-order.maude \
-	metaInterpreter.maude \
-	smt.maude \
-	file.maude
+	compile.cc \
+	pass1.cc \
+	pass2a.cc \
+	drp.cc
+
+noinst_HEADERS = \
+	parser.hh
 
 all: all-am
 
@@ -407,9 +301,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Main/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Parser/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/Main/Makefile
+	  $(AUTOMAKE) --gnu src/Parser/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -428,52 +322,14 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p \
-	  ; then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' \
-	    -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
 
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' \
-	`; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-
-maude$(EXEEXT): $(maude_OBJECTS) $(maude_DEPENDENCIES) $(EXTRA_maude_DEPENDENCIES) 
-	@rm -f maude$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(maude_OBJECTS) $(maude_LDADD) $(LIBS)
+libparser.a: $(libparser_a_OBJECTS) $(libparser_a_DEPENDENCIES) $(EXTRA_libparser_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libparser.a
+	$(AM_V_AR)$(libparser_a_AR) libparser.a $(libparser_a_OBJECTS) $(libparser_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libparser.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -481,7 +337,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maude-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libparser_a-parser.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -497,40 +353,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-maude-main.o: main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(maude_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT maude-main.o -MD -MP -MF $(DEPDIR)/maude-main.Tpo -c -o maude-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/maude-main.Tpo $(DEPDIR)/maude-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cc' object='maude-main.o' libtool=no @AMDEPBACKSLASH@
+libparser_a-parser.o: parser.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparser_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libparser_a-parser.o -MD -MP -MF $(DEPDIR)/libparser_a-parser.Tpo -c -o libparser_a-parser.o `test -f 'parser.cc' || echo '$(srcdir)/'`parser.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libparser_a-parser.Tpo $(DEPDIR)/libparser_a-parser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='parser.cc' object='libparser_a-parser.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(maude_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maude-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparser_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libparser_a-parser.o `test -f 'parser.cc' || echo '$(srcdir)/'`parser.cc
 
-maude-main.obj: main.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(maude_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT maude-main.obj -MD -MP -MF $(DEPDIR)/maude-main.Tpo -c -o maude-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/maude-main.Tpo $(DEPDIR)/maude-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cc' object='maude-main.obj' libtool=no @AMDEPBACKSLASH@
+libparser_a-parser.obj: parser.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparser_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libparser_a-parser.obj -MD -MP -MF $(DEPDIR)/libparser_a-parser.Tpo -c -o libparser_a-parser.obj `if test -f 'parser.cc'; then $(CYGPATH_W) 'parser.cc'; else $(CYGPATH_W) '$(srcdir)/parser.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libparser_a-parser.Tpo $(DEPDIR)/libparser_a-parser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='parser.cc' object='libparser_a-parser.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(maude_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o maude-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
-install-dataDATA: $(data_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(datadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(datadir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(datadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(datadir)" || exit $$?; \
-	done
-
-uninstall-dataDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(data_DATA)'; test -n "$(datadir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(datadir)'; $(am__uninstall_files_from_dir)
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparser_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libparser_a-parser.obj `if test -f 'parser.cc'; then $(CYGPATH_W) 'parser.cc'; else $(CYGPATH_W) '$(srcdir)/parser.cc'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -616,11 +451,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(DATA)
+all-am: Makefile $(LIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -653,7 +485,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -673,13 +505,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dataDATA
+install-data-am:
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -718,23 +550,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-dataDATA
+uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
-	distclean distclean-compile distclean-generic distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-binPROGRAMS install-data install-data-am \
-	install-dataDATA install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
+	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-dataDATA
+	uninstall-am
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

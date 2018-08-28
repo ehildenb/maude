@@ -1,3 +1,14 @@
+2018-03-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* Makefile.am (maude_LDADD): remove refs to MSCP10
+
+2017-12-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* main.cc (main): call setUsePromptsAnyway() in
+	forceInteractive case
+
+===================================Maude116===========================================
+
 2017-08-08  Steven Eker  <eker@install.csl.sri.com>
 
 	* prelude.maude: fmod LEXICAL: print -> printTokens to

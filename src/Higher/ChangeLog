@@ -1,3 +1,19 @@
+2017-12-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* narakonadi:?item=60039&type=message%2Frfc822rowingFolder.cc (RetainedState): getNrRealVariables() ->
+	getNrProtecctedVariables() to fix symmetric bug
+
+	* variantFolder.cc (RetainedVariant): getNrRealVariables() ->
+	getNrProtecctedVariables() to fix symmetric bug
+
+2017-12-04  Steven Eker  <eker@install.csl.sri.com>
+
+	* unifierFilter.cc (RetainedUnifier): us getNrProtectedVariables()
+	rather than getNrRealVariables() to fix bug where we weren't
+	accounting for abstraction variables
+
+===================================Maude116===========================================
+
 2017-05-26  Steven Eker  <eker@install.csl.sri.com>
 
 	* narrowingSequenceSearch3.cc (NarrowingSequenceSearch3): fixed

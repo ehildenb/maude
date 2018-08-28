@@ -1,3 +1,116 @@
+2018-03-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (makeTerms): Assert() that we actually found a
+	second parse
+
+2018-03-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (makeTerm): fix pathological case where pos ends up
+	outside of the sentence
+
+2018-02-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeComponentProductions): don't make COLON2_PAIR
+	productions for bubble components
+
+2017-12-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (parseSentence): use getErrorPosition()
+
+2017-10-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): give ?:
+	the gather (e & E)
+
+	* mixfixModule.hh (SharedTokens): STRAT_BRANCH_PREC from 101
+	to 55
+
+2017-10-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* strategyPrint.cc (prettyPrint): pass STRAT_USING_PREC - 1
+	for substrategies
+	(prettyPrint): add () around test and subterm cases if needed
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): require
+	strategy argument of using in matchrew be tightly bound
+
+	* mixfixModule.hh (SharedTokens): STRAT_USING_PREC from
+	105 to 21, STRAT_USING_LIST_PREC from 105 to 61,
+	STRAT_REW_PREC from 93 to 21
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	gatherAny4 for subterm strategy syntax
+
+	* mixfixModule.cc: added gatherAny4
+	(MixfixModule): initialize gatherAny4
+
+	* mixfixModule.hh (SharedTokens): added static date member
+	gatherAny4
+
+2017-10-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): make all
+	test strategy nonterminals have gather ANY
+
+	* mixfixModule.hh (SharedTokens): STRAT_SEQ_PREC from 95 to 39,
+	STRAT_UNION_PREC form 97 to 41, STRAT_ORELSE_PREC from 99 to 43
+	(SharedTokens): STRAT_TEST_PREC from 93 to 21
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	INFIX_PREC, gatherAnyAny for strategy lists
+
+	* mixfixModule.hh (SharedTokens): added STRAT_BASIC_PREC
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	STRAT_BASIC_PREC for basic strategies
+
+2017-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* strategyPrint.cc (prettyPrint): hanlde SubtermStrategy case
+
+	* mixfixParser.cc (makeStrategy): use SubtermStrategy()
+
+2017-09-26  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use MAKE_USING_PAIR
+	and MAKE_USING_LIST actions
+	(makeStrategyLanguageProductions): use PASS_THRU for USING_LIST
+
+	* mixfixParser.hh (M): added MAKE_USING_PAIR, MAKE_USING_LIST
+	to enum SemanticActions
+	(M): added decls for appendUsingPair(), makeUsingList()
+
+	* mixfixParser.cc (appendUsingPair, makeUsingList): added
+	(makeStrategy): added dummy MAKE_REW case
+
+	* mixfixParser.hh (M): added MAKE_REW to enum SemanticActions
+
+2017-09-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixModule.hh (SharedTokens): added nonterminal USING_PAIR
+	(SharedTokens): added STRAT_REW_PREC
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): added
+	syntax for using pairs and lists
+
+	* specialTokens.cc: added by
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): added
+	syntax for matchrew/xmatchrew/amatchrew strategies
+
+	* mixfixModule.hh (SharedTokens): added STRAT_USING_LIST_PREC,
+	STRAT_USING_PREC
+	(SharedTokens): added USING_LIST nonterminal
+
+2017-09-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* specialTokens.cc: added matchrew, xmatchrew, amatchrew
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): remove
+	the #if 1 / #endif around the match/xmatch/amatch productions
+
+===================================Maude116===========================================
+
 2017-08-11  Steven Eker  <eker@install.csl.sri.com>
 
 	* tokenizer.ll (Rope): use fixUp()

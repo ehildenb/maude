@@ -108,6 +108,7 @@ am_libstrategyLanguage_a_OBJECTS =  \
 	libstrategyLanguage_a-branchStrategy.$(OBJEXT) \
 	libstrategyLanguage_a-unionStrategy.$(OBJEXT) \
 	libstrategyLanguage_a-testStrategy.$(OBJEXT) \
+	libstrategyLanguage_a-subtermStrategy.$(OBJEXT) \
 	libstrategyLanguage_a-strategicExecution.$(OBJEXT) \
 	libstrategyLanguage_a-strategicTask.$(OBJEXT) \
 	libstrategyLanguage_a-branchTask.$(OBJEXT) \
@@ -307,6 +308,7 @@ libstrategyLanguage_a_SOURCES = \
 	branchStrategy.cc \
 	unionStrategy.cc \
 	testStrategy.cc \
+	subtermStrategy.cc \
 	strategicExecution.cc \
 	strategicTask.cc \
 	branchTask.cc \
@@ -329,6 +331,7 @@ noinst_HEADERS = \
 	branchStrategy.hh \
 	unionStrategy.hh \
 	testStrategy.hh \
+	subtermStrategy.hh \
 	strategicExecution.hh \
 	strategicTask.hh \
 	branchTask.hh \
@@ -405,6 +408,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-strategicSearch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-strategicTask.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-strategyStackManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-testStrategy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-trivialStrategy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libstrategyLanguage_a-unionStrategy.Po@am__quote@
@@ -520,6 +524,20 @@ libstrategyLanguage_a-testStrategy.obj: testStrategy.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='testStrategy.cc' object='libstrategyLanguage_a-testStrategy.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libstrategyLanguage_a-testStrategy.obj `if test -f 'testStrategy.cc'; then $(CYGPATH_W) 'testStrategy.cc'; else $(CYGPATH_W) '$(srcdir)/testStrategy.cc'; fi`
+
+libstrategyLanguage_a-subtermStrategy.o: subtermStrategy.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libstrategyLanguage_a-subtermStrategy.o -MD -MP -MF $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Tpo -c -o libstrategyLanguage_a-subtermStrategy.o `test -f 'subtermStrategy.cc' || echo '$(srcdir)/'`subtermStrategy.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Tpo $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='subtermStrategy.cc' object='libstrategyLanguage_a-subtermStrategy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libstrategyLanguage_a-subtermStrategy.o `test -f 'subtermStrategy.cc' || echo '$(srcdir)/'`subtermStrategy.cc
+
+libstrategyLanguage_a-subtermStrategy.obj: subtermStrategy.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libstrategyLanguage_a-subtermStrategy.obj -MD -MP -MF $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Tpo -c -o libstrategyLanguage_a-subtermStrategy.obj `if test -f 'subtermStrategy.cc'; then $(CYGPATH_W) 'subtermStrategy.cc'; else $(CYGPATH_W) '$(srcdir)/subtermStrategy.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Tpo $(DEPDIR)/libstrategyLanguage_a-subtermStrategy.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='subtermStrategy.cc' object='libstrategyLanguage_a-subtermStrategy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libstrategyLanguage_a-subtermStrategy.obj `if test -f 'subtermStrategy.cc'; then $(CYGPATH_W) 'subtermStrategy.cc'; else $(CYGPATH_W) '$(srcdir)/subtermStrategy.cc'; fi`
 
 libstrategyLanguage_a-strategicExecution.o: strategicExecution.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libstrategyLanguage_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libstrategyLanguage_a-strategicExecution.o -MD -MP -MF $(DEPDIR)/libstrategyLanguage_a-strategicExecution.Tpo -c -o libstrategyLanguage_a-strategicExecution.o `test -f 'strategicExecution.cc' || echo '$(srcdir)/'`strategicExecution.cc

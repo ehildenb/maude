@@ -332,7 +332,7 @@ VariantFolder::RetainedVariant::RetainedVariant(const Vector<DagNode*> original)
       //matchingAutomata[i]->dump(cerr, variableInfo);
     }
 
-  nrVariables = variableInfo.getNrRealVariables();  // may also have some abstraction variables
+  nrVariables = variableInfo.getNrProtectedVariables();  // may also have some abstraction variables
 }
 
 VariantFolder::RetainedVariant::~RetainedVariant()

@@ -442,7 +442,9 @@ TESTS = \
 	sreduce \
 	smtTest \
 	narrow \
-	continue
+	continue \
+	parse \
+	bubble
 
 MAUDE_FILES = \
 	dekker.maude \
@@ -464,7 +466,9 @@ MAUDE_FILES = \
 	sreduce.maude \
 	smtTest.maude \
 	narrow.maude \
-	continue.maude
+	continue.maude \
+	parse.maude \
+	bubble.maude
 
 RESULT_FILES = \
 	dekker.expected \
@@ -486,7 +490,9 @@ RESULT_FILES = \
 	sreduce.expected \
 	smtTest.expected \
 	narrow.expected \
-	continue.expected
+	continue.expected \
+	parse.expected \
+	bubble.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
 all: all-am
@@ -807,6 +813,20 @@ narrow.log: narrow
 continue.log: continue
 	@p='continue'; \
 	b='continue'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+parse.log: parse
+	@p='parse'; \
+	b='parse'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+bubble.log: bubble
+	@p='bubble'; \
+	b='bubble'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

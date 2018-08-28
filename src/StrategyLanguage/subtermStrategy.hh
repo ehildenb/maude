@@ -2,7 +2,7 @@
 
     This file is part of the Maude 2 interpreter.
 
-    Copyright 1997-2006 SRI International, Menlo Park, CA 94025, USA.
+    Copyright 2017 SRI International, Menlo Park, CA 94025, USA.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@
 */
 
 //
-//      Class for match/xmatch/amatch strategies.
+//      Class for matchrew/xmatchrew/amatchrew strategies.
 //
-#ifndef _testStrategy_hh_
-#define _testStrategy_hh_
+#ifndef _subtermStrategy_hh_
+#define _subtermStrategy_hh_
 #include "strategyExpression.hh"
 #include "pattern.hh"
 
-class TestStrategy : public StrategyExpression
+class SubtermStrategy : public StrategyExpression
 {
 public:
   //
@@ -36,11 +36,17 @@ public:
   //	depth = 0		means at top, with extension
   //	depth = UNBOUNDED	means all the way down to the leaf nodes, with extension
   //
-  TestStrategy(Term* patternTerm, int depth, const Vector<ConditionFragment*>& condition);
+  SubtermStrategy(Term* patternTerm,
+		  int depth,
+		  const Vector<ConditionFragment*>& condition,
+		  const Vector<Term*>& subterms,
+		  const Vector<StrategyExpression*>& strategies);
 
   Term* getPatternTerm() const;
   int getDepth() const;
   const Vector<ConditionFragment*>& getCondition();
+  const Vector<Term*>& getSubterms();
+  const Vector<StrategyExpression*>& getStrategies();
 
   StrategicExecution::Survival decompose(StrategicSearch& searchObject, DecompositionProcess* remainder);
 
@@ -48,24 +54,38 @@ public:
 private:
   Pattern pattern;
   const int depth;
+  const Vector<Term*> subterms;
+  const Vector<StrategyExpression*> strategies;
 };
 
 inline Term*
-TestStrategy::getPatternTerm() const
+SubtermStrategy::getPatternTerm() const
 {
   return pattern.getLhs();
 }
 
 inline int
-TestStrategy::getDepth() const
+SubtermStrategy::getDepth() const
 {
   return depth;
 }
 
 inline const Vector<ConditionFragment*>&
-TestStrategy::getCondition()
+SubtermStrategy::getCondition()
 {
   return pattern.getCondition();
+}
+
+inline const Vector<Term*>&
+SubtermStrategy::getSubterms()
+{
+  return subterms;
+}
+
+inline const Vector<StrategyExpression*>&
+SubtermStrategy::getStrategies()
+{
+  return strategies;
 }
 
 #endif

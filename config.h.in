@@ -3,9 +3,6 @@
 /* annotate comiler output */
 #undef ANNOTATED
 
-/* support bubbles when parsing */
-#undef BUBBLES
-
 /* build the experimental integrated compiler */
 #undef COMPILER
 
@@ -113,9 +110,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* use MSCP10 calling conventions */
-#undef SCP
 
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT

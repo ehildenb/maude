@@ -281,6 +281,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = \
 	3rdParty \
 	Utility \
+	Parser \
 	Temporal \
 	Interface \
 	Core \
@@ -299,7 +300,6 @@ SUBDIRS = \
 	ObjectSystem \
 	Meta \
 	FullCompiler \
-	MSCP10 \
 	StrategyLanguage \
 	Mixfix \
 	SMT \

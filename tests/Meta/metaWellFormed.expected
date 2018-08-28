@@ -94,26 +94,6 @@ endfm,
   'Y:Foo <- 'b.Foo) .
 rewrites: 1
 result Bool: false
-Warning: <standard input>, line 79: ambiguous term, two parses are:
-[Bool] : wellFormed(fmod 'FOO is
-  protecting 'FLOAT .
-  sorts 'Foo ; 'Bar .
-  subsort 'Bar < 'Foo .
-  op 'a : nil -> 'Foo [none] .
-  mb 'a.Foo : 'Bar [none] .
-  none
-endfm, (none).Substitution)
--versus-
-[Bool] : wellFormed(fmod 'FOO is
-  protecting 'FLOAT .
-  sorts 'Foo ; 'Bar .
-  subsort 'Bar < 'Foo .
-  op 'a : nil -> 'Foo [none] .
-  mb 'a.Foo : 'Bar [none] .
-  none
-endfm, (none).EmptyTypeSet)
-
-Arbitrarily taking the first as correct.
 ==========================================
 reduce in META-LEVEL : wellFormed(fmod 'FOO is
   protecting 'FLOAT .

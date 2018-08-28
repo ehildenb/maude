@@ -3,7 +3,7 @@
 #
 #	Initialize autoconf stuff.
 #
-AC_INIT(Maude, alpha115, [maude-bugs@lists.cs.illinois.edu])
+AC_INIT(Maude, alpha116, [maude-bugs@lists.cs.illinois.edu])
 #
 #	Allow directory names that look like macros.
 #
@@ -349,8 +349,8 @@ fi
 #
 #	Needed defines.
 #
-AC_DEFINE([SCP], [], [use MSCP10 calling conventions])
-AC_DEFINE([BUBBLES], [], [support bubbles when parsing])
+#AC_DEFINE([SCP], [], [use MSCP10 calling conventions])
+#AC_DEFINE([BUBBLES], [], [support bubbles when parsing])
 #
 #	Check to see if we should build the compiler.
 #
@@ -383,6 +383,7 @@ AC_CONFIG_FILES([Makefile
 	         src/Makefile
 		 src/3rdParty/Makefile
 		 src/Utility/Makefile
+		 src/Parser/Makefile
 		 src/Temporal/Makefile
 		 src/Interface/Makefile
 		 src/Core/Makefile
@@ -401,7 +402,6 @@ AC_CONFIG_FILES([Makefile
 		 src/ObjectSystem/Makefile
 		 src/Meta/Makefile
 		 src/FullCompiler/Makefile
-		 src/MSCP10/Makefile
 		 src/StrategyLanguage/Makefile
 		 src/Mixfix/Makefile
 		 src/SMT/Makefile

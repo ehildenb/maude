@@ -1,7 +1,0 @@
-fmod ERROR-RAT is
-  *** This modules defines pseudo constructors used for error detection
-  protecting STRING .
-  protecting RAT .
-  
-  op error-Rat _ : String -> Rat .
-endfm
