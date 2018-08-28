@@ -2,6 +2,9 @@ Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 39 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
