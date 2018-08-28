@@ -141,7 +141,7 @@ reduce leastSort(#M, '_+_['1.Zero>,'@3:Nat>]) .
 
 reduce state('wait.NcMode)            <= state('PC:Mode) .
 reduce state('_+_['1.Zero>,'@3:Nat>]) <= state('Y1:NzNat>) .
-reduce state('Y1:NzNat>)              <= state('_+_['1.Zero>,'@3:Nat>]) .
+--- reduce state('Y1:NzNat>)              <= state('_+_['1.Zero>,'@3:Nat>]) .
 reduce state('@2:NcMode)              <= state('QNC:NcMode) .
 reduce state('@3:Nat>)                <= state('Y2:Nat>) .
 

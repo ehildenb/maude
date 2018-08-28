@@ -130,25 +130,25 @@ reduce invariant(states(0)) .
 reduce invariant(states(2)) .
 reduce invariant(states(0 ; 2)) .
 
---- proving that `states(1)` is an invariant
-reduce invariant(states(1)) .
-
---- first subgoal (now discharged)
-reduce states(4) <= states(5) .
-reduce fold(states(4), states(5)) .
-reduce fold(state(init(2)), state(init(3))) == fold(sub(0)) .
-reduce implies?(pred(2) << sub(0), pred(3) << sub(0)) .
-
---- should the second one be producing variants?
-reduce metaReduce(#MC, pred(4)) .
-reduce metaGenVariant(#MC, pred(4)) .
-
---- new subgoal
-reduce states(6) <= states(7) .
-reduce state(init(4)) <= state(init(5)) .
-reduce fold(state(init(4)), state(init(5))) == fold(sub(1)) .
-reduce implies?(pred(5) << sub(1), pred(6) << sub(1)) .
-reduce metaReduce(#MC, pred(7)) .
+--- ; --- proving that `states(1)` is an invariant
+--- ; reduce invariant(states(1)) .
+--- ;
+--- ; --- first subgoal (now discharged)
+--- ; reduce states(4) <= states(5) .
+--- ; reduce fold(states(4), states(5)) .
+--- ; reduce fold(state(init(2)), state(init(3))) == fold(sub(0)) .
+--- ; reduce implies?(pred(2) << sub(0), pred(3) << sub(0)) .
+--- ;
+--- ; --- should the second one be producing variants?
+--- ; reduce metaReduce(#MC, pred(4)) .
+--- ; reduce metaGenVariant(#MC, pred(4)) .
+--- ;
+--- ; --- new subgoal
+--- ; reduce states(6) <= states(7) .
+--- ; reduce state(init(4)) <= state(init(5)) .
+--- ; reduce fold(state(init(4)), state(init(5))) == fold(sub(1)) .
+--- ; reduce implies?(pred(5) << sub(1), pred(6) << sub(1)) .
+--- ; reduce metaReduce(#MC, pred(7)) .
 
 
 --- ; The invariant satisfied by this protocol can be expressed as the constrained term:
