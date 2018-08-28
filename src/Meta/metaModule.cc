@@ -39,9 +39,8 @@
 #include "metaModule.hh"
 
 
-MetaModule::MetaModule(int name, ModuleType moduleType, Entity::User* parent, Interpreter* owner)
-  : VisibleModule(name, moduleType, parent),
-    owner(owner)
+MetaModule::MetaModule(int name, ModuleType moduleType, Interpreter* owner)
+  : VisibleModule(name, moduleType, owner)
 {
   //cout << "made meta module " << name << endl;
 }

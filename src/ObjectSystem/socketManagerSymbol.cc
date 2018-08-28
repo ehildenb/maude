@@ -141,7 +141,7 @@ SocketManagerSymbol::getSymbolAttachments(Vector<const char*>& purposes,
 bool
 SocketManagerSymbol::handleManagerMessage(DagNode* message, ObjectSystemRewritingContext& context)
 {
-  //cerr << "SocketManagerSymbol::handleManagerMessage(): saw " << message << endl;
+  DebugAdvisory("SocketManagerSymbol::handleManagerMessage(): saw " << message);
   Symbol* s = message->symbol();
   if (s == createClientTcpSocketMsg)
     return createClientTcpSocket(safeCast(FreeDagNode*, message), context);
@@ -153,7 +153,7 @@ SocketManagerSymbol::handleManagerMessage(DagNode* message, ObjectSystemRewritin
 bool
 SocketManagerSymbol::handleMessage(DagNode* message, ObjectSystemRewritingContext& context)
 {
-  //cerr << "SocketManagerSymbol::handleMessage(): saw " << message << endl;
+  DebugAdvisory("SocketManagerSymbol::handleMessage(): saw " << message);
   Symbol* s = message->symbol();
   if (s == acceptClientMsg)
     return acceptClient(safeCast(FreeDagNode*, message), context);

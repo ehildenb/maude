@@ -26,11 +26,7 @@
 #ifndef _mixfixParser_hh_
 #define _mixfixParser_hh_
 #include <map>
-#ifdef SCP
-#include "scp_parser.hh"
-#else
 #include "parser.hh"
-#endif
 #include "intSet.hh"
 #include "token.hh"
 
@@ -226,6 +222,7 @@ private:
 
   MixfixModule& client;
   Parser parser;			// CFG parser
+  Vector<int> productionRhs;		// to avoid creating a new Vector for each production insertion
   IntSet tokens;			// mapping between token codes and terminal numbers
   Vector<Action> actions;		// action associated with each production
   Vector<int> specialTerminals;		// special terminals for tokens with special properties

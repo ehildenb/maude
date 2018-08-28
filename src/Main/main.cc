@@ -192,6 +192,7 @@ main(int argc, char* argv[])
     {
       //
       //	Prompt for input from stdio, even if useTecla == false, or Tecla is not linked
+      //
       ioManager.setUsePromptsAnyway();
     }
   directoryManager.initialize();

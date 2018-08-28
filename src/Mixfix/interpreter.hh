@@ -31,6 +31,7 @@
 #include "moduleCache.hh"
 #include "compiler.hh"
 #include "viewDatabase.hh"
+//#include "syntacticView.hh"
 #include "SMT.hh"
 
 class Interpreter
@@ -166,9 +167,9 @@ public:
   void setCurrentModule(SyntacticPreModule* module);
   void makeClean(int lineNumber);
 
-  View* getCurrentView() const;
+  SyntacticView* getCurrentView() const;
   bool setCurrentView(const Vector<Token>& viewExpr);
-  void setCurrentView(View* view);
+  void setCurrentView(SyntacticView* view);
 
   void parse(const Vector<Token>& subject);
   void reduce(const Vector<Token>& subject, bool debug);
@@ -230,7 +231,6 @@ private:
   typedef void (Interpreter::*ContinueFuncPtr)(Int64 limit, bool debug);
 
   static DagNode* makeDag(Term* subjectTerm);
-  static void beginRewriting(bool debug);
   static void printTiming(Int64 nrRewrites, Int64 cpu, Int64 real);
   static void printBubble(ostream& s, const Vector<int>& bubble);
 
@@ -239,6 +239,7 @@ private:
   void startUsingModule(VisibleModule* module);
   void printModifiers(Int64 number, Int64 number2);
   void printStats(const Timer& timer, RewritingContext& context, bool timingFlag);
+  void beginRewriting(bool debug);
   void endRewriting(Timer& timer,
 		    CacheableRewritingContext* context,
 		    VisibleModule* module,
@@ -293,7 +294,7 @@ private:
 		   Int64 limit);
   void smtSearchCont(Int64 limit, bool debug);
 
-  void doExternalRewriting(UserLevelRewritingContext* context, Int64 limit);
+  void doExternalRewriting(UserLevelRewritingContext* context);
   void doStrategicSearch(Timer& timer,
 			 VisibleModule* module,
 			 StrategicSearch* state,
@@ -327,7 +328,7 @@ private:
   int flags;
   int printFlags;
   SyntacticPreModule* currentModule;
-  View* currentView;
+  SyntacticView* currentView;
   //
   //	Continuation information.
   //
@@ -416,14 +417,14 @@ Interpreter::getCurrentModule() const
   return currentModule;
 }
 
-inline View*
+inline SyntacticView*
 Interpreter::getCurrentView() const
 {
   return currentView;
 }
 
 inline void
-Interpreter::setCurrentView(View* view)
+Interpreter::setCurrentView(SyntacticView* view)
 {
   currentView = view;
 }

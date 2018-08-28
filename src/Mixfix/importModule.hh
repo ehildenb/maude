@@ -56,6 +56,7 @@ public:
     VIEW_LOCAL
   };
 
+  ImportModule(int name, ModuleType moduleType);
   ImportModule(int name, ModuleType moduleType, Origin origin, Entity::User* parent);
   ~ImportModule();
 
@@ -252,7 +253,7 @@ private:
   //
   //	For mbs, eqs, and rls, locals come first, then imports.
   //	The reason for this different order is to avoid imports unless
-  //	we ace actually going to do some work in the module.
+  //	we are actually going to do some work in the module.
   //
   int nrUserSorts;			// total number of user declared sorts
   int nrImportedSorts;			// how many of these were imported

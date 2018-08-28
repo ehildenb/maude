@@ -1,3 +1,38 @@
+2018-06-11  Steven Eker  <eker@install.csl.sri.com>
+
+	* module.cc (closeTheory): converted commented out print into
+	DebugAdvisory()
+	(insertLateSymbol, closeTheory): deleted commented out calls
+	to finalizeSymbol()
+
+2018-05-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* rewritingContext.cc (handleInterrupt): added
+
+	* rewritingContext.hh (SimpleRootContainer): added decl for
+	handleInterrupt();
+
+2018-05-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* rewritingContext.hh (SimpleRootContainer): deleted decl for limit
+	version of fairTraversal(); make other version public
+	(SimpleRootContainer): updated decl for fairStart()
+
+	* run.cc (fairTraversal): delete limit version
+
+	* rewritingContext.hh (fairRestart): added
+
+	* run.cc (fairStart): take limit argument
+
+	* rewritingContext.hh (getProgress): added
+
+	* run.cc (fairTraversal): rewritten
+
+	* rewritingContext.hh (SimpleRootContainer): update decl for public
+	fairTraversal()
+
+===================================Maude117===========================================
+
 2017-06-12  Steven Eker  <eker@install.csl.sri.com>
 
 	* equation.hh (clearVariant): added

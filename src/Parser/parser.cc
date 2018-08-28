@@ -16,14 +16,22 @@
 
 //	our stuff
 #include "compile.cc"
+#include "compile2.cc"
 #include "pass1.cc"
-#include "pass2a.cc"
+#include "bubble.cc"
+#include "pass2.cc"
 #include "drp.cc"
 
 Parser::Parser()
 {
   haveBubbles = false;
   haveEmptyBubbles = false;
+}
+
+Parser::~Parser()
+{
+  FOR_EACH_CONST(i, Vector<Rule*>, rules)
+    delete *i;
 }
 
 void
@@ -55,10 +63,11 @@ Parser::insertProd(int nonTerminal,
   //
   int nrRules = rules.length();
   rules.expandBy(1);
-  Rule& r = rules[nrRules];
-  r.index = nrRules;
-  r.prec = prec;
-  r.nonTerminal = nonTerminal;
+  Rule* r = new Rule;
+  rules[nrRules] = r;
+  r->index = nrRules;
+  r->prec = prec;
+  r->nonTerminal = nonTerminal;
 
   Assert(!(rhs.empty()), "epsilon rules not supported");
   if (rhs[0] < 0)
@@ -66,7 +75,7 @@ Parser::insertProd(int nonTerminal,
       //
       //	Nonterminal case.
       //
-      r.nextRule = firstNonTerminalRules[index];
+      r->nextRule = firstNonTerminalRules[index];
       firstNonTerminalRules[index] = nrRules;
     }
   else
@@ -74,22 +83,22 @@ Parser::insertProd(int nonTerminal,
       //
       //	Terminal case.
       //
-      r.nextRule = firstTerminalRules[index];
+      r->nextRule = firstTerminalRules[index];
       firstTerminalRules[index] = nrRules;
     }
   //
   //	Copy in rhs with prec derived from gather values.
   //
   int nrSymbols = rhs.length();
-  r.rhs.expandTo(nrSymbols);
+  r->rhs.expandTo(nrSymbols);
   int gatherIndex = 0;
   for (int i = 0; i < nrSymbols; i++)
     {
-      Pair& p = r.rhs[i];
+      Pair& p = r->rhs[i];
       p.symbol = rhs[i];
       p.prec = p.symbol < 0 ? gather[gatherIndex++] : NONE;
     }
-  r.nrNonTerminals = gatherIndex;
+  r->nrNonTerminals = gatherIndex;
 }
 
 void
@@ -140,13 +149,15 @@ Parser::parseSentence(const Vector<int>& sentence, int root)
   if (expansions.length() == 0)
     {
       buildExpansionTables();
+      firstRealCall = calls.size();
+      ParserLog("expansion lists use " << firstRealCall << " calls");
       buildTerminalDecisionTrees();
       buildNonTerminalDecisionTrees();
     }
   rootNonTerminal = root;
   int nrTokens = sentence.length();
   continuations.contractTo(0);
-  calls.contractTo(0);
+  calls.contractTo(firstRealCall);
   returns.contractTo(0);
   memoItems.clear();
   firstCalls.resize(nrTokens + 1);
@@ -162,12 +173,12 @@ Parser::parseSentence(const Vector<int>& sentence, int root)
   //	Start by creating call to root with unbounded precedence.
   //
   calls.expandBy(1);
-  Call& call = calls[0];
+  Call& call = calls[firstRealCall];
   call.nonTerminal = root;
   call.maxPrec = UNBOUNDED;
   call.firstContinuation = NONE;
   call.nextCall = NONE;
-  firstCalls[0] = 0;
+  firstCalls[0] = firstRealCall;
   //
   //	Do passes.
   //
@@ -207,18 +218,12 @@ Parser::checkForEmptyBubbles(int tokenNr, const Vector<int>& sentence)
   for (;;)
     {
       expandCalls(tokenNr);
-      int nrContinuations = continuations.size();
+      Vector<Continuation>::size_type nrContinuations = continuations.size();
       doEmptyBubbles(tokenNr);
       doEmptyBubbleReturns(tokenNr, sentence);
       if (nrContinuations == continuations.size())
 	break;  // no new continuations added by returns for empty bubbles
     }
-}
-
-int
-Parser::getProductionNumber(int node)
-{
-  return parseTree[node].ruleNr;
 }
 
 int
@@ -235,18 +240,6 @@ Parser::getChild(int node, int sonNr)
   return son;
 }
 
-int
-Parser::getFirstPosition(int node)
-{
-  return parseTree[node].startTokenNr;
-}
-
-int
-Parser::getLastPosition(int node)
-{
-  return parseTree[node].endToken;
-}
-
 void
 Parser::dump()
 {
@@ -260,15 +253,15 @@ Parser::dump()
 	  for (int k = call.firstContinuation; k != NONE; k = continuations[k].nextContinuation)
 	    {
 	      Continuation& cont = continuations[k];
-	      Rule& rule = rules[cont.ruleNr];
-	      cout << "\tContinutation for rule #" << cont.ruleNr << " [" << rule.nonTerminal << " -> ";
+	      Rule* rule = rules[cont.ruleNr];
+	      cout << "\tContinutation for rule #" << cont.ruleNr << " [" << rule->nonTerminal << " -> ";
 	      for (int l = 0;; l++)
 		{
 		  if (l == cont.rhsPosition)
 		    cout << " .";
-		  if (l == rule.rhs.length())
+		  if (l == rule->rhs.length())
 		    break;
-		  cout << ' ' << rule.rhs[l].symbol;
+		  cout << ' ' << rule->rhs[l].symbol;
 		}
 	      cout << " , " << cont.startTokenNr << "]\n";
 	    }
@@ -276,20 +269,20 @@ Parser::dump()
       for (int j = firstReturns[i]; j != NONE; j = returns[j].nextReturn)
 	{
 	  Return& r = returns[j];
-	  Rule& rule = rules[r.ruleNr];
-	  cout << "Return #" << j << " for rule #" << r.ruleNr << " [" << rule.nonTerminal << " -> ";
-	  for (int k = 0; k < rule.rhs.length(); k++)
-	    cout << ' ' << rule.rhs[k].symbol;
+	  Rule* rule = rules[r.ruleNr];
+	  cout << "Return #" << j << " for rule #" << r.ruleNr << " [" << rule->nonTerminal << " -> ";
+	  for (int k = 0; k < rule->rhs.length(); k++)
+	    cout << ' ' << rule->rhs[k].symbol;
 	  cout << " , " << r.startTokenNr << "]\n";
 	}
       cout << '\n';
       for (int j = firstMemoItems[i]; j != NONE; j = memoItems[j].nextMemoItem)
 	{
 	  MemoItem& m = memoItems[j];
-	  Rule& rule = rules[m.ruleNr];
-	  cout << "Memo  (" << m.nonTerminal << ", " << m.maxPrec << ") -> rule #" << m.ruleNr << " [" << rule.nonTerminal << " -> ";
-	  for (int k = 0; k < rule.rhs.length(); k++)
-	    cout << ' ' << rule.rhs[k].symbol;
+	  Rule* rule = rules[m.ruleNr];
+	  cout << "Memo  (" << m.nonTerminal << ", " << m.maxPrec << ") -> rule #" << m.ruleNr << " [" << rule->nonTerminal << " -> ";
+	  for (int k = 0; k < rule->rhs.length(); k++)
+	    cout << ' ' << rule->rhs[k].symbol;
 	   cout << " , " << m.startTokenNr << "]\n";
 	}
       cout << '\n';

@@ -27,6 +27,7 @@
 
 bool UserLevelRewritingContext::interactiveFlag = true;
 bool UserLevelRewritingContext::ctrlC_Flag = false;
+bool UserLevelRewritingContext::infoFlag = false;
 bool UserLevelRewritingContext::stepFlag = false;
 bool UserLevelRewritingContext::abortFlag = false;
 int UserLevelRewritingContext::debugLevel = 0;
@@ -66,6 +67,18 @@ UserLevelRewritingContext::setHandlers(bool handleCtrlC)
 #endif
       sigaction(SIGINT, &ctrlC_Handler, 0);
     }
+  //
+  //	We want to have requests for info to be minimally disruptive
+  //	so we request system calls that are interrrupted be restarted.
+  //
+  static struct sigaction sigInfoHandler;
+  sigInfoHandler.sa_handler = infoHandler;
+  sigInfoHandler.sa_flags = SA_RESTART;
+#ifdef SIGINFO
+  sigaction(SIGINFO, &sigInfoHandler, 0);
+#else
+  sigaction(SIGUSR1, &sigInfoHandler, 0);
+#endif
 
 #ifdef NO_ASSERT
   //
@@ -157,9 +170,34 @@ UserLevelRewritingContext::interruptHandler(int)
 }
 
 void
+UserLevelRewritingContext::infoHandler(int)
+{
+  infoFlag =  true;
+  setTraceStatus(true);
+}
+
+void
 UserLevelRewritingContext::interruptHandler2(...)
 {
   // windowChangedFlag = true;
+}
+
+bool
+UserLevelRewritingContext::handleInterrupt()
+{
+  //
+  //	This is called because a slow/blocked system call was interrupted
+  //	by a signal. We return true if we dealt with the issue and want
+  //	to restart the system call and false to quit.
+  //
+  //	If ctrl-C has been pressed we want to quit the system call so Maude
+  //	can respond to the user - might cause issues with files and sockets
+  //	but we prefer Maude to be responsive.
+  //
+  //	If it was cause by an info request we want to continue as normal. If
+  //	there are both ctrl-C and info events we treat it as a ctrl-C.
+  //
+  return !ctrlC_Flag;
 }
 
 void
@@ -252,11 +290,64 @@ UserLevelRewritingContext::beginCommand()
     cout << "==========================================\n";
 }
 
+void
+UserLevelRewritingContext::printStatusReport(DagNode* subject, const PreEquation* pe)
+{
+  struct timeval t;
+  gettimeofday(&t, 0);
+  time_t secs = t.tv_sec;
+  cerr << "====> Maude status report on " << ctime(&secs);
+
+  Int64 mbTotal = 0;
+  Int64 eqTotal = 0;
+  Int64 rlTotal = 0;
+  Int64 nrTotal = 0;
+  Int64 vnTotal = 0;
+  for (UserLevelRewritingContext* p = this; p != 0; p = p->parent)
+    {
+      mbTotal += p->getMbCount();
+      eqTotal += p->getEqCount();
+      rlTotal += p->getRlCount();
+      nrTotal += p->getNarrowingCount();
+      vnTotal += p->getVariantNarrowingCount();
+    }
+  cerr << "membership applications: " << mbTotal <<
+    "\nequational rewrites: " << eqTotal <<
+    "\nrule rewrites: " << rlTotal <<
+    "\nvariant narrowing steps: " << nrTotal <<
+    "\nnarrowing steps: " << vnTotal <<
+    "\ntotal: " << mbTotal + eqTotal + rlTotal + nrTotal + vnTotal << '\n';
+
+  cerr << "About to apply ";
+  if (const SortConstraint* mb = dynamic_cast<const SortConstraint*>(pe))
+    cerr << "membership axiom:\n  " << mb << '\n';
+  else if (const Equation* eq = dynamic_cast<const Equation*>(pe))
+    cerr << "equation:\n  " << eq << '\n';
+  else if (const Rule* rl = dynamic_cast<const Rule*>(pe))
+    cerr << "rule:\n  " << rl << '\n';
+  else
+    CantHappen("unidentified statement");
+  cerr << "on redex:\n" << subject << endl;
+  where(cerr);
+  cerr << endl;
+}
+
 bool
-UserLevelRewritingContext::handleDebug(const DagNode* subject, const PreEquation* pe)
+UserLevelRewritingContext::handleDebug(DagNode* subject, const PreEquation* pe)
 {
   if (abortFlag)
     return true;
+  if (infoFlag)
+    {
+      printStatusReport(subject, pe);
+      infoFlag = false;
+      //
+      //	If we are only slow routed by an INFO signal we want
+      //	to make sure we take the fast route now that we've made
+      //	our report.
+      //
+      setTraceStatus(interpreter.getFlag(Interpreter::EXCEPTION_FLAGS));
+    }
   bool broken = 0;
   Symbol* brokenSymbol = 0;
   if (interpreter.getFlag(Interpreter::BREAK))
@@ -332,7 +423,7 @@ UserLevelRewritingContext::handleDebug(const DagNode* subject, const PreEquation
 	  }
 	case WHERE:
 	  {
-	    where();
+	    where(cout);
 	    break;
 	  }
 	default:
@@ -343,7 +434,7 @@ UserLevelRewritingContext::handleDebug(const DagNode* subject, const PreEquation
 }
 
 void
-UserLevelRewritingContext::where()
+UserLevelRewritingContext::where(ostream& s)
 {
   static const char* purposeString[] =
   {
@@ -353,16 +444,16 @@ UserLevelRewritingContext::where()
     "which arose while executing a top level command.",
     "which arose while doing a meta-evaluation requested by:"
   };
-  cout << "Current term is:\n";
+  s << "Current term is:\n";
   for (UserLevelRewritingContext* p = this; p != 0; p = p->parent)
     {
-      cout << p->root() << '\n';
+      s << p->root() << '\n';
       if (ctrlC_Flag)
 	{
 	  ctrlC_Flag = false;
 	  return;
 	}
-      cout << purposeString[p->purpose] << '\n';
+      s << purposeString[p->purpose] << '\n';
     }
 }
 

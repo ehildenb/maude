@@ -57,11 +57,13 @@ Interpreter::unify(const Vector<Token>& bubble, Int64 limit)
   if (problem->problemOK())
     doUnification(timer, fm, problem, 0, limit);
   else
-    delete problem;
+    {
+      delete problem;
+      fm->unprotect();
 #ifdef QUANTIFY_REWRITING
-  else
-    quantify_stop_recording_data();
+      quantify_stop_recording_data();
 #endif
+    }
 }
 
 void

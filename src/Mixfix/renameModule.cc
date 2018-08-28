@@ -260,6 +260,8 @@ ImportModule::donateOps2(ImportModule* copy, Renaming* renaming)
 	      for (int k = 0; k < domainAndRangeLength; k++)
 		domainAndRange[k] = localSort(copy, renaming, oldDomainAndRange[k]);
 	      symbolType.assignFlags(SymbolType::CTOR, opDecls[j].isConstructor());
+	      Assert(name.code() != NONE, "bad code");
+	      Assert(name.lineNumber() != NONE, "bad line number");
 	      Symbol* newSymbol = copy->addOpDeclaration(name,  // BUG: name has codeNr = -1
 							 domainAndRange,
 							 symbolType,
@@ -298,6 +300,8 @@ ImportModule::donateOps2(ImportModule* copy, Renaming* renaming)
   for (int i = nrImportedPolymorphs; i < nrPolymorphs; i++)
     {
       Token name = getPolymorphName(i);
+      //cout << name;
+
       SymbolType symbolType = getPolymorphType(i);
       int prec = DEFAULT;
       const Vector<int>* format;
@@ -430,14 +434,25 @@ ImportModule::fixUpDonatedOps2(ImportModule* copy, Renaming* renaming)
 void
 ImportModule::localStatementsComplete()
 {
+  //
+  //	Record how many local statement we have so we can
+  //	distiguish them from later imports.
+  //
   nrOriginalMembershipAxioms = getSortConstraints().length();
   nrOriginalEquations = getEquations().length();
   nrOriginalRules = getRules().length();
-
+  //
+  //	Collect labels from imports. Because labels is a set
+  //	we don't need to worry about duplicates from diamond imports.
+  //
   FOR_EACH_CONST(i, Vector<ImportModule*>, importedModules)
     labels.insert((*i)->labels.begin(), (*i)->labels.end());
+
   if (canonicalRenaming == 0)
     {
+      //
+      //	We're an original module so collect labels from our
+      //	statements.
       {
 	FOR_EACH_CONST(i, Vector<SortConstraint*>, getSortConstraints())
 	  {
@@ -465,6 +480,10 @@ ImportModule::localStatementsComplete()
     }
   else
     {
+      //
+      //	We're a renaming of baseModule, so rename the labels
+      //	from baseModule.
+      //
       FOR_EACH_CONST(i, set<int>, baseModule->labels)
 	labels.insert(canonicalRenaming->renameLabel(*i));
     }

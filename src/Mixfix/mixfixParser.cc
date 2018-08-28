@@ -95,11 +95,7 @@
 #include "quotedIdentifierTerm.hh"
 #include "mixfixParser.hh"
 
-#ifdef SCP
-#define ROOT_NODE	(parser.getRootNode())
-#else
 #define ROOT_NODE	(0)
-#endif
 
 const IntSet&
 MixfixParser::getTokenSet()  // HACK
@@ -123,25 +119,23 @@ MixfixParser::insertProduction(int lhs,
 			       int data,
 			       int data2)
 {
-  static Vector<int> rhs2;
-
   int rhsLength = rhs.length();
-  rhs2.resize(rhsLength);
+  productionRhs.resize(rhsLength);
   int ntCount = 0;
   for (int i = 0; i < rhsLength; i++)
     {
       int s = rhs[i];
       if (s < 0)
 	ntCount++;
-      rhs2[i] = s < 0 ? s : tokens.insert(s);
+      productionRhs[i] = s < 0 ? s : tokens.insert(s);
     }
 
   //#if PARSER_DEBUG
   if (ntCount != gather.size())
     {
   cout << "production: " << lhs << " ::= ";
-  for (int i = 0; i < rhs2.length(); i++)
-    cout << rhs2[i] << ' ';
+  for (int i = 0; i < productionRhs.length(); i++)
+    cout << productionRhs[i] << ' ';
   cout << "\t\tprec: " << prec << "\tgather: ";
   for (int i = 0; i < gather.length(); i++)
     cout << gather[i] << ' ';
@@ -151,7 +145,7 @@ MixfixParser::insertProduction(int lhs,
   //#endif
     }
 
-  parser.insertProd(lhs, rhs2, prec, gather);
+  parser.insertProd(lhs, productionRhs, prec, gather);
   int nrActions = actions.length();
   actions.expandBy(1);
   Action& a = actions[nrActions];
@@ -281,32 +275,9 @@ MixfixParser::parseSentence(const Vector<Token>& original,
   cout << ", " << root << '\n';
 #endif
   nrParses = parser.parseSentence(sentence, root);
-#ifdef SCP
-  DebugAdvisoryCheck(nrParses == 1, "MSCP10 returned " << nrParses << " parses");
-#else
   DebugAdvisoryCheck(nrParses == 1, "New parser returned " << nrParses << " parses");
-#endif
-  if (nrParses < 0)
-    nrParses = INT_MAX;  // assume a wrap around error
-  else if (nrParses == 0)  // no parse
-    {
-#ifdef SCP
-      int nrErrors = parser.getNumberOfErrors();
-      DebugAdvisory("MSCP10 found " << nrErrors << " errors");
-      if (nrErrors >= 1)
-	{
-	  int errorPos = parser.getErrorPosition(1);
-	  Assert(errorPos >= 0 && errorPos <= nrTokens,
-		 "parser return bad error position " << errorPos);
-	  firstBad = begin + errorPos;
-	}
-      else
-	firstBad = begin + nrTokens;  // this shouldn't happen but it does :(
-#else
-      firstBad = begin + parser.getErrorPosition();
-      //firstBad = begin + nrTokens;  // HACK
-#endif
-    }
+  if (nrParses == 0)  // no parse
+    firstBad = begin + parser.getErrorPosition();
 #if PARSER_DEBUG
   parser.printCurrentParse();
 #endif
@@ -322,13 +293,8 @@ MixfixParser::makeTerms(Term*& first, Term*& second)
   second = 0;
   if (nrParses > 1)
     {
-#ifdef SCP
-      (void) parser.nextAnalysis();
-#else
-      //cerr << "Multiple parse extraction not yet supported by new parser\n";
       bool success = parser.extractNextParse();
       Assert(success, "didn't find 2nd parse for ambigous sentence");
-#endif
       second  = makeTerm(node);
     }
 }

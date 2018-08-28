@@ -32,7 +32,9 @@ class VisibleModule : public ImportModule
   NO_COPYING(VisibleModule);
 
 public:
-  VisibleModule(int name, ModuleType moduleType, Entity::User* parent = 0);
+  VisibleModule(int name, ModuleType moduleType, Interpreter* owner);
+
+  Interpreter* getOwner() const;
 
   void showSummary(ostream& s);
   void showKinds(ostream& s) const;
@@ -52,6 +54,14 @@ private:
   void showPolymorphAttributes(ostream& s, int index) const;
   void showDecls(ostream& s, bool indent, int index, bool all) const;
   void showAttributes(ostream& s, Symbol* symbol, int opDeclIndex) const;
+
+  Interpreter* const owner;
 };
+
+inline Interpreter*
+VisibleModule::getOwner() const
+{
+  return owner;
+}
 
 #endif

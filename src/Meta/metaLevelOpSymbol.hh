@@ -88,6 +88,8 @@ private:
 					  UnificationProblem*& unification,
 					  Int64& lastSolutionNr);
 
+  PreModule* getPreModule(int name);
+
   MatchSearchState* makeMatchSearchState(MetaModule* m,
 					 FreeDagNode* subject,
 					 RewritingContext& context) const;

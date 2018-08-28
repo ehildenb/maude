@@ -67,6 +67,15 @@ RewritingContext::makeSubcontext(DagNode* root, int /* purpose */)
   return new RewritingContext(root);
 }
 
+bool
+RewritingContext::handleInterrupt()
+{
+  //
+  //	By default we don't know how to handle an interrupt.
+  //
+  return false;
+}
+
 int
 RewritingContext::traceBeginEqTrial(DagNode* /* subject */, const Equation* /* equation */)
 {

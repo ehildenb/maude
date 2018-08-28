@@ -1,4 +1,5 @@
 TESTS = \
+	view \
 	dekker \
 	commands \
 	debug \
@@ -20,9 +21,11 @@ TESTS = \
 	narrow \
 	continue \
 	parse \
-	bubble
+	bubble \
+	rot13
 
 MAUDE_FILES = \
+	view.maude \
 	dekker.maude \
 	commands.maude \
 	debug.maude \
@@ -44,9 +47,11 @@ MAUDE_FILES = \
 	narrow.maude \
 	continue.maude \
 	parse.maude \
-	bubble.maude
+	bubble.maude \
+	rot13.maude
 
 RESULT_FILES = \
+	view.expected \
 	dekker.expected \
 	commands.expected \
 	debug.expected \
@@ -68,6 +73,7 @@ RESULT_FILES = \
 	narrow.expected \
 	continue.expected \
 	parse.expected \
-	bubble.expected
+	bubble.expected \
+	rot13.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)

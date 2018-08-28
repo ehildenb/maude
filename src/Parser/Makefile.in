@@ -281,8 +281,10 @@ libparser_a_SOURCES = \
 
 EXTRA_DIST = \
 	compile.cc \
+	compile2.cc \
 	pass1.cc \
-	pass2a.cc \
+	bubble.cc \
+	pass2.cc \
 	drp.cc
 
 noinst_HEADERS = \

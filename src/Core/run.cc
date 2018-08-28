@@ -142,10 +142,10 @@ RewritingContext::fairContinue(Int64 limit)
   return;  // no more redexes 
 }
 
-
 void
-RewritingContext::fairStart(Int64 gas)
+RewritingContext::fairStart(Int64 limit, Int64 gas)
 {
+  rewriteLimit = limit;
   gasPerNode = gas;
   currentIndex = 0;
   lazyMarker = NONE;
@@ -153,15 +153,6 @@ RewritingContext::fairStart(Int64 gas)
   reduce();
   redexStack.clear();
   redexStack.append(RedexPosition(rootNode, UNDEFINED, UNDEFINED, true));
-}
-
-bool
-RewritingContext::fairTraversal(Int64& limit)
-{
-  rewriteLimit = limit;
-  (void) fairTraversal();
-  limit = rewriteLimit;
-  return progress;  // progress during current traversal - not necessarily during this call
 }
 
 bool

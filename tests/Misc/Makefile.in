@@ -423,6 +423,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = \
+	view \
 	dekker \
 	commands \
 	debug \
@@ -444,9 +445,11 @@ TESTS = \
 	narrow \
 	continue \
 	parse \
-	bubble
+	bubble \
+	rot13
 
 MAUDE_FILES = \
+	view.maude \
 	dekker.maude \
 	commands.maude \
 	debug.maude \
@@ -468,9 +471,11 @@ MAUDE_FILES = \
 	narrow.maude \
 	continue.maude \
 	parse.maude \
-	bubble.maude
+	bubble.maude \
+	rot13.maude
 
 RESULT_FILES = \
+	view.expected \
 	dekker.expected \
 	commands.expected \
 	debug.expected \
@@ -492,7 +497,8 @@ RESULT_FILES = \
 	narrow.expected \
 	continue.expected \
 	parse.expected \
-	bubble.expected
+	bubble.expected \
+	rot13.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
 all: all-am
@@ -677,6 +683,13 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+view.log: view
+	@p='view'; \
+	b='view'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 dekker.log: dekker
 	@p='dekker'; \
 	b='dekker'; \
@@ -827,6 +840,13 @@ parse.log: parse
 bubble.log: bubble
 	@p='bubble'; \
 	b='bubble'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+rot13.log: rot13
+	@p='rot13'; \
+	b='rot13'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

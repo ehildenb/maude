@@ -101,11 +101,11 @@ am__v_AR_1 =
 libmixfix_a_AR = $(AR) $(ARFLAGS)
 libmixfix_a_LIBADD =
 am__libmixfix_a_SOURCES_DIST = syntaxContainer.cc renaming.cc view.cc \
-	entity.cc moduleCache.cc moduleExpression.cc importModule.cc \
-	importTranslation.cc fileTable.cc loopSymbol.cc \
-	quotedIdentifierSymbol.cc quotedIdentifierDagNode.cc \
-	quotedIdentifierTerm.cc quotedIdentifierOpSymbol.cc \
-	mixfixModule.cc token.cc global.cc \
+	syntacticView.cc entity.cc moduleCache.cc moduleExpression.cc \
+	importModule.cc importTranslation.cc fileTable.cc \
+	loopSymbol.cc quotedIdentifierSymbol.cc \
+	quotedIdentifierDagNode.cc quotedIdentifierTerm.cc \
+	quotedIdentifierOpSymbol.cc mixfixModule.cc token.cc global.cc \
 	userLevelRewritingContext.cc preModule.cc \
 	syntacticPreModule.cc symbolType.cc xmlBuffer.cc \
 	maudemlBuffer.cc interpreter.cc moduleDatabase.cc \
@@ -116,6 +116,7 @@ am__libmixfix_a_SOURCES_DIST = syntaxContainer.cc renaming.cc view.cc \
 @BUILD_COMPILER_TRUE@am__objects_1 = libmixfix_a-compiler.$(OBJEXT)
 am_libmixfix_a_OBJECTS = libmixfix_a-syntaxContainer.$(OBJEXT) \
 	libmixfix_a-renaming.$(OBJEXT) libmixfix_a-view.$(OBJEXT) \
+	libmixfix_a-syntacticView.$(OBJEXT) \
 	libmixfix_a-entity.$(OBJEXT) libmixfix_a-moduleCache.$(OBJEXT) \
 	libmixfix_a-moduleExpression.$(OBJEXT) \
 	libmixfix_a-importModule.$(OBJEXT) \
@@ -354,6 +355,7 @@ libmixfix_a_SOURCES = \
 	syntaxContainer.cc \
 	renaming.cc \
 	view.cc \
+	syntacticView.cc \
 	entity.cc \
 	moduleCache.cc \
 	moduleExpression.cc \
@@ -446,6 +448,7 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	renaming.hh \
 	view.hh \
+	syntacticView.hh \
 	entity.hh \
 	moduleCache.hh \
 	moduleExpression.hh \
@@ -565,6 +568,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-surface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-symbolType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-syntacticPreModule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-syntacticView.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-syntaxContainer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmixfix_a-tokenizer.Po@am__quote@
@@ -630,6 +634,20 @@ libmixfix_a-view.obj: view.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='view.cc' object='libmixfix_a-view.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmixfix_a-view.obj `if test -f 'view.cc'; then $(CYGPATH_W) 'view.cc'; else $(CYGPATH_W) '$(srcdir)/view.cc'; fi`
+
+libmixfix_a-syntacticView.o: syntacticView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmixfix_a-syntacticView.o -MD -MP -MF $(DEPDIR)/libmixfix_a-syntacticView.Tpo -c -o libmixfix_a-syntacticView.o `test -f 'syntacticView.cc' || echo '$(srcdir)/'`syntacticView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmixfix_a-syntacticView.Tpo $(DEPDIR)/libmixfix_a-syntacticView.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='syntacticView.cc' object='libmixfix_a-syntacticView.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmixfix_a-syntacticView.o `test -f 'syntacticView.cc' || echo '$(srcdir)/'`syntacticView.cc
+
+libmixfix_a-syntacticView.obj: syntacticView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmixfix_a-syntacticView.obj -MD -MP -MF $(DEPDIR)/libmixfix_a-syntacticView.Tpo -c -o libmixfix_a-syntacticView.obj `if test -f 'syntacticView.cc'; then $(CYGPATH_W) 'syntacticView.cc'; else $(CYGPATH_W) '$(srcdir)/syntacticView.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmixfix_a-syntacticView.Tpo $(DEPDIR)/libmixfix_a-syntacticView.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='syntacticView.cc' object='libmixfix_a-syntacticView.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmixfix_a-syntacticView.obj `if test -f 'syntacticView.cc'; then $(CYGPATH_W) 'syntacticView.cc'; else $(CYGPATH_W) '$(srcdir)/syntacticView.cc'; fi`
 
 libmixfix_a-entity.o: entity.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmixfix_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmixfix_a-entity.o -MD -MP -MF $(DEPDIR)/libmixfix_a-entity.Tpo -c -o libmixfix_a-entity.o `test -f 'entity.cc' || echo '$(srcdir)/'`entity.cc

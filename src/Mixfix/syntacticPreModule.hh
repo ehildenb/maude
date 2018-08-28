@@ -38,6 +38,7 @@ class SyntacticPreModule
     public LineNumber,
     public SyntaxContainer,
     private SharedTokens
+    
 {
   NO_COPYING(SyntacticPreModule);
 
@@ -49,15 +50,15 @@ public:
     TERM_HOOK
   };
 
-  SyntacticPreModule(Token startToken, Token moduleName);
+  SyntacticPreModule(Token startToken, Token moduleName, Interpreter* owner);
   ~SyntacticPreModule();
 
   void loseFocus();
   void finishModule(Token endToken);
   bool isComplete();
 
-  void addParameter(Token name, ModuleExpression*  theory);
-  void addImport(Token mode, ModuleExpression* expr);
+  void addImport(Token modeToken, ModuleExpression* expr);
+
   void addSortDecl(const Vector<Token>& sortDecl);
   void addSubsortDecl(const Vector<Token>& subsortDecl);
   void addOpDecl(const Vector<Token>& opName);
@@ -81,14 +82,7 @@ public:
   VisibleModule* getFlatSignature();
   VisibleModule* getFlatModule();
 
-  const ModuleDatabase::ImportMap& getAutoImports() const;
-  int getNrImports() const;
-  int getImportMode(int index) const;
-  const ModuleExpression* getImport(int index) const;
-  int getNrParameters() const;
-  int getParameterName(int index) const;
-  const ModuleExpression* getParameter(int index) const;
-
+  const ModuleDatabase::ImportMap* getAutoImports() const;
 
   void dump();
   void showModule(ostream& s = cout);
@@ -142,18 +136,6 @@ private:
     Vector<Sort*> domainAndRange;
   };
 
-  struct Parameter
-  {
-    Token name;
-    ModuleExpression* theory;
-  };
-
-  struct Import
-  {
-    Token mode;
-    ModuleExpression* expr;
-  };
-
   void process();
 
   static void printAttributes(ostream& s, const OpDef& opDef);
@@ -186,8 +168,6 @@ private:
   int startTokenCode;
   Bool lastSawOpDecl;
   Bool isCompleteFlag;
-  Vector<Parameter> parameters;
-  Vector<Import> imports;
   Vector<Vector<Token> > sortDecls;
   Vector<Vector<Token> > subsortDecls;
   Vector<OpDecl> opDecls;
@@ -219,46 +199,10 @@ SyntacticPreModule::addSubsortDecl(const Vector<Token>& subsortDecl)
   subsortDecls.append(subsortDecl);
 }
 
-inline const ModuleDatabase::ImportMap&
+inline const ModuleDatabase::ImportMap*
 SyntacticPreModule::getAutoImports() const
 {
-  return autoImports;
-}
-
-inline int
-SyntacticPreModule::getNrImports() const
-{
-  return imports.length();
-}
-
-inline int
-SyntacticPreModule::getImportMode(int index) const
-{
-  return imports[index].mode.code();
-}
-
-inline const ModuleExpression*
-SyntacticPreModule::getImport(int index) const
-{
-  return imports[index].expr;
-}
-
-inline int
-SyntacticPreModule::getNrParameters() const
-{
-  return parameters.length();
-}
-
-inline int
-SyntacticPreModule::getParameterName(int index) const
-{
-  return parameters[index].name.code();
-}
-
-inline const ModuleExpression*
-SyntacticPreModule::getParameter(int index) const
-{
-  return parameters[index].theory;
+  return &autoImports;
 }
 
 #endif

@@ -31,7 +31,8 @@
 #include "vector.hh"
 #include "pointerSet.hh"
 #include "bddUser.hh"
- 
+#include "timeStuff.hh"
+
 //      forward declarations
 #include "interface.hh"
 #include "core.hh"
@@ -66,6 +67,7 @@
 
 #include "interpreter.hh"  // HACK
 #include "global.hh"  // HACK shouldn't be accessing global variables
+
 
 //	our stuff
 #include "interact.cc"

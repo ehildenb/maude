@@ -105,7 +105,7 @@ am_libmeta_a_OBJECTS = libmeta_a-metaModuleCache.$(OBJEXT) \
 	libmeta_a-interpreterManagerSymbol.$(OBJEXT) \
 	libmeta_a-metaOpCache.$(OBJEXT) libmeta_a-metaModule.$(OBJEXT) \
 	libmeta_a-metaLevelOpSymbol.$(OBJEXT) \
-	libmeta_a-metaPreModule.$(OBJEXT)
+	libmeta_a-metaPreModule.$(OBJEXT) libmeta_a-metaView.$(OBJEXT)
 libmeta_a_OBJECTS = $(am_libmeta_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -306,7 +306,8 @@ libmeta_a_SOURCES = \
 	metaOpCache.cc \
 	metaModule.cc \
 	metaLevelOpSymbol.cc \
-	metaPreModule.cc
+	metaPreModule.cc \
+	metaView.cc
 
 EXTRA_DIST = \
 	metaDown.cc \
@@ -328,7 +329,9 @@ EXTRA_DIST = \
 	descentSignature.cc \
 	interpreterSignature.cc \
 	metaUpView.cc \
-	metaVariant.cc
+	metaDownView.cc \
+	metaVariant.cc \
+	metaDownSignature.cc
 
 noinst_HEADERS = \
 	meta.hh \
@@ -338,7 +341,8 @@ noinst_HEADERS = \
 	metaModule.hh \
 	metaModuleCache.hh \
 	metaOpCache.hh \
-	metaPreModule.hh
+	metaPreModule.hh \
+	metaView.hh
 
 all: all-am
 
@@ -396,6 +400,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmeta_a-metaModuleCache.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmeta_a-metaOpCache.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmeta_a-metaPreModule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmeta_a-metaView.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -508,6 +513,20 @@ libmeta_a-metaPreModule.obj: metaPreModule.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='metaPreModule.cc' object='libmeta_a-metaPreModule.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmeta_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmeta_a-metaPreModule.obj `if test -f 'metaPreModule.cc'; then $(CYGPATH_W) 'metaPreModule.cc'; else $(CYGPATH_W) '$(srcdir)/metaPreModule.cc'; fi`
+
+libmeta_a-metaView.o: metaView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmeta_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmeta_a-metaView.o -MD -MP -MF $(DEPDIR)/libmeta_a-metaView.Tpo -c -o libmeta_a-metaView.o `test -f 'metaView.cc' || echo '$(srcdir)/'`metaView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmeta_a-metaView.Tpo $(DEPDIR)/libmeta_a-metaView.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='metaView.cc' object='libmeta_a-metaView.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmeta_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmeta_a-metaView.o `test -f 'metaView.cc' || echo '$(srcdir)/'`metaView.cc
+
+libmeta_a-metaView.obj: metaView.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmeta_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libmeta_a-metaView.obj -MD -MP -MF $(DEPDIR)/libmeta_a-metaView.Tpo -c -o libmeta_a-metaView.obj `if test -f 'metaView.cc'; then $(CYGPATH_W) 'metaView.cc'; else $(CYGPATH_W) '$(srcdir)/metaView.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmeta_a-metaView.Tpo $(DEPDIR)/libmeta_a-metaView.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='metaView.cc' object='libmeta_a-metaView.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libmeta_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libmeta_a-metaView.obj `if test -f 'metaView.cc'; then $(CYGPATH_W) 'metaView.cc'; else $(CYGPATH_W) '$(srcdir)/metaView.cc'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

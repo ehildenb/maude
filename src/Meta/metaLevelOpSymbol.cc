@@ -28,6 +28,7 @@
 #include "macros.hh"
 #include "vector.hh"
 #include "pointerMap.hh"
+#include "meta.hh"
  
 //      forward declarations
 #include "interface.hh"
@@ -96,7 +97,6 @@
 #include "syntacticPreModule.hh"
 #include "interpreter.hh"
 #include "visibleModule.hh"
-#include "global.hh"  // HACK: shouldn't access global variables
 #include "freshVariableSource.hh"
 
 //	our stuff

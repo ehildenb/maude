@@ -56,6 +56,7 @@ class ModuleExpression;
 class Renaming;
 class ModuleCache;
 class View;
+class SyntacticView;
 class ModuleDatabase;
 class ViewDatabase;
 class Entity;

@@ -198,7 +198,8 @@ StreamManagerSymbol::getLine(FreeDagNode* message, ObjectSystemRewritingContext&
       DagNode* promptArg = message->getArgument(2);
       if (promptArg->symbol() == stringSymbol)
 	{
-	  Rope line = ioManager.getLine(safeCast(StringDagNode*, promptArg)->getValue(), stdin);
+	  //Rope line = ioManager.getLine(safeCast(StringDagNode*, promptArg)->getValue(), stdin);
+	  Rope line = ioManager.getLineFromStdin(safeCast(StringDagNode*, promptArg)->getValue());
 	  gotLineReply(line, message, context);
 	  return true;
 	}

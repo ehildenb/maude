@@ -36,6 +36,18 @@ MetaLevel::downQid(DagNode* metaQid, int& id)
 }
 
 bool
+MetaLevel::downToken(DagNode* metaQid, Token& token)
+{
+  if (metaQid->symbol() == qidSymbol)
+    {
+      token.tokenize(Token::unBackQuoteSpecials(static_cast<QuotedIdentifierDagNode*>(metaQid)->getIdIndex()),
+		     FileTable::META_LEVEL_CREATED);
+      return true;
+    }
+  return false;
+}
+
+bool
 MetaLevel::downOpName(DagNode* metaQid, int& id)
 {
   //
@@ -131,7 +143,7 @@ MetaLevel::downHeader(DagNode* metaHeader, int& id, DagNode*& metaParameterDeclL
 }
 
 bool
-MetaLevel::downParameterDeclList(DagNode* metaParameterDeclList, ImportModule* m)
+MetaLevel::downParameterDeclList(DagNode* metaParameterDeclList, MetaModule* m)
 {
   if (metaParameterDeclList == 0)
     return true;
@@ -150,7 +162,7 @@ MetaLevel::downParameterDeclList(DagNode* metaParameterDeclList, ImportModule* m
 }
 
 bool
-MetaLevel::downParameterDecl(DagNode* metaParameterDecl, ImportModule* m)
+MetaLevel::downParameterDecl(DagNode* metaParameterDecl, MetaModule* m)
 {
   if (metaParameterDecl->symbol() == parameterDeclSymbol)
     {
@@ -164,7 +176,7 @@ MetaLevel::downParameterDecl(DagNode* metaParameterDecl, ImportModule* m)
 	    {
 	      Token t;
 	      t.tokenize(name, FileTable::META_LEVEL_CREATED);
-	      Interpreter* owner = safeCast(MetaModule*, m)->getOwner();  // HACK - probably all modules should have owners
+	      Interpreter* owner = m->getOwner();
 	      m->addParameter(t, owner->makeParameterCopy(name, theory));
 	      return true;
 	    }
@@ -183,24 +195,28 @@ MetaLevel::downParameterDecl(DagNode* metaParameterDecl, ImportModule* m)
 }
 
 MetaModule*
-MetaLevel::downModule(DagNode* metaModule, bool cacheMetaModule, Interpreter* owner)
+MetaLevel::downModule(DagNode* metaModule)
 {
-  if (owner == 0)
-    owner = &interpreter;  // NASTY HACK - should get default owner from metaModule rather than global variable
-  /*
-    Ideally we should get a symbol from metaModule, a module from symbol, and an owner from that module,
-    so that if an interpreter is not given we use the one containing the metaModule's, top symbol's module.
-    Currently we can't do this because only the MetaModule class supports ownership.
-  */
+  //
+  //	This function is only usable from the functional metalevel because it
+  //	makes use of the MetaModuleCache in MetaLevel, which may contain modules
+  //	that imported modules from the current interpreter.
+  //
 
-  MetaModule* cm = cache.find(metaModule);  // BUG - could be in another interpreter
-  /*
-    Currently we side step this bug by not caching metaModules belonging to metaIntepreters.
-   */
-  if (cm != 0)
-    return cm;
+  //
+  //	Caching downed modules is critically important for efficiency
+  //	in the functional metalevel.
+  //
+  if (MetaModule* cm = cache.find(metaModule))
+    {
+      DebugAdvisory("metaLevel cache hit for " << metaModule);
+      return cm;
+    }
+  //
+  //	Cache miss - we need to actually down the module so find
+  //	out what kind of module it is.
+  //
   Symbol* ms = metaModule->symbol();
-
   MixfixModule::ModuleType mt;
   if (ms == fmodSymbol)
     mt = MixfixModule::FUNCTIONAL_MODULE;
@@ -212,13 +228,23 @@ MetaLevel::downModule(DagNode* metaModule, bool cacheMetaModule, Interpreter* ow
     mt = MixfixModule::SYSTEM_THEORY;
   else
     return 0;
+  //
+  //	Find current interpreter. This is the interpreter where the module we are
+  //	working in resides. The module itself is either a VisibleModule that
+  //	was entered into the object level interpreter or it is a MetaModule.
+  //	Either way it is safe to downcast it to VisibleModule so we can extract
+  //	a pointer to the Interpreter where it resides.
+  //
+  Module* activeModule = ms->getModule();
+  Interpreter* owner = safeCast(VisibleModule*, activeModule)->getOwner();
 
   FreeDagNode* f = safeCast(FreeDagNode*, metaModule);
   int id;
   DagNode* metaParameterDeclList;
   if (downHeader(f->getArgument(0), id, metaParameterDeclList))
     {
-      MetaModule* m = new MetaModule(id, mt, cacheMetaModule ? &cache : 0, owner);
+      MetaModule* m = new MetaModule(id, mt, owner);
+      m->addUser(&cache);
       if (downParameterDeclList(metaParameterDeclList, m) &&
 	  downImports(f->getArgument(1), m))
 	{
@@ -247,8 +273,7 @@ MetaLevel::downModule(DagNode* metaModule, bool cacheMetaModule, Interpreter* ow
 			      m->importStatements();
 			      m->closeTheory();
 			      m->resetImports();
-			      if (cacheMetaModule)  // HACK: this should probably be done elsewhere
-				cache.insert(metaModule, m);
+			      cache.insert(metaModule, m);
 			      //
 			      //	We may have displace a module from the 
 			      //	metamodule cache generating garbage in
@@ -257,7 +282,7 @@ MetaLevel::downModule(DagNode* metaModule, bool cacheMetaModule, Interpreter* ow
 			      //	processing so we should tidy the (expression)
 			      //	module cache regularly.
 			      //
-			      interpreter.destructUnusedModules();
+			      owner->destructUnusedModules();
 			      return m;
 			    }
 			}
@@ -281,7 +306,7 @@ MetaLevel::downModule(DagNode* metaModule, bool cacheMetaModule, Interpreter* ow
       //	dependents now that we failed to build the metamodule.
       //	Thus we now need to tidy the module cache.
       //	
-      interpreter.destructUnusedModules();
+      owner->destructUnusedModules();
     }
   return 0;
 }

@@ -56,22 +56,24 @@ void
 SyntacticPreModule::showModule(ostream& s)
 {
   s << MixfixModule::moduleTypeString(getModuleType()) << ' ' << this;
-  int nrParameters = parameters.size();
+  int nrParameters = getNrParameters();
   if (nrParameters > 0)
     {
-      s << '{' << parameters[0].name << " :: " << parameters[0].theory;
+      s << '{' << Token::name(getParameterName(0)) << " :: " << getParameter(0); // FIX NAME
       for (int i = 1; i < nrParameters; ++i)
-	s << ", " << parameters[i].name << " :: " << parameters[i].theory;
+	s << ", " << Token::name(getParameterName(i)) << " :: " << getParameter(i); // FIX NAME
       s << '}';
     }
   s << " is\n";
 
-  int nrImports = imports.length();
+  const char* modeStrings[] = { "protecting", "extending", "including" };
+
+  int nrImports = getNrImports();
   for (int i = 0; i < nrImports; i++)
     {
       if (UserLevelRewritingContext::interrupted())
 	return;
-      s << "  " << imports[i].mode << ' ' << imports[i].expr << " .\n";
+      s << "  " << modeStrings[getImportMode(i)] << ' ' << getImport(i) << " .\n";  // FIX MODE
     }
 
   int nrSortDecls = sortDecls.length();

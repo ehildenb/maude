@@ -65,6 +65,7 @@ private:
   bool reduceTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool rewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool frewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool erewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool quit(FreeDagNode* message, ObjectSystemRewritingContext& context);
 
   bool getInterpreter(DagNode* interpreterArg, Interpreter*& interpreter);

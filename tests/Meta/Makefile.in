@@ -450,7 +450,12 @@ TESTS = \
 	metaMetadata \
 	metaVariantUnify \
 	metaGetVariant \
-	metaNarrow
+	metaNarrow \
+	metaIntPrelude \
+	metaIntReplace \
+	metaIntReplace2 \
+	russianDollsFlat \
+	russianDollsNonFlat
 
 MAUDE_FILES = \
 	metaApply.maude \
@@ -480,7 +485,12 @@ MAUDE_FILES = \
 	metaMetadata.maude \
 	metaVariantUnify.maude \
 	metaGetVariant.maude \
-	metaNarrow.maude 
+	metaNarrow.maude \
+	metaIntPrelude.maude \
+	metaIntReplace.maude \
+	metaIntReplace2.maude \
+	russianDollsFlat.maude \
+	russianDollsNonFlat.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -512,7 +522,12 @@ RESULT_FILES = \
 	metaMetadata.expected \
 	metaVariantUnify.expected \
 	metaGetVariant.expected \
-	metaNarrow.expected
+	metaNarrow.expected \
+	metaIntPrelude.expected \
+	metaIntReplace.expected \
+	metaIntReplace2.expected \
+	russianDollsFlat.expected \
+	russianDollsNonFlat.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
 all: all-am
@@ -889,6 +904,41 @@ metaGetVariant.log: metaGetVariant
 metaNarrow.log: metaNarrow
 	@p='metaNarrow'; \
 	b='metaNarrow'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntPrelude.log: metaIntPrelude
+	@p='metaIntPrelude'; \
+	b='metaIntPrelude'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntReplace.log: metaIntReplace
+	@p='metaIntReplace'; \
+	b='metaIntReplace'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntReplace2.log: metaIntReplace2
+	@p='metaIntReplace2'; \
+	b='metaIntReplace2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+russianDollsFlat.log: russianDollsFlat
+	@p='russianDollsFlat'; \
+	b='russianDollsFlat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+russianDollsNonFlat.log: russianDollsNonFlat
+	@p='russianDollsNonFlat'; \
+	b='russianDollsNonFlat'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

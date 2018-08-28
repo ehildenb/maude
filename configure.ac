@@ -3,7 +3,7 @@
 #
 #	Initialize autoconf stuff.
 #
-AC_INIT(Maude, alpha116, [maude-bugs@lists.cs.illinois.edu])
+AC_INIT(Maude, alpha117, [maude-bugs@lists.cs.illinois.edu])
 #
 #	Allow directory names that look like macros.
 #
@@ -348,9 +348,6 @@ fi
 
 #
 #	Needed defines.
-#
-#AC_DEFINE([SCP], [], [use MSCP10 calling conventions])
-#AC_DEFINE([BUBBLES], [], [support bubbles when parsing])
 #
 #	Check to see if we should build the compiler.
 #
