@@ -140,6 +140,7 @@
 #include "iterationStrategy.hh"
 #include "branchStrategy.hh"
 #include "testStrategy.hh"
+#include "subtermStrategy.hh"
 
 //	metalevel class definitions
 #include "metaLevelOpSymbol.hh"
@@ -163,6 +164,7 @@ Vector<int> MixfixModule::emptyGather;
 Vector<int> MixfixModule::gatherAny(1);
 Vector<int> MixfixModule::gatherAnyAny(2);
 Vector<int> MixfixModule::gatherAnyAnyAny(3);
+Vector<int> MixfixModule::gatherAny4(4);
 Vector<int> MixfixModule::gatherPrefix(1);
 Vector<int> MixfixModule::gatherPrefixPrefix(2);
 Vector<int> MixfixModule::gatherAny0(2);
@@ -264,6 +266,10 @@ MixfixModule::MixfixModule(int name, ModuleType moduleType)
       gatherAnyAnyAny[0] = ANY;
       gatherAnyAnyAny[1] = ANY;
       gatherAnyAnyAny[2] = ANY;
+      gatherAny4[0] = ANY;
+      gatherAny4[1] = ANY;
+      gatherAny4[2] = ANY;
+      gatherAny4[3] = ANY;
       gatherPrefix[0] = PREFIX_GATHER;
       gatherPrefixPrefix[0] = PREFIX_GATHER;
       gatherPrefixPrefix[1] = PREFIX_GATHER;

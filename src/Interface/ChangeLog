@@ -1,3 +1,25 @@
+2017-10-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* associativeSymbol.hh (BinarySymbol): added decl for
+	isConstructor()
+
+	* associativeSymbol.cc (associativeCtorCheck): pull code into
+	outer loops
+	(associativeCtorCheck): invert first step; summarize conflicts
+	(isConstructor): implemented - we need this after all
+
+2017-10-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* associativeSymbol.cc (isConstructor): deleted
+
+	* associativeSymbol.hh (BinarySymbol): added associativeCtorCheck()
+	(BinarySymbol): deleted decl for isConstructor()
+
+	* associativeSymbol.cc (associativeCtorCheck): added
+	(finalizeSortInfo): call associativeCtorCheck()
+
+===================================Maude116==========================================
+
 2017-04-14  Steven Eker  <eker@install.csl.sri.com>
 
 	* associativeSymbol.hh (BinarySymbol): added a comment explaining the

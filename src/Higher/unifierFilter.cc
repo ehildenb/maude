@@ -235,7 +235,9 @@ UnifierFilter::RetainedUnifier::RetainedUnifier(const Substitution& original,
       //matchingAutomata[i]->dump(cerr, variableInfo);
     }
 
-  nrVariablesInBindings = variableInfo.getNrRealVariables();  // may also have some abstraction variables
+  nrVariablesInBindings = variableInfo.getNrProtectedVariables();  // may also have some abstraction variables
+  DebugAdvisory("compiled retained unifier has  " << variableInfo.getNrRealVariables() << " real variables");
+  DebugAdvisory("compiled retained unifier has  " << variableInfo.getNrProtectedVariables() << " protected variables");
 }
 
 UnifierFilter::RetainedUnifier::~RetainedUnifier()

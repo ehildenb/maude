@@ -145,9 +145,16 @@ IO_Manager::getInput(char* buf, size_t maxSize, FILE* stream)
   //
   if (usePromptsAnyway)
     {
-      fputs(contFlag ? contPrompt.c_str() : prompt.c_str(), stdout);  // HACK: bypass line wrapper
-      fflush(stdout);
-      contFlag = true;
+      //
+      //	We don't generate continuation prompts in this case to avoid breaking IOP.
+      //
+      if (!contFlag)
+	{
+	  fputs(prompt.c_str(), stdout);  // HACK: bypass line wrapper 
+	  //fputs(contFlag ? contPrompt.c_str() : prompt.c_str(), stdout);  // HACK: bypass line wrapper
+	  fflush(stdout);
+	  contFlag = true;
+	}
     }
   return boundedGetLine(buf, maxSize, stdin);
 }

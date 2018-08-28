@@ -20,7 +20,9 @@ TESTS = \
 	sreduce.maude \
 	smtTest.maude \
 	narrow.maude \
-	continue.maude
+	continue.maude \
+	parse.maude \
+	bubble.maude
 
 RESULT_FILES = \
 	dekker.expected \
@@ -42,6 +44,8 @@ RESULT_FILES = \
 	sreduce.expected \
 	smtTest.expected \
 	narrow.expected \
-	continue.expected
+	continue.expected \
+	parse.expected \
+	bubble.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

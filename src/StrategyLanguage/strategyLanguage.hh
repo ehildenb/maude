@@ -34,6 +34,7 @@ class IterationStrategy;
 class BranchStrategy;
 class UnionStrategy;
 class TestStrategy;
+class SubtermStrategy;
 
 class StrategicExecution;
 

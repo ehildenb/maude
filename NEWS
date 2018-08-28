@@ -1,3 +1,13 @@
+Overview of Changes in alpha116
+===============================
+* fixed bug in ctor calculations for associative operators;
+  enforce new ctor consistancy for such operators
+* fixed related bugs in unifier filtering, variant folding
+  and narrowing folding wrt the handing of abstraction
+  variables
+* new mixfix parser based on Leo's algorithm fixes many
+  bubble related bugs
+
 Overview of Changes in alpha115
 ===============================
 * fixed bug show mod command output empty parentheses

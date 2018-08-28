@@ -1,3 +1,20 @@
+2017-08-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* configSymbol.cc (ruleRewrite): added comments to explain
+	the tricky tracing code
+	(ruleRewrite): fake rewrites when tracing in the single subterm
+	case and in the ConfigSymbol went away/not leftOver rules
+	case
+
+2017-08-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* configSymbol.cc (ruleRewrite): do tracePostRuleRewrite()
+	after successful objMsgRewrite()
+	(objMsgRewrite): don't do tracePostRuleRewrite() here
+	since we don't have a context with the new dag
+
+===================================Maude115===========================================
+
 2017-08-02  Steven Eker  <eker@install.csl.sri.com>
 
 	* fileManagerSymbol.hh (ExternalObjectManagerSymbol): updated

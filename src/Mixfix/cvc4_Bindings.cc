@@ -58,7 +58,10 @@ VariableGenerator::VariableGenerator(const SMT_Info& smtInfo)
   : smtInfo(smtInfo)
 {
   exprManager = new ExprManager();
+  //cout << "created manager " << exprManager << endl;
   smtEngine = new SmtEngine(exprManager);
+  //cout << "created engine " << smtEngine << endl;
+
   smtEngine->setOption("rewrite-divk", SExpr(true));
   smtEngine->push();  // make a new context so we have a clean context to pop() back to
   pushCount = 0;
@@ -67,7 +70,9 @@ VariableGenerator::VariableGenerator(const SMT_Info& smtInfo)
 VariableGenerator::~VariableGenerator()
 {
   variableMap.clear();  // need to get rid of Expr objects before we can safely delete exprManager
+  //cout << "deleting engine " << smtEngine << endl;
   delete smtEngine;
+  //cout << "deleting manager " << exprManager << endl;
   delete exprManager;
 }
 

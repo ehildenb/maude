@@ -195,6 +195,9 @@ MixfixModule::prettyPrint(ostream& s, StrategyExpression* strategy, int required
     }
   else if (TestStrategy* t = dynamic_cast<TestStrategy*>(strategy))
     {
+      needParen = requiredPrec < STRAT_TEST_PREC;
+      if (needParen)
+	s << '(';
       int depth = t->getDepth();
       if (depth >= 0)
 	s << (depth == 0 ? 'x' : 'a');
@@ -204,6 +207,31 @@ MixfixModule::prettyPrint(ostream& s, StrategyExpression* strategy, int required
 	{
 	  s << " such that ";
 	  printCondition(s, condition);
+	}
+    }
+  else if (SubtermStrategy* t = dynamic_cast<SubtermStrategy*>(strategy))
+    {
+      needParen = requiredPrec < STRAT_REW_PREC;
+      if (needParen)
+	s << '(';
+      int depth = t->getDepth();
+      if (depth >= 0)
+	s << (depth == 0 ? 'x' : 'a');
+      s << "matchrew " << t->getPatternTerm();
+      const Vector<ConditionFragment*>& condition = t->getCondition();
+      if (!condition.empty())
+	{
+	  s << " such that ";
+	  printCondition(s, condition);
+	}
+      const Vector<Term*>& subterms = t->getSubterms();
+      const Vector<StrategyExpression*>& strategies = t->getStrategies();
+      int nrSubterms = subterms.size();
+      for (int i = 0; i < nrSubterms; ++i)
+	{
+	  s << ((i == 0) ? " by " : ", ");
+	  s << subterms[i] << " using ";
+	  (void) prettyPrint(s, strategies[i], STRAT_USING_PREC - 1);
 	}
     }
 

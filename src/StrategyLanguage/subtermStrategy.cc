@@ -21,7 +21,7 @@
 */
 
 //
-//      Implementation for class TestStrategy.
+//      Implementation for abstract class SubtermStrategy.
 //
 
 //	utility stuff
@@ -44,22 +44,29 @@
 //	strategy language class definitions
 #include "decompositionProcess.hh"
 #include "strategicSearch.hh"
-#include "testStrategy.hh"
+#include "subtermStrategy.hh"
 
-TestStrategy::TestStrategy(Term* patternTerm, int depth, const Vector<ConditionFragment*>& condition)
+SubtermStrategy::SubtermStrategy(Term* patternTerm,
+				 int depth,
+				 const Vector<ConditionFragment*>& condition,
+				 const Vector<Term*>& subterms,
+				 const Vector<StrategyExpression*>& strategies)
   : pattern(patternTerm, depth >= 0, condition),
-    depth(depth)
+    depth(depth),
+    subterms(subterms),
+    strategies(strategies)
 {
   WarningCheck(pattern.getUnboundVariables().empty(),
 	       *patternTerm << ": variable " <<
 	       QUOTE(pattern.index2Variable(pattern.getUnboundVariables().min())) <<
-	       " is used before it is bound in condition of test strategy.");
+	       " is used before it is bound in condition of subterm strategy.");
   // need to do something about recovery
 }
 
 StrategicExecution::Survival
-TestStrategy::decompose(StrategicSearch& searchObject, DecompositionProcess* remainder)
+SubtermStrategy::decompose(StrategicSearch& searchObject, DecompositionProcess* remainder)
 {
+  /*
   if (!pattern.getUnboundVariables().empty())
     return StrategicExecution::DIE;  // bad condition always fails
   RewritingContext* context = searchObject.getContext();
@@ -69,4 +76,6 @@ TestStrategy::decompose(StrategicSearch& searchObject, DecompositionProcess* rem
   state->transferCount(*context);
   delete state;
   return result ? StrategicExecution::SURVIVE : StrategicExecution::DIE;
+  */
+  return StrategicExecution::DIE;  // not implemented
 }
