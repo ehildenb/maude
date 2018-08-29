@@ -2,6 +2,28 @@ Narrowing
 =========
 
 Several narrowing utilities/wrappers are provided here.
+Much of this code is extracted from Santiago Escobar's [unification.md].
+
+Substitution Sets
+-----------------
+
+```maude
+fmod SUBSTITUTION-SET is
+   protecting META-TERM .
+
+    var SUB : Substitution .
+
+    sort SubstitutionSet NeSubstitutionSet .
+    ----------------------------------------
+    subsort Substitution < NeSubstitutionSet < SubstitutionSet .
+
+    op .SubstitutionSet :                                   ->   SubstitutionSet [ctor] .
+    op _|_              : SubstitutionSet   SubstitutionSet ->   SubstitutionSet [ctor assoc comm id: .SubstitutionSet] .
+    op _|_              : SubstitutionSet NeSubstitutionSet -> NeSubstitutionSet [ctor ditto] .
+    -------------------------------------------------------------------------------------------
+    eq SUB | SUB = SUB .
+endfm
+```
 
 Variant Sets
 ------------
