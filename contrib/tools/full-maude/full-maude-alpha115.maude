@@ -14087,7 +14087,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'unifier
             else procIdUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14096,7 +14096,7 @@ fmod COMMAND-PROCESSING is
     if X:[SubstitutionSet] := metaACUUnify(M, T, T') .
   eq procIdUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procIdUnify3(M, UP, I, empty)
+  eq procIdUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procIdUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14128,7 +14128,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'variant 'unifier
             else procVariantUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14146,7 +14146,7 @@ fmod COMMAND-PROCESSING is
           ) .
   eq procVariantUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procVariantUnify3(M, UP, I, empty)
+  eq procVariantUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procVariantUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14181,7 +14181,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'asymmetric 'unifier
             else procAsymmetricVariantUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14199,7 +14199,7 @@ fmod COMMAND-PROCESSING is
           ) .
   eq procAsymmetricVariantUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procAsymmetricVariantUnify3(M, UP, I, empty)
+  eq procAsymmetricVariantUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procAsymmetricVariantUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14725,19 +14725,19 @@ fmod MODULE-VARIANTS is
 
   eq getVariants(M, T, Subst | SubstS)
     = {getTerm(metaNormalize(M, T << Subst)), Subst, 0,none,true} | getVariants(M, T, SubstS) .
-  eq getVariants(M, T, empty) = {T, none, 0, none, true} .
+  eq getVariants(M, T, .SubstitutionSet) = {T, none, 0, none, true} .
 
   eq getSubstitutions(M, V ; VS, ODS, N)
     = < combineSubsts(
           getSubst(getSubstitutions1(M, V, ODS, N)),
           getSubst(getSubstitutions(M, VS, ODS, getIndex(getSubstitutions1(M, V, ODS, N))))) ;
         getIndex(getSubstitutions(M, VS, ODS, getIndex(getSubstitutions1(M, V, ODS, N)))) > .
-  eq getSubstitutions(M, none, ODS, N) = < empty ; N > .
+  eq getSubstitutions(M, none, ODS, N) = < .SubstitutionSet ; N > .
 
   eq combineSubsts(Subst | SubstS, Subst' | SubstS')
     = (Subst ; Subst') | combineSubsts(SubstS, Subst' | SubstS') | combineSubsts(Subst, SubstS') .
-  eq combineSubsts(SubstS, empty) = SubstS .
-  eq combineSubsts(empty, SubstS) = SubstS .
+  eq combineSubsts(SubstS, .SubstitutionSet) = SubstS .
+  eq combineSubsts(.SubstitutionSet, SubstS) = SubstS .
 
   ceq getSubstitutions1(M, V, op F : TpL -> Tp [id(T) AtS] . ODS, N)
     = < (V <- T) |
@@ -14745,7 +14745,7 @@ fmod MODULE-VARIANTS is
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- (F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]))
            | (V <- (F[T, qid("X@" + string(s N, 10) + ":" + string(Tp))]))
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
@@ -14755,7 +14755,7 @@ fmod MODULE-VARIANTS is
         if (assoc in AtS and-then not comm in AtS)
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- F[T, qid("X@" + string(N, 10) + ":" + string(Tp))])
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
@@ -14765,12 +14765,12 @@ fmod MODULE-VARIANTS is
         if (assoc in AtS and-then not comm in AtS)
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- F[qid("X@" + string(s N, 10) + ":" + string(Tp)), T])
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
     if sortLeq(M, leastSort(M, T), getType(V)) . ----  ls[e] <= s ls[f(y,e)] <= s
-  eq getSubstitutions1(M, V, ODS, N) = < empty ; N > [owise] .
+  eq getSubstitutions1(M, V, ODS, N) = < .SubstitutionSet ; N > [owise] .
 
   ------------------------------------------------------------------------------
   ---- Given a module with axioms B where for each f we have B_f \in {A_f,C_f},

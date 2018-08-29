@@ -38,9 +38,10 @@ fmod CTERM-SET is
     ------------------------------------------------
     eq .CTermSet     << SS = .CTermSet .
     eq (CT ;; NeCTS) << SS = (CT << SS) ;; (NeCTS << SS) .
-    eq CT << empty         = .CTermSet .
-    eq CT << (S | S' | SS) = (CT << S) ;; (CT << S') ;; (CT << SS) .
-   ceq (T | F)       << S  = (T << S) | (F << S)
+    eq CT << .SubstitutionSet = .CTermSet .
+    eq CT << (S | S' | SS)    = (CT << S) ;; (CT << S') ;; (CT << SS) .
+
+   ceq (T | F) << S = (T << S) | (F << S)
     if not (F == tt) .
 
     op .CTermSet : -> CTermSet .
@@ -97,8 +98,8 @@ This should either be implemented, hooked up to an existing implementation, or w
 
     op #disjSubsts : SubstitutionSet -> PosEqQFForm? .
     --------------------------------------------------
-    eq #disjSubsts(empty)  = ff .
-    eq #disjSubsts(S | SS) = #conjSubst(S) \/ #disjSubsts(SS) .
+    eq #disjSubsts(.SubstitutionSet) = ff .
+    eq #disjSubsts(S | SS)           = #conjSubst(S) \/ #disjSubsts(SS) .
 
     op #conjSubst : Substitution -> PosEqConj? .
     --------------------------------------------

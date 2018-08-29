@@ -46,7 +46,7 @@ fmod MGCI is
 
   eq mgci(M,T)                     = mgci(M,T,0) .
   eq mgci(M,T,I)                   = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
-  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),empty) .
+  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),.SubstitutionSet) .
   eq $mgci(M,CM,UP,N,noUnifier,SS) = lift-sub(M,SS) .
   eq $mgci(M,CM,UP,N,{S,S',I},SS)  = $mgci(M,CM,UP,s(N),metaDisjointUnify(CM,UP,s(I),s(N)),SS | S) .
 
@@ -112,5 +112,5 @@ fmod CTOR-VARIANT is
   eq $ctor-unifiers(M,T,ssnp(S | SS,I)) =
     (S << mgci(M,getTerm(metaReduce(M,T << S)),I)) |
     $ctor-unifiers(M,T,ssnp(SS,I)) .
-  eq $ctor-unifiers(M,T,ssnp(empty,I)) = empty .
+  eq $ctor-unifiers(M,T,ssnp(.SubstitutionSet,I)) = .SubstitutionSet .
 endfm

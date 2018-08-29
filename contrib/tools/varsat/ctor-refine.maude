@@ -126,8 +126,8 @@ fmod CTOR-LIFT is
   eq lift-term(M,(T,L)) = lift-term(M,T), lift-term(M,L) .
   eq lift-term(M,empty) = empty .
 
-  eq lift-sub(M,V <- T ; B)  = lift-term(M,V) <- lift-term(M,T) ; lift-sub(M,B) .
-  eq lift-sub(M,none)        = none .
-  eq lift-sub(M,B | B' | BS) = lift-sub(M,B) | lift-sub(M,B' | BS) .
-  eq lift-sub(M,empty)       = empty .
+  eq lift-sub(M,V <- T ; B)       = lift-term(M,V) <- lift-term(M,T) ; lift-sub(M,B) .
+  eq lift-sub(M,none)             = none .
+  eq lift-sub(M,B | B' | BS)      = lift-sub(M,B) | lift-sub(M,B' | BS) .
+  eq lift-sub(M,.SubstitutionSet) = .SubstitutionSet .
 endfm

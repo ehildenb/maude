@@ -79,8 +79,8 @@ Module constructions can be instantiated further with substitutions using `_<<_`
 **TODO**: It feels strange to also generate `forall MDS exists MDS'` in the first equation.
 
 ```maude
-    op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction [right id: empty] .
-    --------------------------------------------------------------------------------------
+    op _<<_ : ModuleConstruction SubstitutionSet -> ModuleConstruction [right id: .SubstitutionSet] .
+    -------------------------------------------------------------------------------------------------
     eq (forall MDS exists MDS') << SU = (forall (MDS << SU) exists (MDS' << SU)) | (forall MDS exists MDS') .
 
     eq NeMC << (SU | SU' | SUBSTS) = (NeMC << SU) | (NeMC << SU') | (NeMC << SUBSTS) .

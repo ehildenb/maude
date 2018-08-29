@@ -15,13 +15,13 @@ fmod UNIFIERS is
   var SS : SubstitutionSet .
   var T T' : Term .
 
-  eq unifiers(M,UP) = $unifiers(M,UP,0,metaUnify(M,UP,0,0),empty) .
+  eq unifiers(M,UP) = $unifiers(M,UP,0,metaUnify(M,UP,0,0),.SubstitutionSet) .
   eq $unifiers(M,UP,I,{S,J},SS) = $unifiers(M,UP,s(I),metaUnify(M,UP,s(J),s(I)),SS | S) .
   eq $unifiers(M,UP,I,noUnifier,SS) = SS .
 
   eq matches(M,T,T') = $matches(M,T,T',0,metaMatch(M,T,T',nil,0)) .
   eq $matches(M,T,T',I,S) = S | $matches(M,T,T',s(I),metaMatch(M,T,T',nil,s(I))) .
-  eq $matches(M,T,T',I,noMatch) = empty .
+  eq $matches(M,T,T',I,noMatch) = .SubstitutionSet .
 endfm
 
 fmod EQ-VARIANT is
@@ -54,15 +54,15 @@ fmod EQ-VARIANT is
   eq $variants(M,T,I,noVariant,VS)        = VS .
   eq $variants(M,T,I,{T',S,J,P,B},VS)     = $variants(M,T,s(I),metaGetVariant(M,T,empty,s(J),s(I)),{T',S,J,P,B} | VS) .
   eq  var-unifiers(M,UP)                  = getss(#var-unifiers(M,UP)) .
-  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),empty) .
+  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),.SubstitutionSet) .
   eq $var-unifiers(M,UP,I,J,noUnifier,SS) = ssnp(SS,J) .
   eq $var-unifiers(M,UP,I,J,{S,J'},SS)    = $var-unifiers(M,UP,s(I),s(J'),metaVariantUnify(M,UP,empty,s(J'),s(I)),SS | S) .
 
-  eq applySubs({T,S,I,P,B},S' | SS) = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
-  eq applySubs({T,S,I,P,B},empty)   = empty .
+  eq applySubs({T,S,I,P,B},S' | SS)          = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
+  eq applySubs({T,S,I,P,B},.SubstitutionSet) = empty .
 
   eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
-  eq getSubs(empty)             = empty .
+  eq getSubs(empty)             = .SubstitutionSet .
   eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
   eq getTerms(empty)            = emptyTermSet .
   eq getss(ssnp(SS,I))          = SS .

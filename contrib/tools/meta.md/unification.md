@@ -1,6 +1,10 @@
 Narrowing and Equational Unification
 ====================================
 
+```maude
+load "narrowing.maude"
+```
+
 Santiago Escobar
 
 ```maude
@@ -576,19 +580,11 @@ fmod RENAMING is
 endfm
 
 fmod SUBSTITUTIONSET is
+  protecting SUBSTITUTION-SET .
   protecting SUBSTITUTION-HANDLING .
   protecting META-LEVEL-MNPA .
   protecting TERMSET .
   protecting RENAMING .
-
-  sort SubstitutionSet NeSubstitutionSet .
-  subsort Substitution < NeSubstitutionSet < SubstitutionSet .
-  op empty : -> SubstitutionSet [ctor] .
-  op _|_ : SubstitutionSet SubstitutionSet -> SubstitutionSet
-    [ctor assoc comm id: empty format (d n d d)] .
-  op _|_ : NeSubstitutionSet SubstitutionSet -> NeSubstitutionSet
-    [ctor ditto] .
-  eq X:Substitution | X:Substitution = X:Substitution .
 
   vars SS SS' : SubstitutionSet .
   vars S S' Subst : Substitution .
@@ -598,13 +594,13 @@ fmod SUBSTITUTIONSET is
   var V : Variable .
 
   op _<<_ : Substitution SubstitutionSet -> SubstitutionSet .
-  eq S << empty = empty .
-  ceq S << (S' | SS') = (S << S') | (S << SS') if SS' =/= empty .
+  eq S << .SubstitutionSet = .SubstitutionSet .
+  ceq S << (S' | SS') = (S << S') | (S << SS') if SS' =/= .SubstitutionSet .
 
   op _..._ : SubstitutionSet [SubstitutionSet]
           -> SubstitutionSet [strat (1) gather (e E)] .
 
-  eq empty ... SS':[SubstitutionSet] = empty .
+  eq .SubstitutionSet ... SS':[SubstitutionSet] = .SubstitutionSet .
   eq (S | SS) ... SS':[SubstitutionSet]
    = (S ...' SS':[SubstitutionSet])
      |
@@ -612,8 +608,8 @@ fmod SUBSTITUTIONSET is
 
   op _...'_ : Substitution SubstitutionSet -> SubstitutionSet .
 
-  eq S ...' empty
-   = empty .
+  eq S ...' .SubstitutionSet
+   = .SubstitutionSet .
 
   eq S ...' (S' | SS')
    = (S .. S')
@@ -621,7 +617,7 @@ fmod SUBSTITUTIONSET is
      (S ...' SS') .
 
   op _|>_ : SubstitutionSet TermList -> SubstitutionSet .
-  eq (empty).SubstitutionSet |> TL = empty .
+  eq .SubstitutionSet |> TL = .SubstitutionSet .
   eq (S | SS:NeSubstitutionSet) |> TL
    = (S |> TL) | (SS:NeSubstitutionSet |> TL) .
 
@@ -630,7 +626,7 @@ fmod SUBSTITUTIONSET is
    = SS:NeSubstitutionSet |> (0,N) .
 
   op _|>`(_,_`) : SubstitutionSet Nat Nat -> SubstitutionSet .
-  eq (empty).SubstitutionSet |> (N,N') = empty .
+  eq .SubstitutionSet |> (N,N') = .SubstitutionSet .
   eq (S | SS:NeSubstitutionSet) |> (N,N')
    = (S |> (N,N')) | (SS:NeSubstitutionSet |> (N,N')) .
 
@@ -644,22 +640,22 @@ fmod SUBSTITUTIONSET is
      ; (Subst |> (N,N')) .
 
   op filter_by!InVars_ : SubstitutionSet TermList -> SubstitutionSet .
-  eq filter (empty).SubstitutionSet by!InVars TL
-   = (empty).SubstitutionSet .
+  eq filter .SubstitutionSet by!InVars TL
+   = .SubstitutionSet .
   eq filter (S | SS) by!InVars TL
    = if dom S inVars TL
-     then empty
+     then .SubstitutionSet
      else S
      fi
      | filter SS by!InVars TL .
 
   op _==* none : SubstitutionSet -> Bool .
   eq (none | SS) ==* none = SS ==* none .
-  eq (empty).SubstitutionSet ==* none = true .
+  eq .SubstitutionSet ==* none = true .
   eq SS ==* none = false [owise] .
 
   op |_| : SubstitutionSet -> Nat .
-  eq | (empty).SubstitutionSet | = 0 .
+  eq | .SubstitutionSet | = 0 .
   eq | (S | SS) | = s(| SS |) .
 
 endfm
@@ -732,7 +728,7 @@ fmod UNIFICATIONPAIRSET is
      | filter US by!InVars TL .
 
   op toUnificationPair[_]`(_`) : Nat SubstitutionSet -> UnificationPairSet .
-  eq toUnificationPair[N](empty)
+  eq toUnificationPair[N](.SubstitutionSet)
    = empty .
   eq toUnificationPair[N](S | SS)
    = {S,highestVar(S,N)}
@@ -740,7 +736,7 @@ fmod UNIFICATIONPAIRSET is
 
   op toSubstitution : UnificationPairSet -> SubstitutionSet .
   eq toSubstitution((empty).UnificationPairSet)
-   = empty .
+   = .SubstitutionSet .
   eq toSubstitution({S,N} | US)
    = S | toSubstitution(US) .
 
@@ -826,7 +822,7 @@ fmod UNIFICATIONTRIPLESET is
   op toUnificationTriple*[_]`(_,_`) :
              Nat SubstitutionSet
              UnificationTripleSet -> UnificationTripleSet .
-  eq toUnificationTriple*[N](empty,US)
+  eq toUnificationTriple*[N](.SubstitutionSet,US)
    = US .
   eq toUnificationTriple*[N](S | SS,US)
    = toUnificationTriple*[N](SS, US | {none,S,highestVar(S,N)}) .
@@ -839,7 +835,7 @@ fmod UNIFICATIONTRIPLESET is
   op toUnificationTriple*[_,_]`(_,_`) :
              Nat Nat SubstitutionSet
              UnificationTripleSet -> UnificationTripleSet .
-  eq toUnificationTriple*[NextVar,N](empty,US)
+  eq toUnificationTriple*[NextVar,N](.SubstitutionSet,US)
    = US .
   eq toUnificationTriple*[NextVar,N](S | SS,US)
    = toUnificationTriple*[NextVar,N](SS,
@@ -853,14 +849,14 @@ fmod UNIFICATIONTRIPLESET is
   op toUnificationTriple*[_,_,_]`(_,_`) :
              Term Term Nat SubstitutionSet
              UnificationTripleSet -> UnificationTripleSet .
-  eq toUnificationTriple*[T,T',N](empty,US)
+  eq toUnificationTriple*[T,T',N](.SubstitutionSet,US)
    = US .
   eq toUnificationTriple*[T,T',N](S | SS,US)
    = toUnificationTriple*[T,T',N](SS, US | {S |> T,S |> T',highestVar(S,N)}) .
 
   op toSubstitution : UnificationTripleSet -> SubstitutionSet .
   eq toSubstitution(US)
-   = toSubstitution*(US,empty) .
+   = toSubstitution*(US,.SubstitutionSet) .
 
   op toSubstitution* : UnificationTripleSet
                        SubstitutionSet -> SubstitutionSet .
@@ -2387,7 +2383,7 @@ fmod VARIANT is
               | R:VariantTripleSet)
    = S:Substitution | getSubstitutions(R:VariantTripleSet) .
   eq getSubstitutions((empty).VariantTripleSet)
-   = empty .
+   = .SubstitutionSet .
 
   --- Variants ----------------------------------------------------------
   sort VariantFour .
@@ -2708,7 +2704,7 @@ fmod RESULT-CONTEXT-SET is
   eq getSubstitutions({T,TP,S} | R:ResultTripleSet)
    = S | getSubstitutions(R:ResultTripleSet) .
   eq getSubstitutions((empty).ResultTripleSet)
-   = (empty).SubstitutionSet .
+   = .SubstitutionSet .
 
   --- ResultContextSet ---------------------------
 
@@ -2891,7 +2887,7 @@ fmod META-MATCH is
   op metaCoreMatch$ : Module Term Term -> SubstitutionSet .
   eq metaCoreMatch$(M,T,T')
    = if glbSorts(M,leastSort(M,T),leastSort(M,T')) == none
-     then empty
+     then .SubstitutionSet
      else metaCoreMatchCollect(eraseEqs(eraseRls(M)),T,T')
      fi .
 
@@ -2908,7 +2904,7 @@ fmod META-MATCH is
   --- metaCoreMatchCollect(M,T,T') calls Maude metaMatch
   op metaCoreMatchCollect : Module Term Term -> SubstitutionSet .
   eq metaCoreMatchCollect(M,T,T')
-   = metaCoreMatchCollect*(M,T,T',empty,0) .
+   = metaCoreMatchCollect*(M,T,T',.SubstitutionSet,0) .
 
   op metaCoreMatchCollect* : Module Term Term SubstitutionSet Nat
                              -> SubstitutionSet .
@@ -3113,7 +3109,7 @@ fmod RIGIDIFE is
    = unrigidife(Q,V) <- unrigidife(Q,T) ; unrigidife(Q,S) .
 
   op unrigidife : Qid SubstitutionSet -> SubstitutionSet .
-  eq unrigidife(Q,(empty).SubstitutionSet) = empty .
+  eq unrigidife(Q,.SubstitutionSet) = .SubstitutionSet .
   eq unrigidife(Q,S | SSe)
    = unrigidife(Q,S) | unrigidife(Q,SSe) .
 
@@ -3185,7 +3181,7 @@ fmod RIGIDIFE is
    = unrigidLabel(V) <- unrigidLabel(T) ; unrigidLabel(S) .
 
   op unrigidLabel : SubstitutionSet -> SubstitutionSet .
-  eq unrigidLabel((empty).SubstitutionSet) = empty .
+  eq unrigidLabel(.SubstitutionSet) = .SubstitutionSet .
   eq unrigidLabel(S | SSe)
    = unrigidLabel(S) | unrigidLabel(SSe) .
 
@@ -3871,11 +3867,11 @@ fmod ORDERS-TERM-SUBSTITUTION is
   --- metaEMatch(M,T,T') implies that T is an instance of T' modulo E + axioms
   op metaEMatch : Module Term Term -> SubstitutionSet .
   eq metaEMatch(M,T,T')
-   = if metaCoreMatch(M,T,T') =/= empty
+   = if metaCoreMatch(M,T,T') =/= .SubstitutionSet
      then metaCoreMatch(M,T,T')
      else if metaEBuiltInUnifyIrr?(M,T,T')
           then metaShared-filter(M,T,T',metaEBuiltInUnifyIrr(M,T,T'))
-          else empty
+          else .SubstitutionSet
           fi
      fi .
 
@@ -3888,7 +3884,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
   --- order between terms ---------------------------
   --- T <=[M] T' implies that T' is an instance of T
   op _<=[_]_ : Term Module Term -> Bool .
-  eq T <=[M] T' = (metaCoreMatch(M,T',T) |> T) =/= empty .
+  eq T <=[M] T' = (metaCoreMatch(M,T',T) |> T) =/= .SubstitutionSet .
 
   --- order between substitutions ---------------------------
   --- Subst <=[M] Subst' implies that Subst' is an instance of Subst
@@ -3897,19 +3893,19 @@ fmod ORDERS-TERM-SUBSTITUTION is
    = SS <=[empty,M] SS' .
 
   op _<=[_`,_]_ : SubstitutionSet TermList Module SubstitutionSet -> Bool .
-  eq empty <=[TL,M] SS'
+  eq .SubstitutionSet <=[TL,M] SS'
    = false .
   eq SS <=[TL,M] SS'
    = SS <=[TL,M]$ SS' [owise] .
 
   op _<=[_`,_]$_ : SubstitutionSet TermList Module SubstitutionSet -> Bool .
-  eq SS <=[TL,M]$ empty
+  eq SS <=[TL,M]$ .SubstitutionSet
    = true .
   eq SS <=[TL,M]$ (S' | SS')
    = (SS <=[TL,M]* S') and-then SS <=[TL,M]$ SS' .
 
   op _<=[_`,_]*_ : SubstitutionSet TermList Module Substitution -> Bool .
-  eq empty <=[TL,M]* S'
+  eq .SubstitutionSet <=[TL,M]* S'
    = false .
   eq (S | SS) <=[TL,M]* S'
    = S <=[TL,M]** S' or-else SS <=[TL,M]* S' .
@@ -3935,7 +3931,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
       then metaCoreMatchShared(M,T',T)
       else metaCoreMatch(M,T',T)
       fi |> T)
-     =/= empty .
+     =/= .SubstitutionSet .
 
   sort Triple .
   op {{_`,_`,_}} : TermList TermList TypeList -> Triple .
@@ -4051,7 +4047,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
 
   *****
   op onlyRenamingAll : Module SubstitutionSet -> Bool .
-  eq onlyRenamingAll(M,empty)
+  eq onlyRenamingAll(M,.SubstitutionSet)
    = true .
   eq onlyRenamingAll(M,S | SS)
    = onlyRenaming*(M,S)
@@ -4059,7 +4055,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
      onlyRenamingAll(M,SS) .
 
   op onlyRenamingAny : Module SubstitutionSet -> Bool .
-  eq onlyRenamingAny(M,empty)
+  eq onlyRenamingAny(M,.SubstitutionSet)
    = false .
   eq onlyRenamingAny(M,S | SS)
    = onlyRenaming*(M,S)
@@ -4113,11 +4109,11 @@ fmod ORDERS-TERM-SUBSTITUTION is
   op metaShared-filter : Module Term Term SubstitutionSet
                            -> SubstitutionSet .
   eq metaShared-filter(M,T,T',SS)
-   = metaShared-filter*(M,T,T',empty,SS) .
+   = metaShared-filter*(M,T,T',.SubstitutionSet,SS) .
 
   op metaShared-filter* : Module Term Term SubstitutionSet SubstitutionSet
                            -> SubstitutionSet .
-  eq metaShared-filter*(M,T,T',SS',empty)
+  eq metaShared-filter*(M,T,T',SS',.SubstitutionSet)
    = SS' .
   eq metaShared-filter*(M,T,T',SS',S | SS)
    = metaShared-filter*(M,T,T',
@@ -4130,7 +4126,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
 
   *** Normalize Substitutions
   op normalizedSubstitution? : Module SubstitutionSet -> Bool .
-  eq normalizedSubstitution?(M, empty)
+  eq normalizedSubstitution?(M, .SubstitutionSet)
    = true .
   eq normalizedSubstitution?(M, S | SS)
    = normalizedSubstitution?*(M, S) and-then normalizedSubstitution?(M, SS) .
@@ -4149,8 +4145,8 @@ fmod ORDERS-TERM-SUBSTITUTION is
    = eqNormalizeSubstitution(M,S:SubstitutionSet) .
 
   op eqNormalizeSubstitution : Module SubstitutionSet -> SubstitutionSet .
-  eq eqNormalizeSubstitution(M, empty)
-   = empty .
+  eq eqNormalizeSubstitution(M, .SubstitutionSet)
+   = .SubstitutionSet .
   eq eqNormalizeSubstitution(M, S | SS)
    = eqNormalizeSubstitution*(M, S) | eqNormalizeSubstitution(M, SS) .
 

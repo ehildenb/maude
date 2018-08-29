@@ -614,8 +614,8 @@ fmod FOFORM-SUBSTITUTIONSET is
   ---
   var S S' : Substitution . var SS : SubstitutionSet . var F : FOForm? .
   --- base case
-  eq F << empty         = mtFormSet .
-  eq F << (S | S' | SS) = (F << S) | (F << S' | SS) .
+  eq F << .SubstitutionSet = mtFormSet .
+  eq F << (S | S' | SS)    = (F << S) | (F << S' | SS) .
 endfm
 
 fmod FOFORMSUBSTITUTION-PAIRSET is
@@ -630,12 +630,12 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   op build-app : FOForm? SubstitutionSet -> FOFormSubstPairSet .
   ---
   var F : FOForm? . var S : Substitution . var FPS : FOFormSubstPairSet . var SS : SubstitutionSet .
-  eq toSet((F,S) | FPS)  = F | toSet(FPS) .
-  eq toSet(mtFSPS)       = mtFormSet .
-  eq build(F,S | SS)     = (F,S) | build(F,SS) .
-  eq build(F,empty)      = mtFSPS .
-  eq build-app(F,S | SS) = (F << S,S) | build-app(F,SS) .
-  eq build-app(F,empty)  = mtFSPS .
+  eq toSet((F,S) | FPS)            = F | toSet(FPS) .
+  eq toSet(mtFSPS)                 = mtFormSet .
+  eq build(F,S | SS)               = (F,S) | build(F,SS) .
+  eq build(F,.SubstitutionSet)     = mtFSPS .
+  eq build-app(F,S | SS)           = (F << S,S) | build-app(F,SS) .
+  eq build-app(F,.SubstitutionSet) = mtFSPS .
 endfm
 
 fmod FQF-IMPL is

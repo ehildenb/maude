@@ -151,7 +151,7 @@ fmod VAR-SAT is
   var WTL : WTermList . var T T' : Term .
 
   eq fin-sorts(FM,C,FSS,ISS) = FSS ; get-finite-sorts(ctor-sig(FM),sorts(vars(C)) - (FSS ; ISS)) .
-  eq not-empty?(SBS) = SBS =/= empty .
+  eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
   eq nf-ctor-variants(FM,NC) = toDUPs(getTerms(ctor-variants(kl-ext(FM),toKPL(FM,NC)))) .
   eq $renameForm(M,CS) = downTerm(renameTmpVar(M,upTerm(CS)),ff) .
   eq $renameForm(M,F?) = downTerm(renameTmpVar(M,upTerm(F?)),ff) .

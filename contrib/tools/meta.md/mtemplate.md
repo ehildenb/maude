@@ -192,7 +192,7 @@ Here we add `SortPoset` and allow an entire poset to be declared at once.
 
     op _<<_ : ModuleDeclSet SubstitutionSet -> [ModuleDeclSet] .
     ------------------------------------------------------------
-    eq MDS          << empty               = (none).NullDeclSet .
+    eq MDS          << .SubstitutionSet    = (none).NullDeclSet .
     eq MDS          << (SU | SU' | SUBSTS) = (MDS << SU) (MDS << SU') (MDS << SUBSTS) .
 
     eq (none).NullDeclSet << SU = none .
@@ -202,7 +202,7 @@ Here we add `SortPoset` and allow an entire poset to be declared at once.
 
     op match_with_ : ModuleDeclSet ModuleDeclSet -> [SubstitutionSet] .
     -------------------------------------------------------------------
-    eq match MDS with none  = empty .
+    eq match MDS with none  = .SubstitutionSet .
    ceq match MDS with NeMDS = SUBSTS
     if NeMDS' := MDS ( sorts var<SortSet>('##SSCTX##) . ) var<ModuleDeclSet>('##MDSCTX##)
     /\ SUBSTS := #subsumesWith(upModule('MODULE-DECLARATION, true), upTerm(NeMDS'), upTerm(NeMDS)) .
@@ -240,25 +240,25 @@ fmod MODULE-TEMPLATE-SET is
 
     op {_in_|_} : Substitution SubstitutionSet [Bool] -> SubstitutionSet [strat(2 0)] .
     -----------------------------------------------------------------------------------
-    eq { SU in empty                 | B } = empty .
-    eq { SU in SU'                   | B } = if downTerm(upTerm(B) << (upTerm(SU) <- upTerm(SU')), false) then SU' else empty fi .
+    eq { SU in .SubstitutionSet      | B } = .SubstitutionSet .
+    eq { SU in SU'                   | B } = if downTerm(upTerm(B) << (upTerm(SU) <- upTerm(SU')), false) then SU' else .SubstitutionSet fi .
     eq { SU in (SU' | SU'' | SUBSTS) | B } = { SU in SU' | B } | { SU in SU'' | B } | { SU in SUBSTS | B } .
 
     op empty? : SubstitutionSet -> Bool .
     -------------------------------------
-    eq empty?(empty)       = true .
-    eq empty?(SU | SUBSTS) = false .
+    eq empty?(.SubstitutionSet) = true .
+    eq empty?(SU | SUBSTS)      = false .
 
     op not-instance-of? : ModuleDeclSet ModuleDeclSet  -> ModuleDeclSet .
     ---------------------------------------------------------------------
-   ceq not-instance-of?(MDS, MDS') = if SUBSTS == empty then MDS else none fi
+   ceq not-instance-of?(MDS, MDS') = if SUBSTS == .SubstitutionSet then MDS else none fi
                                   if SUBSTS := match MDS' with MDS .
 
     op not-instance-with? : ModuleDeclSet ModuleDeclSet SubstitutionSet -> SubstitutionSet .
     ----------------------------------------------------------------------------------------
-    eq not-instance-with?(MDS, MDS', empty)               = empty .
+    eq not-instance-with?(MDS, MDS', .SubstitutionSet)    = .SubstitutionSet .
     eq not-instance-with?(MDS, MDS', (SU | SU' | SUBSTS)) = not-instance-with?(MDS, MDS', SU) | not-instance-with?(MDS, MDS', SU') | not-instance-with?(MDS, MDS', SUBSTS) .
-   ceq not-instance-with?(MDS, MDS', SU)                  = if SUBSTS == empty then SU else empty fi
+   ceq not-instance-with?(MDS, MDS', SU)                  = if SUBSTS == .SubstitutionSet then SU else .SubstitutionSet fi
                                                          if SUBSTS := match (MDS << SU) with MDS' .
 endfm
 ```
