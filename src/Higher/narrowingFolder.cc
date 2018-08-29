@@ -303,7 +303,7 @@ NarrowingFolder::RetainedState::RetainedState(DagNode* state, int parentIndex, b
 
       matchingAutomaton = t->compileLhs(false, variableInfo, boundUniquely, subproblemLikely);
       stateTerm = t;
-      nrMatchingVariables = variableInfo.getNrRealVariables();  // may also have some abstraction variables
+      nrMatchingVariables = variableInfo.getNrProtectedVariables();  // may also have some abstraction variables
     }
   else
     {

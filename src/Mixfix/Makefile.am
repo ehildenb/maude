@@ -20,6 +20,7 @@ libmixfix_a_CPPFLAGS = \
 	-I$(top_srcdir)/src/Mixfix \
 	-I$(top_srcdir)/src/BuiltIn \
 	-I$(top_srcdir)/src/MSCP10 \
+	-I$(top_srcdir)/src/Parser \
 	-I$(top_srcdir)/src/IO_Stuff \
 	-I$(top_srcdir)/src/ACU_Persistent \
 	-I$(top_srcdir)/src/ACU_Theory \
@@ -35,6 +36,7 @@ libmixfix_a_SOURCES = \
 	syntaxContainer.cc \
 	renaming.cc \
 	view.cc \
+	syntacticView.cc \
 	entity.cc \
 	moduleCache.cc \
 	moduleExpression.cc \
@@ -155,6 +157,7 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	renaming.hh \
 	view.hh \
+	syntacticView.hh \
 	entity.hh \
 	moduleCache.hh \
 	moduleExpression.hh \

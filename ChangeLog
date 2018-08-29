@@ -1,3 +1,91 @@
+2018-07-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Misc/rot13.maude: added
+
+2018-06-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/metaIntRewriteJune2018.maude: added
+
+2018-06-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/clearRulesJune2018.maude: added
+
+	* tests/ResolvedBugs/metaIntAscentJune2018.maude: added
+
+	* tests/ResolvedBugs/metaIntImportJune2018.maude: added
+
+2018-06-26  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/metaModuleCacheJune2018.maude: added
+
+	* tests/ResolvedBugs/showModuleJune2018.maude: added
+
+2018-06-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/staleViewJune2018.maude: added
+
+	* tests/ResolvedBugs/parserJune2018.maude: added
+
+2018-06-08  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/russianDollsFlat.maude: added
+
+	* tests/Meta/russianDollsNonFlat.maude: added
+
+2018-05-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntReplace2.maude: added
+
+	* tests/Meta/metaIntReplace.maude: added
+
+	* tests/Meta/metaIntPrelude.maude: added example to test upModule()
+	running in meta-interpreter
+
+2018-05-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntPrelude.maude: added
+
+2018-05-11  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Misc/view.maude: added
+
+2018-03-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* configure.ac: removed references to MSCP10
+
+	* AUTHORS: removed reference to MSCP10
+
+	* tests/Misc/bubble.maude: added two more examples
+
+===================================Maude117===========================================
+
+2018-03-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* configure.ac: remove ref to MSCP10
+
+2018-03-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* src/Makefile.am (SUBDIRS): remove MSCP10
+
+	* tests/Misc/Makefile.am: added parse and bubble tests
+
+	* tests/Misc/bubble (MAUDE_LIB): created
+
+	* tests/Misc/parse.maude: created
+
+	* tests/Misc/parse (MAUDE_LIB): created
+
+2018-02-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Misc/bubble.maude: created
+
+2017-12-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaWellFormed.maude: fix issue where none is ambiguous;
+	it can be (none).EmptyTypeSet or (none).Substitution
+
+===================================Maude116===========================================
+
 2017-07-12  Steven Eker  <eker@install.csl.sri.com>
 
 	* tests/Misc/smtTest.maude: added tests for violations

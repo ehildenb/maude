@@ -1,3 +1,11 @@
+2018-03-26  Steven Eker  <eker@install.csl.sri.com>
+
+	* floatOpSymbol.cc (safePow, eqRewrite):  use isNaN() macro to
+	avoid ambiguity between C and C++ definitions of isnan() that
+	appear with -std=gnu++11
+
+===================================Maude115===========================================
+
 2017-07-25  Steven Eker  <eker@install.csl.sri.com>
 
 	* minusSymbol.hh (NumberOpSymbol): added decl for

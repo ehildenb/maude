@@ -27,7 +27,8 @@
 void
 SyntacticPreModule::process()
 {
-  flatModule = new VisibleModule(id(), getModuleType(), this);
+  flatModule = new VisibleModule(id(), getModuleType(), getOwner());
+  flatModule->addUser(this);
   flatModule->setLineNumber(getLineNumber());
 #ifdef QUANTIFY_PROCESSING
   quantify_start_recording_data();
@@ -210,7 +211,7 @@ SyntacticPreModule::checkType(const Type& type)
 void
 SyntacticPreModule::computeOpTypes()
 {
- int nrOpDefs = opDefs.length();
+  int nrOpDefs = opDefs.length();
   for (int i = 0; i < nrOpDefs; i++)
     {
       OpDef& def = opDefs[i];
@@ -358,28 +359,7 @@ SyntacticPreModule::processStatements()
 void
 SyntacticPreModule::processImports()
 {
-  //
-  //	Parameters.
-  //
-  {
-    FOR_EACH_CONST(i, Vector<Parameter>, parameters)
-      {
-	if (ImportModule* fm = interpreter.makeModule(i->theory))
-	  {
-	    if (MixfixModule::canHaveAsParameter(getModuleType(), fm->getModuleType()))
-	      flatModule->addParameter(i->name, interpreter.makeParameterCopy(i->name.code(), fm));  // HACK maybe pass Token
-	    else
-	      {
-		IssueWarning(LineNumber(i->name.lineNumber()) <<
-			     ": parameterization of " << 
-			     QUOTE(MixfixModule::moduleTypeString(getModuleType())) <<
-			     " " << this << " by " <<
-			     QUOTE(MixfixModule::moduleTypeString(fm->getModuleType())) <<
-			     " " << fm << " is not allowed.");
-	      }
-	  }
-      }
-  }
+  processParameters(flatModule);
   //
   //	Automatic imports (not for theories).
   //
@@ -387,44 +367,10 @@ SyntacticPreModule::processImports()
     {
       FOR_EACH_CONST(i, ModuleDatabase::ImportMap, autoImports)
 	{
-	  if (ImportModule* fm = interpreter.getModuleOrIssueWarning(i->first, *this))
+	  if (ImportModule* fm = getOwner()->getModuleOrIssueWarning(i->first, *this))
 	    flatModule->addImport(fm, i->second, *this);
 	}
     }
-  //
-  //	Explicit imports.
-  //
-  {
-    FOR_EACH_CONST(i, Vector<Import>, imports)
-      {
-	if (ImportModule* fm = interpreter.makeModule(i->expr, flatModule))
-	  {
-	    ImportModule::ImportMode mode;
-	    int code = i->mode.code();
-	    LineNumber lineNumber(i->mode.lineNumber());
-	    if (code == pr || code == protecting)
-	      mode = ImportModule::PROTECTING;
-	    else if (code == ex || code == extending)
-	      mode = ImportModule::EXTENDING;
-	    else if (code == inc || code == including)
-	      mode = ImportModule::INCLUDING;
-	    else
-	      {
-		Assert(code == us || code == usingToken, "unknown importation mode");
-		IssueWarning(lineNumber <<
-			     ": importation mode " << QUOTE("using") <<
-			     " not supported - treating it like " <<
-			     QUOTE("including") << '.');
-		mode = ImportModule::INCLUDING;
-	      }
-	    if (fm->getNrParameters() != 0 && !(fm->parametersBound()))
-	      {
-		IssueWarning(lineNumber << ": cannot import module " << fm <<
-			     " because it has free parameters.");
-	      }
-	    else
-	      flatModule->addImport(fm, mode, lineNumber);
-	  }
-      }
-  }
+
+  processExplicitImports(flatModule);
 }

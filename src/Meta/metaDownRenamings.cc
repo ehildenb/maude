@@ -37,10 +37,9 @@ MetaLevel::convertToTokens(const Vector<int>& ids, Vector<Token>& tokens)
 }
 
 bool
-MetaLevel::downModuleExpression(DagNode* metaExpr, ImportModule* enclosingModule, ImportModule*& m)
+MetaLevel::downModuleExpression(DagNode* metaExpr, MetaModule* enclosingModule, ImportModule*& m)
 {
-  Interpreter* owner = safeCast(MetaModule*, enclosingModule)->getOwner();  // HACK - probably all modules should have owners
-
+  Interpreter* owner = enclosingModule->getOwner();
   int moduleName;
   if (downQid(metaExpr, moduleName))
     {

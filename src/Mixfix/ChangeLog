@@ -1,3 +1,492 @@
+2018-07-10  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreter.hh (ViewDatabase): made beginRewriting non-static
+
+	* execute.cc (beginRewriting): call setTraceStatus() if we
+	don't call setDebug() so that we don't start with spurious
+	traceFlag caused by SIGINFO
+
+	* userLevelRewritingContext.hh (clearInfo): added
+
+	* execute.cc (beginRewriting): call clearInfo() to dispose
+	of any pending info requests
+
+	* interact.cc (handleDebug): make sure we switch trace flag off
+	if we are only here because of SIGINFO
+
+	* userLevelRewritingContext.hh (ObjectSystemRewritingContext): updated
+	decl for handleDebug()
+
+	* interact.cc (handleDebug): removed constness from subject
+
+	* userLevelRewritingContext.hh (ObjectSystemRewritingContext): updated
+	decl for where(); added decl for printStatusReport()
+
+	* interact.cc (printStatusReport): take ostream&
+	(printStatusReport): added
+	(handleDebug): call printStatusReport(); pass cout to
+	where()
+
+	* userLevelRewritingContext.hh (ObjectSystemRewritingContext): added
+	decl for handleInterrupt()
+
+	* interact.cc (handleInterrupt): added
+
+2018-07-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* interact.cc: add data member UserLevelRewritingContext::infoFlag
+	(handleDebug): check and reset infoFlag
+
+	* userLevelRewritingContext.hh (ObjectSystemRewritingContext): add
+	static data member infoFlag; add decl for infoHandler()
+
+	* interact.cc (infoHandler): added
+	(setHandlers): install infoHandler
+
+2018-07-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* unify.cc (unify): fix a suble memory leak where
+	we were failing to unprotect() module if the unification
+	problem was bad
+
+2018-06-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticPreModule.hh (SharedTokens): updated decl for
+	getAutoImports()
+	(getAutoImports): use new convention
+
+	* preModule.hh (User): updated decl for getAutoImports()
+
+2018-06-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* visibleModule.cc (VisibleModule): use new ImportModule()
+
+	* importModule.hh (User): added decl for 2nd ctor
+
+	* importModule.cc (ImportModule): added new version for use
+	by VisibleModule
+
+	* preModule.cc (processExplicitImports): deleted commented
+	out code
+
+	* syntacticPreModule.hh (SharedTokens): derive from
+	SharedTokens
+
+	* preModule.hh (User): don't derive from SharedTokens
+
+	* mixfixModule.hh (SharedTokens): made data member moduleType
+	const
+
+2018-06-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticPreModule.hh (SyntaxContainer): deleted data member
+	owner
+
+	* process.cc (processImports): use getOwner()
+
+	* syntacticPreModule.cc (regretToInform): use getOwner()
+	(finishModule): use getOwner() (3 places)
+	(SyntacticPreModule): don't initialize owner
+
+2018-06-20  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticPreModule.cc (addImport): pass lineNumber to
+	PreModule::addImport()
+
+	* preModule.cc (addImport): handle lineNumber argument
+
+	* preModule.hh (SharedTokens): added lineNumber field to
+	struct Import
+	(SharedTokens): updated decl for addImport()
+
+	* command.cc (showModule): use modeStrings
+
+	* syntacticPreModule.hh (SyntaxContainer): added decl for addImport
+
+	* syntacticPreModule.cc (addImport): added to do Token
+	to import mode conversion
+
+	* preModule.hh (getImportMode): return ImportModule::ImportMode
+
+	* preModule.cc (addImport): take mode as an
+	ImportModule::ImportMode
+	(processExplicitImports): don't do Token to mode conversion
+	here
+
+	* preModule.hh (SharedTokens): store import mode as a
+	ImportModule::ImportMode rather than a token.
+
+	* command.cc (showModule): use PreModule parameter and
+	import functionality
+
+	* syntacticPreModule.cc (SyntacticPreModule): don't
+	deepSelfDestruct() module expressions
+
+	* syntacticPreModule.hh (getNrImports, getImportMode, getImport)
+	(getNrParameters, getParameterName, getParameter): deleted
+	(SharedTokens): deleted structs Parameter, Import
+	(SharedTokens): deleted data members parameters, imports
+	(SharedTokens): deleted decls for addParameter(), addImport()
+
+	* syntacticPreModule.cc (addParameter, addImport): deleted
+
+	* process.cc (processImports): use processParameters(),
+	processExplicitImports();
+
+	* preModule.hh (User): added decls for processParameters(),
+	processExplicitImports()
+
+	* preModule.cc (~PreModule): call deepSelfDestruct() on
+	ModuleExpressions
+	(addParameter, addImport): added
+	(processParameters): added
+	(processExplicitImports): added
+
+	* preModule.hh (User): added struct members Parameter, Import
+	(User): add data members parameters parameters, imports
+	(getNrImports, getImportMode, getImport, getNrParameters)
+	(getParameterName, getParameter): added
+	(User): added decls for addParameter(), addImport()
+
+2018-06-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixModule.hh (getSymbolType): more detailed message in Assert()
+
+2018-06-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* process.cc (process): pass owner to VisibleModule()
+
+	* visibleModule.cc (VisibleModule): handle owner argument
+
+	* visibleModule.hh (ImportModule): take owner rather than parent
+	argument to ctor
+	(ImportModule): added data member owner
+	(getOwner): added
+
+2018-06-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* process.cc (process): pass parent as null to VisibleModule()
+
+	* process.cc (process): call addUser() here
+
+2018-05-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* erewrite.cc (eRewrite, eRewriteCont): use externalRewrite()
+
+2018-05-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreter.hh (ViewDatabase): updated decl for
+	doExternalRewriting()
+
+	* erewrite.cc (doExternalRewriting): only call nonblocking
+	eventLoop() if fairTraversal() makes progress
+	(doExternalRewriting): use new fairTranversal() convention;
+	use getProgress()
+	(eRewriteCont): use fairRestart()
+	(eRewriteCont): don't pass limit to doExternalRewriting()
+	(eRewrite): don't pass limit to doExternalRewriting(); pass limit
+	to fairStart()
+	(doExternalRewriting): don't take or pass limit argument
+
+2018-05-24  Steven Eker  <eker@install.csl.sri.com>
+
+	* erewrite.cc (doExternalRewriting): interleave nonblocking calls
+	to eventLoop() with fairTraversal()
+
+2018-05-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* view.hh (Renaming): deleted struct VarDecl, struct BubblePair
+
+	* view.cc (insertOpToTermMapping): added missing return true
+
+	* view.hh (Renaming): added NO_COPYING macro
+
+2018-05-08  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticView.cc (regretToInform): deepSelfDestruct() other
+	local module to avoid bug where the old local module
+	eventually sends us a unexpected regretToInform()
+
+2018-05-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticView.hh (View): deleted typedef VarMap
+	(View): deleted decls for mapSort(), indexRhsVariables()
+
+	* syntacticView.cc (indexRhsVariables): deleted
+	(handleOpTermMappings): reimplemented
+	(mapSort): deleted
+
+	* view.hh (insertOpToTermPair): deleted
+
+	* syntacticView.hh (View): deleted decl for mapComponent()
+
+	* syntacticView.cc (mapComponent): deleted
+
+	* view.hh (Renaming): added decls for mapSort(),
+	indexRhsVariables(), insertOpToTermMapping(); added back
+	typedef VarMap
+
+	* view.cc (mapSort, indexRhsVariables): moved back to
+	class View
+
+2018-05-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* view.hh (Renaming): delete typedefs for VarDeclList,
+	TypeList, OpTermList, VarMap
+
+	* syntacticView.cc (regretToInform): dont deepSelfDestruct()
+	anything
+
+	* view.cc (View): don't clear newFromTheory, newFromModule
+	(regretToInform): don't delete newFromTheory, newFromModule
+	(View): don't delete newFromTheory, newFromModule
+	(evaluate): set status to GOOD before calling
+	handleOpTermMappings()
+
+	* view.hh (Renaming): make mapComponent() protected
+	(Renaming): deleted decls for handleVarDecls(),
+	indexRhsVariables(), mapSort()
+	(Renaming): deleted data members varDecls, varDefs, opTermList,
+	newFromTheory, newFromModule
+
+	* interpreter.cc (setCurrentView): downcast to SyntacticView*
+
+	* mixfix.hh: added class SyntacticView
+
+	* interpreter.hh (ViewDatabase): use SyntacticView
+
+	* modules.yy (view): use SyntacticView
+
+	* view.cc (addVarDecl): deleted
+	(addType): deleted
+	(addOpTermMapping): deleted
+	(mapSort): deleted
+	(finishModule): deleted
+	(handleVarDecls): deleted
+	(indexRhsVariables): deleted
+	(handleOpTermMappings): deleted
+	(showView): deleted
+
+	* view.hh (Renaming): made regretToInform() protected
+	rather than private
+	(Renaming): make handleOpTermMappings virtual and protected
+	(Renaming): deleted decls for addOpTermMapping(), addVarDecl(),
+	addType()
+
+	* syntacticView.cc (handleOpTermMappings): use insertOpToTermPair()
+
+	* view.hh (insertOpToTermPair): added
+
+2018-05-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* syntacticView.hh: created
+
+	* syntacticView.cc: created
+
+	* renaming.cc (renameOp): added comments to distinguish
+	the two versions of this member function
+
+2018-05-01  Steven Eker  <eker@install.csl.sri.com>
+
+	* view.hh (Renaming): added comment about the metalevel
+
+2018-04-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreter.cc (showView): call View::evaluate()
+
+	* view.hh (Renaming): delete decls for finishModule1(),
+	finishModule2(); add decl for finishModule()
+	(finishView): moved here
+
+	* view.cc (finishModule1, finishModule2): merged into
+	finishModule()
+	(handleOpTermMappings): use finishModule()
+
+2018-04-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* view.cc (handleOpTermMappings): finish processing
+	newFromTheory before we start processing newToModule to
+	avoid messing up the import phase counter on common imports
+	(handleVarDecls): added comment
+
+	* renameModule.cc (localStatementsComplete): added comments
+	to explain obscure code
+
+	* entity.cc (informUsers): added comments to explain obscure
+	code
+
+2018-04-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* process.cc (processImports):  use owner rather than
+	global interpreter
+
+	* modules.yy (module): pass interpreter to SyntacticModule
+	ctor
+
+	* syntacticPreModule.hh (SharedTokens): updated decl
+	for ctor
+	(SharedTokens): added owner data member
+
+	* syntacticPreModule.cc (SyntacticPreModule): take owner
+	argument and remove hack
+	(regretToInform, finishModule): use owner rather than
+	global interpreter
+
+	* modules.yy (view): pass interpreter to View ctor
+
+	* view.cc (View): take owner argument
+	(evaluate): use owner rather than global interpreter
+
+	* view.hh (Renaming): updated decl for ctor; added data member
+	owner
+
+2018-04-24  Steven Eker  <eker@install.csl.sri.com>
+
+	* renameModule.cc (donateOps2): added Asserts() to see if
+	bug mentioned in comment actually happens
+
+2018-04-20  Steven Eker  <eker@install.csl.sri.com>
+
+	* modules.yy (viewDecList, skipStrayArrow, parameters, decList)
+	(skipStrayColon, typeList, attributes, identity, sortNameList):
+	provide empty action for empty rhs syntax to avoid default
+	action generating an uninitialized memory read
+	(hookList): provide empty actions
+
+2018-04-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* banner.cc (printBanner): update copyright year
+
+2018-04-04  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (insertProduction): use productionRhs
+	in place of static rhs2
+
+	* mixfixParser.hh (M): added data member productionRhs
+
+2018-03-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (ROOT_NODE): removed MSCP10 #define
+	(parseSentence): removed MSCP10 specific code
+	(makeTerms): removed MSCP10 specific code
+
+	* mixfixParser.hh: removed include for MSCP10
+
+===================================Maude117===========================================
+
+2018-03-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (makeTerms): Assert() that we actually found a
+	second parse
+
+2018-03-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (makeTerm): fix pathological case where pos ends up
+	outside of the sentence
+
+2018-02-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeComponentProductions): don't make COLON2_PAIR
+	productions for bubble components
+
+2017-12-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixParser.cc (parseSentence): use getErrorPosition()
+
+2017-10-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): give ?:
+	the gather (e & E)
+
+	* mixfixModule.hh (SharedTokens): STRAT_BRANCH_PREC from 101
+	to 55
+
+2017-10-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* strategyPrint.cc (prettyPrint): pass STRAT_USING_PREC - 1
+	for substrategies
+	(prettyPrint): add () around test and subterm cases if needed
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): require
+	strategy argument of using in matchrew be tightly bound
+
+	* mixfixModule.hh (SharedTokens): STRAT_USING_PREC from
+	105 to 21, STRAT_USING_LIST_PREC from 105 to 61,
+	STRAT_REW_PREC from 93 to 21
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	gatherAny4 for subterm strategy syntax
+
+	* mixfixModule.cc: added gatherAny4
+	(MixfixModule): initialize gatherAny4
+
+	* mixfixModule.hh (SharedTokens): added static date member
+	gatherAny4
+
+2017-10-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): make all
+	test strategy nonterminals have gather ANY
+
+	* mixfixModule.hh (SharedTokens): STRAT_SEQ_PREC from 95 to 39,
+	STRAT_UNION_PREC form 97 to 41, STRAT_ORELSE_PREC from 99 to 43
+	(SharedTokens): STRAT_TEST_PREC from 93 to 21
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	INFIX_PREC, gatherAnyAny for strategy lists
+
+	* mixfixModule.hh (SharedTokens): added STRAT_BASIC_PREC
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use
+	STRAT_BASIC_PREC for basic strategies
+
+2017-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* strategyPrint.cc (prettyPrint): hanlde SubtermStrategy case
+
+	* mixfixParser.cc (makeStrategy): use SubtermStrategy()
+
+2017-09-26  Steven Eker  <eker@install.csl.sri.com>
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): use MAKE_USING_PAIR
+	and MAKE_USING_LIST actions
+	(makeStrategyLanguageProductions): use PASS_THRU for USING_LIST
+
+	* mixfixParser.hh (M): added MAKE_USING_PAIR, MAKE_USING_LIST
+	to enum SemanticActions
+	(M): added decls for appendUsingPair(), makeUsingList()
+
+	* mixfixParser.cc (appendUsingPair, makeUsingList): added
+	(makeStrategy): added dummy MAKE_REW case
+
+	* mixfixParser.hh (M): added MAKE_REW to enum SemanticActions
+
+2017-09-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* mixfixModule.hh (SharedTokens): added nonterminal USING_PAIR
+	(SharedTokens): added STRAT_REW_PREC
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): added
+	syntax for using pairs and lists
+
+	* specialTokens.cc: added by
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): added
+	syntax for matchrew/xmatchrew/amatchrew strategies
+
+	* mixfixModule.hh (SharedTokens): added STRAT_USING_LIST_PREC,
+	STRAT_USING_PREC
+	(SharedTokens): added USING_LIST nonterminal
+
+2017-09-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* specialTokens.cc: added matchrew, xmatchrew, amatchrew
+
+	* makeGrammar.cc (makeStrategyLanguageProductions): remove
+	the #if 1 / #endif around the match/xmatch/amatch productions
+
+===================================Maude116===========================================
+
 2017-08-11  Steven Eker  <eker@install.csl.sri.com>
 
 	* tokenizer.ll (Rope): use fixUp()
@@ -2949,7 +3438,7 @@
 2006-10-09  Steven Eker  <eker@goo.csl.sri.com>
 
 	* banner.cc (printBanner): update copyright notice
-	
+
 ===================================Maude88b===========================================
 
 	* modules.yy (domainRangeAttr): fix type clash

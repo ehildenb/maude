@@ -49,8 +49,9 @@
 #include "userLevelRewritingContext.hh"
 #include "visibleModule.hh"
 
-VisibleModule::VisibleModule(int name, ModuleType moduleType, Entity::User* parent)
-  : ImportModule(name, moduleType, TEXT, parent)
+VisibleModule::VisibleModule(int name, ModuleType moduleType, Interpreter* owner)
+  : ImportModule(name, moduleType),
+    owner(owner)
 {
 }
 

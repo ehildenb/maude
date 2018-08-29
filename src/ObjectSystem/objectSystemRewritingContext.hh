@@ -56,6 +56,8 @@ public:
   void setObjectMode(Mode m);
   Mode getObjectMode() const;
 
+  void externalRewrite();
+
 protected:
   void markReachableNodes();
 

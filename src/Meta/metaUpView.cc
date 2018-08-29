@@ -25,6 +25,7 @@ MetaLevel::upView(View* view, PointerMap& qidMap)
 {
   Vector<DagNode*> args(5);
 
+  view->evaluate();  // in case it became stale
   args[0] = upQid(view->id(), qidMap);
   args[1] = upModuleExpression(view->getFrom(), qidMap);
   args[2] = upModuleExpression(view->getTo(), qidMap);
@@ -47,7 +48,6 @@ MetaLevel::upSortMappings(View* view, PointerMap& qidMap)
     }
   return upGroup(args, emptySortMappingSetSymbol, sortMappingSetSymbol);
 }
-
 
 DagNode*
 MetaLevel::upOpMappings(View* view, PointerMap& qidMap)

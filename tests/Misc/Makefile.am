@@ -1,6 +1,7 @@
 include ../test.Makefile
 
 TESTS = \
+	view.maude \
 	dekker.maude \
 	commands.maude \
 	debug.maude \
@@ -20,9 +21,13 @@ TESTS = \
 	sreduce.maude \
 	smtTest.maude \
 	narrow.maude \
-	continue.maude
+	continue.maude \
+	parse.maude \
+	bubble.maude \
+	rot13.maude
 
 RESULT_FILES = \
+	view.expected \
 	dekker.expected \
 	commands.expected \
 	debug.expected \
@@ -42,6 +47,9 @@ RESULT_FILES = \
 	sreduce.expected \
 	smtTest.expected \
 	narrow.expected \
-	continue.expected
+	continue.expected \
+	parse.expected \
+	bubble.expected \
+	rot13.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

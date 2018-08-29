@@ -68,6 +68,7 @@ public:
   static void clearDebug();
   static void clearInterrupt();
   static void clearTrialCount();
+  static void clearInfo();
 
   RewritingContext* makeSubcontext(DagNode* root, int purpose);
   void beAdoptedBy(UserLevelRewritingContext* newParent);
@@ -127,6 +128,7 @@ private:
 			    bool localTraceFlag);
 
   static void interruptHandler(int);
+  static void infoHandler(int);
   static void interruptHandler2(...);
 
 #ifdef USE_LIBSIGSEGV
@@ -137,9 +139,12 @@ private:
 
   static void changePrompt();
   static bool dontTrace(const DagNode* redex, const PreEquation* pe);
+
+  bool handleInterrupt();
   void checkForPrintAttribute(MetadataStore::ItemType itemType, const PreEquation* item);
-  bool handleDebug(const DagNode* subject, const PreEquation* pe);
-  void where();
+  bool handleDebug(DagNode* subject, const PreEquation* pe);
+  void where(ostream& s);
+  void printStatusReport(DagNode* subject, const PreEquation* pe);
 
   static bool tracePostFlag;
   static int trialCount;
@@ -147,6 +152,7 @@ private:
 
   static bool interactiveFlag;
   static bool ctrlC_Flag;
+  static bool infoFlag;
   static bool stepFlag;
   static bool abortFlag;
   static int debugLevel;
@@ -190,6 +196,12 @@ UserLevelRewritingContext::setDebug()
 {
   setTraceStatus(true);
   stepFlag = true;
+}
+
+inline void
+UserLevelRewritingContext::clearInfo()
+{
+  infoFlag = false;
 }
 
 inline void

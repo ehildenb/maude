@@ -375,6 +375,10 @@ Renaming::renameLabel(int oldId) const
 bool
 Renaming::typeMatch(const set<int>& type, const ConnectedComponent* component)
 {
+  //
+  //	Check that a type matches a connected component; i.e. at least
+  //	on sort in the connect component appears in the type.
+  //
   set<int>::const_iterator e = type.end();
   int nrSorts = component->nrSorts();
   for (int i = 1; i < nrSorts; i++)
@@ -388,6 +392,10 @@ Renaming::typeMatch(const set<int>& type, const ConnectedComponent* component)
 bool
 Renaming::typeMatch(const Vector<set<int> >& types, Symbol* oldSymbol)
 {
+  //
+  //	Check that each connected component in the symbol arity/co-arity
+  //	matches the corresponding type in the Vector of types.
+  //
   int nrArgs = types.size() - 1;
   if (oldSymbol->arity() != nrArgs)
     return false;
@@ -402,6 +410,9 @@ Renaming::typeMatch(const Vector<set<int> >& types, Symbol* oldSymbol)
 int
 Renaming::renameOp(Symbol* oldSymbol) const
 {
+  //
+  //	Rename a concrete symbol.
+  //
   int oldId = oldSymbol->id();
   int index = NONE;
   const OpMap::const_iterator e = opMap.end();
@@ -425,6 +436,10 @@ Renaming::renameOp(Symbol* oldSymbol) const
 bool
 Renaming::typeMatch(const Vector<set<int> >& types, const Vector<int>& sortNames)
 {
+  //
+  //	Check that each sort name in sortNames appears in the corresponding type
+  //	in types.
+  //
   int nrTypes = types.size();
   for (int i = 0; i < nrTypes; ++i)
     {
@@ -438,6 +453,11 @@ Renaming::typeMatch(const Vector<set<int> >& types, const Vector<int>& sortNames
 int
 Renaming::renameOp(int id, const Vector<int>& sortNames) const
 {
+  //
+  //	Rename an abstract operation arising from module expression evaluation.
+  //	This is needed because a concrete symbol might be pushed through a sequence
+  //	of renamings.
+  //
   int index = NONE;
   const OpMap::const_iterator e = opMap.end();
   for (OpMap::const_iterator i = opMap.find(id); i != e && i->first == id; ++i)
@@ -588,7 +608,6 @@ Renaming::addType(bool /* kind */, const Vector<Token>& tokens)
   FOR_EACH_CONST(i, Vector<Token>, tokens)
     type.insert(i->code());
 }
-
 
 void
 Renaming::addType(const ConnectedComponent* component)

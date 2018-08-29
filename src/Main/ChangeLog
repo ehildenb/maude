@@ -1,3 +1,31 @@
+2018-05-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added messages erewriteTerm()
+	and erewroteTerm()
+
+2018-05-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added messages showView() and
+	showingView()
+
+2018-05-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added messages insertView() and
+	insertedView()
+
+===================================Maude117===========================================
+
+2018-03-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* Makefile.am (maude_LDADD): remove refs to MSCP10
+
+2017-12-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* main.cc (main): call setUsePromptsAnyway() in
+	forceInteractive case
+
+===================================Maude116===========================================
+
 2017-08-08  Steven Eker  <eker@install.csl.sri.com>
 
 	* prelude.maude: fmod LEXICAL: print -> printTokens to

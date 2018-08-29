@@ -21,7 +21,7 @@
 */
 
 //
-//      Class for idle and fail strategies.
+//      Class for match/xmatch/amatch strategies.
 //
 #ifndef _testStrategy_hh_
 #define _testStrategy_hh_

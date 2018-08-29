@@ -21,7 +21,7 @@
 */
 
 //
-//      Implementation for abstract class Strategy.
+//      Implementation for class TestStrategy.
 //
 
 //	utility stuff
@@ -45,7 +45,6 @@
 #include "decompositionProcess.hh"
 #include "strategicSearch.hh"
 #include "testStrategy.hh"
-
 
 TestStrategy::TestStrategy(Term* patternTerm, int depth, const Vector<ConditionFragment*>& condition)
   : pattern(patternTerm, depth >= 0, condition),

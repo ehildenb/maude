@@ -16,6 +16,7 @@ libstrategyLanguage_a_SOURCES = \
 	branchStrategy.cc \
 	unionStrategy.cc \
 	testStrategy.cc \
+	subtermStrategy.cc \
 	strategicExecution.cc \
 	strategicTask.cc \
 	branchTask.cc \
@@ -38,6 +39,7 @@ noinst_HEADERS = \
 	branchStrategy.hh \
 	unionStrategy.hh \
 	testStrategy.hh \
+	subtermStrategy.hh \
 	strategicExecution.hh \
 	strategicTask.hh \
 	branchTask.hh \

@@ -188,8 +188,13 @@ main(int argc, char* argv[])
   UserLevelRewritingContext::setHandlers(handleCtrlC);
   if (useTecla)
     ioManager.setCommandLineEditing();
-  if (inputIsTerminal)
-    ioManager.setUsePromptsAnyway();  // even if useTecla == false, or Tecla is not linked
+  if (inputIsTerminal || forceInteractive)
+    {
+      //
+      //	Prompt for input from stdio, even if useTecla == false, or Tecla is not linked
+      //
+      ioManager.setUsePromptsAnyway();
+    }
   directoryManager.initialize();
   string executable(argv[0]);
   findExecutableDirectory(executableDirectory, executable);

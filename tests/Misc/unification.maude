@@ -1,4 +1,4 @@
-
+set show advise off .
 
 *** order sorted free theory unification is not unitary
 fmod TEST is
@@ -142,6 +142,4 @@ unify g(X:Foo) =? Y:Foo /\ h(X:Foo) =? h(Y:Foo) .
 unify g(X:Foo) =? Y:Foo /\ X:Foo =? h(Y:Foo) .
 
 unify [1] in SIMULT : g(X:Foo) =? Y:Foo /\ h(X:Foo) =? h(Z:Foo) .
-
-
 

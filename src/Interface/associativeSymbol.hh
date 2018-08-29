@@ -68,6 +68,7 @@ private:
   struct Inv;
 
   void associativeSortCheck();
+  void associativeCtorCheck();
   void associativeSortBoundsAnalysis();
   void associativeSortStructureAnalysis();
   bool checkUniformity(const Sort* uniformSort, int nrSorts);

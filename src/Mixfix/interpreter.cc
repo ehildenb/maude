@@ -69,7 +69,7 @@
 #include "cacheableRewritingContext.hh"
 #include "maudemlBuffer.hh"
 #include "syntacticPreModule.hh"
-#include "view.hh"
+#include "syntacticView.hh"
 #include "visibleModule.hh"
 #include "loopSymbol.hh"
 #include "freshVariableSource.hh"
@@ -233,7 +233,7 @@ Interpreter::setCurrentView(const Vector<Token>& viewExpr)
       {
 	if (View* v = getView(viewExpr[0].code()))
 	  {
-	    setCurrentView(v);
+	    setCurrentView(safeCast(SyntacticView*, v));
 	    return true;
 	  }
 	// fall thru
@@ -323,6 +323,7 @@ Interpreter::showModule(bool all) const
 void
 Interpreter::showView() const
 {
+  currentView->evaluate();  // in case it became stale
   currentView->showView(cout);
 }
 

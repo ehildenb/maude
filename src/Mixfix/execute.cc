@@ -75,8 +75,11 @@ Interpreter::startUsingModule(VisibleModule* module)
 void
 Interpreter::beginRewriting(bool debug)
 {
+  UserLevelRewritingContext::clearInfo();
   if (debug)
     UserLevelRewritingContext::setDebug();
+  else
+    RewritingContext::setTraceStatus(flags & EXCEPTION_FLAGS);  // in case traceFlag was set by SIGINFO
 #ifdef QUANTIFY_REWRITING
   quantify_start_recording_data();
 #endif

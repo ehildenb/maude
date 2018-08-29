@@ -151,6 +151,10 @@ ConfigSymbol::compileRules()
 	    leftOver.rules.append(rl);
 	}
     }
+  //
+  //	Just in case resetRules() is not called before first rewriting happens.
+  //
+  resetRules();
 }
 
 void
@@ -169,7 +173,7 @@ ConfigSymbol::resetRules()
 DagNode*
 ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
 {
-  //cerr << "ruleRewrite() " << subject << endl;
+  DebugAdvisory("ConfigSymbol::ruleRewrite() " << subject);
   ObjectSystemRewritingContext* rc = safeCast(ObjectSystemRewritingContext*, &context);
   ObjectSystemRewritingContext::Mode mode = rc->getObjectMode();
   if (mode == ObjectSystemRewritingContext::STANDARD)
@@ -227,8 +231,15 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
   //objectMap.dump(cerr);
   //remainder.dump(cerr);
 
+
   if (objectMap.empty())
-    return ACU_Symbol::ruleRewrite(subject, context);
+    {
+      //
+      //	No objects or messages in the configuration so
+      //	do a plain ACU rewrite.
+      //
+      return ACU_Symbol::ruleRewrite(subject, context);
+    }
 
   Vector<DagNode*> dagNodes(2);
   Vector<int> multiplicities(2);
@@ -237,6 +248,10 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
   for (ObjectMap::iterator i = objectMap.begin(); i != e; ++i)
     {
       list<DagNode*>& messages = i->second.messages;
+      //
+      //	If we're doing erewriting, check for external messages
+      //	aimed at our object.
+      //
       if (external && rc->getExternalMessages(i->first, messages))
 	delivered = true;  // make sure we do a rewrite
 
@@ -263,6 +278,8 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
 		      delivered = true;
 		      //cerr << "delivered " << *j << endl;
 		      t = context.makeSubcontext(r);
+		      if (RewritingContext::getTraceStatus())
+			t->tracePostRuleRewrite(r);
 		      t->reduce();
 		      i->second.object =
 			retrieveObject(t->root(), i->first, remainder);
@@ -279,8 +296,7 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
 	    }
 	  else
 	    {
-	      //cerr << "unresolved message " << *j << endl;
-	      //  cerr << "external = " << external << endl;
+	      DebugAdvisory("unresolved message " << *j <<  "  external = " << external);
 	      if (external && rc->offerMessageExternally(i->first, *j))
 		{
 		  delivered = true;  // make sure we do a rewrite
@@ -315,9 +331,24 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
   //
   //	Now deal with remainder.
   //
+  //	Because we will be returning a new state, if we are tracing,
+  //	caller will do the post part of the trace so we need
+  //	to do the pre part of a trace, by doing non-object message
+  //	rewrite on the remainder if possible or faking a built-in
+  //	rewrite otherwise.
+  //
   if (remainder.multiplicities.length() == 1 &&
       remainder.multiplicities[0] == 1)
-    return remainder.dagNodes[0];
+    {
+      //
+      //	No left over rewrite, so if we're tracing
+      //	we need to fake a built-in rewrite.
+      //
+      if (RewritingContext::getTraceStatus())
+	context.tracePreRuleRewrite(subject, 0);
+      return remainder.dagNodes[0];
+    }
+
   DagNode* r = makeDagNode(remainder.dagNodes, remainder.multiplicities);
   //cerr << "remainder = " << r << endl;
   RewritingContext* t = context.makeSubcontext(r);
@@ -329,11 +360,24 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
       DagNode* d = leftOverRewrite(r, context, &extensionInfo);
       if (d == 0)
 	{
+	  //
+	  //	No left over rewrite, so if we're tracing
+	  //	we need to fake a built-in rewrite.
+	  //
 	  if (RewritingContext::getTraceStatus())
-	    context.tracePreRuleRewrite(subject, 0);  // HACK
+	    context.tracePreRuleRewrite(subject, 0);
 	}
       else
 	r = d;
+    }
+  else
+    {
+      //
+      //	No left over rewrite, so if we're tracing
+      //	we need to fake a built-in rewrite.
+      //
+      if (RewritingContext::getTraceStatus())
+	context.tracePreRuleRewrite(subject, 0);
     }
   context.addInCount(*t);
   delete t;
@@ -372,8 +416,6 @@ ConfigSymbol::objMsgRewrite(Symbol* messageSymbol,
 		    }
 		}
 	      DagNode* r =  rl->getRhsBuilder().construct(context);
-	      if (RewritingContext::getTraceStatus())
-		context.tracePostRuleRewrite(r);
 	      context.incrementRlCount();
 	      delete sp;
 	      context.finished();

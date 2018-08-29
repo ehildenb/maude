@@ -262,14 +262,21 @@ public:  // HACK
     UNARY_PREC = 15,		// backward compatibility with OBJ3 defaults
     INFIX_PREC = 41,		// backward compatibility with OBJ3 defaults
     //
-    //	Precedences for strategy language.
+    //	Precedences for complex syntax
     //
     ASSIGNMENT_PREC = 75,
-    STRAT_TEST_PREC = 93,
-    STRAT_SEQ_PREC = 95,
-    STRAT_UNION_PREC = 97,
-    STRAT_ORELSE_PREC = 99,
-    STRAT_BRANCH_PREC = 101
+    //
+    //	Precedences for strategy language.
+    //
+    STRAT_BASIC_PREC = 0,
+    STRAT_TEST_PREC = 21,
+    STRAT_REW_PREC = 21,
+    STRAT_SEQ_PREC = 39,
+    STRAT_UNION_PREC = 41,
+    STRAT_ORELSE_PREC = 43,
+    STRAT_BRANCH_PREC = 55,
+    STRAT_USING_LIST_PREC = 61,
+    STRAT_USING_PREC = 21
   };
 
 private:
@@ -365,7 +372,10 @@ private:
 
     VARIANT_UNIFY_COMMAND = SIMPLE_BASE - 15,
 
-    COMPLEX_BASE = SIMPLE_BASE - 16
+    USING_PAIR = SIMPLE_BASE - 16,
+    USING_LIST = SIMPLE_BASE - 17,
+
+    COMPLEX_BASE = SIMPLE_BASE - 18
   };
 
   enum NonTerminalType
@@ -544,13 +554,14 @@ private:
   static Vector<int> gatherAny;
   static Vector<int> gatherAnyAny;
   static Vector<int> gatherAnyAnyAny;
+  static Vector<int> gatherAny4;
   static Vector<int> gatherPrefix;
   static Vector<int> gatherPrefixPrefix;
   static Vector<int> gatherAny0;
   static int globalIndent;
   static bool attributeUsed;
 
-  ModuleType moduleType;
+  const ModuleType moduleType;
   Sort* boolSort;
   FreeSymbol* trueSymbol;
   FreeSymbol* falseSymbol;
@@ -790,7 +801,8 @@ private:
 inline SymbolType
 MixfixModule::getSymbolType(Symbol* symbol) const
 {
-  Assert(symbol->getModule() == this, "symbol belongs to " << symbol->getModule() << " and not " << this);
+  Assert(symbol->getModule() == this, "symbol " << symbol <<
+	 " belongs to " << symbol->getModule() << " and not " << this);
   return symbolInfo[symbol->getIndexWithinModule()].symbolType;
 }
 

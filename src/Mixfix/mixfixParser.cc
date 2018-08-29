@@ -87,6 +87,7 @@
 #include "iterationStrategy.hh"
 #include "branchStrategy.hh"
 #include "testStrategy.hh"
+#include "subtermStrategy.hh"
 
 //	front end class definitions
 #include "mixfixModule.hh"
@@ -94,11 +95,7 @@
 #include "quotedIdentifierTerm.hh"
 #include "mixfixParser.hh"
 
-#ifdef SCP
-#define ROOT_NODE	(parser.getRootNode())
-#else
 #define ROOT_NODE	(0)
-#endif
 
 const IntSet&
 MixfixParser::getTokenSet()  // HACK
@@ -122,29 +119,33 @@ MixfixParser::insertProduction(int lhs,
 			       int data,
 			       int data2)
 {
-  static Vector<int> rhs2;
-
   int rhsLength = rhs.length();
-  rhs2.resize(rhsLength);
+  productionRhs.resize(rhsLength);
+  int ntCount = 0;
   for (int i = 0; i < rhsLength; i++)
     {
       int s = rhs[i];
-      rhs2[i] = s < 0 ? s : tokens.insert(s);
+      if (s < 0)
+	ntCount++;
+      productionRhs[i] = s < 0 ? s : tokens.insert(s);
     }
 
-#if PARSER_DEBUG
+  //#if PARSER_DEBUG
+  if (ntCount != gather.size())
+    {
   cout << "production: " << lhs << " ::= ";
-  for (int i = 0; i < rhs2.length(); i++)
-    cout << rhs2[i] << ' ';
+  for (int i = 0; i < productionRhs.length(); i++)
+    cout << productionRhs[i] << ' ';
   cout << "\t\tprec: " << prec << "\tgather: ";
   for (int i = 0; i < gather.length(); i++)
     cout << gather[i] << ' ';
   cout << "(action = " << action <<
     ", data = " << data <<
     ", data2 = " << data2 <<")\n";
-#endif
+  //#endif
+    }
 
-  parser.insertProd(lhs, rhs2, prec, gather);
+  parser.insertProd(lhs, productionRhs, prec, gather);
   int nrActions = actions.length();
   actions.expandBy(1);
   Action& a = actions[nrActions];
@@ -178,6 +179,8 @@ MixfixParser::insertBubbleProduction(int lhs,
   cout << ")\n";
 #endif
 
+  //#ifdef BUBBLES
+
   parser.insertProd(lhs, lowerBound, upperBound, left, right, excludedTerminals);
   int nrActions = actions.length();
   actions.expandBy(1);
@@ -186,6 +189,8 @@ MixfixParser::insertBubbleProduction(int lhs,
   a.data = bubbleSpecIndex;
   a.data2 = NONE;
   bubblesAllowed = true;
+
+  //#endif
 }
 
 void
@@ -270,27 +275,9 @@ MixfixParser::parseSentence(const Vector<Token>& original,
   cout << ", " << root << '\n';
 #endif
   nrParses = parser.parseSentence(sentence, root);
-  DebugAdvisoryCheck(nrParses == 1, "MSCP10 returned " << nrParses << " parses");
-  if (nrParses < 0)
-    nrParses = INT_MAX;  // assume a wrap around error
-  else if (nrParses == 0)  // no parse
-    {
-#ifdef SCP
-      int nrErrors = parser.getNumberOfErrors();
-      DebugAdvisory("MSCP10 found " << nrErrors << " errors");
-      if (nrErrors >= 1)
-	{
-	  int errorPos = parser.getErrorPosition(1);
-	  Assert(errorPos >= 0 && errorPos <= nrTokens,
-		 "parser return bad error position " << errorPos);
-	  firstBad = begin + errorPos;
-	}
-      else
-	firstBad = begin + nrTokens;  // this shouldn't happen but it does :(
-#else
-      firstBad = begin + nrTokens;  // HACK
-#endif
-    }
+  DebugAdvisoryCheck(nrParses == 1, "New parser returned " << nrParses << " parses");
+  if (nrParses == 0)  // no parse
+    firstBad = begin + parser.getErrorPosition();
 #if PARSER_DEBUG
   parser.printCurrentParse();
 #endif
@@ -306,11 +293,8 @@ MixfixParser::makeTerms(Term*& first, Term*& second)
   second = 0;
   if (nrParses > 1)
     {
-#ifdef SCP
-      (void) parser.nextAnalysis();
-#else
-      (void) parser.extractNextParse();
-#endif
+      bool success = parser.extractNextParse();
+      Assert(success, "didn't find 2nd parse for ambigous sentence");
       second  = makeTerm(node);
     }
 }
@@ -543,6 +527,25 @@ MixfixParser::makeStrategy(int node)
 	s = new TestStrategy(makeTerm(parser.getChild(node, 0)), actions[parser.getProductionNumber(node)].data, condition);
 	break;
       }
+    case MAKE_REW:
+      {
+	Vector<ConditionFragment*> condition;
+	int listIndex = 1;
+	if (parser.getNumberOfChildren(node) > 2)  // such that clause
+	  {
+	    makeCondition(parser.getChild(node, 2), condition);
+	    listIndex = 3;
+	  }
+	Vector<Term*> subterms;
+	Vector<StrategyExpression*> strategies;
+	makeUsingList(parser.getChild(node, listIndex), subterms, strategies);
+	s = new SubtermStrategy(makeTerm(parser.getChild(node, 0)),
+				actions[parser.getProductionNumber(node)].data,
+				condition,
+				subterms,
+				strategies);
+	break;
+      }
     default:
       {
 	s = 0;  // to avoid uninitialized variable warning
@@ -553,6 +556,28 @@ MixfixParser::makeStrategy(int node)
 }
 
 void
+MixfixParser::appendUsingPair(int node, Vector<Term*>& terms, Vector<StrategyExpression*>& strategies)
+{
+  Assert(actions[parser.getProductionNumber(node)].action == MAKE_USING_PAIR,
+	 "unexpected action: " << actions[parser.getProductionNumber(node)].action);
+  terms.append(makeTerm(parser.getChild(node, 0)));
+  strategies.append(makeStrategy(parser.getChild(node, 1)));
+}
+
+void
+MixfixParser::makeUsingList(int node, Vector<Term*>& terms, Vector<StrategyExpression*>& strategies)
+{
+  while (actions[parser.getProductionNumber(node)].action == MAKE_USING_LIST)
+    {
+      appendUsingPair(parser.getChild(node, 0), terms, strategies);
+      node = parser.getChild(node, 1);
+    }
+  Assert(actions[parser.getProductionNumber(node)].action == PASS_THRU,
+	 "unexpected action: " << actions[parser.getProductionNumber(node)].action);
+  appendUsingPair(parser.getChild(node, 0), terms, strategies);
+}
+
+void
 MixfixParser::makeTermList(int node, Vector<Term*>& termList)
 {
   while (actions[parser.getProductionNumber(node)].action == MAKE_TERM_LIST)
@@ -560,7 +585,8 @@ MixfixParser::makeTermList(int node, Vector<Term*>& termList)
       termList.append(makeTerm(parser.getChild(node, 0)));
       node = parser.getChild(node, 1);
     }
-  Assert(actions[parser.getProductionNumber(node)].action == PASS_THRU, "unexpected action: " << actions[parser.getProductionNumber(node)].action);
+  Assert(actions[parser.getProductionNumber(node)].action == PASS_THRU,
+	 "unexpected action: " << actions[parser.getProductionNumber(node)].action);
   termList.append(makeTerm(parser.getChild(node, 0)));
 }
 
@@ -748,7 +774,7 @@ MixfixParser::makeTerm(int node)
 	t = new SMT_NumberTerm(symbol, rat);
 	break;
       }
-#ifdef BUBBLES
+      //#ifdef BUBBLES
     case MAKE_BUBBLE:
       {
 	return client.makeBubble(a.data,
@@ -756,14 +782,20 @@ MixfixParser::makeTerm(int node)
 				 currentOffset + parser.getFirstPosition(node),
 				 currentOffset + parser.getLastPosition(node) - 1);  // HACK last position
       }
-#endif
+      //#endif
     default:
       {
 	CantHappen("bad action");
 	return 0;  // to avoid uninitialized variable warning
       }
     }
-  t->setLineNumber((*currentSentence)[pos].lineNumber());
+  //
+  //	It's possible our production matched zero tokens at the end of the sentence if
+  //	the production rhs contained only empty bubbles. Thus pos might be outside
+  //	of the sentence.
+  //
+  int lastPos = currentSentence->size() - 1;
+  t->setLineNumber((*currentSentence)[(pos > lastPos) ? lastPos : pos].lineNumber());
   return t;
 }
 

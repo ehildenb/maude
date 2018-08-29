@@ -80,8 +80,12 @@ public:
   void ruleRewrite(Int64 limit = NONE);
   void fairRewrite(Int64 limit = NONE, Int64 gas = 1);
   void fairContinue(Int64 limit = NONE);
-  void fairStart(Int64 gas);
-  bool fairTraversal(Int64& limit);
+
+  void fairStart(Int64 limit, Int64 gas);
+  void fairRestart(Int64 limit);
+  bool fairTraversal();
+  bool getProgress();
+
   bool builtInReplace(DagNode* old, DagNode* replacement);
 
   virtual RewritingContext* makeSubcontext(DagNode* root, int purpose = OTHER);
@@ -124,6 +128,11 @@ public:
 					 DagNode* newState,
 					 const Vector<DagNode*>& newVariantSubstitution,
 					 const NarrowingVariableInfo& originalVariables);
+  //
+  //	This exists so we can handle an interrupt that causes a blocking call to return early.
+  //	If it returns true, the caller assumes it can continue; otherwise the caller should return.
+  //
+  virtual bool handleInterrupt();
 
 #ifdef DUMP
   static void dumpStack(ostream& s, const Vector<RedexPosition>& stack);
@@ -147,7 +156,6 @@ private:
   bool ascend();
   void descend();
   bool doRewriting(bool argsUnstackable);
-  bool fairTraversal();
 
   static bool traceFlag;
 
@@ -348,6 +356,18 @@ RewritingContext::builtInReplace(DagNode* old, DagNode* replacement)
    if (trace)
      tracePostEqRewrite(old);
    return true;
+}
+
+inline bool
+RewritingContext::getProgress()
+{
+  return progress;
+}
+
+inline void
+RewritingContext::fairRestart(Int64 limit)
+{
+  rewriteLimit = limit;
 }
 
 #endif

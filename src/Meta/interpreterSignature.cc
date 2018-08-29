@@ -46,6 +46,8 @@
   MACRO(rewroteTermMsg, FreeSymbol, 5)
   MACRO(frewriteTermMsg, FreeSymbol, 6)
   MACRO(frewroteTermMsg, FreeSymbol, 5)
+  MACRO(erewriteTermMsg, FreeSymbol, 6)
+  MACRO(erewroteTermMsg, FreeSymbol, 5)
   MACRO(continueMsg, FreeSymbol, 3)
   MACRO(quitMsg, FreeSymbol, 2)
   MACRO(byeMsg, FreeSymbol, 2)

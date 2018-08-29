@@ -46,6 +46,7 @@
 #include "strategyLanguage.hh"
 #include "SMT.hh"
 #include "mixfix.hh"
+#include "meta.hh"
 
 //      interface class definitions
 #include "symbol.hh"
@@ -92,7 +93,6 @@
 #include "succSymbol.hh"
 
 //	SMT class definitions
-//#include "SMT_Symbol.hh"
 #include "SMT_NumberSymbol.hh"
 #include "SMT_NumberTerm.hh"
 #include "SMT_NumberDagNode.hh"
@@ -111,14 +111,17 @@
 #include "quotedIdentifierTerm.hh"
 #include "quotedIdentifierDagNode.hh"
 #include "syntacticPreModule.hh"
-#include "metaModule.hh"
-#include "metaLevel.hh"
 #include "interpreter.hh"
 #include "visibleModule.hh"
 #include "moduleExpression.hh"
 #include "renaming.hh"
-#include "view.hh"
-#include "global.hh"  // HACK to access global module database
+#include "metaView.hh"
+
+//	metalevel class definitions
+#include "metaLevel.hh"
+#include "metaModule.hh"
+#include "metaPreModule.hh"
+#include "metaView.hh"
 
 //	our stuff
 #include "metaDown.cc"
@@ -128,6 +131,8 @@
 #include "metaUp.cc"
 #include "metaUpModule.cc"
 #include "metaUpView.cc"
+#include "metaDownView.cc"
+#include "metaDownSignature.cc"
 
 MetaLevel::MetaLevel()
 {

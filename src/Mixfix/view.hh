@@ -25,7 +25,6 @@
 //
 #ifndef _view_hh_
 #define _view_hh_
-#include<list>
 #include "namedEntity.hh"
 #include "lineNumber.hh"
 #include "entity.hh"
@@ -38,6 +37,8 @@ class View
     public Entity::User,
     public Renaming
 {
+  NO_COPYING(View);
+
 public:
   enum ReturnValues
   {
@@ -46,24 +47,36 @@ public:
 
   typedef multimap<int, pair<Term*, Term*> > OpTermMap;
 
-  View(Token viewName);
+  View(Token viewName, Interpreter* owner);
   ~View();
 
   void addFrom(ModuleExpression* expr);
   void addTo(ModuleExpression* expr);
-  ModuleExpression* getFrom() const;
-  ModuleExpression* getTo() const;
-  void addOpTermMapping(const Vector<Token>& fromOp, const Vector<Token>& toTerm);
-  void addVarDecl(Token varName);
-  void addType(bool kind, const Vector<Token>& tokens);
   void finishView();
   bool evaluate();
   bool isComplete();
-  void showView(ostream& s);
   ImportModule* getFromTheory() const;
   ImportModule* getToModule() const;
   Term* getOpMapTerm(Symbol* symbol) const;
-  const OpTermMap& getOpTermMap() const;  // maybe this exposes too much be we need it for the metalevel
+  //
+  //	These exist in order to up a view in the metalevel.
+  //
+  ModuleExpression* getFrom() const;
+  ModuleExpression* getTo() const;
+  const OpTermMap& getOpTermMap() const;  // maybe this exposes too much but we need it for the metalevel
+
+protected:
+  void regretToInform(Entity* doomedEntity);
+  ConnectedComponent* mapComponent(const ConnectedComponent* component, ImportModule* module) const;
+  //
+  //	Op->Term mappings need to be handled by a subclass.
+  //
+  virtual bool handleOpTermMappings() = 0;
+  bool insertOpToTermMapping(int fromLineNumber,
+			     Term* fromTerm,
+			     int toLineNumber,
+			     Term* toTerm,
+			     ImportModule* targetModule);
 
 private:
   enum Status
@@ -74,49 +87,25 @@ private:
       STALE
     };
 
-  struct VarDecl
-  {
-    Token varName;
-    bool lastWithCurrentDef;
-  };
-
-  struct BubblePair
-  {
-    Vector<Token> fromBubble;
-    Vector<Token> toBubble;
-  };
-
-  typedef list<VarDecl> VarDeclList;
-  typedef list<Type> TypeList;
-  typedef list<BubblePair> OpTermList;
   typedef map<int, pair<Sort*, int> > VarMap;
 
   static bool typeMatch(const ConnectedComponent* c1, const ConnectedComponent* c2);
   static bool typeMatch(const Symbol* s1, const Symbol* s2);
 
-  ConnectedComponent* mapComponent(const ConnectedComponent* component, ImportModule* module) const;
-  Sort* mapSort(const Sort* sort, ImportModule* module) const;
-  void regretToInform(Entity* doomedEntity);
-  void finishModule1(ImportModule* module);
-  void finishModule2(ImportModule* module);
+  void finishModule(ImportModule* module);
   bool checkSorts();
-  bool handleVarDecls();
-  bool indexRhsVariables(Term* term, const VarMap& varMap, int lineNr);
-  bool handleOpTermMappings();
   bool checkOps();
   bool checkPolymorphicOps();
   void clearOpTermMap();
+  Sort* mapSort(const Sort* sort, ImportModule* module) const;
+  bool indexRhsVariables(Term* term, const VarMap& varMap, int lineNr);
 
+  Interpreter* const owner;
   Status status;
   ModuleExpression* fromExpr;
   ModuleExpression* toExpr;
   ImportModule* fromTheory;
   ImportModule* toModule;
-  ImportModule* newFromTheory;	// copy of fromTheory with different variable aliases
-  ImportModule* newToModule;	// copy of toModule with different variable aliases
-  VarDeclList varDecls;		// list of variable aliases declared
-  TypeList varDefs;		// list of sorts used in variable declarations
-  OpTermList opTermList;	// list of op->term mappings stored as unparsed bubble pairs
   OpTermMap opTermMap;		// map from op name to op->term mappings stored as term pairs
 };
 
@@ -132,16 +121,10 @@ View::addTo(ModuleExpression* expr)
   toExpr = expr;
 }
 
-inline ModuleExpression*
-View::getFrom() const
+inline void
+View::finishView()
 {
-  return fromExpr;
-}
-
-inline ModuleExpression*
-View::getTo() const
-{
-  return toExpr;
+  evaluate();
 }
 
 inline bool
@@ -164,7 +147,19 @@ View::getToModule() const
   return toModule;
 }
 
-inline  const View::OpTermMap&
+inline ModuleExpression*
+View::getFrom() const
+{
+  return fromExpr;
+}
+
+inline ModuleExpression*
+View::getTo() const
+{
+  return toExpr;
+}
+
+inline const View::OpTermMap&
 View::getOpTermMap() const
 {
   return opTermMap;
