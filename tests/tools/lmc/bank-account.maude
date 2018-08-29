@@ -74,7 +74,7 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     eq #MO = upModule('BANK-ACCOUNT-CTOR,       true) .
 
    ceq implies?(C, C') = true  if {'tt.Truth, 'Truth} := metaReduce(#MC, '_->_[C, C']) .
-   ceq implies?(C, C') = true  if 'tt.Truth           := getTerms(metaGenVariant(#MC, '_->_[C, C'])) .
+   ceq implies?(C, C') = true  if 'tt.Truth           := getTerms(variants(#MC, '_->_[C, C'])) .
     eq implies?(C, C') = false [owise] .
 endm
 

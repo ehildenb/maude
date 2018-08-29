@@ -3,16 +3,12 @@ Narrowing
 
 Several narrowing utilities/wrappers are provided here.
 
-```maude
-load unification.maude
-```
-
 Variant Sets
 ------------
 
 ```maude
 fmod VARIANT-SET is
-    protecting RENAMING .
+   protecting META-LEVEL .
 
     var N N' : Nat . var P : Parent . var B : Bool .
     var M : Module . var T : Term . var SUB : Substitution .
@@ -27,26 +23,20 @@ fmod VARIANT-SET is
     -----------------------------------------------------------------------------------------------------------------
     eq V # V = V .
 
-    op metaGenVariant : Module Term -> VariantSet .
-    -----------------------------------------------
-    eq metaGenVariant(M, T) = metaGenVariant(M, T, highestVar(T)) .
+    op variants : Module Term -> VariantSet .
+    -----------------------------------------
+    eq variants(M, T) = allVariants(M, T, 0) .
 
-    op metaGenVariant : Module Term Nat -> VariantSet .
-    ---------------------------------------------------
-    eq metaGenVariant(M, T, N) = metaGenVariant2(M, T, N, 0) .
-
-    op metaGenVariant2 : Module Term Nat Nat -> VariantSet .
-    --------------------------------------------------------
-    eq metaGenVariant2(M, T, N', N) = .VariantSet [owise] .
-   ceq metaGenVariant2(M, T, N', N) = V # metaGenVariant2(M,T,N',s N)
-    if V := metaGetVariant(M,T,empty,N',N) .
+    op allVariants : Module Term Nat -> [VariantSet] .
+    --------------------------------------------------
+    eq allVariants(M, T, N) = .VariantSet [owise].
+   ceq allVariants(M, T, N) = V # allVariants(M, T, N + 1)
+    if V := metaGetIrredundantVariant(M, T, empty, 0, N) .
 
     op getTerms : VariantSet -> TermList .
     --------------------------------------
-    eq getTerms(.VariantSet) = empty .
-    eq getTerms(V # V' # VS) = getTerms(V) , getTerms(V') , getTerms(VS) .
-
-    eq getTerms( { T , SUB , N , P , B } ) = T .
+    eq getTerms(.VariantSet)            = empty .
+    eq getTerms({T, SUB, N, P, B} # VS) = T , getTerms(VS) .
 endfm
 ```
 
@@ -56,7 +46,6 @@ Narrowing using Core Maude
 ```maude
 fmod NARROWING is
    protecting VARIANT-SET .
-   protecting SUBSTITUTIONSET .
 
     sorts NarrowStepResult NarrowStepResults .
     ------------------------------------------

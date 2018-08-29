@@ -31,23 +31,23 @@ reduce in NAT>-HARNESS : wellFormed(##m##, init(7)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(0)) .
-rewrites: 31
+reduce in NAT>-HARNESS : variants(##m##, init(0)) .
+rewrites: 8
 result Variant: {'#1:Nat>,
   'X:Nat> <- '#1:Nat>,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(1)) .
-rewrites: 40
+reduce in NAT>-HARNESS : variants(##m##, init(1)) .
+rewrites: 8
 result Variant: {'_+_['1.NzNat>,'#1:Nat>],
   'Y:Nat> <- '#1:Nat>,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(2)) .
-rewrites: 31
+reduce in NAT>-HARNESS : variants(##m##, init(2)) .
+rewrites: 8
 result Variant: {'#1:NzNat>,
   'Z:NzNat> <- '#1:NzNat>,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(3)) .
-rewrites: 68
+reduce in NAT>-HARNESS : variants(##m##, init(3)) .
+rewrites: 22
 result VariantSet: {'ff.Bool>,
   'X:Nat> <- '%1:Nat> ; 
   'Z:NzNat> <- '_+_['%1:Nat>,'%2:NzNat>],2,0,true} #
@@ -61,8 +61,8 @@ result VariantSet: {'ff.Bool>,
   'X:Nat> <- '#1:Nat> ; 
   'Z:NzNat> <- '#2:NzNat>,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(4)) .
-rewrites: 77
+reduce in NAT>-HARNESS : variants(##m##, init(4)) .
+rewrites: 22
 result VariantSet: {'ff.Bool>,
   'X:Nat> <- '%1:Nat> ; 
   'Y:Nat> <- '_+_['%1:Nat>,'%2:Nat>],2,0,true} #
@@ -76,8 +76,8 @@ result VariantSet: {'ff.Bool>,
   'X:Nat> <- '#1:Nat> ; 
   'Y:Nat> <- '#2:Nat>,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(5)) .
-rewrites: 77
+reduce in NAT>-HARNESS : variants(##m##, init(5)) .
+rewrites: 22
 result VariantSet: {'ff.Bool>,
   'Y:Nat> <- '_+_['%1:Nat>,'%2:Nat>] ; 
   'Z:NzNat> <- '_+_['1.NzNat>,'%1:Nat>],2,0,true} #
@@ -91,41 +91,41 @@ result VariantSet: {'ff.Bool>,
   'Y:Nat> <- '#2:Nat> ; 
   'Z:NzNat> <- '#1:NzNat>,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(6)) .
-rewrites: 112
+reduce in NAT>-HARNESS : variants(##m##, init(6)) .
+rewrites: 10
 result Variant: {'tt.Bool>,
   'Y:Nat> <- '#1:Nat>,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : metaGenVariant(##m##, init(7)) .
-rewrites: 95
+reduce in NAT>-HARNESS : variants(##m##, init(7)) .
+rewrites: 11
 result Variant: {'ff.Bool>,
   'X:Nat> <- '#1:Nat> ; 
   'Y:Nat> <- '#2:Nat>,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(0))) .
-rewrites: 32
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(0))) .
+rewrites: 10
 result Variable: '#1:Nat>
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(3))) .
-rewrites: 75
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(3))) .
+rewrites: 27
 result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:Nat>,'#2:NzNat>]
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(4))) .
-rewrites: 84
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(4))) .
+rewrites: 27
 result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:Nat>,'_+_['1.NzNat>,
     '#2:Nat>]]
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(5))) .
-rewrites: 84
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(5))) .
+rewrites: 27
 result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:NzNat>,'_+_[
     '1.NzNat>,'#2:Nat>]]
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(6))) .
-rewrites: 113
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(6))) .
+rewrites: 12
 result Constant: 'tt.Bool>
 ==========================================
-reduce in NAT>-HARNESS : getTerms(metaGenVariant(##m##, init(7))) .
-rewrites: 96
+reduce in NAT>-HARNESS : getTerms(variants(##m##, init(7))) .
+rewrites: 13
 result Constant: 'ff.Bool>
 ==========================================
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[

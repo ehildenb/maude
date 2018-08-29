@@ -429,7 +429,7 @@ Warning: unsafe variable name @1:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
-rewrites: 1249
+rewrites: 710
 result FoldedLabeledGraph?: (0 -[label('deposit, 
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '%2:Nat ; 
@@ -550,11 +550,11 @@ rewrites: 5
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : implies?(pred(0), pred(1)) .
-rewrites: 127
+rewrites: 56
 result Bool: false
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : implies?(pred(1), pred(2)) .
-rewrites: 86
+rewrites: 30
 result Bool: false
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(0)) .
