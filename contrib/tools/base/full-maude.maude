@@ -190,7 +190,7 @@ fmod VARIABLES-TO-CONSTANTS is
 endfm
 
 fmod APPLY-SUBS is
-  pr TERMSET .
+  pr TERM-SET .
   pr SUBSTITUTIONSET .
 
   var S : Substitution .
@@ -199,7 +199,7 @@ fmod APPLY-SUBS is
 
   op apply : SubstitutionSet Term -> TermSet .
   eq apply(S | SS,T) = (T << S) | apply(SS,T) .
-  eq apply(none,T) = emptyTermSet .
+  eq apply(none,T) = .TermSet .
 endfm
 
 fmod MODULE-DATABASE-IMP{X :: TRIV} is

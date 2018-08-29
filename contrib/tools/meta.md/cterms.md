@@ -12,7 +12,12 @@ This will require infrastructure to determine whether part of a formula downs co
 ```maude
 load mtemplate.maude
 load foform.maude
+```
 
+Constrained Terms
+-----------------
+
+```maude
 fmod CTERM-SET is
    protecting FOFORM-SUBSTITUTION + FOFORMSIMPLIFY-IMPL + FOFORM-DEFINEDOPS .
    protecting META-LEVEL-EXT .
@@ -22,7 +27,7 @@ fmod CTERM-SET is
     subsorts Term < CTerm < NeCTermSet < CTermSet < CTermSet? .
     subsort TermSet < CTermSet .
 
-    var Q : Qid . vars S S' : Substitution . var SS : SubstitutionSet .
+    var Q : Qid . vars S S' : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
     var MOD : Module . var X : Variable . vars T T' : Term . vars TML? TML?' : [TermList] .
     vars CT CT' : CTerm . vars CTS CTS' : CTermSet . vars NeCTS NeCTS' : NeCTermSet .
     vars F F' F'' : FOForm . vars EqC EqC' : EqConj .

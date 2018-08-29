@@ -25,7 +25,7 @@ load ctor-refine.maude
 --- analyzed should make any use of kinds!
 fmod MGCI is
   pr META-LEVEL .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr CTOR-REFINE .
   pr CTOR-LIFT .
   pr QID-JOIN .
@@ -76,7 +76,7 @@ endfm
 fmod CTOR-VARIANT is
   pr META-LEVEL .
   pr MGCI .
-  pr TERMSET .
+  pr TERM-SET .
   pr APPLY-SUBS .
   pr EQ-VARIANT .
   pr KIND-LIST-EXT .

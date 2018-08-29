@@ -16,7 +16,7 @@ load ../meta/sort-ops.maude
 load ctor-var-unif.maude
 
 fmod WRAPPED-TERMS is
-  pr TERMSET .
+  pr TERM-SET .
   sort WTerm WTermList .
   subsort WTerm < WTermList .
   op _;_ : WTermList WTermList -> WTermList [ctor assoc id: tlnil] .
@@ -32,7 +32,7 @@ fmod WRAPPED-TERMS is
   eq [{T} ; TL] = T, [TL] .
   eq [tlnil] = empty .
   eq wrap(T | TS) = {T} ; wrap(TS) .
-  eq wrap(emptyTermSet) = tlnil .
+  eq wrap(.TermSet) = tlnil .
 endfm
 
 view WTermList from UNIT-LIST to WRAPPED-TERMS is

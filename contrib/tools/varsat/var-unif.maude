@@ -1,7 +1,8 @@
 load ../base/prelude-aux.maude
 
 fmod UNIFIERS is
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
+  pr META-LEVEL .
 
   op unifiers  : Module UnificationProblem -> SubstitutionSet .
   op $unifiers : Module UnificationProblem Nat UnificationPair? SubstitutionSet -> SubstitutionSet .
@@ -27,7 +28,7 @@ endfm
 fmod EQ-VARIANT is
   --- renaming needed to avoid a billion conflicts later...
   pr VARIANT * (op addOps to MHaddOps, op addEqs to MHaddEqs, op addSorts to MHaddSorts) .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr VARIABLESET .
 
   --- sort to collect variant unifier results
@@ -64,7 +65,7 @@ fmod EQ-VARIANT is
   eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
   eq getSubs(empty)             = .SubstitutionSet .
   eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
-  eq getTerms(empty)            = emptyTermSet .
+  eq getTerms(empty)            = .TermSet .
   eq getss(ssnp(SS,I))          = SS .
 endfm
 

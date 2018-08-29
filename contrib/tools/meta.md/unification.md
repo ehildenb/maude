@@ -2,7 +2,7 @@ Narrowing and Equational Unification
 ====================================
 
 ```maude
-load "narrowing.maude"
+load narrowing.maude
 ```
 
 Santiago Escobar
@@ -389,35 +389,12 @@ fmod SUBSTITUTION-HANDLING is
   eq extract-bindings(V <- T ; Subst) = (T,extract-bindings(Subst)) .
 endfm
 
-fmod TERMSET is
-  protecting META-LEVEL-MNPA .
-  protecting SUBSTITUTION-HANDLING .
-
-  sort TermSet .
-  subsort Term < TermSet .
-  op emptyTermSet : -> TermSet [ctor] .
-  op _|_ : TermSet TermSet -> TermSet
-    [ctor assoc comm id: emptyTermSet format (d n d d)] .
-  eq X:Term | X:Term = X:Term .
-
-  op _in_ : Term TermSet -> Bool .
-  eq T:Term in (T:Term | TS:TermSet) = true .
-  eq T:Term in TS:TermSet = false [owise] .
-
-  op TermSet : TermList -> TermSet .
-  eq TermSet(empty)
-   = emptyTermSet .
-  eq TermSet((T:Term,TL:TermList))
-   = T:Term | TermSet(TL:TermList) .
-
-endfm
-
 fmod RENAMING is
   protecting META-TERM .
   protecting META-LEVEL-MNPA .
   protecting TERM-HANDLING .
   protecting SUBSTITUTION-HANDLING .
-  protecting TERMSET .
+  protecting TERM-SET .
   protecting CONVERSION .
   protecting QID .
   protecting INT .
@@ -583,7 +560,7 @@ fmod SUBSTITUTIONSET is
   protecting SUBSTITUTION-SET .
   protecting SUBSTITUTION-HANDLING .
   protecting META-LEVEL-MNPA .
-  protecting TERMSET .
+  protecting TERM-SET .
   protecting RENAMING .
 
   vars SS SS' : SubstitutionSet .
@@ -2376,7 +2353,7 @@ fmod VARIANT is
               | R:VariantTripleSet)
    = T:Term | getTerms(R:VariantTripleSet) .
   eq getTerms((empty).VariantTripleSet)
-   = emptyTermSet .
+   = .TermSet .
 
   op getSubstitutions : VariantTripleSet -> SubstitutionSet .
   eq getSubstitutions({T:Term,S:Substitution,NextVar:Nat,P:Parent,B:Bool}
@@ -2698,7 +2675,7 @@ fmod RESULT-CONTEXT-SET is
   eq getTerms({T:Term,TP:Type,S:Substitution} | R:ResultTripleSet)
    = T:Term | getTerms(R:ResultTripleSet) .
   eq getTerms((empty).ResultTripleSet)
-   = emptyTermSet .
+   = .TermSet .
 
   op getSubstitutions : ResultTripleSet -> SubstitutionSet .
   eq getSubstitutions({T,TP,S} | R:ResultTripleSet)
@@ -2831,7 +2808,7 @@ fmod RESULT-CONTEXT-SET is
   eq getTerms({T,TP,S,S',Ct,CtS,TS:Term,CtTS:Term,NextVar,Tr:TraceNarrow,B:Flags} | RTS)
    = CtTS:Term | getTerms(RTS) .
   eq getTerms((empty).ResultContextSet)
-   = emptyTermSet .
+   = .TermSet .
 
   op toUnificationTriples : ResultContextSet -> UnificationTripleSet .
   eq toUnificationTriples(
@@ -2965,7 +2942,7 @@ fmod VARIANT-HANDLING is
               | R:VariantFourSet)
    = T:Term | getTerms(R:VariantFourSet) .
   eq getTerms((empty).VariantFourSet)
-   = emptyTermSet .
+   = .TermSet .
 
   op toVariantTripleSet : VariantFourSet -> VariantTripleSet .
   eq toVariantTripleSet(empty)
@@ -3974,7 +3951,7 @@ fmod ORDERS-TERM-SUBSTITUTION is
 
   *****
   op metaBuiltInRenaming : Module TermSet TermSet -> Bool .
-  eq metaBuiltInRenaming(M,emptyTermSet,emptyTermSet)
+  eq metaBuiltInRenaming(M,.TermSet,.TermSet)
    = true .
  ceq metaBuiltInRenaming(M,T:Term | T:TermSet,T':Term | T':TermSet)
     = metaBuiltInRenaming(M,T:TermSet,T':TermSet)

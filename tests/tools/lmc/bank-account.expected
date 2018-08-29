@@ -7,7 +7,7 @@ Warning: "bank-account.maude", line 185 (mod BANK-ACCOUNT-CTOR): variable m is
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs [narrowing label deposit] .
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
+    on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out

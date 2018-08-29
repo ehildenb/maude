@@ -98,7 +98,7 @@ endfm
 fmod CTOR-LIFT is
   pr META-LEVEL .
   pr QID-JOIN .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr UNIQUE-PREFIX .
 
   op lift-sort : Module Sort -> Sort .

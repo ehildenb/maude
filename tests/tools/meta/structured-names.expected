@@ -1,5 +1,5 @@
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 38 sort tuples. First such tuple is (Type).
+    on 6 out of 39 sort tuples. First such tuple is (Type).
 ==========================================
 reduce in TEST-STRUCTURED-NAME : x ==> y .
 rewrites: 2

@@ -17,7 +17,7 @@ Additionally, extra sorts are added for the non-empty versions of each declarati
 ```maude
 fmod MODULE-DECLARATION is
    protecting STRUCTURED-NAME .
-   protecting SUBSTITUTIONSET .
+   protecting SUBSTITUTION-SET .
    protecting META-LEVEL-EXT .
 
     sorts ImportDecl ImportDeclSet .
