@@ -18,7 +18,7 @@ Additionally, extra sorts are added for the non-empty versions of each declarati
 fmod MODULE-DECLARATION is
    protecting STRUCTURED-NAME .
    protecting SUBSTITUTION-SET .
-   protecting META-LEVEL-EXT .
+   protecting TERM-COMPARISON .
 
     sorts ImportDecl ImportDeclSet .
     --------------------------------

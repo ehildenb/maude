@@ -20,7 +20,7 @@ Constrained Terms
 ```maude
 fmod CTERM-SET is
    protecting FOFORM-SUBSTITUTION + FOFORMSIMPLIFY-IMPL + FOFORM-DEFINEDOPS .
-   protecting META-LEVEL-EXT .
+   protecting TERM-COMPARISON .
 
     sorts CTerm NeCTermSet CTermSet CTermSet? .
     -------------------------------------------

@@ -1,7 +1,6 @@
 include ../../test.Makefile
 
 TESTS = \
-	metalevel-ext.maude \
 	structured-names.maude \
 	cterms.maude \
 	foform.maude \
@@ -15,7 +14,6 @@ TESTS = \
 	narrowing.maude
 
 RESULT_FILES = \
-	metalevel-ext.expected \
 	structured-names.expected \
 	cterms.expected \
 	foform.expected \

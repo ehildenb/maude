@@ -4,7 +4,7 @@ Structured Names
 For substutions:
 
 ```maude
-load metalevel-ext.maude
+load narrowing.maude
 ```
 
 First, we'll need a way to generate variables at the object level because writing all our syntax at the meta-level can be a pain.
