@@ -36,12 +36,10 @@ If your branch falls into two categories, pick the earlier one in this list.
 -   `systems/FEATURE-NAME`: Branches which add systems to the `contrib/systems` directory.
 -   `doc/FEATURE-NAME`:     Branches which work on repository documentation.
 
-The actual merge into `master` will be performed as:
+The actual merge into `master` will be performed using the `merge-pr` script in `contrib/scripts`.
 
 ```sh
-git fetch --all
-git checkout -B master upstream/master
-git merge --no-ff --no-edit -m "PULL-REQUEST-NAME (#N : BRANCH)" BRANCH
+./contrib/scripts/merge-pr BRANCH 'PULL-REQUEST-NAME'
 git push upstream master
 ```
 
@@ -49,6 +47,6 @@ with:
 
 -   `BRANCH` as the branch to be merged.
 -   `PULL-REQUEST-NAME` as the GitHub pull-request name.
--   `N` as the GitHub pull-request number.
 
 This creates an empty merge commit which marks the feature addition/bug-fix.
+It's assumed that the remote you're pushing to is named `upstream`.

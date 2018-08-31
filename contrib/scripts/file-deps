@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+for file in $(find -iname '*.maude'); do
+    echo ""
+    echo "$(basename $file)"
+    while read load dependency; do
+        echo "    $(basename "$dependency")"
+    done < <(grep '^load ' "$file")
+done
