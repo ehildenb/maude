@@ -1,8 +1,8 @@
-[submodule "src/SMT/cvc4"]
-	path = src/SMT/cvc4
-	url = https://github.com/cvc4/cvc4
-	ignore = untracked
 [submodule "contrib/pandoc-tangle"]
 	path = contrib/pandoc-tangle
 	url = https://github.com/ehildenb/pandoc-tangle
+	ignore = untracked
+[submodule "ext/cvc4"]
+	path = ext/cvc4
+	url = https://github.com/CVC4/CVC4
 	ignore = untracked

@@ -12,7 +12,6 @@ include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 contrib_dir="contrib"
 
-cvc4_dir="src/SMT/cvc4"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
 
 export PATH="/usr/lib/ccache/bin:$PATH"
@@ -25,17 +24,27 @@ build_clean() {
     rm -rf "$build_dir"
     make clean || true
     git clean -dfx
-    [[ ! -f "$cvc4_dir/Makefile" ]] \
-        || ( cd "$cvc4_dir"
-             make distclean
-           )
+    [[ ! -f "ext/cvc4/Makefile" ]]   || ( cd "ext/cvc4"   ; make distclean )
     ( cd "$contrib_dir"
       make clean
     )
 }
 
 build_deps() {
-    git submodule update --init -- "$cvc4_dir" "$pandoc_tangle_dir"
+    git submodule update --init
+}
+
+build_cvc4() {
+    mkdir -p $build_dir
+    (  cd ext/cvc4/
+       ./autogen.sh
+       ./contrib/get-antlr-3.4
+       ./configure --prefix="$build_dir" \
+                   --with-antlr-dir=./antlr-3.4 \
+                   ANTLR=./antlr-3.4/bin/antlr3
+       make -s -j4
+       make -s install
+    )
 }
 
 build_maude() {
@@ -50,6 +59,11 @@ build_maude() {
         || ( git checkout -- src/Mixfix/surface.cc
              make -s -j4
            )
+}
+
+build_maude_cvc4() {
+    build_cvc4
+    build_maude --with-cvc4 CVC4_LIB="-L$lib_dir -Wl,-R$lib_dir -lcvc4"
 }
 
 build_tangle() {
@@ -82,6 +96,8 @@ build_test_all() {
     build_tangle
     make check "$@"
     git checkout -- src/Mixfix/tokenizer.cc
+    build_maude_cvc4
+    build_test tests/Misc/smtTest
 }
 
 # Main
@@ -92,6 +108,7 @@ case "$build_command" in
     clean)    build_clean    "$@" ;;
     deps)     build_deps     "$@" ;;
     maude)    build_maude    "$@" ;;
+    maude-cvc4)  build_maude_cvc4 "$@" ;;
     tangle)   build_tangle   "$@" ;;
     test)     build_test     "$@" ;;
     test-all) build_test_all "$@" ;;
@@ -103,6 +120,7 @@ case "$build_command" in
     $0 clean:            remove build directory '$build_dir', and call 'make clean'.
     $0 deps:             clone git submodules and build CVC4.
     $0 maude <options>:  build maude passing <options> to the ./configure step.
+    $0 maude-cvc4 ...:   build maude using the cvc4 git submodule
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
 
     developers: $0 test <test-name>
