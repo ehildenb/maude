@@ -159,6 +159,8 @@ endm
 
 After constructor-decomposition of `BAKERY-FVP`, you should get the following theory.
 
+**TODO**: deduplicate rule names
+
 ```maude
 mod BAKERY-FVP-CTOR is
    protecting NAT> .

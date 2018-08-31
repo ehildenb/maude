@@ -1,0 +1,72 @@
+set show timing off .
+
+load ../../../contrib/systems/token.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+load ../../../contrib/tools/meta/narrowing.maude
+
+--- Narrowing Graph of `2TOKEN` System
+--- ----------------------------------
+
+mod NARROW-SEARCH-2TOKEN is
+    protecting 2TOKEN .
+    including FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
+
+    eq #M = upModule('2TOKEN, true) .
+
+    op init : Nat -> Term .
+    -----------------------
+    eq init(0) = '`{_`}['__['$.Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]] .
+    eq init(1) = '`{_`}['__['T:Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]] .
+    eq init(2) = '`{_`}['__['`[_`,wait`]['a.Name],'`[_`,crit`]['b.Name]]] .
+    eq init(3) = '`{_`}['__['`[_`,wait`]['b.Name],'`[_`,crit`]['a.Name]]] .
+    eq init(4) = '`{_`}['__['T:Token,'T':Token,'`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]] .
+    eq init(5) = '`{_`}['__['$.Token,'P:Proc,'`[_`,wait`]['a.Name]]] .
+    eq init(6) = '`{_`}['__['*.Token,'P:Proc,'`[_`,wait`]['a.Name]]] .
+    eq init(7) = '`{_`}['__['T:Token,'P:Proc,'`[_`,wait`]['a.Name]]] .
+endm
+
+--- Initial states are well-formed
+
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
+reduce wellFormed(#M, init(6)) .
+reduce wellFormed(#M, init(7)) .
+
+--- Take a synce step from each state
+
+reduce step(state(init(0))) .
+reduce step(state(init(1))) .
+reduce step(state(init(2))) .
+reduce step(state(init(3))) .
+reduce step(state(init(4))) .
+reduce step(state(init(5))) .
+reduce step(state(init(6))) .
+reduce step(state(init(7))) .
+
+--- Check some folds
+
+reduce fold(state(init(0)), state(init(0))) .
+reduce fold(state(init(0)), state(init(1))) .
+reduce fold(state(init(0)), state(init(6))) .
+reduce fold(state(init(1)), state(init(6))) .
+reduce fold(state(init(0)), state(init(5))) .
+
+--- Some BFS
+
+reduce bfs(state(init(0))) .
+reduce bfs(state(init(1))) .
+reduce bfs(state(init(2))) .
+reduce bfs(state(init(3))) .
+reduce bfs(state(init(4))) .
+reduce bfs(state(init(5))) .
+reduce bfs(state(init(6))) .
+reduce bfs(state(init(7))) .
+reduce bfs(state(init(7))) .
+
+--- Stability check from RL Logic tool
+
+reduce check state(init(0)) stable in state(init(1)) ; state(init(2)) ; state(init(3)) .

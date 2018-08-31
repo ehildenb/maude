@@ -1,0 +1,195 @@
+set show timing off .
+
+load ../../../contrib/systems/token.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+
+--- Testing Harnesses
+--- =================
+
+--- Abstract Graph
+--- --------------
+
+fmod GRAPH-FOLDING-SEARCH-TEST is
+    extending GRAPH-ANALYSIS .
+
+    ops A B C D E F G : -> Node .
+    ops x y z : -> Label .
+
+    op < : -> Fold .
+
+    eq fold(D, E) = < .
+    eq fold(B, C) = < .
+
+    --- Add the following equation to reduce _<=_ to constructors
+    vars NeNS NeNS' : NeNodeSet .
+    eq NeNS <= NeNS'          = false [owise] .
+    eq intersect(NeNS, NeNS') = false [owise] .
+
+    eq step(A) = < x , B > , < y , D > , < z , D > .
+    eq step(B) = < y , B > .
+    eq step(C) = < x , A > .
+    eq step(D) = < y , C > , < z , G > .
+    eq step(E) = < x , E > .
+    eq step(F) = < x , E > .
+    eq step(G) = < y , D > .
+endfm
+
+--- Test Module LABELLED-GRAPH
+--- --------------------------
+
+reduce (A -[x]-> B B -[y]-> C C -[z]-> D) :: NeLabeledGraph .
+
+reduce < x , A > , < y , B > , < x , A > .
+
+reduce B -> < x , A > .
+reduce B -> < x , A > , < y , D > .
+
+--- Test Module GRAPH-FOLDING-SEARCH
+--- --------------------------------
+
+reduce 3 [ .Fold ] < 4 [ .Fold ] .
+reduce 4 [ .Fold ] < 3 [ .Fold ] .
+reduce 3 [ < ] < 4 .
+reduce 4 [ < ] < 3 .
+reduce 3 < 4 [ < ] .
+reduce 4 < 3 [ < ] .
+reduce 3 [ < ] < 4 [ < ] .
+reduce 4 [ < ] < 3 [ < ] .
+
+reduce fold(A, A) .
+reduce fold(D, E) .
+reduce fold(E, D) .
+
+reduce B       <= (A ; B ; C) .
+reduce B       <= (A ; B) .
+reduce D       <= E .
+reduce (D ; B) <= (E ; B) .
+reduce (D ; B) <= E .
+
+reduce intersect(A, A) .
+reduce intersect(.NodeSet, A) .
+reduce intersect(B, C) .
+reduce intersect(B, C ; A) .
+reduce intersect(B, C ; A ; E) .
+reduce intersect(A ; B ; C, D) .
+reduce intersect(A ; B ; D, A) .
+reduce intersect(A ; E, G ; E) .
+
+reduce step(E) .
+reduce step(D) .
+
+reduce all-step(E ; D ; F ; G) .
+reduce all-step(E ; D ; D) .
+reduce all-step(E) .
+reduce all-step(.NodeSet) .
+
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ .NodeSet ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 7 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ; 3 ; 0 ] .
+reduce (0 |-> A 1 |-> B 2 |-> F 3 |-> G) [ 2 ; 3 ; 7 ] .
+
+reduce insert( 3 |-> A , .NodeMap ) .
+reduce insert( 3 |-> A , 2 |-> A  ) .
+reduce insert( 3 |-> D , 2 |-> E  ) .
+reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
+reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
+
+reduce insert( .NodeSet  ,                .FoldedLabeledGraph) .
+reduce insert( A ; B ; C ,                .FoldedLabeledGraph) .
+reduce insert( A ; B ; C ; D ; E ; F ; G, .FoldedLabeledGraph) .
+
+reduce insert( .NodeSet  , .LabeledGraph | 0 |-> E         | 1 ) .
+reduce insert( A         , .LabeledGraph | 0 |-> A         | 1 ) .
+reduce insert( D         , .LabeledGraph | 0 |-> E         | 1 ) .
+reduce insert( D         , .LabeledGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( E         , .LabeledGraph | 0 |-> D 1 |-> A | 2 ) .
+reduce insert( A ; D ; C , .LabeledGraph | 0 |-> A 1 |-> E | 2 ) .
+
+reduce insert( .LabeledGraph         , .FoldedLabeledGraph ) .
+reduce insert( A -[y]-> D            , .FoldedLabeledGraph ) .
+reduce insert( A -[y]-> D E -[z]-> B , .FoldedLabeledGraph ) .
+
+reduce insert( .LabeledGraph         , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D            , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> D E -[z]-> B , (0 -[x]-> 2) | 0 |-> E 2 |-> B | 3 | 2 ) .
+reduce insert( A -[y]-> E D -[x]-> B , (0 -[x]-> 2) | 0 |-> A 2 |-> B | 3 | 2 ) .
+
+reduce extend( .NodeSet  ) .
+reduce extend( A         ) .
+reduce extend( A ; B ; C ) .
+
+reduce              ( .LabeledGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(        .LabeledGraph | 0 |-> A                 | 1 | 0         ) .
+reduce extend(extend( .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce extend(        .LabeledGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 ) .
+reduce extend(insert(A ; B ; C, .FoldedLabeledGraph)) .
+
+reduce nodes(             ( .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(        .LabeledGraph | 0 |-> A                 | 1 | 0         )) .
+reduce nodes(extend(extend( .LabeledGraph | 0 |-> A                 | 1 | 0         ))) .
+reduce nodes(extend(        .LabeledGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
+reduce nodes(extend(insert(A ; B ; C, .FoldedLabeledGraph))) .
+
+reduce frontier( .FoldedLabeledGraph | .NodeSet ) .
+reduce frontier(extend(A)) .
+reduce frontier(extend(E)) .
+reduce frontier(extend(A ; B ; C)) .
+reduce frontier(extend(A ; B ; C ; D ; E ; F ; G)) .
+
+--- Test Module GRAPH-ANALYSIS
+--- --------------------------
+
+reduce bfs(A, 0) .
+reduce bfs(A, 1) .
+reduce bfs(A, 2) .
+reduce bfs(A) .
+reduce bfs(A, unbounded) == bfs(A) .
+
+reduce bfs(C, 1) .
+reduce bfs(C, 2) .
+reduce bfs(C) .
+
+reduce bfs(A ; B ; C, 0) .
+reduce bfs(A ; B ; C, 1) .
+reduce bfs(A ; B ; C, unbounded) .
+reduce bfs(B ; F, unbounded) .
+reduce bfs(D ; A, unbounded) .
+
+reduce bfs(A ; B ; C ; D ; E ; F ; G, 1) .
+reduce bfs(A ; B ; C ; D ; E ; F ; G, unbounded) .
+
+reduce invariant(.NodeSet) .
+reduce invariant(E) .
+reduce invariant(A ; B ; C) .
+reduce invariant(A ; B ; C ; D ; E ; F ; G) .
+
+reduce check .NodeSet  stable in .NodeSet .
+reduce check A         stable in .NodeSet .
+reduce check A         stable in A .
+reduce check A ; B     stable in A .
+reduce check A ; B ; C stable in A ; B ; C .
+reduce check A ; B ; C stable in A ; B ; C ; D ; E ; F ; G .
+
+reduce A =>* A .
+reduce A =>* D ; E .
+reduce A =>* E .
+reduce A =>* F .
+reduce A =>* G .
+reduce E =>* D .
+reduce D =>* E .
+
+reduce .NodeSet              =>* .NodeSet .
+reduce .NodeSet              =>* A ; B ; C .
+reduce A ; B ; C             =>* .NodeSet .
+reduce A ; B ; C             =>* A .
+reduce A ; B ; C ; D ; E ; G =>* F .
+
+reduce A =>[0] E .
+reduce A =>[1] E .
+reduce D =>[1] C .
+reduce C =>[1] D .
+reduce C =>[2] D .
+reduce C =>[2] E .
+reduce C =>[2] G .
+reduce C =>[3] G .

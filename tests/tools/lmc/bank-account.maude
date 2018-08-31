@@ -1,0 +1,165 @@
+set show timing off .
+
+load ../../../contrib/systems/bank-account.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+load ../../../contrib/tools/meta/narrowing.maude
+
+--- Initial states and Conditions
+--- =============================
+
+mod BANK-ACCOUNT-INIT-STATES is
+    extending FVP-NARROWING-MODULO-T-GRAPH .
+
+    var N : Nat . vars NeNS NeNS' : NeNodeSet .
+
+    op init : Nat -> [Term] .
+    -------------------------
+    eq init(0) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+    eq init(1) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'tt.Truth],'MSGS:MsgConf] .
+    eq init(2) = '_#_['<`bal:_pend:_overdraft:_>['_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]],'debts['@1:MsgConf],'ff.Truth],'@1:MsgConf] .
+    eq init(3) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'ff.Truth],'MSGS:MsgConf] .
+    eq init(4) = '_#_['<`bal:_pend:_overdraft:_>['_+_['@1:Nat,'@4:Nat] , '@2:Nat ,'ff.Truth ] , '@3:MsgConf   ] .
+    eq init(5) = '_#_['<`bal:_pend:_overdraft:_>['N:Nat                , 'X:Nat  ,'ff.Truth ] , 'MSGS:MsgConf ] .
+
+    op pred : Nat -> [Term] .
+    -------------------------
+    eq pred(0) = 'C:Truth .
+    eq pred(1) = '_>=_['N:Nat, 'X:Nat] .
+    eq pred(2) = 'tt.Truth .
+    eq pred(3) = '_/\_['_>=_['N:Nat,'X:Nat],'_==_['X:Nat,'debts['MSGS:MsgConf]]] .
+    eq pred(4) = '_->_[pred(3), pred(2)] << sub(0) .
+    eq pred(5) = '_>=_['@1:Nat,'@2:Nat] .
+    eq pred(6) = '_>=_['N:Nat,'X:Nat] .
+    eq pred(7) = '_->_[pred(5),pred(6)] << sub(1) .
+
+    op cinit : Nat -> [Term] .
+    --------------------------
+    eq cinit(0) = '_|_[init(0), pred(0)] .
+    eq cinit(1) = '_|_[init(0), pred(1)] .
+    eq cinit(2) = '_|_[init(1), pred(0)] .
+    eq cinit(3) = '_|_[init(1), pred(1)] .
+    eq cinit(4) = '_|_[init(2), pred(2)] .
+    eq cinit(5) = '_|_[init(3), pred(3)] .
+    eq cinit(6) = '_|_[init(4), pred(5)] .
+    eq cinit(7) = '_|_[init(5), pred(6)] .
+
+    op sub : Nat -> [Substitution] .
+    --------------------------------
+    eq sub(0) = ('MSGS:MsgConf <- '@1:MsgConf ; 'N:Nat <- '_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] ; 'X:Nat <- 'debts['@1:MsgConf]) .
+    eq sub(1) = ('MSGS:MsgConf <- '@3:MsgConf ; 'N:Nat <- '_+_['@1:Nat,'@4:Nat] ; 'X:Nat <- '@2:Nat) .
+
+
+    op states : NodeSet -> [NodeSet] .
+    ----------------------------------
+    eq states(.NodeSet)     = .NodeSet .
+    eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
+
+    eq states(N) = state(cinit(N)) .
+endm
+
+--- Module BANK-ACCOUNT-UNCONDITIONALIZED
+--- -------------------------------------
+
+mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
+    extending BANK-ACCOUNT-INIT-STATES .
+    extending GRAPH-ANALYSIS .
+
+    vars C C' : Term .
+
+    eq #T  = 'State .
+    eq #C  = 'Truth .
+    eq #ST = '_|_   .
+
+    eq #MC = upModule('BANK-ACCOUNT-DEFINEDOPS, true) .
+    eq #MO = upModule('BANK-ACCOUNT-CTOR,       true) .
+
+   ceq implies?(C, C') = true  if {'tt.Truth, 'Truth} := metaReduce(#MC, '_->_[C, C']) .
+   ceq implies?(C, C') = true  if 'tt.Truth           := getTerms(variants(#MC, '_->_[C, C'])) .
+    eq implies?(C, C') = false [owise] .
+endm
+
+reduce #M .
+reduce #MC .
+reduce #MO .
+reduce wellFormed(#M) .
+reduce wellFormed(#MC) .
+reduce wellFormed(#MO) .
+
+reduce leastSort (#M, init(0)) .
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
+
+reduce leastSort (#M, pred(0)) .
+reduce wellFormed(#M, pred(0)) .
+reduce wellFormed(#M, pred(1)) .
+reduce wellFormed(#M, pred(2)) .
+reduce wellFormed(#M, pred(3)) .
+reduce wellFormed(#M, pred(4)) .
+reduce wellFormed(#M, pred(5)) .
+reduce wellFormed(#M, pred(6)) .
+reduce wellFormed(#M, pred(7)) .
+
+reduce leastSort (#M, cinit(0)) .
+reduce wellFormed(#M, cinit(0)) .
+reduce wellFormed(#M, cinit(1)) .
+reduce wellFormed(#M, cinit(2)) .
+reduce wellFormed(#M, cinit(3)) .
+reduce wellFormed(#M, cinit(4)) .
+reduce wellFormed(#M, cinit(5)) .
+reduce wellFormed(#M, cinit(6)) .
+reduce wellFormed(#M, cinit(7)) .
+
+reduce bfs(state(cinit(0))) .
+reduce bfs(state(cinit(1)), 1) .
+
+reduce state(pred(1)) <= state(pred(0)) .
+reduce states(1)      <= states(0) .
+reduce states(1)      <= states(2) .
+
+reduce intersect(states(0), states(2)) .
+
+reduce implies?(pred(0), pred(0)) .
+reduce implies?(pred(0), pred(1)) .
+reduce implies?(pred(1), pred(2)) .
+
+reduce invariant(states(0)) .
+reduce invariant(states(2)) .
+reduce invariant(states(0 ; 2)) .
+
+--- ; --- proving that `states(1)` is an invariant
+--- ; reduce invariant(states(1)) .
+--- ;
+--- ; --- first subgoal (now discharged)
+--- ; reduce states(4) <= states(5) .
+--- ; reduce fold(states(4), states(5)) .
+--- ; reduce fold(state(init(2)), state(init(3))) == fold(sub(0)) .
+--- ; reduce implies?(pred(2) << sub(0), pred(3) << sub(0)) .
+--- ;
+--- ; --- should the second one be producing variants?
+--- ; reduce metaReduce(#MC, pred(4)) .
+--- ; reduce metaGenVariant(#MC, pred(4)) .
+--- ;
+--- ; --- new subgoal
+--- ; reduce states(6) <= states(7) .
+--- ; reduce state(init(4)) <= state(init(5)) .
+--- ; reduce fold(state(init(4)), state(init(5))) == fold(sub(1)) .
+--- ; reduce implies?(pred(5) << sub(1), pred(6) << sub(1)) .
+--- ; reduce metaReduce(#MC, pred(7)) .
+
+
+--- ; The invariant satisfied by this protocol can be expressed as the constrained term:
+--- ;
+--- ;     < bal: n pend: x overdraft: ff > # msgs | n >= x = tt /\ x = debts(msgs)
+--- ;
+--- ; where debts is the recursive function:
+--- ;
+--- ;  op debts : MsgConf -> Nat .
+--- ;
+--- ;  eq debts(mt) = 0 .
+--- ;  eq debts(withdraw(m),msgs) = m + debts(msgs) .
+--- ;
+--- ; Note that this predicate should have an easy proof by contextual rewriting in reachability logic.

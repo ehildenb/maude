@@ -167,23 +167,23 @@ mod BANK-ACCOUNT-CTOR is
     var msgs : MsgConf .
 
     rl < bal: n + m + x pend: x     overdraft: ff > #               msgs
-    => < bal: n + m + x pend: x + m overdraft: ff > # withdraw(m) , msgs [narrowing] .
+    => < bal: n + m + x pend: x + m overdraft: ff > # withdraw(m) , msgs [narrowing label initWithdrawal] .
 
      *** actual withdrawing of money from account (done with ctor variants of original rule)
 
     rl < bal: N1:Nat + N3:Nat + N4:Nat pend: N3:Nat overdraft: ff > # M2:MsgConf , withdraw(N3:Nat + N4:Nat)
-    => < bal: N1:Nat                   pend: 0      overdraft: ff > # M2:MsgConf [narrowing] .
+    => < bal: N1:Nat                   pend: 0      overdraft: ff > # M2:MsgConf [narrowing label doWithdrawal1] .
 
     rl < bal: N1:Nat + N3:Nat pend: N3:Nat + N4:Nat overdraft: ff > # M2:MsgConf , withdraw(N3:Nat)
-    => < bal: N1:Nat          pend: N4:Nat          overdraft: ff > # M2:MsgConf [narrowing] .
+    => < bal: N1:Nat          pend: N4:Nat          overdraft: ff > # M2:MsgConf [narrowing label doWithdrawal2] .
 
     rl < bal: N1:Nat pend: N2:Nat overdraft: ff > # M3:MsgConf , withdraw(1 + N1:Nat + N4:Nat)
-    => < bal: N1:Nat pend: N2:Nat overdraft: tt > # M3:MsgConf [narrowing] .
+    => < bal: N1:Nat pend: N2:Nat overdraft: tt > # M3:MsgConf [narrowing label overdraft] .
 
     *** more money can at any time be deposited in the account if it is not in overdraft
 
     rl < bal: n     pend: x overdraft: ff > # msgs
-    => < bal: n + m pend: x overdraft: ff > # msgs [narrowing] .
+    => < bal: n + m pend: x overdraft: ff > # msgs [narrowing label deposit] .
 endm
 ```
 
@@ -196,7 +196,14 @@ The following operations help to specify claims about the bank account system.
 mod BANK-ACCOUNT-DEFINEDOPS is
    protecting BANK-ACCOUNT-CTOR .
 
-    var N : Nat . var MSGS : MsgConf .
+    vars X Y : Truth . var N : Nat . var MSGS : MsgConf .
+
+    op _->_ : Truth Truth -> Truth .
+    --------------------------------
+    eq X  -> X  = tt        [variant] .
+    eq ff -> X  = tt        [variant] .
+    eq X  -> tt = tt        [variant] .
+    eq X  -> Y  = ~(X) \/ Y [variant] .
 
     op debts : MsgConf -> Nat .
     ---------------------------

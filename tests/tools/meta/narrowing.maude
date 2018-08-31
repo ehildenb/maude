@@ -9,7 +9,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 --- =================
 
 fmod NAT>-HARNESS is
-   protecting NARROWING2 .
+   protecting NARROWING .
 
     op ##m## : ~> SModule [memo] .
     ------------------------------
@@ -41,26 +41,26 @@ reduce wellFormed(##m##, init(7)) .
 
 --- ### Module `NAT>`
 
-reduce metaGenVariant(##m##, init(0)) .
-reduce metaGenVariant(##m##, init(1)) .
-reduce metaGenVariant(##m##, init(2)) .
-reduce metaGenVariant(##m##, init(3)) .
-reduce metaGenVariant(##m##, init(4)) .
-reduce metaGenVariant(##m##, init(5)) .
-reduce metaGenVariant(##m##, init(6)) .
-reduce metaGenVariant(##m##, init(7)) .
+reduce variants(##m##, init(0)) .
+reduce variants(##m##, init(1)) .
+reduce variants(##m##, init(2)) .
+reduce variants(##m##, init(3)) .
+reduce variants(##m##, init(4)) .
+reduce variants(##m##, init(5)) .
+reduce variants(##m##, init(6)) .
+reduce variants(##m##, init(7)) .
 
-reduce getTerms(metaGenVariant(##m##, init(0))) .
-reduce getTerms(metaGenVariant(##m##, init(3))) .
-reduce getTerms(metaGenVariant(##m##, init(4))) .
-reduce getTerms(metaGenVariant(##m##, init(5))) .
-reduce getTerms(metaGenVariant(##m##, init(6))) .
-reduce getTerms(metaGenVariant(##m##, init(7))) .
+reduce getTerms(variants(##m##, init(0))) .
+reduce getTerms(variants(##m##, init(3))) .
+reduce getTerms(variants(##m##, init(4))) .
+reduce getTerms(variants(##m##, init(5))) .
+reduce getTerms(variants(##m##, init(6))) .
+reduce getTerms(variants(##m##, init(7))) .
 
---- Module `NARROWNG2`
---- ==================
+--- Module `NARROWNG`
+--- =================
 
-select NARROWING2 .
+select NARROWING .
 
 --- Function `allNarrowSteps`
 --- -------------------------
@@ -79,9 +79,9 @@ reduce allNarrowSteps(upModule('EXT-CYCLE, true), 'g['a.PreState], 0) .
 reduce allNarrowSteps(upModule('2TOKEN, true), '`{_`}['__['$.Token, '`[_`,wait`]['a.Name]]], 0) .
 reduce allNarrowSteps(upModule('2TOKEN, true), '`{_`}['__['T:Token, 'P:Proc]], 0) .
 
---- Function `metaNarrow2`
+--- Function `narrowSteps`
 --- ----------------------
 
-reduce metaNarrow2(upModule('BAKERY, true), '_;_;_['N:Name,'N:Name,'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]) .
-reduce metaNarrow2(upModule('BAKERY, true), '_;_;_['N:Name,'M:Name,'IS:ProcIdleSet]) .
-reduce metaNarrow2(upModule('BAKERY, true), '_;_;_['N:Name,'M:Name,'WS:ProcWaitSet]) .
+reduce narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,'N:Name,'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]) .
+reduce narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,'M:Name,'IS:ProcIdleSet]) .
+reduce narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,'M:Name,'WS:ProcWaitSet]) .
