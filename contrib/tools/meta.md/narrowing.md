@@ -18,8 +18,9 @@ fmod TERM-SET is
     var T : Term . var TS : TermSet . var NeTL : NeTermList .
 
     op .TermSet : -> TermSet [ctor] .
-    op _|_ : TermSet TermSet -> TermSet [ctor assoc comm id: .TermSet] .
-    --------------------------------------------------------------------
+    op _|_ : TermSet   TermSet ->   TermSet [ctor assoc comm id: .TermSet] .
+    op _|_ : TermSet NeTermSet -> NeTermSet [ctor ditto] .
+    ------------------------------------------------------
     eq T | T = T .
 
     op _in_ : Term TermSet -> Bool .

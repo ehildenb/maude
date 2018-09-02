@@ -22,77 +22,102 @@ fmod CTERM-SET is
    protecting FOFORM-SUBSTITUTION + FOFORMSIMPLIFY-IMPL + FOFORM-DEFINEDOPS .
    protecting TERM-COMPARISON .
 
-    sorts CTerm NeCTermSet CTermSet CTermSet? .
-    -------------------------------------------
-    subsorts Term < CTerm < NeCTermSet < CTermSet < CTermSet? .
-    subsort TermSet < CTermSet .
+    sorts CTerm NeCTermSet CTermSet .
+    ---------------------------------
+    subsorts Term < CTerm < NeCTermSet < CTermSet .
+    subsort  NeTermSet < NeCTermSet .
+    subsort    TermSet <   CTermSet .
 
-    var Q : Qid . vars S S' : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
-    var MOD : Module . var X : Variable . vars T T' : Term . vars TML? TML?' : [TermList] .
-    vars CT CT' : CTerm . vars CTS CTS' : CTermSet . vars NeCTS NeCTS' : NeCTermSet .
-    vars F F' F'' : FOForm . vars EqC EqC' : EqConj .
+    var Q : Qid . var S : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
+    vars T T' : Term . vars TML? TML?' : [TermList] .
+    var CT : CTerm . var NeCTS : NeCTermSet .
+    var F : FOForm . vars EqC EqC' : EqConj .
 
-    op _|_ : Term FOForm -> CTerm [right id: tt prec 52] .
-    ------------------------------------------------------
-    eq  T        | ff                = .CTermSet .
-    eq (T | EqC) | EqC'              = T | (EqC /\ EqC') .
-    eq Q [ TML? , (T | EqC), TML?' ] = Q[TML?, T, TML?'] | EqC .
+    op _st_ : Term FOForm -> CTerm [right id: tt prec 52] .
+    -------------------------------------------------------
+    eq  T         st ff               = .TermSet .
+    eq (T st EqC) st EqC'             = T st (EqC /\ EqC') .
+    eq Q [ TML? , (T st EqC), TML?' ] = Q[TML?, T, TML?'] st EqC .
+
+    op _|_ : CTermSet   CTermSet ->   CTermSet [ctor ditto] .
+    op _|_ : CTermSet NeCTermSet -> NeCTermSet [ctor ditto] .
+    ---------------------------------------------------------
+    eq CT | CT = CT .
 
     op _<<_ : CTerm    Substitution    -> CTerm .
     op _<<_ : CTermSet SubstitutionSet -> CTermSet .
     ------------------------------------------------
-    eq .CTermSet     << SS = .CTermSet .
-    eq (CT ;; NeCTS) << SS = (CT << SS) ;; (NeCTS << SS) .
-    eq CT << .SubstitutionSet = .CTermSet .
-    eq CT << (S | S' | SS)    = (CT << S) ;; (CT << S') ;; (CT << SS) .
+   ceq (T st F) << S = (T << S) st (F << S)
+                    if not (F == tt) .
 
-   ceq (T | F) << S = (T << S) | (F << S)
-    if not (F == tt) .
+    eq CT           << .SubstitutionSet = .TermSet .
+    eq CT           << (S | NeSS)       = (CT << S) | (CT << NeSS) .
+    eq (CT | NeCTS) << SS               = (CT << SS) | (NeCTS << SS) .
+```
 
-    op .CTermSet : -> CTermSet .
-    op _;;_ : CTermSet CTermSet   -> CTermSet   [ctor assoc comm id: .CTermSet prec 60] .
-    op _;;_ : CTermSet CTermSet?  -> CTermSet?  [ctor ditto] .
-    op _;;_ : CTermSet NeCTermSet -> NeCTermSet [ctor ditto] .
-    ----------------------------------------------------------
-    eq NeCTS ;; NeCTS = NeCTS .
+`EqConj` is extended to handle constrained terms.
+
+```maude
+    op _?=_ : CTerm CTerm -> EqConj [ditto] .
+    op _!=_ : CTerm CTerm -> EqConj [ditto] .
+    -----------------------------------------
+    eq T ?= (T' st EqC) = (T ?= T') /\ EqC .
+    eq T != (T' st EqC) = (T != T') /\ EqC .
+endfm
+```
+
+Constrained terms can be simplified with respect to a given module.
+
+```maude
+fmod CTERM-SET-SIMPLIFICATION is
+   protecting CTERM-SET .
+
+    var Q : Qid . vars S S' : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
+    var MOD : Module . var X : Variable . vars T T' : Term . vars TML? TML?' : [TermList] .
+    vars CT CT' : CTerm . vars CTS CTS' : CTermSet . vars NeCTS NeCTS' : NeCTermSet .
+    vars F F' F'' : FOForm .
+
+    sort CTermSet? .
+    ----------------
+    subsort CTermSet < CTermSet? .
 
     op _[_] : CTermSet? Module -> [CTermSet] [prec 64] .
     ----------------------------------------------------
     eq CTS [ MOD ] = CTS .
 
-    op _++_ : CTermSet? CTermSet? -> CTermSet? [assoc comm id: .CTermSet prec 61] .
-    -------------------------------------------------------------------------------
-    eq NeCTS ;; CTS ++ NeCTS ;; CTS'  = NeCTS ;; CTS ++ CTS' .
-    eq NeCTS        ++ NeCTS' [ MOD ] = NeCTS ;; NeCTS' [owise] .
+    op _++_ : CTermSet? CTermSet? -> CTermSet? [assoc comm id: .TermSet prec 61] .
+    ------------------------------------------------------------------------------
+    eq NeCTS | CTS ++ NeCTS | CTS'   = NeCTS | CTS ++ CTS' .
+    eq NeCTS       ++ NeCTS' [ MOD ] = NeCTS | NeCTS' [owise] .
 
-   ceq T | F ;; CTS ++ CT' ;; CTS' [ MOD ] = T | F'' ;; CTS ++ CTS' [ MOD ]
-    if T' | F' := #varsApart(CT', T | F)
-    /\ S | SS  := #subsumesWith(MOD, T, T')
-    /\ F''     := F \/ (F' /\ #disjSubsts(S | SS)) .
+   ceq (T st F) | CTS ++ CT' | CTS' [ MOD ] = (T st F'') | CTS ++ CTS' [ MOD ]
+    if T' st F' := #varsApart(CT', T st F)
+    /\ S | SS   := #subsumesWith(MOD, T, T')
+    /\ F''      := F \/ (F' /\ #disjSubsts(S | SS)) .
 
-    op _--_ : CTermSet? CTermSet? -> CTermSet? [right id: .CTermSet prec 62] .
-    --------------------------------------------------------------------------
-    eq .CTermSet    -- NeCTS          = .CTermSet .
-    eq NeCTS ;; CTS -- NeCTS ;; CTS'  = CTS -- NeCTS ;; CTS' .
-    eq CT ;; NeCTS  -- NeCTS' [ MOD ] = (CT -- NeCTS' [ MOD ]) ;; (NeCTS -- NeCTS' [ MOD ]) .
-    eq NeCTS        -- NeCTS' [ MOD ] = NeCTS [owise] . --- Over-approximate when we can't simplify
+    op _--_ : CTermSet? CTermSet? -> CTermSet? [right id: .TermSet prec 62] .
+    -------------------------------------------------------------------------
+    eq .TermSet    -- NeCTS          = .TermSet .
+    eq NeCTS | CTS -- NeCTS | CTS'   = CTS -- NeCTS | CTS' .
+    eq CT | NeCTS  -- NeCTS' [ MOD ] = (CT -- NeCTS' [ MOD ]) | (NeCTS -- NeCTS' [ MOD ]) .
+    eq NeCTS       -- NeCTS' [ MOD ] = NeCTS [owise] . --- Over-approximate when we can't simplify
 
-   ceq CT    -- CT' ;; CTS'  [ MOD ] = .CTermSet
-    if S | SS := #subsumesWith(MOD, CT', #varsApart(CT, CT')) .
+   ceq CT -- CT' | CTS' [ MOD ] = .TermSet
+                               if S | SS := #subsumesWith(MOD, CT', #varsApart(CT, CT')) .
 
-   ceq T | F -- CT' ;; CTS'  [ MOD ] = CT -- CTS' [ MOD ]
-    if T' | F' := #varsApart(CT', T | F)
-    /\ S | SS  := #subsumesWith(MOD, T, T')
-    /\ CT      := (T | F /\ (#disjSubsts(S | SS) => (~ F'))) .
+   ceq T  st F -- CT' | CTS' [ MOD ] = CT -- CTS' [ MOD ]
+                                    if T' st F' := #varsApart(CT', T st F)
+                                    /\ S | SS   := #subsumesWith(MOD, T, T')
+                                    /\ CT       := (T st F /\ (#disjSubsts(S | SS) => (~ F'))) .
 
-   ceq CT    -- CT' ;; CTS   [ MOD ] = CT -- CTS' ;; CTS [ MOD ]
-    if CTS' := #intersect(MOD, CT, CT') .
+   ceq CT -- CT' | CTS [ MOD ] = CT -- CTS' | CTS [ MOD ]
+                              if CTS' := #intersect(MOD, CT, CT') .
 
     op #intersect : Module CTerm CTerm -> CTermSet? .
     -------------------------------------------------
-   ceq #intersect(MOD, T | F, CT') = (T | F /\ F') << (S | SS)
-    if T' | F' := #varsApart(CT', T | F)
-    /\ S | SS  := #unifiers(MOD, T, T') .
+   ceq #intersect(MOD, T st F, CT') = (T st F /\ F') << (S | SS)
+                                   if T' st F' := #varsApart(CT', T st F)
+                                   /\ S | SS   := #unifiers(MOD, T, T') .
 ```
 
 This should either be implemented, hooked up to an existing implementation, or we should convince ourselves it's not needed.
@@ -115,16 +140,6 @@ This should either be implemented, hooked up to an existing implementation, or w
     op #varsApart : CTerm CTerm -> CTerm .
     --------------------------------------
     eq #varsApart(CT, CT') = CT .
-```
-
-`EqConj` is extended to handle constrained terms.
-
-```maude
-    op _?=_ : CTerm CTerm -> EqConj [ditto] .
-    op _!=_ : CTerm CTerm -> EqConj [ditto] .
-    -----------------------------------------
-    eq T ?= (T' | EqC) = (T ?= T') /\ EqC .
-    eq T != (T' | EqC) = (T != T') /\ EqC .
 endfm
 ```
 
@@ -133,7 +148,7 @@ The first element of the pair are the states seen for the first time in that ste
 
 ```maude
 fmod CTERM-TRACE is
-   protecting CTERM-SET .
+   protecting CTERM-SET-SIMPLIFICATION .
 
     sorts CTermSetPair CTermSetPairMap CTermSetTrace .
 
@@ -427,11 +442,11 @@ If the top symbol of the term is from the first module, purify the subterms.
 Otherwise, generate an equality constraint at the top and purify with respect to the second module.
 
 ```maude
-     eq purify(M, M', T | EqC) = purify(M, M', T) | EqC               .
-    ceq purify(M, M', T)       = T                                    if wellFormed(M, T) .
-    ceq purify(M, M', T)       = FV | (FV ?= T)                       if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
-    ceq purify(M, M', Q[TL])   = purify(M, M', purify(M', M, Q[TL]))  if Q inO asTemplate(M') /\ not (Q inO asTemplate(M)) .
-    ceq purify(M, M', Q[TL])   = Q[purify(M, M', TL)]                 if Q inO asTemplate(M) .
+     eq purify(M, M', T st EqC) = purify(M, M', T) st EqC .
+    ceq purify(M, M', T)        = T                                    if wellFormed(M, T) .
+    ceq purify(M, M', T)        = FV st (FV ?= T)                      if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
+    ceq purify(M, M', Q[TL])    = purify(M, M', purify(M', M, Q[TL]))  if Q inO asTemplate(M') /\ not (Q inO asTemplate(M)) .
+    ceq purify(M, M', Q[TL])    = Q[purify(M, M', TL)]                 if Q inO asTemplate(M) .
 ```
 
 Sometimes, we need to make sure that a term contains only symbols from a given subtheory.
@@ -445,7 +460,7 @@ Sometimes, we need to make sure that a term contains only symbols from a given s
                                              if wellFormed(fromTemplate('TMP, MDS), T) .
    ceq subtheoryPurify(MDS, M, Q[TL])         = Q[subtheoryPurify(MDS, M, TL)]
                                              if Q inO MDS .
-   ceq subtheoryPurify(MDS, M, Q[TL])         = FV | FV ?= Q[TL]
+   ceq subtheoryPurify(MDS, M, Q[TL])         = FV st FV ?= Q[TL]
                                              if (not Q inO MDS)
                                              /\ FV := #var(Q[TL], leastSort(M, Q[TL])) .
 endfm
@@ -491,8 +506,8 @@ fmod TERM-TRAVERSE is
     --------------------------------------------
     ceq purify(ME ;;; MEL          [T]     = T                          if wellFormed(M, T) .
     ceq purify(ME ;;; MEL)         [Q[TL]] = Q[purify((ME ;; MEL))[TL]] if Q inO asTemplate(ME) .
----    ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV | ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
----                                                                        /\ T | QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
+---    ceq purify(ME ;;; ME' ;;; MEL) [Q[TL]] = FV st ((FV ?= T) /\ QFF)    if not Q inO asTemplate(ME)
+---                                                                        /\ T st QFF := purify(ME' ;;; MEL ;;; ME) [Q[TL]]
 ---                                                                        /\ FV      := ??? .
 endfm
 ```

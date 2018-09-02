@@ -8,14 +8,14 @@ load ../../../contrib/tools/meta/cterms.maude
 
 select CTERM-SET .
 
---- Operator `_|_`
---- --------------
+--- Operator `_st_`
+--- ---------------
 
-reduce ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat])
-    == ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat]) .
+reduce ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] st 'Y:Nat ?= '_*_['0.Nat,'1.Nat] st 'Y:Nat ?= '_*_['0.Nat,'1.Nat])
+    == ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] st 'Y:Nat ?= '_*_['0.Nat,'1.Nat]) .
 
-reduce ('_+_['Y:Nat, ('X:Nat | 'Z:Nat ?= '_*_['1.Nat, '0.Nat]), 'Z:Nat])
-    == ('_+_['Y:Nat, 'X:Nat, 'Z:Nat] | 'Z:Nat ?= '_*_['1.Nat, '0.Nat]) .
+reduce ('_+_['Y:Nat, ('X:Nat st 'Z:Nat ?= '_*_['1.Nat, '0.Nat]), 'Z:Nat])
+    == ('_+_['Y:Nat, 'X:Nat, 'Z:Nat] st 'Z:Nat ?= '_*_['1.Nat, '0.Nat]) .
 
 --- Module PURIFICATION
 --- ===================
@@ -38,14 +38,14 @@ reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-M
     == '_+_['0.Nat, 'X:Nat] .
 
 reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_*_['0.Nat, '1.Nat])
-    == ('#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+    == ('#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat st '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
 reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat, '1.Nat], 'X:Nat])
-    == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat] | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+    == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat] st '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
 reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat, '1.Nat], 'X:Nat, '_*_['0.Nat, '1.Nat]])
     == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat, '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat]
-             | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+             st '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
 fmod ASSOC-LIST { X :: TRIV } is
 
