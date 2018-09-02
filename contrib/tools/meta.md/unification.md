@@ -2,7 +2,7 @@ Narrowing and Equational Unification
 ====================================
 
 ```maude
-load narrowing.maude
+load terms.maude
 ```
 
 Santiago Escobar

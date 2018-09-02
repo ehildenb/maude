@@ -54,6 +54,8 @@ lib*.a
 /contrib/tools/meta/mtemplate.maude
 /contrib/tools/meta/mtransform.maude
 /contrib/tools/meta/narrowing.maude
+/contrib/tools/meta/purification.maude
 /contrib/tools/meta/structured-names.maude
+/contrib/tools/meta/terms.maude
 /contrib/tools/meta/unification.maude
 /contrib/tools/meta/variables.maude

@@ -2,7 +2,8 @@ Variable Handling
 =================
 
 ```maude
-load ../base/prelude-aux.maude
+--- TODO: avoid Full Maude dependency
+load ../base/full-maude.maude
 ```
 
 Determiistic Variables
@@ -606,8 +607,6 @@ endfm
 The only remaining Full Maude dependency is the `UNIT` import here.
 
 ```maude
---- TODO: avoid Full Maude dependency
-load ../base/full-maude.maude
 --- Gathers all functionality into a single module
 fmod RENAME-METAVARS is
   pr META-LEVEL      .

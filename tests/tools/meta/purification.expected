@@ -1,0 +1,161 @@
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 43 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '0.Nat) == '0.Nat .
+rewrites: 10
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), 'X:Nat) == 'X:Nat .
+rewrites: 10
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '_+_['0.Nat,'1.Nat]) == '_+_['0.Nat,'1.Nat]
+    .
+rewrites: 10
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '_+_['0.Nat,'X:Nat]) == '_+_['0.Nat,'X:Nat]
+    .
+rewrites: 10
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '_*_['0.Nat,'1.Nat]) == (
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat st
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+rewrites: 35
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat,'1.Nat],'X:Nat]) == ('_+_[
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat] st
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+rewrites: 48
+result Bool: true
+==========================================
+reduce in PURIFICATION : subtheoryPurify(asTemplate(upModule('FVP-NAT, true)),
+    upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat,'1.Nat],'X:Nat,'_*_['0.Nat,
+    '1.Nat]]) == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat,
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat] st
+    '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
+rewrites: 82
+result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 43 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in TEST-PURIFY : 'Foo inS moduleIntersect(asTemplate(natOrderMod),
+    asTemplate(natListMod)) == false .
+rewrites: 19
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : 'NatList inS moduleIntersect(asTemplate(natOrderMod),
+    asTemplate(natListMod)) == false .
+rewrites: 19
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : joint-variable(natListMod, natOrderMod, 'head[
+    'L2:NeNatList]) .
+rewrites: 37
+result Variable: '#makeVariable`(head`[L2:NeNatList`]`):Nat
+==========================================
+reduce in TEST-PURIFY : joint-variable(natOrderMod, natListMod, 'head[
+    'L2:NeNatList]) .
+rewrites: 38
+result Variable: '#makeVariable`(head`[L2:NeNatList`]`):Nat
+==========================================
+reduce in TEST-PURIFY : purify(natOrderMod, natListMod, '_<_['head[
+    'L1:NeNatList],'head['L2:NeNatList]]) .
+rewrites: 89
+result CTerm: '_<_['#makeVariable`(head`[L1:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L2:NeNatList`]`):Nat] st
+    '#makeVariable`(head`[L1:NeNatList`]`):Nat ?= 'head['L1:NeNatList] /\
+    '#makeVariable`(head`[L2:NeNatList`]`):Nat ?= 'head['L2:NeNatList]
+==========================================
+reduce in TEST-PURIFY : purify(natListMod, natOrderMod, '_<_['head[
+    'L1:NeNatList],'head['L2:NeNatList]]) .
+rewrites: 143
+result CTerm: '#makeVariable`(_<_`[#makeVariable`(head`[L1:NeNatList`]`):Nat`,#makeVariable`(head`[L2:NeNatList`]`):Nat`]`):Bool st '#makeVariable`(_<_`[#makeVariable`(head`[L1:NeNatList`]`):Nat`,#makeVariable`(head`[L2:NeNatList`]`):Nat`]`):Bool ?= '_<_['#makeVariable`(head`[L1:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L2:NeNatList`]`):Nat] /\
+    '#makeVariable`(head`[L1:NeNatList`]`):Nat ?= 'head['L1:NeNatList] /\
+    '#makeVariable`(head`[L2:NeNatList`]`):Nat ?= 'head['L2:NeNatList]
+==========================================
+reduce in TEST-PURIFY : purify(natListMod, natOrderMod, '_<_['_+_['head[
+    'L':NeNatList],'head['L':NeNatList]],'_+_['head['L:NeNatList],'head[
+    'L:NeNatList]]]) .
+rewrites: 265
+result CTerm: '#makeVariable`(_<_`[_+_`[#makeVariable`(head`[L':NeNatList`]`):Nat`,#makeVariable`(head`[L':NeNatList`]`):Nat`]`,_+_`[#makeVariable`(head`[L:NeNatList`]`):Nat`,#makeVariable`(head`[L:NeNatList`]`):Nat`]`]`):Bool st '#makeVariable`(_<_`[_+_`[#makeVariable`(head`[L':NeNatList`]`):Nat`,#makeVariable`(head`[L':NeNatList`]`):Nat`]`,_+_`[#makeVariable`(head`[L:NeNatList`]`):Nat`,#makeVariable`(head`[L:NeNatList`]`):Nat`]`]`):Bool ?= '_<_['_+_[
+    '#makeVariable`(head`[L':NeNatList`]`):Nat,
+    '#makeVariable`(head`[L':NeNatList`]`):Nat],'_+_[
+    '#makeVariable`(head`[L:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L:NeNatList`]`):Nat]] /\
+    '#makeVariable`(head`[L':NeNatList`]`):Nat ?= 'head['L':NeNatList] /\
+    '#makeVariable`(head`[L:NeNatList`]`):Nat ?= 'head['L:NeNatList]
+==========================================
+reduce in TEST-PURIFY : purify(natOrderMod, natMultMod, deepLeft) .
+rewrites: 114
+result CTerm: '#makeVariable`(_*_`[1.Nat`,min`[0.Nat`,_*_`[1.Nat`,max`[0.Nat`,_*_`[1.Nat`,_+_`[1.Nat`,1.Nat`]`]`]`]`]`]`):Nat st '#makeVariable`(_*_`[1.Nat`,min`[0.Nat`,_*_`[1.Nat`,max`[0.Nat`,_*_`[1.Nat`,_+_`[1.Nat`,1.Nat`]`]`]`]`]`]`):Nat ?= '_*_['1.Nat,'min['0.Nat,'_*_['1.Nat,'max['0.Nat,'_*_['1.Nat,'_+_['1.Nat,
+    '1.Nat]]]]]]
+==========================================
+reduce in TEST-PURIFY : purify(natMultMod, natOrderMod, deepLeft) .
+rewrites: 7
+result GroundTerm: '_*_['1.Nat,'min['0.Nat,'_*_['1.Nat,'max['0.Nat,'_*_['1.Nat,
+    '_+_['1.Nat,'1.Nat]]]]]]
+==========================================
+reduce in TEST-PURIFY : purify(natOrderMod, natMultMod, deepRight) .
+rewrites: 114
+result CTerm: '#makeVariable`(_*_`[min`[_*_`[max`[_*_`[_+_`[1.Nat`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`):Nat st '#makeVariable`(_*_`[min`[_*_`[max`[_*_`[_+_`[1.Nat`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`):Nat ?= '_*_['min['_*_['max['_*_['_+_['1.Nat,'1.Nat],'1.Nat],'1.Nat],'1.Nat],
+    '1.Nat],'1.Nat]
+==========================================
+reduce in TEST-PURIFY : purify(natOrderMod, natMultMod, deepMixed) .
+rewrites: 193
+result CTerm: '#makeVariable`(_+_`[_*_`[min`[_*_`[max`[_*_`[_+_`[1.Nat`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,_*_`[1.Nat`,min`[0.Nat`,_*_`[1.Nat`,max`[0.Nat`,_*_`[1.Nat`,_+_`[1.Nat`,1.Nat`]`]`]`]`]`]`]`):Nat st '#makeVariable`(_+_`[_*_`[min`[_*_`[max`[_*_`[_+_`[1.Nat`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,1.Nat`]`,_*_`[1.Nat`,min`[0.Nat`,_*_`[1.Nat`,max`[0.Nat`,_*_`[1.Nat`,_+_`[1.Nat`,1.Nat`]`]`]`]`]`]`]`):Nat ?= '_+_['_*_['min['_*_['max['_*_['_+_[
+    '1.Nat,'1.Nat],'1.Nat],'1.Nat],'1.Nat],'1.Nat],'1.Nat],'_*_['1.Nat,'min[
+    '0.Nat,'_*_['1.Nat,'max['0.Nat,'_*_['1.Nat,'_+_['1.Nat,'1.Nat]]]]]]]
+==========================================
+reduce in TEST-PURIFY : purify('MYLISTNAT, 'FVP-NAT-PRED, 'tt.Bool ?= '_<_[
+    'head['L1:NeNatList],'head['L2:NeNatList]]) .
+rewrites: 186
+result PosEqConj: '#makeVariable`(head`[L1:NeNatList`]`):Nat ?= 'head[
+    'L1:NeNatList] /\ '#makeVariable`(head`[L2:NeNatList`]`):Nat ?= 'head[
+    'L2:NeNatList] /\ 'tt.Bool ?= '_<_[
+    '#makeVariable`(head`[L1:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L2:NeNatList`]`):Nat]
+==========================================
+reduce in TEST-PURIFY : purify('FVP-NAT-PRED, 'MYLISTNAT, 'tt.Bool != '_<_[
+    '_+_['head['L':NeNatList],'head['L':NeNatList]],'_+_['head['L:NeNatList],
+    'head['L:NeNatList]]]) .
+rewrites: 286
+result EqConj: '#makeVariable`(head`[L':NeNatList`]`):Nat ?= 'head[
+    'L':NeNatList] /\ '#makeVariable`(head`[L:NeNatList`]`):Nat ?= 'head[
+    'L:NeNatList] /\ 'tt.Bool != '_<_['_+_[
+    '#makeVariable`(head`[L':NeNatList`]`):Nat,
+    '#makeVariable`(head`[L':NeNatList`]`):Nat],'_+_[
+    '#makeVariable`(head`[L:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L:NeNatList`]`):Nat]]
+==========================================
+reduce in TEST-PURIFY : purify('MYLISTNAT, 'FVP-NAT-PRED, 'tt.Bool != '_<_[
+    '_+_['head['L':NeNatList],'head['L':NeNatList]],'_+_['head['L:NeNatList],
+    'head['L:NeNatList]]]) .
+rewrites: 286
+result EqConj: '#makeVariable`(head`[L':NeNatList`]`):Nat ?= 'head[
+    'L':NeNatList] /\ '#makeVariable`(head`[L:NeNatList`]`):Nat ?= 'head[
+    'L:NeNatList] /\ 'tt.Bool != '_<_['_+_[
+    '#makeVariable`(head`[L':NeNatList`]`):Nat,
+    '#makeVariable`(head`[L':NeNatList`]`):Nat],'_+_[
+    '#makeVariable`(head`[L:NeNatList`]`):Nat,
+    '#makeVariable`(head`[L:NeNatList`]`):Nat]]
+Bye.

@@ -9,7 +9,6 @@ This isolates the modules from one another and simplifies the algorithm design.
 
 ```maude
 load variables.maude
-load ../base/full-maude.maude
 
 fmod REFLECT is
   pr META-LEVEL .

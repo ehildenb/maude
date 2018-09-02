@@ -2,7 +2,7 @@ Module Transformations
 ======================
 
 ```maude
-load cterms.maude
+load purification.maude
 load mconstruction.maude
 load variables.maude
 ```
