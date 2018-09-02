@@ -141,5 +141,18 @@ This also assumes that the given theory is topmost.
     eq stripConditions(NeMDS NeMDS')                = stripConditions(NeMDS) stripConditions(NeMDS') .
     eq stripConditions(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
     eq stripConditions( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
+
+    op stripConditions : Module -> [Module] .
+    -----------------------------------------
+    eq stripConditions(M) = fromTemplate(getName(M), stripConditions(asTemplate(M))) .
+
+    op conditionFor : Qid ModuleDeclSet -> [Condition] .
+    ----------------------------------------------------
+    eq conditionFor(Q, crl T => T' if C [ label(Q) AS ] . MDS) = C   .
+    eq conditionFor(Q,  rl T => T'      [ label(Q) AS ] . MDS) = nil .
+
+    op conditionFor : Qid Module -> [Condition] .
+    ---------------------------------------------
+    eq conditionFor(Q, M) = conditionFor(Q, asTemplate(M)) .
 endfm
 ```
