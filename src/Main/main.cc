@@ -68,7 +68,7 @@ int
 main(int argc, char* argv[])
 {
   //
-  //	Global function declatations
+  //	Global function declarations
   //
   void printBanner(ostream& s);
   void printHelp(const char* name);
@@ -81,13 +81,15 @@ main(int argc, char* argv[])
   bool findPrelude(string& directory, string& fileName);
   void checkForPending();
 
-  bool lineWrapping = true;
-  bool handleCtrlC = true;
-  bool readPrelude = true;
+  bool lineWrapping     = true;
+  bool handleCtrlC      = true;
+  bool readPrelude      = true;
   bool forceInteractive = false;
-  bool outputBanner = true;
+  bool outputBanner     = true;
+  bool loadOnce         = false;
+
   int ansiColor = UNDECIDED;
-  int useTecla = UNDECIDED;
+  int useTecla  = UNDECIDED;
 
   for (int i = 1; i < argc; i++)
     {
@@ -130,6 +132,8 @@ main(int argc, char* argv[])
 	    lineWrapping = false;
 	  else if (strcmp(arg, "-batch") == 0)
 	    handleCtrlC = false;
+	  else if (strcmp(arg, "-repeat-loads") == 0)
+	    loadOnce = true;
 	  else if (strcmp(arg, "-interactive") == 0)
 	    forceInteractive = true;
 	  else if (strcmp(arg, "-print-to-stderr") == 0)
@@ -251,6 +255,7 @@ printHelp(const char* name)
     "  -tecla\t\tUse tecla command line editing\n" <<
     "  -no-tecla\t\tDo not use tecla command line editing\n" <<
     "  -batch\t\tRun in batch mode\n" <<
+    "  -repeat-loads\t\tRe-read file on every `load`\n" <<
     "  -interactive\t\tRun in interactive mode\n" <<
     "  -print-to-stderr\tPrint attribute should use stderr rather than stdout\n" <<
     "  -random-seed=<int>\tSet seed for random number generator\n" <<
