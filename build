@@ -25,6 +25,7 @@ build_clean() {
     make clean || true
     git clean -dfx
     [[ ! -f "ext/cvc4/Makefile" ]]   || ( cd "ext/cvc4"   ; make distclean )
+    [[ ! -f "ext/yices2/Makefile" ]] || ( cd "ext/yices2" ; make clean     )
     ( cd "$contrib_dir"
       make clean
     )
@@ -47,6 +48,16 @@ build_cvc4() {
     )
 }
 
+build_yices2() {
+    mkdir -p $build_dir
+    (   cd ext/yices2/
+        autoconf
+        ./configure --prefix="$build_dir"
+        make -s -j4
+        make -s install
+    )
+}
+
 build_maude() {
     aclocal
     autoconf
@@ -64,6 +75,11 @@ build_maude() {
 build_maude_cvc4() {
     build_cvc4
     build_maude --with-cvc4 CVC4_LIB="-L$lib_dir -Wl,-R$lib_dir -lcvc4"
+}
+
+build_maude_yices2() {
+    build_yices2
+    build_maude --with-yices2 YICES2_LIB="-L$lib_dir -Wl,-R$lib_dir -lyices"
 }
 
 build_tangle() {
@@ -98,6 +114,8 @@ build_test_all() {
     git checkout -- src/Mixfix/tokenizer.cc
     build_maude_cvc4
     build_test tests/Misc/smtTest
+    build_maude_yices2
+    build_test tests/Misc/smtTest
 }
 
 # Main
@@ -109,6 +127,7 @@ case "$build_command" in
     deps)     build_deps     "$@" ;;
     maude)    build_maude    "$@" ;;
     maude-cvc4)  build_maude_cvc4 "$@" ;;
+    maude-yices2) build_maude_yices2 "$@" ;;
     tangle)   build_tangle   "$@" ;;
     test)     build_test     "$@" ;;
     test-all) build_test_all "$@" ;;
@@ -121,6 +140,7 @@ case "$build_command" in
     $0 deps:             clone git submodules and build CVC4.
     $0 maude <options>:  build maude passing <options> to the ./configure step.
     $0 maude-cvc4 ...:   build maude using the cvc4 git submodule
+    $0 maude-yices2 ...: build maude using the yices2 git submodule
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
 
     developers: $0 test <test-name>

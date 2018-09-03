@@ -6,3 +6,6 @@
 	path = ext/cvc4
 	url = https://github.com/CVC4/CVC4
 	ignore = untracked
+[submodule "ext/yices2"]
+	path = ext/yices2
+	url = https://github.com/SRI-CSL/yices2
