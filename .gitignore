@@ -47,6 +47,7 @@ lib*.a
 /contrib/tools/lmc/lgraph-search.maude
 /contrib/tools/lmc/lmc.maude
 /contrib/tools/meta/cterms.maude
+/contrib/tools/meta/eqform.maude
 /contrib/tools/meta/foform.maude
 /contrib/tools/meta/mconstruction.maude
 /contrib/tools/meta/metalevel-ext.maude

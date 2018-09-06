@@ -5,6 +5,7 @@ TESTS = \
 	structured-names.maude \
 	cterms.maude \
 	foform.maude \
+	eqform.maude \
 	mtemplate.maude \
 	mtransform.maude \
 	mconstruction.maude \
@@ -18,6 +19,7 @@ RESULT_FILES = \
 	structured-names.expected \
 	cterms.expected \
 	foform.expected \
+	eqform.expected \
 	mtemplate.expected \
 	mtransform.expected \
 	mconstruction.expected \
