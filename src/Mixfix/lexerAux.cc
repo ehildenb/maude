@@ -23,8 +23,9 @@
 //
 //	Auxiliary functions and data needed by lexical analyzer.
 //
-#define MAX_IN_DEPTH	10
+#define MAX_IN_DEPTH	50
 
+int maxInDepthReloads = 10;
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
 int dirMarkerStack[MAX_IN_DEPTH];
@@ -196,7 +197,7 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
       return true;
   }
   loadedFiles.append(relPath);
-  if (!loadOnce && inStackPtr >= MAX_IN_DEPTH)
+  if (!loadOnce && inStackPtr >= maxInDepthReloads)
     {
       IssueWarning(LineNumber(lineNr) <<
 		   ": ins nested too deeply - couldn't open file " <<
