@@ -242,7 +242,7 @@ endfm
 
 fmod EQFORM-NNF is
   pr EQFORM .
-  var F : Form .
+  var F G : Form .
   var CF CG : NoTrueForm .
   var DF DG : NoFalseForm .
   var NL : NormLit .
@@ -250,10 +250,10 @@ fmod EQFORM-NNF is
 
   op nnf : Form -> [Form] .
 
-  eq nnf(CF /\ CG) = nnf(CF) /\ nnf(CG) .
-  eq nnf(DF \/ DG) = nnf(DF) \/ nnf(DG) .
-  eq nnf(~ (CF /\ CG)) = nnf(~ CF) \/ nnf(~ CG) .
-  eq nnf(~ (DF \/ DG)) = nnf(~ DF) /\ nnf(~ DG) .
+ ceq nnf(F /\ G) = nnf(F) /\ nnf(G) if F =/= tt /\ G =/= tt .
+ ceq nnf(F \/ G) = nnf(F) \/ nnf(G) if F =/= ff /\ G =/= ff .
+ ceq nnf(~ (F /\ G)) = nnf(~ F) \/ nnf(~ G) if F =/= tt /\ G =/= tt .
+ ceq nnf(~ (F \/ G)) = nnf(~ F) /\ nnf(~ G) if F =/= ff /\ G =/= ff .
   eq nnf(~ ~ F) = nnf(F) .
   eq nnf(~ tt) = ff .
   eq nnf(~ ff) = tt .
@@ -266,7 +266,7 @@ endfm
 ---       Removes all negation and unneeded true/false
 fmod EQFORM-NEF is
   pr EQFORM-NNF .
-  var F : Form .
+  var F G : Form .
   var NF : NormForm .
   var EF : EqForm .
   var CF : NoTrueForm .
@@ -277,10 +277,10 @@ fmod EQFORM-NEF is
 
   eq nef(F) = nef1(nnf(F)) .
   eq nef1(NF) = NF .
-  eq nef1(ff /\ CF) = ff .
-  eq nef1(tt \/ DF) = tt .
-  eq nef1(EF /\ CF) = nef1(EF /\ nef1(CF)) [owise] .
-  eq nef1(EF \/ DF) = nef1(EF \/ nef1(DF)) [owise] .
+ ceq nef1(ff /\ F) = ff if F =/= tt .
+ ceq nef1(tt \/ F) = tt if F =/= ff .
+ ceq nef1(F /\ G) = nef1(F /\ nef1(G)) if F =/= tt /\ G =/= tt [owise] .
+ ceq nef1(F \/ G) = nef1(F \/ nef1(G)) if F =/= ff /\ G =/= ff [owise] .
 endfm
 
 fth FUN is inc TRIV .
@@ -298,28 +298,30 @@ endfm
 
 fmod EQFORM-CNF-IMPL is
   pr EQFORM-NEF .
+  var F G H : Form .
   var EF EG EH : EqForm .
   var NL : NormLit .
 
   op cnf-impl1 : NormForm -> [NormForm] .
 
   eq cnf-impl1(NL) = NL .
-  eq cnf-impl1((EF /\ EG) \/ EH) = cnf-impl1((EF \/ EH) /\ (EG \/ EH)) .
-  eq cnf-impl1(EF \/ EG) = cnf-impl1(EF) \/ cnf-impl1(EG) [owise] .
-  eq cnf-impl1(EF /\ EG) = cnf-impl1(EF) /\ cnf-impl1(EG) .
+ ceq cnf-impl1((F /\ G) \/ H) = cnf-impl1((F \/ H) /\ (G \/ H)) if F =/= tt /\ G =/= tt /\ H =/= ff .
+ ceq cnf-impl1(F \/ G) = cnf-impl1(F) \/ cnf-impl1(G) if F =/= ff /\ G =/= ff [owise] .
+ ceq cnf-impl1(F /\ G) = cnf-impl1(F) /\ cnf-impl1(G) if F =/= tt /\ G =/= tt .
 endfm
 
 fmod EQFORM-DNF-IMPL is
   pr EQFORM-NEF .
+  var F G H : Form .
   var EF EG EH : EqForm .
   var NL : NormLit .
 
   op dnf-impl1 : NormForm -> [NormForm] .
 
   eq dnf-impl1(NL) = NL .
-  eq dnf-impl1((EF \/ EG) /\ EH) = dnf-impl1((EF /\ EH) \/ (EG /\ EH)) .
-  eq dnf-impl1(EF /\ EG) = dnf-impl1(EF) /\ dnf-impl1(EG) [owise] .
-  eq dnf-impl1(EF \/ EG) = dnf-impl1(EF) \/ dnf-impl1(EG) .
+ ceq dnf-impl1((F \/ G) /\ H) = dnf-impl1((F /\ H) \/ (G /\ H)) if F =/= ff /\ G =/= ff /\ H =/= tt .
+ ceq dnf-impl1(F /\ G) = dnf-impl1(F) /\ dnf-impl1(G) if F =/= tt /\ G =/= tt [owise] .
+ ceq dnf-impl1(F \/ G) = dnf-impl1(F) \/ dnf-impl1(G) if F =/= ff /\ G =/= ff .
 endfm
 
 view cnf from FUN to EQFORM-CNF-IMPL is sort Elt to NormForm . op F to cnf-impl1 . endv
