@@ -42,10 +42,10 @@ A:  Because true and false are actually _identities_ for the operators
     we are performing operations over these operators as sets, we use true
     and false as the set identity operators respectively.
 
-   See the NNF module below to see how to traverse over formulas as TREES.
-   See the NEF, DNF, and CNF modules below for more SET-like examples.
-   Note that NEF stands for Normal Equational Form. It converts formulas
-   of type Form into type NormForm.
+    See the NNF module below to see how to traverse over formulas as TREES.
+    See the NEF, DNF, and CNF modules below for more SET-like examples.
+    Note that NEF stands for Normal Equational Form. It converts formulas
+    of type Form into type NormForm.
 
 Style Notes
 -----------
@@ -53,7 +53,7 @@ Style Notes
 -   Name variables of different formula sorts consistently for readability,
     e.g. 'C'X for NoTrueForm variables safe for conjunctions,
          'D'X for NoFalseForm variables safe for disjunctions, or
-         'N'X for NormForm variables that we prefer to use
+         'N'X for NormForm variables
 -   Think about if using TREE-like traversal or SET-like traversal makes more
     sense for your application as your write code
 -   Be sure to use a variable appropriate for the kind of iteration you will
@@ -76,16 +76,20 @@ Currently, this list includes:
 Note that, due to preregularity requirements, the number of sorts grows
 in a multiplicative fashion every time one applies a functor to the
 formula data strcuture. For this reason, to avoid generating many unneeded
-sorts, we only generate list/set liftings for:
+sorts, we only generate functor liftings for:
 
 A.  Subsorts of EqForm (12 sorts in total)
 B.  NormForm
 C.  Form
 
 In practice, these are the primary cases that we care about, due to the
-considerations mentioned above. Since the list/set functors generate a
-unique sort for non-empty and possibly empty lists/sets, we actually
-generate 2 * N + 1 additional sorts each time (29 assuming the 14 above).
+considerations mentioned above.
+
+Note: many data functors (such as list and set) generate a unique sort for
+non-empty and possibly empty data structures, so that we actually generate
+2 * N + 1 additional sorts each time, where the extra sort comes from a
+base sort which helps ensure preregularity in complex cases (this gives
+29 sorts generated for both the list and set functor assuming the 14 above).
 
 ```maude
 set include BOOL off .
