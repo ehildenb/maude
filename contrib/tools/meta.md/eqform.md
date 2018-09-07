@@ -252,8 +252,8 @@ fmod EQFORM-NNF is
 
   eq nnf(CF /\ CG) = nnf(CF) /\ nnf(CG) .
   eq nnf(DF \/ DG) = nnf(DF) \/ nnf(DG) .
-  eq nnf(~ (CF /\ CG)) = nnf(~ CF) /\ nnf(~ CG) .
-  eq nnf(~ (DF \/ DG)) = nnf(~ DF) \/ nnf(~ DG) .
+  eq nnf(~ (CF /\ CG)) = nnf(~ CF) \/ nnf(~ CG) .
+  eq nnf(~ (DF \/ DG)) = nnf(~ DF) /\ nnf(~ DG) .
   eq nnf(~ ~ F) = nnf(F) .
   eq nnf(~ tt) = ff .
   eq nnf(~ ff) = tt .
