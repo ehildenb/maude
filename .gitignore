@@ -44,6 +44,7 @@ lib*.a
 
 # tangled files
 /contrib/systems/*
+/contrib/tools/fvp/numbers.maude
 /contrib/tools/lmc/lgraph-search.maude
 /contrib/tools/lmc/lmc.maude
 /contrib/tools/meta/cterms.maude
