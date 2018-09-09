@@ -6,7 +6,15 @@ TESTS = \
 	bakery.maude \
 	imp.maude \
 	caut.maude \
-	bitswap.maude
+	qlock.maude \
+	rw.maude \
+	bitswap.maude \
+	token.maude \
+	choice.maude \
+	cycle.maude \
+	oc.maude \
+	vending.maude \
+	dijkstra.maude
 
 RESULT_FILES = \
 	nim.expected \
@@ -14,6 +22,14 @@ RESULT_FILES = \
 	bakery.expected \
 	imp.expected \
 	caut.expected \
-	bitswap.expected
+	qlock.expected \
+	rw.expected \
+	bitswap.expected \
+	token.expected \
+	choice.expected \
+	cycle.expected \
+	oc.expected \
+	vending.expected \
+	dijkstra.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)
