@@ -7,6 +7,35 @@ set include NAT  off .
 set include INT  off .
 ```
 
+FVP Booleans
+------------
+
+```maude
+fmod FVP-BOOL is
+
+    sort Bool .
+    -----------
+    var B : Bool .
+
+   ops tt ff : -> Bool [ctor] .
+    ---------------------------
+
+    op _/\_ : Bool Bool -> Bool [assoc comm] .
+    op _\/_ : Bool Bool -> Bool [assoc comm] .
+    ------------------------------------------
+    eq tt /\ B = B [variant] .
+    eq ff \/ B = B [variant] .
+
+    eq ff /\ B = ff [variant] .
+    eq tt \/ B = tt [variant] .
+
+    op ~_ : Bool -> Bool .
+    ----------------------
+    eq ~ tt = ff [variant] .
+    eq ~ ff = tt [variant] .
+endfm
+```
+
 FVP Natural Numbers
 -------------------
 
@@ -140,28 +169,29 @@ endfm
 Predicates over Numbers
 -----------------------
 
-```
+```maude
 fmod FVP-NAT-PRED is
    protecting FVP-NAT .
+   protecting FVP-BOOL .
 
     vars   N N' :   Nat .
     var  NzN    : NzNat .
 
-    op _==_  : Nat Nat -> Bool* [comm] .
-    op _=/=_ : Nat Nat -> Bool* [comm] .
-    ------------------------------------
+    op _==_  : Nat Nat -> Bool [comm] .
+    op _=/=_ : Nat Nat -> Bool [comm] .
+    -----------------------------------
     eq N       == N = tt [variant] .
     eq N + NzN == N = ff [variant] .
 
     eq N =/= N' = ~ (N == N') [variant] .
 
-    op _<_ : Nat Nat -> Bool* .
-    ---------------------------
+    op _<_ : Nat Nat -> Bool .
+    --------------------------
     eq N      < N + NzN = tt [variant] .
     eq N + N' < N       = ff [variant] .
 
-    op _<=_ : Nat Nat -> Bool* .
-    ----------------------------
+    op _<=_ : Nat Nat -> Bool .
+    ---------------------------
     eq N + NzN <= N      = ff [variant] .
     eq N       <= N + N' = tt [variant] .
 endfm

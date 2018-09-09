@@ -1,5 +1,10 @@
 load ../../../contrib/tools/fvp/numbers.maude
 
+select FVP-BOOL .
+
+get variants B:Bool .
+get variants B:Bool /\ ~ B:Bool .
+
 select FVP-NAT .
 
 get variants N:Nat .
@@ -22,3 +27,14 @@ select FVP-INT .
 get variants I:Int - N:Nat .
 get variants min(N:Int, M:Int) + max(N:Int, M:Int) .
 get variants NzI:NzInt * NzN:NzNat .
+
+select FVP-NAT-PRED .
+
+get variants N:Nat == N:Nat + NzN:NzNat .
+get variants N:Nat == NzN:NzNat .
+
+get variants NzN:NzNat < N:Nat + NzN:NzNat .
+get variants N:Nat < NzN:NzNat .
+
+get variants NzN:NzNat <= N:Nat + NzN:NzNat .
+get variants N:Nat <= NzN:NzNat .

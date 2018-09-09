@@ -1,4 +1,34 @@
 ==========================================
+get variants in FVP-BOOL : B .
+
+Variant #1
+rewrites: 0
+Bool: #1:Bool
+B --> #1:Bool
+
+No more variants.
+rewrites: 0
+==========================================
+get variants in FVP-BOOL : B /\ ~ B .
+
+Variant #1
+rewrites: 0
+Bool: #1:Bool /\ ~ #1:Bool
+B --> #1:Bool
+
+Variant #2
+rewrites: 3
+Bool: ff
+B --> tt
+
+Variant #3
+rewrites: 3
+Bool: ff
+B --> ff
+
+No more variants.
+rewrites: 3
+==========================================
 get variants in FVP-NAT : N .
 
 Variant #1
@@ -301,4 +331,130 @@ NzI --> 1
 
 No more variants.
 rewrites: 2
+==========================================
+get variants in FVP-NAT-PRED : N == N + NzN .
+
+Variant #1
+rewrites: 1
+Bool: ff
+N --> #1:Nat
+NzN --> #2:NzNat
+
+No more variants.
+rewrites: 1
+==========================================
+get variants in FVP-NAT-PRED : N == NzN .
+
+Variant #1
+rewrites: 0
+Bool: #1:Nat == #2:NzNat
+N --> #1:Nat
+NzN --> #2:NzNat
+
+Variant #2
+rewrites: 3
+Bool: tt
+N --> %1:NzNat
+NzN --> %1:NzNat
+
+Variant #3
+rewrites: 3
+Bool: ff
+N --> %1:Nat
+NzN --> %1:Nat + %2:NzNat
+
+Variant #4
+rewrites: 3
+Bool: ff
+N --> %1:NzNat + %2:NzNat
+NzN --> %1:NzNat
+
+No more variants.
+rewrites: 3
+==========================================
+get variants in FVP-NAT-PRED : NzN < N + NzN .
+
+Variant #1
+rewrites: 0
+Bool: #1:NzNat < #2:Nat + #1:NzNat
+NzN --> #1:NzNat
+N --> #2:Nat
+
+Variant #2
+rewrites: 2
+Bool: tt
+NzN --> %1:NzNat
+N --> %2:NzNat
+
+Variant #3
+rewrites: 2
+Bool: ff
+NzN --> %1:NzNat
+N --> 0
+
+No more variants.
+rewrites: 2
+==========================================
+get variants in FVP-NAT-PRED : N < NzN .
+
+Variant #1
+rewrites: 0
+Bool: #1:Nat < #2:NzNat
+N --> #1:Nat
+NzN --> #2:NzNat
+
+Variant #2
+rewrites: 2
+Bool: tt
+N --> %1:Nat
+NzN --> %1:Nat + %2:NzNat
+
+Variant #3
+rewrites: 2
+Bool: ff
+N --> %2:Nat + %1:NzNat
+NzN --> %1:NzNat
+
+No more variants.
+rewrites: 2
+==========================================
+get variants in FVP-NAT-PRED : NzN <= N + NzN .
+
+Variant #1
+rewrites: 1
+Bool: tt
+NzN --> #1:NzNat
+N --> #2:Nat
+
+No more variants.
+rewrites: 1
+==========================================
+get variants in FVP-NAT-PRED : N <= NzN .
+
+Variant #1
+rewrites: 0
+Bool: #1:Nat <= #2:NzNat
+N --> #1:Nat
+NzN --> #2:NzNat
+
+Variant #2
+rewrites: 3
+Bool: ff
+N --> %1:NzNat + %2:NzNat
+NzN --> %1:NzNat
+
+Variant #3
+rewrites: 3
+Bool: tt
+N --> %1:NzNat
+NzN --> %2:Nat + %1:NzNat
+
+Variant #4
+rewrites: 3
+Bool: tt
+N --> %1:Nat
+NzN --> %1:Nat + %2:NzNat
+
+No more variants.
+rewrites: 3
 Bye.
