@@ -413,6 +413,7 @@ AC_CONFIG_FILES([Makefile
 		 tests/tools/meta/Makefile
 		 tests/tools/lmc/Makefile
 		 tests/tools/varsat/Makefile
+		 tests/tools/fvp/Makefile
 		 tests/systems/Makefile
 ])
 
