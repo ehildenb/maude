@@ -1,1 +1,169 @@
+==========================================
+get variants in FVP-NAT : N .
+
+Variant #1
+rewrites: 0
+Nat: #1:Nat
+N --> #1:Nat
+
+No more variants.
+rewrites: 0
+==========================================
+get variants in FVP-NAT : N monus M .
+
+Variant #1
+rewrites: 0
+Nat: #1:Nat monus #2:Nat
+N --> #1:Nat
+M --> #2:Nat
+
+Variant #2
+rewrites: 2
+Nat: 0
+N --> %1:Nat
+M --> %1:Nat + %2:Nat
+
+Variant #3
+rewrites: 2
+Nat: %2:Nat
+N --> %1:Nat + %2:Nat
+M --> %1:Nat
+
+No more variants.
+rewrites: 2
+==========================================
+get variants in FVP-NAT : min(M, NzN:NzNat) .
+
+Variant #1
+rewrites: 0
+Nat: min(#1:Nat, #2:NzNat)
+M --> #1:Nat
+NzN:NzNat --> #2:NzNat
+
+Variant #2
+rewrites: 3
+NzNat: %1:NzNat
+M --> %1:NzNat
+NzN:NzNat --> %2:Nat + %1:NzNat
+
+Variant #3
+rewrites: 3
+Nat: %1:Nat
+M --> %1:Nat
+NzN:NzNat --> %1:Nat + %2:NzNat
+
+Variant #4
+rewrites: 3
+NzNat: %1:NzNat
+M --> %2:Nat + %1:NzNat
+NzN:NzNat --> %1:NzNat
+
+No more variants.
+rewrites: 3
+==========================================
+get variants in FVP-NAT : max(NzN:NzNat, 1 + NzN:NzNat) .
+
+Variant #1
+rewrites: 1
+NzNat: 1 + #1:NzNat
+NzN:NzNat --> #1:NzNat
+
+No more variants.
+rewrites: 1
+==========================================
+get variants in FVP-NAT : min(N, M) + max(N, M) .
+
+Variant #1
+rewrites: 0
+Nat: min(#1:Nat, #2:Nat) + max(#1:Nat, #2:Nat)
+N --> #1:Nat
+M --> #2:Nat
+
+Variant #2
+rewrites: 4
+Nat: %1:Nat + %1:Nat + %2:Nat
+N --> %1:Nat
+M --> %1:Nat + %2:Nat
+
+Variant #3
+rewrites: 4
+Nat: %1:Nat + %1:Nat + %2:Nat
+N --> %1:Nat + %2:Nat
+M --> %1:Nat
+
+No more variants.
+rewrites: 4
+==========================================
+get variants in MULT-FVP-NAT : N:Nat * M:Nat .
+
+Variant #1
+rewrites: 0
+Nat: #1:Nat * #2:Nat
+N:Nat --> #1:Nat
+M:Nat --> #2:Nat
+
+Variant #2
+rewrites: 4
+Nat: 0
+N:Nat --> 0
+M:Nat --> %1:Nat
+
+Variant #3
+rewrites: 4
+Nat: 0
+N:Nat --> %1:Nat
+M:Nat --> 0
+
+Variant #4
+rewrites: 4
+Nat: %1:Nat
+N:Nat --> 1
+M:Nat --> %1:Nat
+
+Variant #5
+rewrites: 4
+Nat: %1:Nat
+N:Nat --> %1:Nat
+M:Nat --> 1
+
+No more variants.
+rewrites: 4
+==========================================
+get variants in MULT-FVP-NAT : M:Nat * 1 + NzN:NzNat .
+
+Variant #1
+rewrites: 2
+Nat: #1:Nat + #1:Nat * #2:NzNat
+M:Nat --> #1:Nat
+NzN:NzNat --> #2:NzNat
+
+Variant #2
+rewrites: 5
+Nat: 0
+M:Nat --> 0
+NzN:NzNat --> %1:NzNat
+
+Variant #3
+rewrites: 5
+NzNat: 1 + %1:NzNat
+M:Nat --> 1
+NzN:NzNat --> %1:NzNat
+
+Variant #4
+rewrites: 5
+Nat: %1:Nat + %1:Nat
+M:Nat --> %1:Nat
+NzN:NzNat --> 1
+
+No more variants.
+rewrites: 5
+==========================================
+get variants in FVP-NUMBERS : 3 .
+
+Variant #1
+rewrites: 4
+NzNat: 1 + 1 + 1
+
+No more variants.
+rewrites: 4
 Bye.

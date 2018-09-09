@@ -1,1 +1,18 @@
 load ../../../contrib/tools/fvp/numbers.maude
+
+select FVP-NAT .
+
+get variants N:Nat .
+get variants N:Nat monus M:Nat .
+get variants min(NzN:NzNat, M:Nat) .
+get variants max(1 + NzN:NzNat, NzN:NzNat) .
+get variants min(N:Nat, M:Nat) + max(N:Nat, M:Nat) .
+
+select MULT-FVP-NAT .
+
+get variants N:Nat * M:Nat .
+get variants (1 + NzN:NzNat) * M:Nat .
+
+select FVP-NUMBERS .
+
+get variants 3 .
