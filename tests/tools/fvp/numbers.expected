@@ -94,66 +94,66 @@ M --> %1:Nat
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-FVP-NAT : N:Nat * M:Nat .
+get variants in MULT-FVP-NAT : N * M:Nat .
 
 Variant #1
 rewrites: 0
 Nat: #1:Nat * #2:Nat
-N:Nat --> #1:Nat
+N --> #1:Nat
 M:Nat --> #2:Nat
 
 Variant #2
 rewrites: 4
 Nat: 0
-N:Nat --> 0
+N --> 0
 M:Nat --> %1:Nat
 
 Variant #3
 rewrites: 4
 Nat: 0
-N:Nat --> %1:Nat
+N --> %1:Nat
 M:Nat --> 0
 
 Variant #4
 rewrites: 4
 Nat: %1:Nat
-N:Nat --> 1
+N --> 1
 M:Nat --> %1:Nat
 
 Variant #5
 rewrites: 4
 Nat: %1:Nat
-N:Nat --> %1:Nat
+N --> %1:Nat
 M:Nat --> 1
 
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-FVP-NAT : M:Nat * 1 + NzN:NzNat .
+get variants in MULT-FVP-NAT : M:Nat * 1 + NzN .
 
 Variant #1
 rewrites: 2
 Nat: #1:Nat + #1:Nat * #2:NzNat
 M:Nat --> #1:Nat
-NzN:NzNat --> #2:NzNat
+NzN --> #2:NzNat
 
 Variant #2
 rewrites: 5
 Nat: 0
 M:Nat --> 0
-NzN:NzNat --> %1:NzNat
+NzN --> %1:NzNat
 
 Variant #3
 rewrites: 5
 NzNat: 1 + %1:NzNat
 M:Nat --> 1
-NzN:NzNat --> %1:NzNat
+NzN --> %1:NzNat
 
 Variant #4
 rewrites: 5
 Nat: %1:Nat + %1:Nat
 M:Nat --> %1:Nat
-NzN:NzNat --> 1
+NzN --> 1
 
 No more variants.
 rewrites: 5

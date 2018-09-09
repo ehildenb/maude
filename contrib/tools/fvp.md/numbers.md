@@ -59,13 +59,15 @@ endfm
 fmod MULT-FVP-NAT is
    protecting FVP-NAT .
 
-    var X : Nat . vars X' Y' : NzNat .
+    var    N      :   Nat .
+    vars NzN NzN' : NzNat .
 
     op _*_ : Nat Nat -> Nat [assoc comm] .
     --------------------------------------
-    eq X *  0        =  0 [variant] .
-    eq X *  1        =  X [variant] .
-    eq X * (X' + Y') = (X * X') + (X * Y') .
+    eq N * 0 =  0 [variant] .
+    eq N * 1 =  N [variant] .
+
+    eq N * (NzN + NzN') = (N * NzN) + (N * NzN') .
 endfm
 
 fmod FVP-NUMBERS is
@@ -90,7 +92,7 @@ FVP Integer Extension
 
 ```maude
 fmod FVP-INT is
-   protecting FVP-NAT .
+   protecting MULT-FVP-NAT .
 
     sorts NzNeg Int NzInt .
     -----------------------
@@ -116,6 +118,13 @@ fmod FVP-INT is
     op _-_ : Int Int -> Int .
     -------------------------
     eq I - I' = I + (- I') [variant] .
+
+    op _*_ : Int Int -> Int [ditto] .
+    ---------------------------------
+    eq I * 0 = 0 [variant] .
+    eq I * 1 = I [variant] .
+
+    eq I * (NzI + NzI') = (I * NzI) + (I * NzI') .
 endfm
 ```
 
