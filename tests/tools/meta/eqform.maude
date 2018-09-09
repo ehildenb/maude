@@ -1,0 +1,48 @@
+load ../../../contrib/tools/meta/eqform.maude
+
+fmod EQFORM-TEST is
+  inc EQFORM-CNF .
+  inc EQFORM-DNF .
+  inc EQFORM-LIST .
+  inc EQFORM-SET .
+
+  ops t1 t2 : -> Term .
+  ops a b c d e : -> Lit .
+
+  eq a = 'F:Foo ?= 'G:Bar .
+  eq b = 'F:Foo != 'G:Bar .
+  eq c = 'H:Baz ?= 'I:Wop .
+  eq d = 'H:Baz != 'I:Wop .
+  eq e = 'U:Stu ?= 'W:Roc .
+
+  op f1 : -> Form .
+  eq f1 = ~ (a /\ b) \/ ~ ((c \/ d) /\ t1 ?= t2 \/ (a /\ ff)) .
+
+  op f2 : -> Form .
+  eq f2 = (f1 /\ ~ e) /\ (d \/ tt) .
+endfm
+
+--- sort check
+reduce f1 :: Form .
+reduce f2 :: Form .
+
+--- testing identities
+reduce tt /\ ff .
+reduce tt \/ ff .
+
+--- testing idempotency
+reduce tt /\ F:Form .
+reduce ff \/ F:Form .
+
+--- testing transformations
+reduce nnf(f1) .
+reduce nnf(f2) .
+
+reduce nef(f1) .
+reduce nef(f2) .
+
+reduce cnf(f1) .
+reduce cnf(f2) .
+
+reduce dnf(f1) .
+reduce dnf(f2) .
