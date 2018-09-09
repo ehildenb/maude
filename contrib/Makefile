@@ -15,8 +15,6 @@ system_names:=bakery     bank-account bitswap  caut \
               thermostat token        vending
 system_files:=$(patsubst %, systems/%.maude, $(system_names))
 
-system_tests:=../tests/systems/bitswap.maude
-
 tangler_repo=$(CURDIR)/pandoc-tangle
 tangler=$(tangler_repo)/tangle.lua
 LUA_PATH=$(tangler_repo)/?.lua;;
@@ -50,14 +48,10 @@ tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 tools/lmc/%.maude: tools/lmc.md/%.md
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
-systems: $(system_files) $(system_tests)
+systems: $(system_files)
 systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
-
-../tests/systems/%.maude: systems.md/%.md $(tangler)
-	mkdir -p $(dir $@)
-	pandoc --from markdown --to $(tangler) --metadata=code:.test $< > $@
 
 # Papers and write-ups
 # --------------------
