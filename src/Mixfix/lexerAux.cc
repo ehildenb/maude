@@ -197,7 +197,9 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
       return true;
   }
   loadedFiles.append(relPath);
-  if (!loadOnce && inStackPtr >= maxInDepthReloads)
+  if (  (inStackPtr >= MAX_IN_DEPTH)
+     || (!loadOnce && inStackPtr >= maxInDepthReloads)
+     )
     {
       IssueWarning(LineNumber(lineNr) <<
 		   ": ins nested too deeply - couldn't open file " <<
