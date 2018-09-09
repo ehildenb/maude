@@ -63,8 +63,8 @@ fmod MULT-FVP-NAT is
 
     op _*_ : Nat Nat -> Nat [assoc comm] .
     --------------------------------------
-    eq X *  0        =  0 .
-    eq X *  1        =  X .
+    eq X *  0        =  0 [variant] .
+    eq X *  1        =  X [variant] .
     eq X * (X' + Y') = (X * X') + (X * Y') .
 endfm
 
