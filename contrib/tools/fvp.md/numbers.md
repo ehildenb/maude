@@ -119,6 +119,15 @@ fmod FVP-INT is
     -------------------------
     eq I - I' = I + (- I') [variant] .
 
+    op min : Int Int -> Int [ditto] .
+    op max : Int Int -> Int [ditto] .
+    ---------------------------------
+    eq min(- NzN, NzN') = - NzN  [variant] .
+    eq max(- NzN, NzN') =   NzN' [variant] .
+
+    eq min(- NzN, - NzN') = - max(NzN, NzN') [variant] .
+    eq max(- NzN, - NzN') = - min(NzN, NzN') [variant] .
+
     op _*_ : Int Int -> Int [ditto] .
     ---------------------------------
     eq I * 0 = 0 [variant] .

@@ -16,3 +16,9 @@ get variants (1 + NzN:NzNat) * M:Nat .
 select FVP-NUMBERS .
 
 get variants 3 .
+
+select FVP-INT .
+
+get variants I:Int - N:Nat .
+get variants min(N:Int, M:Int) + max(N:Int, M:Int) .
+get variants NzI:NzInt * NzN:NzNat .

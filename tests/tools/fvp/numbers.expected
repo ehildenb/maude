@@ -166,4 +166,139 @@ NzNat: 1 + 1 + 1
 
 No more variants.
 rewrites: 4
+==========================================
+get variants in FVP-INT : I - N .
+
+Variant #1
+rewrites: 1
+Int: #1:Int + - #2:Nat
+I --> #1:Int
+N --> #2:Nat
+
+Variant #2
+rewrites: 4
+NzNeg: - (%1:NzNat + %2:NzNat)
+I --> - %1:NzNat
+N --> %2:NzNat
+
+Variant #3
+rewrites: 4
+Int: - %2:Nat
+I --> %1:NzNat
+N --> %1:NzNat + %2:Nat
+
+Variant #4
+rewrites: 4
+Int: %1:Int
+I --> %1:Int
+N --> 0
+
+Variant #5
+rewrites: 5
+Nat: 0
+I --> #1:NzNat
+N --> #1:NzNat
+
+No more variants.
+rewrites: 5
+==========================================
+get variants in FVP-INT : min(N:Int, M:Int) + max(N:Int, M:Int) .
+
+Variant #1
+rewrites: 0
+Int: min(#1:Int, #2:Int) + max(#1:Int, #2:Int)
+N:Int --> #1:Int
+M:Int --> #2:Int
+
+Variant #2
+rewrites: 10
+Int: %2:NzNat + - %1:NzNat
+N:Int --> %2:NzNat
+M:Int --> - %1:NzNat
+
+Variant #3
+rewrites: 10
+Int: %2:NzNat + - %1:NzNat
+N:Int --> - %1:NzNat
+M:Int --> %2:NzNat
+
+Variant #4
+rewrites: 10
+Int: - min(%1:NzNat, %2:NzNat) + - max(%1:NzNat, %2:NzNat)
+N:Int --> - %1:NzNat
+M:Int --> - %2:NzNat
+
+Variant #5
+rewrites: 10
+Nat: %1:Nat + %1:Nat + %2:Nat
+N:Int --> %1:Nat
+M:Int --> %1:Nat + %2:Nat
+
+Variant #6
+rewrites: 10
+Nat: %1:Nat + %1:Nat + %2:Nat
+N:Int --> %1:Nat + %2:Nat
+M:Int --> %1:Nat
+
+Variant #7
+rewrites: 18
+Int: - #2:Nat
+N:Int --> #1:NzNat
+M:Int --> - (#1:NzNat + #2:Nat)
+
+Variant #8
+rewrites: 18
+Int: - #2:Nat
+N:Int --> - (#1:NzNat + #2:Nat)
+M:Int --> #1:NzNat
+
+Variant #9
+rewrites: 18
+NzNeg: - (#1:NzNat + #1:NzNat + #2:Nat)
+N:Int --> - #1:NzNat
+M:Int --> - (#1:NzNat + #2:Nat)
+
+Variant #10
+rewrites: 18
+NzNeg: - (#1:NzNat + #1:NzNat + #2:Nat)
+N:Int --> - (#1:NzNat + #2:Nat)
+M:Int --> - #1:NzNat
+
+Variant #11
+rewrites: 20
+Nat: 0
+N:Int --> %1:NzNat
+M:Int --> - %1:NzNat
+
+Variant #12
+rewrites: 20
+Nat: 0
+N:Int --> - %1:NzNat
+M:Int --> %1:NzNat
+
+No more variants.
+rewrites: 20
+==========================================
+get variants in FVP-INT : NzN * NzI .
+
+Variant #1
+rewrites: 0
+Int: #1:NzNat * #2:NzInt
+NzN --> #1:NzNat
+NzI --> #2:NzInt
+
+Variant #2
+rewrites: 2
+NzInt: %1:NzInt
+NzN --> 1
+NzI --> %1:NzInt
+
+Variant #3
+rewrites: 2
+NzNat: %1:NzNat
+NzN --> %1:NzNat
+NzI --> 1
+
+No more variants.
+rewrites: 2
 Bye.
