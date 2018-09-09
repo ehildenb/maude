@@ -14,13 +14,13 @@ This follows because:
 
 This library provides formula sorts to cover these core cases and more:
 
-4.  `Form`     - the sort of all quantifier-free equational formulas
-5.  `True`     - the sort of the formula in case [1] above
-6.  `False`    - the sort of the formula in case [2] above
-7.  `TruthLit` - the sort of formulas in cases [1-2] above
-8.  `EqLit`    - positive (`_?=_`) or (`_!=_`) negative equality literals
-9.  `EqForm`   - the sort of formulas in case [3] above
-10. `NormForm` - the sort containing all formulas in cases [1-3] above
+4.  `True`     - the sort of the formula in case [1] above
+5.  `False`    - the sort of the formula in case [2] above
+6.  `TruthLit` - the sort of formulas in cases [1-2] above
+7.  `EqLit`    - positive (`_?=_`) or (`_!=_`) negative equality literals
+8.  `EqForm`   - the sort of formulas in case [3] above
+9.  `NormForm` - the sort containing all formulas in cases [1-3] above
+10. `Form`     - the sort of all quantifier-free equational formulas
 
 This library also provides other formula sorts that are needed for programming purposes:
 
