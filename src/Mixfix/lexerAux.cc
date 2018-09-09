@@ -23,12 +23,15 @@
 //
 //	Auxiliary functions and data needed by lexical analyzer.
 //
-#define MAX_IN_DEPTH	10
+#define MAX_IN_DEPTH	50
 
+int maxInDepthReloads = 10;
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
 int dirMarkerStack[MAX_IN_DEPTH];
-Vector<char*> pendingFiles;
+Vector<char*>  pendingFiles;
+Vector<string> loadedFiles;
+bool loadOnce = true;
 int nrPendingRead = 0;
 bool rootInteractive = false;
 bool fakeNewline = false;  // fake \n for files that don't end with \n
@@ -189,7 +192,14 @@ createRootBuffer(FILE* fp, bool forceInteractive)
 bool
 includeFile(const string& directory, const string& fileName, bool silent, int lineNr)
 {
-  if (inStackPtr >= MAX_IN_DEPTH)
+  string relPath = directory + "/" + fileName;
+  if (loadOnce && std::find(loadedFiles.begin(), loadedFiles.end(), relPath) != loadedFiles.end()) {
+      return true;
+  }
+  loadedFiles.append(relPath);
+  if (  (inStackPtr >= MAX_IN_DEPTH)
+     || (!loadOnce && inStackPtr >= maxInDepthReloads)
+     )
     {
       IssueWarning(LineNumber(lineNr) <<
 		   ": ins nested too deeply - couldn't open file " <<
