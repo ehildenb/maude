@@ -170,7 +170,7 @@ Predicates over Numbers
 -----------------------
 
 ```maude
-fmod FVP-NAT-PRED is
+fmod PRED-FVP-NAT is
    protecting FVP-NAT .
    protecting FVP-BOOL .
 
@@ -198,9 +198,9 @@ endfm
 ```
 
 ```
-fmod FVP-INT-PRED is
-   protecting FVP-INT .
-   protecting FVP-NAT-PRED .
+fmod PRED-FVP-INT is
+   protecting      FVP-INT .
+   protecting PRED-FVP-NAT .
 
     op _<_  : Int Int -> Bool* [ditto] .
     op _<=_ : Int Int -> Bool* [ditto] .

@@ -332,7 +332,7 @@ NzI --> 1
 No more variants.
 rewrites: 2
 ==========================================
-get variants in FVP-NAT-PRED : N == N + NzN .
+get variants in PRED-FVP-NAT : N == N + NzN .
 
 Variant #1
 rewrites: 1
@@ -343,7 +343,7 @@ NzN --> #2:NzNat
 No more variants.
 rewrites: 1
 ==========================================
-get variants in FVP-NAT-PRED : N == NzN .
+get variants in PRED-FVP-NAT : N == NzN .
 
 Variant #1
 rewrites: 0
@@ -372,7 +372,7 @@ NzN --> %1:NzNat
 No more variants.
 rewrites: 3
 ==========================================
-get variants in FVP-NAT-PRED : NzN < N + NzN .
+get variants in PRED-FVP-NAT : NzN < N + NzN .
 
 Variant #1
 rewrites: 0
@@ -395,7 +395,7 @@ N --> 0
 No more variants.
 rewrites: 2
 ==========================================
-get variants in FVP-NAT-PRED : N < NzN .
+get variants in PRED-FVP-NAT : N < NzN .
 
 Variant #1
 rewrites: 0
@@ -418,7 +418,7 @@ NzN --> %1:NzNat
 No more variants.
 rewrites: 2
 ==========================================
-get variants in FVP-NAT-PRED : NzN <= N + NzN .
+get variants in PRED-FVP-NAT : NzN <= N + NzN .
 
 Variant #1
 rewrites: 1
@@ -429,7 +429,7 @@ N --> #2:Nat
 No more variants.
 rewrites: 1
 ==========================================
-get variants in FVP-NAT-PRED : N <= NzN .
+get variants in PRED-FVP-NAT : N <= NzN .
 
 Variant #1
 rewrites: 0
