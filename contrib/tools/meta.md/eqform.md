@@ -22,7 +22,7 @@ This library provides formula sorts to cover these core cases and more:
 9.  `EqForm`   - the sort of formulas in case [3] above
 10. `NormForm` - the sort containing all formulas in cases [1-3] above
 
-This library also provides other formula sorts that are needed for for programming purposes:
+This library also provides other formula sorts that are needed for programming purposes:
 
 11. `NegTruthLit` - (~ ... ~ true) or (~ ... ~ false)
 12. `NoTrueForm`  - Formulas over False + EqLit + NegTruthLit
@@ -231,7 +231,7 @@ fmod EQFORM is
       sort NoTrueDisj{Term} to NoTrueDisj,
       sort NoFalseDisj{Term} to NoFalseDisj,
       sort NormDisj{Term} to NormDisj,
-      sort DIsj{Term} to Disj,
+      sort Disj{Term} to Disj,
       ---
       sort NegTruthForm{Term} to NegTruthForm,
       sort NoTrueForm{Term} to NoTrueForm,
