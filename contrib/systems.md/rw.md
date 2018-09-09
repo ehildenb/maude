@@ -5,8 +5,6 @@ Yet another mutual exclusion algorithm, at most one writer should be present but
 Several variants provided.
 
 ```maude
-load ../tools/varsat/numbers.maude
-
 set include BOOL off .
 ```
 

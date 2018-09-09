@@ -1,82 +1,87 @@
 ==========================================
 rewrite in IMP-TEST : < x = 3 ; ~> done | x |-> 0 > .
-rewrites: 3
-result RedContext: < done | x |-> 1 :+ 1 :+ 1 >
+rewrites: 6
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < sum(n, s) ~> done | n |-> 10 * s |-> 3 > .
-rewrites: 408
-result RedContext: < done | n |-> 0 * s |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
-    1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
-    1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
-    1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+ 1 :+
-    1 :+ 1 :+ 1 >
+rewrites: 407
+result RedContext: < done | n |-> 0 * s |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat
+    1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1
+    +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat
+    1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1
+    +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat
+    1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 >
 ==========================================
-rewrite in IMP-TEST : < swap(x, y, t) ~> done | x |-> 3 * t |-> 0 * y |-> 5 > .
-rewrites: 20
-result RedContext: < done | t |-> 1 :+ 1 :+ 1 * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y
-    |-> 1 :+ 1 :+ 1 >
+rewrite in IMP-TEST : < swap(x, y, t) ~> done | x |-> 3 * y |-> 5 * t |-> 0 > .
+rewrites: 30
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1 +Nat
+    1 +Nat 1 * t |-> 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < swap-in-place(x, y) ~> done | x |-> 3 * y |-> 5 > .
-rewrites: 49
-result RedContext: < done | x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 >
+rewrites: 56
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1 +Nat
+    1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < swap-sort(x ; y ; z) ~> done | x |-> 3 * y |-> 4 * z
     |-> 5 > .
-rewrites: 60
-result RedContext: < done | x |-> 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 * z |->
-    1 :+ 1 :+ 1 :+ 1 :+ 1 >
+rewrites: 72
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 * y |-> 1 +Nat 1 +Nat 1 +Nat
+    1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < swap-sort(x ; z ; y) ~> done | x |-> 3 * y |-> 4 * z
     |-> 5 > .
-rewrites: 106
-result RedContext: < done | x |-> 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z
-    |-> 1 :+ 1 :+ 1 :+ 1 >
+rewrites: 115
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 * y |-> 1 +Nat 1 +Nat 1 +Nat
+    1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < swap-sort(y ; z ; x) ~> done | x |-> 3 * y |-> 4 * z
     |-> 5 > .
-rewrites: 152
-result RedContext: < done | x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z
-    |-> 1 :+ 1 :+ 1 :+ 1 >
+rewrites: 158
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1 +Nat
+    1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in IMP-TEST : < swap-sort(y ; z ; q ; x ; r) ~> done | x |-> 3 * y |->
     4 * z |-> 5 * q |-> 3 * r |-> 7 > .
-rewrites: 525
-result RedContext: < done | q |-> 1 :+ 1 :+ 1 :+ 1 * r |-> 1 :+ 1 :+ 1 :+ 1 :+
-    1 :+ 1 :+ 1 * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+
-    1 :+ 1 >
+rewrites: 521
+result RedContext: < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1 +Nat
+    1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 * q |-> 1 +Nat 1 +Nat 1 +Nat 1 * r |-> 1
+    +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 >
 ==========================================
 rewrite in THREADED-IMP-TEST : {< swap(x, y, s) ~> done > < done | x |-> 3 * y
-    |-> 4 * z |-> 5 * s |-> 0 * t |-> 0 >} .
-rewrites: 22
-result ThreadPool: {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 0 * x |-> 1 :+
-    1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 >}
+    |-> 4 * z |-> 5 * t |-> 0 * s |-> 0 >} .
+rewrites: 37
+result ThreadPool: {< done > < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1
+    +Nat 1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * t |-> 0 * s |-> 1
+    +Nat 1 +Nat 1 >}
 ==========================================
 search in THREADED-IMP-TEST : {< swap(x, y, s) ~> done > < swap(y, z, t) ~>
-    done | x |-> 3 * y |-> 4 * z |-> 5 * s |-> 0 * t |-> 0 >} =>! TP:ThreadPool
+    done | x |-> 3 * y |-> 4 * z |-> 5 * t |-> 0 * s |-> 0 >} =>! TP:ThreadPool
     .
 
 Solution 1 (state 526)
-states: 532  rewrites: 1185
-TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
-    * x |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1
-    >}
+states: 532  rewrites: 1200
+TP:ThreadPool --> {< done > < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 +Nat 1 * y
+    |-> 1 +Nat 1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 * t |-> 1 +Nat 1 +Nat 1
+    +Nat 1 * s |-> 1 +Nat 1 +Nat 1 >}
 
 Solution 2 (state 530)
-states: 534  rewrites: 1189
-TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 * x
-    |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 >}
+states: 534  rewrites: 1204
+TP:ThreadPool --> {< done > < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1
+    +Nat 1 +Nat 1 +Nat 1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 * t |-> 1 +Nat 1 +Nat 1
+    * s |-> 1 +Nat 1 +Nat 1 >}
 
 Solution 3 (state 531)
-states: 534  rewrites: 1189
-TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
-    * x |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1
-    :+ 1 >}
+states: 534  rewrites: 1204
+TP:ThreadPool --> {< done > < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1
+    +Nat 1 +Nat 1 +Nat 1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 * t |-> 1 +Nat 1
+    +Nat 1 +Nat 1 * s |-> 1 +Nat 1 +Nat 1 >}
 
 Solution 4 (state 533)
-states: 534  rewrites: 1191
-TP:ThreadPool --> {< done > < done | s |-> 1 :+ 1 :+ 1 * t |-> 1 :+ 1 :+ 1 :+ 1
-    * x |-> 1 :+ 1 :+ 1 :+ 1 * y |-> 1 :+ 1 :+ 1 * z |-> 1 :+ 1 :+ 1 :+ 1 >}
+states: 534  rewrites: 1206
+TP:ThreadPool --> {< done > < done | x |-> 1 +Nat 1 +Nat 1 +Nat 1 * y |-> 1
+    +Nat 1 +Nat 1 * z |-> 1 +Nat 1 +Nat 1 +Nat 1 * t |-> 1 +Nat 1 +Nat 1 +Nat 1
+    * s |-> 1 +Nat 1 +Nat 1 >}
 
 No more solutions.
-states: 534  rewrites: 1191
+states: 534  rewrites: 1206
 Bye.

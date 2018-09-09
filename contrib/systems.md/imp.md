@@ -4,9 +4,7 @@ IMP Language
 IMP is a simple imperative language with expression, variables assignment/lookup, and structured control flow.
 
 ```maude
-set include BOOL off .
-
-load ../tools/varsat/numbers.maude
+load ../tools/fvp/numbers.maude
 ```
 
 Data Structures
@@ -16,7 +14,7 @@ The variant-satisfiability data-structures are used here.
 
 ```maude
 fmod IMP-DATA is
-   protecting MULT-NAT* + NUMBERS .
+   protecting MULT-LOCALLY-FVP-NAT + PRED-FVP-NAT + FVP-NUMBERS .
 
     sort Id .
     ---------
@@ -24,15 +22,15 @@ fmod IMP-DATA is
     sorts Env WrappedEnv .
     ----------------------
 
-    op _|->_  : Id Nat* -> Env [ctor prec 50] .
-    -------------------------------------------
+    op _|->_  : Id Nat -> Env [ctor prec 50] .
+    ------------------------------------------
 
     op mt  :         -> Env [ctor] .
     op _*_ : Env Env -> Env [ctor prec 51 assoc comm id: mt] .
     ----------------------------------------------------------
 
-    op {_}    : Env -> WrappedEnv [ctor] .
-    --------------------------------------
+    op {_} : Env -> WrappedEnv [ctor] .
+    -----------------------------------
 endfm
 ```
 
@@ -41,14 +39,17 @@ IMP Syntax
 
 ```maude
 fmod IMP-SYNTAX is
-   protecting IMP-DATA .
+   protecting IMP-DATA * ( op _+_                  to _+Nat_
+                         , op _*_ : Nat Nat -> Nat to _*Nat_
+                         , op _<_                  to _<Nat_
+                         ) .
 
-    sort AExp BExp Exp Stmt Ids Value .
-    -----------------------------------
-    subsort Id Nat* < AExp .
-    subsort Bool* < BExp .
+    sort AExp BExp Exp Stmt Value .
+    -------------------------------
+    subsort Id Nat < AExp .
+    subsort Bool < BExp .
     subsorts BExp AExp < Exp .
-    subsorts Bool* Nat* < Value < Exp .
+    subsorts Bool Nat < Value < Exp .
 
     var A A' : AExp . var B B' : BExp .
 
@@ -56,12 +57,12 @@ fmod IMP-SYNTAX is
     --- -----
 
     --- Arithmetic Expressions
-    op !_    : BExp      -> BExp [ctor] .
-    op _+:_  : AExp AExp -> AExp [ctor] .
-    op _-:_  : AExp AExp -> AExp [ctor] .
-    op _*:_  : AExp AExp -> AExp [ctor] .
-    op _<:_  : AExp AExp -> BExp [ctor] .
-    op _&&:_ : BExp BExp -> BExp [ctor] .
+    op !_   : BExp      -> BExp [ctor] .
+    op _+_  : AExp AExp -> AExp [ctor] .
+    op _-_  : AExp AExp -> AExp [ctor] .
+    op _*_  : AExp AExp -> AExp [ctor] .
+    op _<_  : AExp AExp -> BExp [ctor] .
+    op _&&_ : BExp BExp -> BExp [ctor] .
 
     --- Statements
     op __              : Stmt Stmt      -> Stmt [ctor prec 42 gather (E e)] .
@@ -74,16 +75,16 @@ fmod IMP-SYNTAX is
     --- defined
     --- -------
 
-    op val? : Exp -> Bool* .
+    op val? : Exp -> Bool .
     ------------------------
-    eq val?(Q:Id)     = ff [variant] .
-    eq val?(A +: A')  = ff [variant] .
-    eq val?(A *: A')  = ff [variant] .
-    eq val?(A -: A')  = ff [variant] .
-    eq val?(! B)      = ff [variant] .
-    eq val?(A <: A')  = ff [variant] .
-    eq val?(B &&: B') = ff [variant] .
-    eq val?(V:Value)  = tt [variant] .
+    eq val?(Q:Id)    = ff [variant] .
+    eq val?(A + A')  = ff [variant] .
+    eq val?(A * A')  = ff [variant] .
+    eq val?(A - A')  = ff [variant] .
+    eq val?(! B)     = ff [variant] .
+    eq val?(A < A')  = ff [variant] .
+    eq val?(B && B') = ff [variant] .
+    eq val?(V:Value) = tt [variant] .
 endfm
 ```
 
@@ -101,18 +102,18 @@ fmod IMP-HOLE-SYNTAX is
     -------------------------
 
     --- !AExp
-    op []+:_ : AExp -> !AExp [ctor] .
-    op _+:[] : AExp -> !AExp [ctor] .
-    op []*:_ : AExp -> !AExp [ctor] .
-    op _*:[] : AExp -> !AExp [ctor] .
-    op []-:_ : AExp -> !AExp [ctor] .
-    op _-:[] : AExp -> !AExp [ctor] .
+    op []+_ : AExp -> !AExp [ctor] .
+    op _+[] : AExp -> !AExp [ctor] .
+    op []*_ : AExp -> !AExp [ctor] .
+    op _*[] : AExp -> !AExp [ctor] .
+    op []-_ : AExp -> !AExp [ctor] .
+    op _-[] : AExp -> !AExp [ctor] .
 
     --- !BExp
-    op ![]    : -> !BExp      [ctor] .
-    op []<:_  : AExp -> !BExp [ctor] .
-    op _<:[]  : Nat* -> !BExp [ctor] .
-    op []&&:_ : BExp -> !BExp [ctor] .
+    op ![]   : -> !BExp      [ctor] .
+    op []<_  : AExp -> !BExp [ctor] .
+    op _<[]  : Nat  -> !BExp [ctor] .
+    op []&&_ : BExp -> !BExp [ctor] .
 
     --- !Stmt
     op if ([]) _ else _ : Stmt Stmt -> !Stmt [ctor] .
@@ -145,8 +146,8 @@ mod IMP-SEMANTICS is
     var Q : Id .
     var BE BE' : BExp .
     var AE AE' : AExp .
-    var N M : Nat* .
-    var B : Bool* .
+    var N M : Nat .
+    var B : Bool .
 
     --- Structural Rules
     --- ----------------
@@ -154,27 +155,29 @@ mod IMP-SEMANTICS is
     --- Heating
    crl [#if]       : < if (BE) S else S' ~> K | E >  => < BE ~> if ([]) S else S' ~> K | E > if val?(BE) = ff .
    crl [#assign]   : < (Q = AE ;)        ~> K | E >  => < AE ~> Q = [];           ~> K | E > if val?(AE) = ff .
-   crl [#add-lft]  : < AE +:  AE'        ~> K | E >  => < AE ~> [] +: AE'         ~> K | E > if val?(AE) = ff .
-   crl [#add-rght] : < N  +:  AE         ~> K | E >  => < AE ~> N  +: []          ~> K | E > if val?(AE) = ff .
-   crl [#mul-lft]  : < AE *:  AE'        ~> K | E >  => < AE ~> [] *: AE'         ~> K | E > if val?(AE) = ff .
-   crl [#mul-rght] : < N  *:  AE         ~> K | E >  => < AE ~> N  *: []          ~> K | E > if val?(AE) = ff .
-   crl [#sub-lft]  : < AE -:  AE'        ~> K | E >  => < AE ~> [] -: AE'         ~> K | E > if val?(AE) = ff .
-   crl [#sub-rght] : < N  -:  AE         ~> K | E >  => < AE ~> N  -: []          ~> K | E > if val?(AE) = ff .
-   crl [#and]      : < BE &&: BE'        ~> K | E >  => < BE ~> [] &&: BE'        ~> K | E > if val?(BE) = ff .
-   crl [#lt-lft]   : < AE <:  AE'        ~> K | E >  => < AE ~> [] <: AE'         ~> K | E > if val?(AE) = ff .
-   crl [#lt-rght]  : < N  <:  AE         ~> K | E >  => < AE ~> N  <: []          ~> K | E > if val?(AE) = ff .
+   crl [#add-lft]  : < AE +  AE'         ~> K | E >  => < AE ~> [] + AE'          ~> K | E > if val?(AE) = ff .
+   crl [#add-rght] : < N  +  AE          ~> K | E >  => < AE ~> N  + []           ~> K | E > if val?(AE) = ff .
+   crl [#mul-lft]  : < AE *  AE'         ~> K | E >  => < AE ~> [] * AE'          ~> K | E > if val?(AE) = ff .
+   crl [#mul-rght] : < N  *  AE          ~> K | E >  => < AE ~> N  * []           ~> K | E > if val?(AE) = ff .
+   crl [#sub-lft]  : < AE -  AE'         ~> K | E >  => < AE ~> [] - AE'          ~> K | E > if val?(AE) = ff .
+   crl [#sub-rght] : < N  -  AE          ~> K | E >  => < AE ~> N  - []           ~> K | E > if val?(AE) = ff .
+   crl [#and]      : < BE && BE'         ~> K | E >  => < BE ~> [] && BE'         ~> K | E > if val?(BE) = ff .
+   crl [#lt-lft]   : < AE <  AE'         ~> K | E >  => < AE ~> [] < AE'          ~> K | E > if val?(AE) = ff .
+   crl [#lt-rght]  : < N  <  AE          ~> K | E >  => < AE ~> N  < []           ~> K | E > if val?(AE) = ff .
    crl [#not]      : < ! BE              ~> K | E >  => < BE ~> ! []              ~> K | E > if val?(BE) = ff .
 
     --- Cooling
     rl [@if]       : < B ~> if ([]) S else S' ~> K | E > => < if (B) S else S' ~> K | E > .
     rl [@assign]   : < N ~> Q = [];           ~> K | E > => < (Q = N ;)        ~> K | E > .
-    rl [@add-lft]  : < N ~> [] +: AE          ~> K | E > => < N  +: AE         ~> K | E > .
-    rl [@add-rght] : < M ~> N  +: []          ~> K | E > => < N  +: M          ~> K | E > .
-    rl [@sub-lft]  : < N ~> [] -: AE          ~> K | E > => < N  -: AE         ~> K | E > .
-    rl [@sub-rght] : < M ~> N  -: []          ~> K | E > => < N  -: M          ~> K | E > .
-    rl [@and]      : < B ~> [] &&: BE         ~> K | E > => < B &&: BE         ~> K | E > .
-    rl [@lt-lft]   : < N ~> [] <: AE          ~> K | E > => < N <: AE          ~> K | E > .
-    rl [@lt-rght]  : < M ~> N  <: []          ~> K | E > => < N <: M           ~> K | E > .
+    rl [@add-lft]  : < N ~> [] +  AE          ~> K | E > => <  N +   AE        ~> K | E > .
+    rl [@add-rght] : < M ~> N  +  []          ~> K | E > => < (N +Nat M)       ~> K | E > .
+    rl [@add-lft]  : < N ~> [] *  AE          ~> K | E > => <  N *   AE        ~> K | E > .
+    rl [@add-rght] : < M ~> N  *  []          ~> K | E > => < (N *Nat M)       ~> K | E > .
+    rl [@sub-lft]  : < N ~> [] -  AE          ~> K | E > => <  N -    AE       ~> K | E > .
+    rl [@sub-rght] : < M ~> N  -  []          ~> K | E > => < (N monus M)      ~> K | E > .
+    rl [@and]      : < B ~> [] && BE          ~> K | E > => < B &&   BE        ~> K | E > .
+    rl [@lt-lft]   : < N ~> [] <  AE          ~> K | E > => < N <    AE        ~> K | E > .
+    rl [@lt-rght]  : < M ~> N  <  []          ~> K | E > => < (N <Nat M)       ~> K | E > .
     rl [@not]      : < B ~> ! []              ~> K | E > => < ! B              ~> K | E > .
 
     --- Semantic Rules
@@ -193,14 +196,14 @@ mod IMP-SEMANTICS is
     rl [lookup] : < Q         ~> K | E * Q |-> N > => < N ~> K | E * Q |-> N > .
 
     --- Expressions
-    rl [add]       : < N +: M    ~> K | E > => < N :+ M   ~> K | E > .
-    rl [mul]       : < N *: M    ~> K | E > => < N :* M   ~> K | E > .
-    rl [sub]       : < N -: M    ~> K | E > => < sd(N,M)  ~> K | E > .
-    rl [lt]        : < N <: M    ~> K | E > => < N <Nat M ~> K | E > .
-    rl [not-1]     : < ! tt      ~> K | E > => < ff       ~> K | E > .
-    rl [not-2]     : < ! ff      ~> K | E > => < tt       ~> K | E > .
-    rl [and-true]  : < tt &&: BE ~> K | E > => < BE       ~> K | E > .
-    rl [and-false] : < ff &&: BE ~> K | E > => < ff       ~> K | E > .
+    rl [add]       : < N + M    ~> K | E > => < (N +Nat M) ~> K | E > .
+    rl [mul]       : < N * M    ~> K | E > => < (N *Nat M) ~> K | E > .
+    rl [sub]       : < N - M    ~> K | E > => < sd(N,M)    ~> K | E > .
+    rl [lt]        : < N < M    ~> K | E > => < (N <Nat M) ~> K | E > .
+    rl [not-1]     : < ! tt     ~> K | E > => < ff         ~> K | E > .
+    rl [not-2]     : < ! ff     ~> K | E > => < tt         ~> K | E > .
+    rl [and-true]  : < tt && BE ~> K | E > => < BE         ~> K | E > .
+    rl [and-false] : < ff && BE ~> K | E > => < ff         ~> K | E > .
 endm
 ```
 
@@ -213,11 +216,11 @@ mod NONSEQ-IMP-SEMANTICS is
 
     var AE AE' : AExp .
     var E : Env .
-    var N : Nat* .
+    var N : Nat .
     var K : Continuation .
 
-   crl [@add-rght] : < AE +: AE'      ~> K | E > => < AE' ~> AE +: [] ~> K | E > if val?(AE) = ff .
-    rl [#add-rght] : < N  ~> AE +: [] ~> K | E > => < AE +: N         ~> K | E > .
+   crl [@add-rght] : < AE + AE'      ~> K | E > => < AE' ~> AE + [] ~> K | E > if val?(AE) = ff .
+    rl [#add-rght] : < N  ~> AE + [] ~> K | E > => < AE + N         ~> K | E > .
 endm
 ```
 
@@ -267,18 +270,25 @@ Here several simple IMP programs are provided as primitives which desugar into t
 
 ```maude
 mod IMP-PROGRAMS is
-   protecting IMP-SYNTAX + IDENTIFIER .
+   protecting IMP-SYNTAX .
+
+    sort Ids .
+    ----------
+    subsort Id < Ids .
 
     vars N M O P Q R S T X Y Z : Id .
     vars XS YS ZS : Ids .
+
+    op _;_ : Ids Ids -> Ids [assoc] .
+    ---------------------------------
 
     op sum : Id Id -> Stmt .
     ------------------------
     eq sum(N,S)
      = S = 0 ;
-       while (0 <: N) {
-           S = S +: N ;
-           N = N -: 1 ;
+       while (0 < N) {
+           S = S + N ;
+           N = N - 1 ;
        } .
 
     op swap : Id Id Id -> Stmt .
@@ -291,14 +301,14 @@ mod IMP-PROGRAMS is
     op swap-in-place : Id Id -> Stmt .
     ----------------------------------
     eq swap-in-place(X, Y)
-     = X = X +: Y ;
-       Y = X -: Y ;
-       X = X -: Y ; .
+     = X = X + Y ;
+       Y = X - Y ;
+       X = X - Y ; .
 
     op swap-sort : Ids -> Stmt .
     ----------------------------
     eq swap-sort(X)          = {} .
-    eq swap-sort(X ; Y)      = if (X <: Y) {} else { swap-in-place(X, Y) } .
+    eq swap-sort(X ; Y)      = if (X < Y) {} else { swap-in-place(X, Y) } .
     eq swap-sort(X ; Y ; ZS) = swap-sort(X ; Y)
                                swap-sort(X ; ZS)
                                swap-sort(Y ; ZS) .

@@ -27,29 +27,93 @@ Data Structures
 Here we extend FVP numbers with pairs and lists.
 
 ```maude
-load ../tools/varsat/numbers.maude
+load ../tools/fvp/numbers.maude
 
-fmod PAIRNAT* is
-  pr NAT* .
-  sorts PairNat* MaybePairNat* .
-  subsorts PairNat* < MaybePairNat* .
-  op [_,_] : Nat* NzNat* -> PairNat* [ctor] .
-  op nullp : -> MaybePairNat* [ctor] .
+fmod MAYBE-FVP-NAT is
+   protecting PRED-FVP-NAT .
+
+    sort MaybeNat .
+    ---------------
+    subsort Nat < MaybeNat .
+
+    var   N     : Nat .
+    vars MN MN' : MaybeNat .
+
+    op null : -> MaybeNat [ctor] .
+    ------------------------------
+
+    op _=/=_ : MaybeNat MaybeNat -> Bool [ditto] .
+    op _==_  : MaybeNat MaybeNat -> Bool [ditto] .
+    ----------------------------------------------
+    eq null == N    = ff [variant] .
+    eq null == null = tt [variant] .
+
+    eq MN =/= MN' = ~ (MN == MN') [variant] .
 endfm
 
-fmod ASSOC-LISTNAT*-LEN is
-  pr ASSOC-LISTNAT* .
-  op |_| : ListNat* -> Nat* .
-  vars l l' : ListNat* .  var n : Nat* .
-  eq | nil | = 0 [variant] .
-  eq | n | = 1   [variant] .
-  eq | l l' | = | l | :+ | l' | .
+fmod ASSOC-LIST { X :: TRIV } is
+
+    sort List{X} NeList{X} .
+    ------------------------
+    subsort X$Elt < NeList{X} < List{X} .
+
+    var N : X$Elt . var L : NeList{X} .
+
+    op nil :                     ->   List{X} [ctor] .
+    op __  : NeList{X} NeList{X} -> NeList{X} [ctor assoc] .
+    --------------------------------------------------------
+
+    op head : NeList{X} -> X$Elt .
+    ------------------------------
+    eq head(N)   = N [variant] .
+    eq head(N L) = N [variant] .
+endfm
+
+view Nat  from TRIV to FVP-NAT-SORT is sort Elt to Nat  . endv
+view Bool from TRIV to     FVP-BOOL is sort Elt to Bool . endv
+
+fmod ASSOC-LIST-FVP-NAT is
+   protecting FVP-NAT .
+   protecting ASSOC-LIST{Nat} * ( sort NeList{Nat} to NeListNat
+                                , sort   List{Nat} to   ListNat
+                                ) .
+endfm
+
+fmod ASSOC-LIST-FVP-BOOL is
+   protecting FVP-BOOL .
+   protecting ASSOC-LIST{Bool} * ( sort NeList{Bool} to NeBoolList
+                                 , sort   List{Bool} to   BoolList
+                                 ) .
+endfm
+
+fmod PAIR-FVP-NAT is
+   protecting FVP-NAT .
+
+    sorts PairNat MaybePairNat .
+    ----------------------------
+    subsorts PairNat < MaybePairNat .
+
+    op nullp :           -> MaybePairNat [ctor] .
+    op [_,_] : Nat NzNat ->      PairNat [ctor] .
+    ---------------------------------------------
+endfm
+
+fmod ASSOC-LIST-FVP-NAT-LEN is
+   protecting ASSOC-LIST-FVP-NAT .
+
+    vars L L' : ListNat .  var N : Nat .
+
+    op |_| : ListNat -> Nat .
+    -------------------------
+    eq | nil  | = 0 [variant] .
+    eq | N    | = 1 [variant] .
+    eq | L L' | = | L | + | L' | .
 endfm
 
 fmod FT-COMM-DATA is
-  pr MAYBENAT* .
-  pr PAIRNAT* .
-  pr ASSOC-LISTNAT* .
+   protecting MAYBE-FVP-NAT .
+   protecting PAIR-FVP-NAT .
+   protecting ASSOC-LIST-FVP-NAT .
 endfm
 ```
 
@@ -60,19 +124,19 @@ Fault Tolerant Protocol
 mod FT-COMM is
   pr FT-COMM-DATA .
   sort State .
-  op [_::_|_|_|_::_] : Nat* ListNat* MaybeNat* MaybePairNat* ListNat* Nat* -> State [ctor] .
+  op [_::_|_|_|_::_] : Nat ListNat MaybeNat MaybePairNat ListNat Nat -> State [ctor] .
 
-  vars l l' l'' : NeListNat* .  vars l1 l2 : ListNat* . var n m k : Nat* . vars p q : NzNat* .
-  var n? : MaybeNat* .  var pa : PairNat* . var pa? : MaybePairNat* .
-  rl [rec-1] :      [p :: l      | n?   | [n,m :+ 1] | nil :: m] => [p      :: l    | m :+ 1 | nullp      | n    :: m :+ 1] .
-  rl [rec-+] :      [p :: l      | n?   | [n,m :+ 1] | l'  :: m] => [p      :: l    | m :+ 1 | nullp      | l' n :: m :+ 1] .
-  rl [rec-ack-1] :  [p :: n      | p    | pa?        | l   :: q] => [p      :: nil  | null   | nullp      | l    :: q     ] .
-  rl [rec-ack-2] :  [p :: n m    | p    | pa?        | l   :: q] => [p :+ 1 :: m    | null   | [m,p :+ 1] | l    :: q     ] .
-  rl [rec-ack-+] :  [p :: n m l' | p    | pa?        | l   :: q] => [p :+ 1 :: m l' | null   | [m,p :+ 1] | l    :: q     ] .
- crl [resend-1] :   [p :: n      | n?   | nullp      | l1  :: m] => [p      :: n    | null   | [n,p]      | l1   :: m     ] if n? =/= p = tt .
- crl [resend-+] :   [p :: n l    | n?   | nullp      | l1  :: m] => [p      :: n l  | null   | [n,p]      | l1   :: m     ] if n? =/= p = tt .
-  rl [resend-ack] : [p :: l      | n?   | [n,q]      | l'  :: q] => [p      :: l    | q      | nullp      | l'   :: q     ] .
-  rl [drop-snd] :   [n :: l1     | n?   | pa         | l2  :: m] => [n      :: l1   | n?     | nullp      | l2   :: m     ] .
-  rl [drop-ack] :   [n :: l1     | k    | pa?        | l2  :: m] => [n      :: l1   | null   | pa?        | l2   :: m     ] .
+  vars l l' l'' : NeListNat .  vars l1 l2 : ListNat . var n m k : Nat . vars p q : NzNat .
+  var n? : MaybeNat .  var pa : PairNat . var pa? : MaybePairNat .
+  rl [rec-1] :      [p :: l      | n?   | [n,m + 1] | nil :: m] => [p     :: l    | m + 1 | nullp     | n    :: m + 1] .
+  rl [rec-+] :      [p :: l      | n?   | [n,m + 1] | l'  :: m] => [p     :: l    | m + 1 | nullp     | l' n :: m + 1] .
+  rl [rec-ack-1] :  [p :: n      | p    | pa?       | l   :: q] => [p     :: nil  | null  | nullp     | l    :: q    ] .
+  rl [rec-ack-2] :  [p :: n m    | p    | pa?       | l   :: q] => [p + 1 :: m    | null  | [m,p + 1] | l    :: q    ] .
+  rl [rec-ack-+] :  [p :: n m l' | p    | pa?       | l   :: q] => [p + 1 :: m l' | null  | [m,p + 1] | l    :: q    ] .
+ crl [resend-1] :   [p :: n      | n?   | nullp     | l1  :: m] => [p     :: n    | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
+ crl [resend-+] :   [p :: n l    | n?   | nullp     | l1  :: m] => [p     :: n l  | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
+  rl [resend-ack] : [p :: l      | n?   | [n,q]     | l'  :: q] => [p     :: l    | q     | nullp     | l'   :: q    ] .
+  rl [drop-snd] :   [n :: l1     | n?   | pa        | l2  :: m] => [n     :: l1   | n?    | nullp     | l2   :: m    ] .
+  rl [drop-ack] :   [n :: l1     | k    | pa?       | l2  :: m] => [n     :: l1   | null  | pa?       | l2   :: m    ] .
 endm
 ```

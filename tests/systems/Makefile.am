@@ -14,7 +14,8 @@ TESTS = \
 	cycle.maude \
 	oc.maude \
 	vending.maude \
-	dijkstra.maude
+	dijkstra.maude \
+	thermostat.maude
 
 RESULT_FILES = \
 	nim.expected \
@@ -30,6 +31,7 @@ RESULT_FILES = \
 	cycle.expected \
 	oc.expected \
 	vending.expected \
-	dijkstra.expected
+	dijkstra.expected \
+	thermostat.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

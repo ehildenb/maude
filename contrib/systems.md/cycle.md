@@ -4,7 +4,7 @@ Cycle
 These systems give very simple finite cycles for testing search algorithms with.
 
 ```maude
-load ../tools/varsat/numbers.maude
+load ../tools/fvp/numbers.maude
 
 mod CYCLE is
     sorts PreState State .
@@ -32,20 +32,20 @@ Though the following can have an arbitrarily large cycle, it will still always b
 
 ```maude
 mod BOUNDED-CYCLE is
-   protecting NAT* .
+   protecting FVP-NAT .
 
     sort State .
     ------------
-    vars N M L : Nat* .
+    vars N M L : Nat .
 
-    op {_,_} : Nat* Nat* -> State .
-    -------------------------------
-    rl [add] : { N           , L :+ 1 :+ N :+ M }
-            => { N :+ L :+ 1 , L :+ 1 :+ N :+ M }
+    op {_,_} : Nat Nat -> State .
+    -----------------------------
+    rl [add] : { N         , L + 1 + N + M }
+            => { N + L + 1 , L + 1 + N + M }
        [narrowing] .
 
-    rl [rm]  : { N :+ L :+ 1 , M }
-            => { N           , M }
+    rl [rm]  : { N + L + 1 , M }
+            => { N         , M }
        [narrowing] .
 endm
 ```
