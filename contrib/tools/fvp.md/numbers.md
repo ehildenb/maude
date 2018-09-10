@@ -176,22 +176,34 @@ fmod PRED-FVP-NAT is
 endfm
 ```
 
-```
+```maude
 fmod PRED-FVP-INT is
    protecting      FVP-INT .
    protecting PRED-FVP-NAT .
 
-    op _<_  : Int Int -> Bool* [ditto] .
-    op _<=_ : Int Int -> Bool* [ditto] .
-    ------------------------------------
-    eq I <  I = ff [variant] .
-    eq I <= I = tt [variant] .
+    vars   N   N' :   Nat .
+    var  NzN NzN' : NzNat .
+    vars   I   I' :   Int .
 
+    op _==_  : Int Int -> Bool [ditto] .
+    op _=/=_ : Int Int -> Bool [ditto] .
+    ------------------------------------
+    eq - NzN ==   NzN' = ff          [variant] .
+    eq - NzN == - NzN' = NzN == NzN' [variant] .
+
+    eq I =/= I' = ~ (I == I') [variant] .
+
+    op _<_  : Int Int -> Bool [ditto] .
+    op _<=_ : Int Int -> Bool [ditto] .
+    ------------------------------------
     eq - NzN <  N' = tt [variant] .
     eq - NzN <= N' = tt [variant] .
 
     eq N <  - NzN' = ff [variant] .
     eq N <= - NzN' = ff [variant] .
+
+    eq - N <  - N' = N' <  N [variant] .
+    eq - N <= - N' = N' <= N [variant] .
 endfm
 ```
 

@@ -41,3 +41,21 @@ get variants N:Nat < NzN:NzNat .
 
 get variants NzN:NzNat <= N:Nat + NzN:NzNat .
 get variants N:Nat <= NzN:NzNat .
+
+select PRED-FVP-INT .
+
+get variants I:Int == I:Int + NzI:NzInt .
+get variants I:Int == NzI:NzInt .
+get variants - NzN:NzNat == NzN':NzNat .
+
+get variants I:Int < NzI:NzInt .
+get variants NzI:Int < I:Int .
+get variants   NzI:NzInt < - NzI':NzInt .
+get variants - NzI:NzInt <   NzI':NzInt .
+get variants - NzI:NzInt < - NzI':NzInt .
+
+get variants I:Int <= NzI:NzInt .
+get variants NzI:Int <= I:Int .
+get variants   NzI:NzInt <= - NzI':NzInt .
+get variants - NzI:NzInt <=   NzI':NzInt .
+get variants - NzI:NzInt <= - NzI':NzInt .
