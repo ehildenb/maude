@@ -372,6 +372,35 @@ NzN --> %1:NzNat
 No more variants.
 rewrites: 3
 ==========================================
+get variants in FVP-NAT-PRED : N =/= N' .
+
+Variant #1
+rewrites: 1
+Bool: ~ (#1:Nat == #2:Nat)
+N --> #1:Nat
+N' --> #2:Nat
+
+Variant #2
+rewrites: 7
+Bool: ff
+N --> %1:Nat
+N' --> %1:Nat
+
+Variant #3
+rewrites: 7
+Bool: tt
+N --> %1:Nat
+N' --> %1:Nat + %2:NzNat
+
+Variant #4
+rewrites: 7
+Bool: tt
+N --> %1:Nat + %2:NzNat
+N' --> %1:Nat
+
+No more variants.
+rewrites: 7
+==========================================
 get variants in FVP-NAT-PRED : NzN < N + NzN .
 
 Variant #1
@@ -592,6 +621,35 @@ NzN --> #2:NzNat
 
 No more variants.
 rewrites: 1
+==========================================
+get variants in FVP-INT-PRED : N =/= N' .
+
+Variant #1
+rewrites: 1
+Bool: ~ (#1:Nat == #2:Nat)
+N --> #1:Nat
+N' --> #2:Nat
+
+Variant #2
+rewrites: 7
+Bool: ff
+N --> %1:Nat
+N' --> %1:Nat
+
+Variant #3
+rewrites: 7
+Bool: tt
+N --> %2:Nat
+N' --> %1:NzNat + %2:Nat
+
+Variant #4
+rewrites: 7
+Bool: tt
+N --> %1:NzNat + %2:Nat
+N' --> %2:Nat
+
+No more variants.
+rewrites: 7
 ==========================================
 get variants in FVP-INT-PRED : I < NzI:NzInt .
 

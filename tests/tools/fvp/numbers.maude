@@ -36,6 +36,8 @@ select FVP-NAT-PRED .
 get variants N:Nat == N:Nat + NzN:NzNat .
 get variants N:Nat == NzN:NzNat .
 
+get variants N':Nat =/= N:Nat .
+
 get variants NzN:NzNat < N:Nat + NzN:NzNat .
 get variants N:Nat < NzN:NzNat .
 
@@ -47,6 +49,8 @@ select FVP-INT-PRED .
 get variants I:Int == I:Int + NzI:NzInt .
 get variants I:Int == NzI:NzInt .
 get variants - NzN:NzNat == NzN':NzNat .
+
+get variants N':Nat =/= N:Nat .
 
 get variants I:Int < NzI:NzInt .
 get variants NzI:Int < I:Int .
