@@ -124,7 +124,7 @@ M --> %1:Nat
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-LOCALLY-FVP-NAT : N * M:Nat .
+get variants in FVP-NAT-MULT : N * M:Nat .
 
 Variant #1
 rewrites: 0
@@ -159,7 +159,7 @@ M:Nat --> 1
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-LOCALLY-FVP-NAT : M:Nat * 1 + NzN .
+get variants in FVP-NAT-MULT : M:Nat * 1 + NzN .
 
 Variant #1
 rewrites: 2
@@ -309,7 +309,7 @@ M:Int --> %1:NzNat
 No more variants.
 rewrites: 20
 ==========================================
-get variants in MULT-LOCALLY-FVP-INT : NzI * NzN:NzNat .
+get variants in FVP-INT-MULT : NzI * NzN:NzNat .
 
 Variant #1
 rewrites: 0
@@ -332,7 +332,7 @@ NzN:NzNat --> 1
 No more variants.
 rewrites: 2
 ==========================================
-get variants in PRED-FVP-NAT : N == N + NzN .
+get variants in FVP-NAT-PRED : N == N + NzN .
 
 Variant #1
 rewrites: 1
@@ -343,7 +343,7 @@ NzN --> #2:NzNat
 No more variants.
 rewrites: 1
 ==========================================
-get variants in PRED-FVP-NAT : N == NzN .
+get variants in FVP-NAT-PRED : N == NzN .
 
 Variant #1
 rewrites: 0
@@ -372,7 +372,7 @@ NzN --> %1:NzNat
 No more variants.
 rewrites: 3
 ==========================================
-get variants in PRED-FVP-NAT : NzN < N + NzN .
+get variants in FVP-NAT-PRED : NzN < N + NzN .
 
 Variant #1
 rewrites: 0
@@ -395,7 +395,7 @@ N --> 0
 No more variants.
 rewrites: 2
 ==========================================
-get variants in PRED-FVP-NAT : N < NzN .
+get variants in FVP-NAT-PRED : N < NzN .
 
 Variant #1
 rewrites: 0
@@ -418,7 +418,7 @@ NzN --> %1:NzNat
 No more variants.
 rewrites: 2
 ==========================================
-get variants in PRED-FVP-NAT : NzN <= N + NzN .
+get variants in FVP-NAT-PRED : NzN <= N + NzN .
 
 Variant #1
 rewrites: 1
@@ -429,7 +429,7 @@ N --> #2:Nat
 No more variants.
 rewrites: 1
 ==========================================
-get variants in PRED-FVP-NAT : N <= NzN .
+get variants in FVP-NAT-PRED : N <= NzN .
 
 Variant #1
 rewrites: 0
@@ -458,7 +458,7 @@ NzN --> %1:Nat + %2:NzNat
 No more variants.
 rewrites: 3
 ==========================================
-get variants in PRED-FVP-INT : I == I + NzI:NzInt .
+get variants in FVP-INT-PRED : I == I + NzI:NzInt .
 
 Variant #1
 rewrites: 0
@@ -517,7 +517,7 @@ NzI:NzInt --> - #1:NzNat
 No more variants.
 rewrites: 12
 ==========================================
-get variants in PRED-FVP-INT : I == NzI:NzInt .
+get variants in FVP-INT-PRED : I == NzI:NzInt .
 
 Variant #1
 rewrites: 0
@@ -582,7 +582,7 @@ NzI:NzInt --> - #2:NzNat
 No more variants.
 rewrites: 9
 ==========================================
-get variants in PRED-FVP-INT : NzN' == - NzN .
+get variants in FVP-INT-PRED : NzN' == - NzN .
 
 Variant #1
 rewrites: 1
@@ -593,7 +593,7 @@ NzN --> #2:NzNat
 No more variants.
 rewrites: 1
 ==========================================
-get variants in PRED-FVP-INT : I < NzI:NzInt .
+get variants in FVP-INT-PRED : I < NzI:NzInt .
 
 Variant #1
 rewrites: 0
@@ -646,7 +646,7 @@ NzI:NzInt --> - (#1:NzNat + #2:Nat)
 No more variants.
 rewrites: 7
 ==========================================
-get variants in PRED-FVP-INT : NzI:Int < I .
+get variants in FVP-INT-PRED : NzI:Int < I .
 
 Variant #1
 rewrites: 0
@@ -699,7 +699,7 @@ I --> - (#1:NzNat + #2:Nat)
 No more variants.
 rewrites: 7
 ==========================================
-get variants in PRED-FVP-INT : NzI:NzInt < - NzI':NzInt .
+get variants in FVP-INT-PRED : NzI:NzInt < - NzI':NzInt .
 
 Variant #1
 rewrites: 0
@@ -758,7 +758,7 @@ NzI':NzInt --> - #1:NzNat
 No more variants.
 rewrites: 8
 ==========================================
-get variants in PRED-FVP-INT : - NzI:NzInt < NzI':NzInt .
+get variants in FVP-INT-PRED : - NzI:NzInt < NzI':NzInt .
 
 Variant #1
 rewrites: 0
@@ -817,7 +817,7 @@ NzI':NzInt --> #1:NzNat
 No more variants.
 rewrites: 8
 ==========================================
-get variants in PRED-FVP-INT : - NzI:NzInt < - NzI':NzInt .
+get variants in FVP-INT-PRED : - NzI:NzInt < - NzI':NzInt .
 
 Variant #1
 rewrites: 0
@@ -888,7 +888,7 @@ NzI':NzInt --> - %1:NzNat
 No more variants.
 rewrites: 11
 ==========================================
-get variants in PRED-FVP-INT : I <= NzI:NzInt .
+get variants in FVP-INT-PRED : I <= NzI:NzInt .
 
 Variant #1
 rewrites: 0
@@ -947,7 +947,7 @@ NzI:NzInt --> - #1:NzNat
 No more variants.
 rewrites: 8
 ==========================================
-get variants in PRED-FVP-INT : NzI:Int <= I .
+get variants in FVP-INT-PRED : NzI:Int <= I .
 
 Variant #1
 rewrites: 0
@@ -1000,7 +1000,7 @@ I --> - #1:NzNat
 No more variants.
 rewrites: 7
 ==========================================
-get variants in PRED-FVP-INT : NzI:NzInt <= - NzI':NzInt .
+get variants in FVP-INT-PRED : NzI:NzInt <= - NzI':NzInt .
 
 Variant #1
 rewrites: 0
@@ -1059,7 +1059,7 @@ NzI':NzInt --> - (#1:NzNat + #2:Nat)
 No more variants.
 rewrites: 8
 ==========================================
-get variants in PRED-FVP-INT : - NzI:NzInt <= NzI':NzInt .
+get variants in FVP-INT-PRED : - NzI:NzInt <= NzI':NzInt .
 
 Variant #1
 rewrites: 0
@@ -1118,7 +1118,7 @@ NzI':NzInt --> #1:NzNat + #2:Nat
 No more variants.
 rewrites: 8
 ==========================================
-get variants in PRED-FVP-INT : - NzI:NzInt <= - NzI':NzInt .
+get variants in FVP-INT-PRED : - NzI:NzInt <= - NzI':NzInt .
 
 Variant #1
 rewrites: 0

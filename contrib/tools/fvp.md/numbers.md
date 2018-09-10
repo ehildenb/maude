@@ -11,14 +11,21 @@ FVP Booleans
 ------------
 
 ```maude
-fmod FVP-BOOL is
-
+fmod FVP-BOOL-SORT is
     sort Bool .
-    -----------
-    var B : Bool .
+endfm
+
+fmod FVP-BOOL-CTOR is
+   protecting FVP-BOOL-SORT .
 
    ops tt ff : -> Bool [ctor] .
-    ---------------------------
+   ----------------------------
+endfm
+
+fmod FVP-BOOL is
+   protecting FVP-BOOL-CTOR .
+
+    var B : Bool .
 
     op _/\_ : Bool Bool -> Bool [assoc comm] .
     op _\/_ : Bool Bool -> Bool [assoc comm] .
@@ -43,15 +50,13 @@ The following implements FVP natural numbers as bags of `1`s.
 
 ```maude
 fmod FVP-NAT-SORT is
-    sorts Nat .
+    sorts Nat NzNat .
+    -----------------
+    subsort NzNat < Nat .
 endfm
 
 fmod FVP-NAT-CTOR is
-    including FVP-NAT-SORT .
-
-    sorts NzNat .
-    -------------
-    subsorts NzNat < Nat .
+   protecting FVP-NAT-SORT .
 
     op 0   :           ->   Nat [ctor] .
     op 1   :           -> NzNat [ctor] .
@@ -149,7 +154,7 @@ Predicates over Numbers
 -----------------------
 
 ```maude
-fmod PRED-FVP-NAT is
+fmod FVP-NAT-PRED is
    protecting FVP-NAT .
    protecting FVP-BOOL .
 
@@ -177,9 +182,9 @@ endfm
 ```
 
 ```maude
-fmod PRED-FVP-INT is
-   protecting      FVP-INT .
-   protecting PRED-FVP-NAT .
+fmod FVP-INT-PRED is
+   protecting FVP-INT .
+   protecting FVP-NAT-PRED .
 
     vars   N   N' :   Nat .
     var  NzN NzN' : NzNat .
@@ -211,7 +216,7 @@ Locally FVP Operators
 ---------------------
 
 ```maude
-fmod MULT-LOCALLY-FVP-NAT is
+fmod FVP-NAT-MULT is
    protecting FVP-NAT .
 
     var    N      :   Nat .
@@ -225,9 +230,9 @@ fmod MULT-LOCALLY-FVP-NAT is
     eq N * (NzN + NzN') = (N * NzN) + (N * NzN') .
 endfm
 
-fmod MULT-LOCALLY-FVP-INT is
-   protecting MULT-LOCALLY-FVP-NAT .
-   protecting              FVP-INT .
+fmod FVP-INT-MULT is
+   protecting FVP-NAT-MULT .
+   protecting FVP-INT .
 
     vars   I   I' :   Int .
     vars NzI NzI' : NzInt .

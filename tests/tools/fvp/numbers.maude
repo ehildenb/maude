@@ -13,7 +13,7 @@ get variants min(NzN:NzNat, M:Nat) .
 get variants max(1 + NzN:NzNat, NzN:NzNat) .
 get variants min(N:Nat, M:Nat) + max(N:Nat, M:Nat) .
 
-select MULT-LOCALLY-FVP-NAT .
+select FVP-NAT-MULT .
 
 get variants N:Nat * M:Nat .
 get variants (1 + NzN:NzNat) * M:Nat .
@@ -27,11 +27,11 @@ select FVP-INT .
 get variants I:Int - N:Nat .
 get variants min(N:Int, M:Int) + max(N:Int, M:Int) .
 
-select MULT-LOCALLY-FVP-INT .
+select FVP-INT-MULT .
 
 get variants NzI:NzInt * NzN:NzNat .
 
-select PRED-FVP-NAT .
+select FVP-NAT-PRED .
 
 get variants N:Nat == N:Nat + NzN:NzNat .
 get variants N:Nat == NzN:NzNat .
@@ -42,7 +42,7 @@ get variants N:Nat < NzN:NzNat .
 get variants NzN:NzNat <= N:Nat + NzN:NzNat .
 get variants N:Nat <= NzN:NzNat .
 
-select PRED-FVP-INT .
+select FVP-INT-PRED .
 
 get variants I:Int == I:Int + NzI:NzInt .
 get variants I:Int == NzI:NzInt .
