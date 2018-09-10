@@ -85,20 +85,6 @@ fmod FVP-NAT is
     eq max( N , N + M ) = N + M [variant] .
 endfm
 
-fmod MULT-FVP-NAT is
-   protecting FVP-NAT .
-
-    var    N      :   Nat .
-    vars NzN NzN' : NzNat .
-
-    op _*_ : Nat Nat -> Nat [assoc comm] .
-    --------------------------------------
-    eq N * 0 =  0 [variant] .
-    eq N * 1 =  N [variant] .
-
-    eq N * (NzN + NzN') = (N * NzN) + (N * NzN') .
-endfm
-
 fmod FVP-NUMBERS is
    protecting FVP-NAT .
 
@@ -121,7 +107,7 @@ FVP Integer Extension
 
 ```maude
 fmod FVP-INT is
-   protecting MULT-FVP-NAT .
+   protecting FVP-NAT .
 
     sorts NzNeg Int NzInt .
     -----------------------
@@ -156,13 +142,6 @@ fmod FVP-INT is
 
     eq min(- NzN, - NzN') = - max(NzN, NzN') [variant] .
     eq max(- NzN, - NzN') = - min(NzN, NzN') [variant] .
-
-    op _*_ : Int Int -> Int [ditto] .
-    ---------------------------------
-    eq I * 0 = 0 [variant] .
-    eq I * 1 = I [variant] .
-
-    eq I * (NzI + NzI') = (I * NzI) + (I * NzI') .
 endfm
 ```
 
@@ -213,5 +192,39 @@ fmod PRED-FVP-INT is
 
     eq N <  - NzN' = ff [variant] .
     eq N <= - NzN' = ff [variant] .
+endfm
+```
+
+Locally FVP Operators
+---------------------
+
+```maude
+fmod MULT-LOCALLY-FVP-NAT is
+   protecting FVP-NAT .
+
+    var    N      :   Nat .
+    vars NzN NzN' : NzNat .
+
+    op _*_ : Nat Nat -> Nat [assoc comm] .
+    --------------------------------------
+    eq N * 0 =  0 [variant] .
+    eq N * 1 =  N [variant] .
+
+    eq N * (NzN + NzN') = (N * NzN) + (N * NzN') .
+endfm
+
+fmod MULT-LOCALLY-FVP-INT is
+   protecting MULT-LOCALLY-FVP-NAT .
+   protecting              FVP-INT .
+
+    vars   I   I' :   Int .
+    vars NzI NzI' : NzInt .
+
+    op _*_ : Int Int -> Int [ditto] .
+    ---------------------------------
+    eq I * 0 = 0 [variant] .
+    eq I * 1 = I [variant] .
+
+    eq I * (NzI + NzI') = (I * NzI) + (I * NzI') .
 endfm
 ```

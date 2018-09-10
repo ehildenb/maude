@@ -124,7 +124,7 @@ M --> %1:Nat
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-FVP-NAT : N * M:Nat .
+get variants in MULT-LOCALLY-FVP-NAT : N * M:Nat .
 
 Variant #1
 rewrites: 0
@@ -159,7 +159,7 @@ M:Nat --> 1
 No more variants.
 rewrites: 4
 ==========================================
-get variants in MULT-FVP-NAT : M:Nat * 1 + NzN .
+get variants in MULT-LOCALLY-FVP-NAT : M:Nat * 1 + NzN .
 
 Variant #1
 rewrites: 2
@@ -242,15 +242,15 @@ M:Int --> #2:Int
 
 Variant #2
 rewrites: 10
-Int: %2:NzNat + - %1:NzNat
-N:Int --> %2:NzNat
+Int: %2:Nat + - %1:NzNat
+N:Int --> %2:Nat
 M:Int --> - %1:NzNat
 
 Variant #3
 rewrites: 10
-Int: %2:NzNat + - %1:NzNat
+Int: %2:Nat + - %1:NzNat
 N:Int --> - %1:NzNat
-M:Int --> %2:NzNat
+M:Int --> %2:Nat
 
 Variant #4
 rewrites: 10
@@ -309,25 +309,25 @@ M:Int --> %1:NzNat
 No more variants.
 rewrites: 20
 ==========================================
-get variants in FVP-INT : NzN * NzI .
+get variants in MULT-LOCALLY-FVP-INT : NzI * NzN:NzNat .
 
 Variant #1
 rewrites: 0
-Int: #1:NzNat * #2:NzInt
-NzN --> #1:NzNat
-NzI --> #2:NzInt
+Int: #1:NzInt * #2:NzNat
+NzI --> #1:NzInt
+NzN:NzNat --> #2:NzNat
 
 Variant #2
 rewrites: 2
-NzInt: %1:NzInt
-NzN --> 1
-NzI --> %1:NzInt
+NzNat: %1:NzNat
+NzI --> 1
+NzN:NzNat --> %1:NzNat
 
 Variant #3
 rewrites: 2
-NzNat: %1:NzNat
-NzN --> %1:NzNat
-NzI --> 1
+NzInt: %1:NzInt
+NzI --> %1:NzInt
+NzN:NzNat --> 1
 
 No more variants.
 rewrites: 2
