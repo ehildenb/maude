@@ -46,12 +46,15 @@ $(tangler):
 
 tools: $(meta_files) $(lmc_files) $(fvp_files)
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
+	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
 tools/lmc/%.maude: tools/lmc.md/%.md
+	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
 tools/fvp/%.maude: tools/fvp.md/%.md
+	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
 systems: $(system_files)
