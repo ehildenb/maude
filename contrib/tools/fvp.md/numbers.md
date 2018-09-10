@@ -195,15 +195,15 @@ fmod PRED-FVP-INT is
 
     op _<_  : Int Int -> Bool [ditto] .
     op _<=_ : Int Int -> Bool [ditto] .
-    ------------------------------------
+    -----------------------------------
     eq - NzN <  N' = tt [variant] .
     eq - NzN <= N' = tt [variant] .
 
     eq N <  - NzN' = ff [variant] .
     eq N <= - NzN' = ff [variant] .
 
-    eq - N <  - N' = N' <  N [variant] .
-    eq - N <= - N' = N' <= N [variant] .
+    eq - NzN <  - NzN' = NzN' <  NzN [variant] .
+    eq - NzN <= - NzN' = NzN' <= NzN [variant] .
 endfm
 ```
 
