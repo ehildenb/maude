@@ -5,7 +5,7 @@ Dijkstra's mutual exclusion algorithm is a simple token-ring algorithm for ensur
 Several implementations are provided.
 
 ```maude
-load ../tools/varsat/numbers.maude
+load ../tools/fvp/numbers.maude
 ```
 
 Version 1 - RL
@@ -13,7 +13,7 @@ Version 1 - RL
 
 ```maude
 fmod DIJKSTRA-DATA is
-  pr BOOL* .
+  protecting FVP-BOOL .
 
   --- Processes
   sort WProc 2Proc NCProc CProc Proc .
@@ -47,8 +47,8 @@ fmod DIJKSTRA-DATA is
   op  mt     : -> WProcSet .
 
   --- Auxiliary Operators
-  op _==_     : Bool* Bool* -> Bool* .
-  op safe? : ProcSet -> Bool* .
+  op _==_  : Bool Bool -> Bool .
+  op safe? : ProcSet -> Bool .
   ---
   eq safe?(P:WProcSet)       = tt .
   eq safe?(P:2ProcSet)       = ff .

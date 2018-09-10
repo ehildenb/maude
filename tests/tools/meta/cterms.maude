@@ -1,6 +1,6 @@
 
 
-load ../../../contrib/tools/varsat/numbers.maude
+load ../../../contrib/tools/fvp/numbers.maude
 load ../../../contrib/tools/meta/cterms.maude
 
 --- Module CTERM-SET
@@ -11,13 +11,11 @@ select CTERM-SET .
 --- Operator `_|_`
 --- --------------
 
---- ### System `MULT-NAT*`
+reduce ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat])
+    == ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] | 'Y:Nat ?= '_*_['0.Nat,'1.Nat]) .
 
-reduce ('_:+_['Y:Nat*, 'X:Nat*, 'Y:Nat*] | 'Y:Nat* ?= '_:*_['0.Nat*,'1.Nat*] | 'Y:Nat* ?= '_:*_['0.Nat*,'1.Nat*])
-    == ('_:+_['Y:Nat*, 'X:Nat*, 'Y:Nat*] | 'Y:Nat* ?= '_:*_['0.Nat*,'1.Nat*]) .
-
-reduce ('_:+_['Y:Nat*, ('X:Nat* | 'Z:Nat* ?= '_:*_['1.Nat*, '0.Nat*]), 'Z:Nat*])
-    == ('_:+_['Y:Nat*, 'X:Nat*, 'Z:Nat*] | 'Z:Nat* ?= '_:*_['1.Nat*, '0.Nat*]) .
+reduce ('_+_['Y:Nat, ('X:Nat | 'Z:Nat ?= '_*_['1.Nat, '0.Nat]), 'Z:Nat])
+    == ('_+_['Y:Nat, 'X:Nat, 'Z:Nat] | 'Z:Nat ?= '_*_['1.Nat, '0.Nat]) .
 
 --- Module PURIFICATION
 --- ===================
@@ -27,83 +25,101 @@ select PURIFICATION .
 --- Function `subtheoryPurify`
 --- --------------------------
 
---- ### System `MULT-NAT*`
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '0.Nat)
+    == '0.Nat .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '0.Nat*)
-    == '0.Nat* .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), 'X:Nat)
+    == 'X:Nat .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), 'X:Nat*)
-    == 'X:Nat* .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['0.Nat, '1.Nat])
+    == '_+_['0.Nat, '1.Nat] .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '_:+_['0.Nat*, '1.Nat*])
-    == '_:+_['0.Nat*, '1.Nat*] .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['0.Nat, 'X:Nat])
+    == '_+_['0.Nat, 'X:Nat] .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '_:+_['0.Nat*, 'X:Nat*])
-    == '_:+_['0.Nat*, 'X:Nat*] .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_*_['0.Nat, '1.Nat])
+    == ('#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '_:*_['0.Nat*, '1.Nat*])
-    == ('#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat* | '#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat* ?= '_:*_['0.Nat*,'1.Nat*]) .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat, '1.Nat], 'X:Nat])
+    == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat] | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '_:+_['_:*_['0.Nat*, '1.Nat*], 'X:Nat*])
-    == ('_:+_['#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat*,'X:Nat*] | '#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat* ?= '_:*_['0.Nat*,'1.Nat*]) .
+reduce subtheoryPurify(asTemplate(upModule('FVP-NAT, true)), upModule('FVP-NAT-MULT, true), '_+_['_*_['0.Nat, '1.Nat], 'X:Nat, '_*_['0.Nat, '1.Nat]])
+    == ('_+_['#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat,'X:Nat, '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat]
+             | '#makeVariable`(_*_`[0.Nat`,1.Nat`]`):Nat ?= '_*_['0.Nat,'1.Nat]) .
 
-reduce subtheoryPurify(asTemplate(upModule('NAT*, true)), upModule('MULT-NAT*, true), '_:+_['_:*_['0.Nat*, '1.Nat*], 'X:Nat*, '_:*_['0.Nat*, '1.Nat*]])
-    == ('_:+_['#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat*,'X:Nat*, '#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat*]
-             | '#makeVariable`(_:*_`[0.Nat*`,1.Nat*`]`):Nat* ?= '_:*_['0.Nat*,'1.Nat*]) .
+fmod ASSOC-LIST { X :: TRIV } is
 
---- Here, we DO NOT import NAT*, but only NAT*-SORT
-fmod MYLISTNAT* is
-    protecting BOOL* .                      --- _<Nat_ etc must go to a shared sort
-    protecting ASSOC-LIST*{Nat*} *
-        (sort NeList*{Nat*} to NeNatList*, sort List*{Nat*} to NatList*) .
+    sort List{X} NeList{X} .
+    ------------------------
+    subsort X$Elt < NeList{X} < List{X} .
+
+    var N : X$Elt . var L : NeList{X} .
+
+    op nil :                     ->   List{X} [ctor] .
+    op __  : NeList{X} NeList{X} -> NeList{X} [ctor assoc] .
+    --------------------------------------------------------
+
+    op head : NeList{X} -> X$Elt .
+    ------------------------------
+    eq head(N)   = N [variant] .
+    eq head(N L) = N [variant] .
+endfm
+
+view Nat  from TRIV to FVP-NAT-SORT is sort Elt to Nat  . endv
+view Bool from TRIV to FVP-BOOL     is sort Elt to Bool . endv
+
+fmod MYLISTNAT is
+    protecting FVP-NAT-SORT .
+    protecting ASSOC-LIST{Nat} *
+        (sort NeList{Nat} to NeNatList, sort List{Nat} to NatList) .
 endfm
 
 fmod TEST-PURIFY is
     protecting FOFORM .
     protecting FOFORMSET .
     protecting PURIFICATION .
-    op natMultMod  : -> Module . eq natMultMod  = upModule('MULT-NAT*-NOORDER, true) .
-    op natOrderMod : -> Module . eq natOrderMod = upModule('NAT*, true) .
-    op natListMod  : -> Module . eq natListMod  = upModule('MYLISTNAT*, true) .
+    op natMultMod  : -> Module . eq natMultMod  = upModule('FVP-NAT-MULT, true) .
+    op natOrderMod : -> Module . eq natOrderMod = upModule('FVP-NAT-PRED, true) .
+    op natListMod  : -> Module . eq natListMod  = upModule('MYLISTNAT, true) .
 
     op deepLeft : -> Term .
-    eq deepLeft = '_:*_ [ '1.Nat*
-                        , 'min[ '0.Nat*
-                              , '_:*_ [ '1.Nat*
-                                      , 'max[ '0.Nat*
-                                            , '_:*_ [ '1.Nat*
-                                                    , '_:+_[ '1.Nat*,  '1.Nat*]
-                        ]     ]       ]     ]       ] .
+    eq deepLeft = '_*_ [ '1.Nat
+                       , 'min[ '0.Nat
+                             , '_*_ [ '1.Nat
+                                    , 'max[ '0.Nat
+                                          , '_*_ [ '1.Nat
+                                                 , '_+_[ '1.Nat,  '1.Nat]
+                       ]     ]      ]     ]      ] .
 
     op deepRight : -> Term .
-    eq deepRight = '_:*_ [ 'min[ '_:*_ [ 'max[ '_:*_ [ '_:+_[ '1.Nat*,  '1.Nat*]
-                                                     , '1.Nat* ]
-                                             , '1.Nat* ]
-                                       , '1.Nat* ]
-                               , '1.Nat* ]
-                         , '1.Nat* ] .
+    eq deepRight = '_*_ [ 'min[ '_*_ [ 'max[ '_*_ [ '_+_[ '1.Nat,  '1.Nat]
+                                                  , '1.Nat ]
+                                           , '1.Nat ]
+                                     , '1.Nat ]
+                              , '1.Nat ]
+                        , '1.Nat ] .
 
     op deepMixed : -> Term .
-    eq deepMixed = '_:+_[ deepRight, deepLeft ] .
+    eq deepMixed = '_+_[ deepRight, deepLeft ] .
 endfm
 
 --- Function `moduleIntersect`
 --- --------------------------
 
-reduce 'Foo      inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
-reduce 'NatList* inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
+reduce 'Foo     inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
+reduce 'NatList inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
 
-reduce joint-variable(natListMod, natOrderMod, 'head['L2:NeNatList*]) .
-reduce joint-variable(natOrderMod, natListMod, 'head['L2:NeNatList*]) .
+reduce joint-variable(natListMod, natOrderMod, 'head['L2:NeNatList]) .
+reduce joint-variable(natOrderMod, natListMod, 'head['L2:NeNatList]) .
 
 --- Function Purify (Terms)
 --- -----------------------
 
-reduce purify(natOrderMod, natListMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
-reduce purify(natListMod, natOrderMod, '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]]) .
+reduce purify(natOrderMod, natListMod, '_<_['head['L1:NeNatList], 'head['L2:NeNatList]]) .
+reduce purify(natListMod, natOrderMod, '_<_['head['L1:NeNatList], 'head['L2:NeNatList]]) .
 reduce purify(natListMod, natOrderMod,
-        '_<Nat_['_:+_['head['L':NeNatList*],'head['L':NeNatList*]]
-               ,'_:+_['head['L:NeNatList*],'head['L:NeNatList*]]]) .
+        '_<_['_+_['head['L':NeNatList],'head['L':NeNatList]]
+            ,'_+_['head['L:NeNatList],'head['L:NeNatList]]]) .
 
 reduce purify(natOrderMod, natMultMod, deepLeft ) .
 reduce purify(natMultMod, natOrderMod, deepLeft ) .
@@ -113,15 +129,15 @@ reduce purify(natOrderMod, natMultMod, deepMixed) .
 --- Function Purify (EqConjs)
 --- -------------------------
 
-reduce purify('MYLISTNAT*, 'NAT*,
-        '_<Nat_['head['L1:NeNatList*], 'head['L2:NeNatList*]] ?= 'tt.Bool*) .
-reduce purify('NAT*, 'MYLISTNAT*,
-    'tt.Bool* != '_<Nat_['_:+_['head['L':NeNatList*],
-                               'head['L':NeNatList*]]
-                        ,'_:+_['head['L:NeNatList*]
-                              ,'head['L:NeNatList*]]]) .
-reduce purify('MYLISTNAT*, 'NAT*,
-    'tt.Bool* != '_<Nat_['_:+_['head['L':NeNatList*],
-                               'head['L':NeNatList*]]
-                        ,'_:+_['head['L:NeNatList*]
-                              ,'head['L:NeNatList*]]]) .
+reduce purify('MYLISTNAT, 'FVP-NAT-PRED,
+        '_<_['head['L1:NeNatList], 'head['L2:NeNatList]] ?= 'tt.Bool) .
+reduce purify('FVP-NAT-PRED, 'MYLISTNAT,
+    'tt.Bool != '_<_['_+_['head['L':NeNatList]
+                         ,'head['L':NeNatList]]
+                    ,'_+_['head['L:NeNatList]
+                         ,'head['L:NeNatList]]]) .
+reduce purify('MYLISTNAT, 'FVP-NAT-PRED,
+    'tt.Bool != '_<_['_+_['head['L':NeNatList]
+                         ,'head['L':NeNatList]]
+                    ,'_+_['head['L:NeNatList]
+                         ,'head['L:NeNatList]]]) .

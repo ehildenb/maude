@@ -91,7 +91,7 @@ pr 'TRUTH .
 ==========================================
 reduce in MODULE-TEMPLATE : asTemplate(upModule('DIJKSTRA, true)) .
 rewrites: 5
-result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool* ; 'CProc ; 'Conf ;
+result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
     'NCProc ; 'NCProcSet ; 'Proc ; 'ProcSet ; 'State ; 'WProc ; 'WProcSet .)
 subsort '2Proc < '2ProcSet .
 subsort '2Proc < 'NCProc .
@@ -104,15 +104,15 @@ subsort 'Proc < 'ProcSet .
 subsort 'WProc < 'NCProc .
 subsort 'WProc < 'WProcSet .
 subsort 'WProcSet < 'NCProcSet .
-eq '_and*_['B:Bool*,'ff.Bool*] = 'ff.Bool* [variant] .
-eq '_and*_['B:Bool*,'tt.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'ff.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'tt.Bool*] = 'tt.Bool* [variant] .
-eq 'not*_['ff.Bool*] = 'tt.Bool* [variant] .
-eq 'not*_['tt.Bool*] = 'ff.Bool* [variant] .
-eq 'safe?['P:2ProcSet] = 'ff.Bool* [none] .
-eq 'safe?['P:WProcSet] = 'tt.Bool* [none] .
-eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool* [none] .
+eq '_/\_['ff.Bool,'B:Bool] = 'ff.Bool [variant] .
+eq '_/\_['tt.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_\/_['ff.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_\/_['tt.Bool,'B:Bool] = 'tt.Bool [variant] .
+eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
+eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
+eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+eq '~_['ff.Bool] = 'tt.Bool [variant] .
+eq '~_['tt.Bool] = 'ff.Bool [variant] .
 rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
     'stop)] .
 rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
@@ -143,15 +143,15 @@ rl '<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
 rl '<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]] => '<_>['_|_['`{0`,try`}.WProc,
     'PS:ProcSet]] [label('exit-crit2)] .
 op '<_> : 'Conf -> 'State [ctor] .
-op '_==_ : 'Bool* 'Bool* -> 'Bool* [none] .
+op '_/\_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+op '_==_ : 'Bool 'Bool -> 'Bool [none] .
+op '_\/_ : 'Bool 'Bool -> 'Bool [assoc comm] .
 op '__ : '2ProcSet '2ProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : '2ProcSet 'WProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : 'NCProcSet 'NCProcSet -> 'NCProcSet [assoc comm ctor id('mt.WProcSet)]
     .
 op '__ : 'ProcSet 'ProcSet -> 'ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : 'WProcSet 'WProcSet -> 'WProcSet [assoc comm ctor id('mt.WProcSet)] .
-op '_and*_ : 'Bool* 'Bool* -> 'Bool* [none] .
-op '_or*_ : 'Bool* 'Bool* -> 'Bool* [none] .
 op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
 op '`[_`] : 'Conf -> 'State [ctor] .
 op '`{0`,try`} : nil -> 'WProc [ctor] .
@@ -161,17 +161,17 @@ op '`{1`,upt`} : nil -> 'WProc [ctor] .
 op '`{2`,chf`} : nil -> '2Proc [ctor] .
 op '`{2`,crt`} : nil -> 'CProc [ctor] .
 op '`{2`,ext`} : nil -> '2Proc [ctor] .
-op 'ff : nil -> 'Bool* [ctor] .
+op 'ff : nil -> 'Bool [ctor] .
 op 'mt : nil -> 'WProcSet [none] .
-op 'not*_ : 'Bool* -> 'Bool* [none] .
-op 'safe? : 'ProcSet -> 'Bool* [none] .
-op 'tt : nil -> 'Bool* [ctor] .
+op 'safe? : 'ProcSet -> 'Bool [none] .
+op 'tt : nil -> 'Bool [ctor] .
+op '~_ : 'Bool -> 'Bool [none] .
 crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'tt.Bool*] = 'tt.Bool* [label('go-crit1)] .
+    'PS:ProcSet]],'tt.Bool] = 'tt.Bool [label('go-crit1)] .
 crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'ff.Bool*] = 'tt.Bool* [label('fail-crit1)] .
+    'PS:ProcSet]],'ff.Bool] = 'tt.Bool [label('fail-crit1)] .
 ==========================================
 reduce in MODULE-TEMPLATE : asTemplate(upModule('BAKERY-FVP, true)) .
 rewrites: 3
@@ -243,7 +243,7 @@ reduce in MODULE-TEMPLATE : fromTemplate('DIJKSTRA, asTemplate(upModule(
 rewrites: 8
 result SModule: mod 'DIJKSTRA is
   nil
-  sorts '2Proc ; '2ProcSet ; 'Bool* ; 'CProc ; 'Conf ; 'NCProc ; 'NCProcSet ;
+  sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ; 'NCProc ; 'NCProcSet ;
     'Proc ; 'ProcSet ; 'State ; 'WProc ; 'WProcSet .
   subsort '2Proc < '2ProcSet .
   subsort '2Proc < 'NCProc .
@@ -257,7 +257,9 @@ result SModule: mod 'DIJKSTRA is
   subsort 'WProc < 'WProcSet .
   subsort 'WProcSet < 'NCProcSet .
   op '<_> : 'Conf -> 'State [ctor] .
-  op '_==_ : 'Bool* 'Bool* -> 'Bool* [none] .
+  op '_/\_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+  op '_==_ : 'Bool 'Bool -> 'Bool [none] .
+  op '_\/_ : 'Bool 'Bool -> 'Bool [assoc comm] .
   op '__ : '2ProcSet '2ProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)]
     .
   op '__ : '2ProcSet 'WProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)]
@@ -267,8 +269,6 @@ result SModule: mod 'DIJKSTRA is
   op '__ : 'ProcSet 'ProcSet -> 'ProcSet [assoc comm ctor id('mt.WProcSet)] .
   op '__ : 'WProcSet 'WProcSet -> 'WProcSet [assoc comm ctor id('mt.WProcSet)]
     .
-  op '_and*_ : 'Bool* 'Bool* -> 'Bool* [none] .
-  op '_or*_ : 'Bool* 'Bool* -> 'Bool* [none] .
   op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
   op '`[_`] : 'Conf -> 'State [ctor] .
   op '`{0`,try`} : nil -> 'WProc [ctor] .
@@ -278,21 +278,21 @@ result SModule: mod 'DIJKSTRA is
   op '`{2`,chf`} : nil -> '2Proc [ctor] .
   op '`{2`,crt`} : nil -> 'CProc [ctor] .
   op '`{2`,ext`} : nil -> '2Proc [ctor] .
-  op 'ff : nil -> 'Bool* [ctor] .
+  op 'ff : nil -> 'Bool [ctor] .
   op 'mt : nil -> 'WProcSet [none] .
-  op 'not*_ : 'Bool* -> 'Bool* [none] .
-  op 'safe? : 'ProcSet -> 'Bool* [none] .
-  op 'tt : nil -> 'Bool* [ctor] .
+  op 'safe? : 'ProcSet -> 'Bool [none] .
+  op 'tt : nil -> 'Bool [ctor] .
+  op '~_ : 'Bool -> 'Bool [none] .
   none
-  eq '_and*_['B:Bool*,'ff.Bool*] = 'ff.Bool* [variant] .
-  eq '_and*_['B:Bool*,'tt.Bool*] = 'B:Bool* [variant] .
-  eq '_or*_['B:Bool*,'ff.Bool*] = 'B:Bool* [variant] .
-  eq '_or*_['B:Bool*,'tt.Bool*] = 'tt.Bool* [variant] .
-  eq 'not*_['ff.Bool*] = 'tt.Bool* [variant] .
-  eq 'not*_['tt.Bool*] = 'ff.Bool* [variant] .
-  eq 'safe?['P:2ProcSet] = 'ff.Bool* [none] .
-  eq 'safe?['P:WProcSet] = 'tt.Bool* [none] .
-  eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool* [none] .
+  eq '_/\_['ff.Bool,'B:Bool] = 'ff.Bool [variant] .
+  eq '_/\_['tt.Bool,'B:Bool] = 'B:Bool [variant] .
+  eq '_\/_['ff.Bool,'B:Bool] = 'B:Bool [variant] .
+  eq '_\/_['tt.Bool,'B:Bool] = 'tt.Bool [variant] .
+  eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
+  eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
+  eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+  eq '~_['ff.Bool] = 'tt.Bool [variant] .
+  eq '~_['tt.Bool] = 'ff.Bool [variant] .
   rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [
     label('stop)] .
   rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
@@ -324,10 +324,10 @@ result SModule: mod 'DIJKSTRA is
     'PS:ProcSet]] [label('exit-crit2)] .
   crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'tt.Bool*] = 'tt.Bool* [label('go-crit1)] .
+    'PS:ProcSet]],'tt.Bool] = 'tt.Bool [label('go-crit1)] .
   crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'ff.Bool*] = 'tt.Bool* [label('fail-crit1)] .
+    'PS:ProcSet]],'ff.Bool] = 'tt.Bool [label('fail-crit1)] .
 endm
 ==========================================
 reduce in MODULE-TEMPLATE : fromTemplate('BAKERY-FVP, asTemplate(upModule(

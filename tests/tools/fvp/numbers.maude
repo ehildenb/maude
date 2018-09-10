@@ -1,0 +1,65 @@
+load ../../../contrib/tools/fvp/numbers.maude
+
+select FVP-BOOL .
+
+get variants B:Bool .
+get variants B:Bool /\ ~ B:Bool .
+
+select FVP-NAT .
+
+get variants N:Nat .
+get variants N:Nat monus M:Nat .
+get variants min(NzN:NzNat, M:Nat) .
+get variants max(1 + NzN:NzNat, NzN:NzNat) .
+get variants min(N:Nat, M:Nat) + max(N:Nat, M:Nat) .
+
+select FVP-NAT-MULT .
+
+get variants N:Nat * M:Nat .
+get variants (1 + NzN:NzNat) * M:Nat .
+
+select FVP-NUMBERS .
+
+get variants 3 .
+
+select FVP-INT .
+
+get variants I:Int - N:Nat .
+get variants min(N:Int, M:Int) + max(N:Int, M:Int) .
+
+select FVP-INT-MULT .
+
+get variants NzI:NzInt * NzN:NzNat .
+
+select FVP-NAT-PRED .
+
+get variants N:Nat == N:Nat + NzN:NzNat .
+get variants N:Nat == NzN:NzNat .
+
+get variants N':Nat =/= N:Nat .
+
+get variants NzN:NzNat < N:Nat + NzN:NzNat .
+get variants N:Nat < NzN:NzNat .
+
+get variants NzN:NzNat <= N:Nat + NzN:NzNat .
+get variants N:Nat <= NzN:NzNat .
+
+select FVP-INT-PRED .
+
+get variants I:Int == I:Int + NzI:NzInt .
+get variants I:Int == NzI:NzInt .
+get variants - NzN:NzNat == NzN':NzNat .
+
+get variants N':Nat =/= N:Nat .
+
+get variants I:Int < NzI:NzInt .
+get variants NzI:Int < I:Int .
+get variants   NzI:NzInt < - NzI':NzInt .
+get variants - NzI:NzInt <   NzI':NzInt .
+get variants - NzI:NzInt < - NzI':NzInt .
+
+get variants I:Int <= NzI:NzInt .
+get variants NzI:Int <= I:Int .
+get variants   NzI:NzInt <= - NzI':NzInt .
+get variants - NzI:NzInt <=   NzI':NzInt .
+get variants - NzI:NzInt <= - NzI':NzInt .

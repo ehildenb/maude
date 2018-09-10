@@ -4,6 +4,8 @@ load ../../contrib/systems/imp.maude
 
 mod IMP-TEST is
    protecting IMP-SEMANTICS + IMP-PROGRAMS .
+
+   ops x y z t q r n s : -> Id .
 endm
 
 rewrite < x = 3 ; ~> done | x |-> 0 > .
@@ -20,6 +22,8 @@ rewrite < swap-sort(y ; z ; q ; x ; r) ~> done | x |-> 3 * y |-> 4 * z |-> 5 * r
 
 mod THREADED-IMP-TEST is
    protecting THREADED-IMP-SEMANTICS + IMP-PROGRAMS .
+
+   ops x y z t q r n s : -> Id .
 endm
 
 rewrite { < swap(x, y, s) ~> done >

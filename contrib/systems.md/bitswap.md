@@ -67,7 +67,7 @@ blocks and the blocks themselves.
 
 ``` {.maude}
     sort Node Strategy NodeId BlockSet WorldState .
- 
+
     subsorts Qid < NodeId .
     subsorts QidSet < BlockSet .
     subsorts Node < WorldState .
@@ -106,7 +106,7 @@ We define the world state as simply a collection of `Node`s.
 
 ``` {.maude}
     op empty : -> WorldState                                            [ctor] .
-    op _ _   : WorldState WorldState -> WorldState 
+    op _ _   : WorldState WorldState -> WorldState
                                     [ctor assoc comm id: empty format(d ni d)] .
 ```
 
@@ -149,7 +149,7 @@ record this transaction. This is implemented in the following block of code.
     rl $tick.foreachNode((A, IDS), [A S1 H1 W1] NS)
     => $tick.foreachNode.chooseRecepient(A,
              send-next-block-to(S1, could-send-to(H1, NS)), IDS, [A S1 H1 W1] NS) .
-    rl $tick.foreachNode.chooseRecepient(A, B,                            
+    rl $tick.foreachNode.chooseRecepient(A, B,
              IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS)
     => $tick.foreachNode.chooseBlock    (A, B, take(intersection(H1, W2)),
              IDS, [ A S1 H1 W1 ] [ B S2 H2 W2 ] NS) .
@@ -296,7 +296,7 @@ like structure to prevent starvation of other nodes.
     eq record-block-sent(tit-for-tat(BS), nobody) = tit-for-tat(BS)            .
     eq record-block-received(tit-for-tat((BS1, (A |->  N     ), BS2)), A)
      =                       tit-for-tat((BS1, (A |-> (N + 1)), BS2))          .
-    eq record-block-received(tit-for-tat(BS), nobody) = tit-for-tat(BS)        . 
+    eq record-block-received(tit-for-tat(BS), nobody) = tit-for-tat(BS)        .
 ```
 
 This seems to work great!

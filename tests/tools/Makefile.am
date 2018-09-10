@@ -1,1 +1,1 @@
-SUBDIRS = base meta lmc varsat
+SUBDIRS = base meta lmc varsat fvp

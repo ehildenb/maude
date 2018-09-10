@@ -14,6 +14,18 @@ select SUBTHEORY-ABSTRACTION .
 --- Module UNCONDITIONALIZE
 --- =======================
 
+fmod META-LEVEL-NAT-RENAMED is
+   protecting META-LEVEL * ( op _+_  to _+ML_
+                           , op sd   to sdML
+                           , op min  to minML
+                           , op max  to maxML
+                           , op _<_  to _<ML_
+                           , op _<=_ to _<=ML_
+                           , op __   to __ML
+                           , op nil  to nilML
+                           ) .
+endfm
+
 select UNCONDITIONALIZE .
 
 reduce stripConditions(asTemplate(upModule('DIJKSTRA    , true))) .
@@ -36,4 +48,4 @@ reduce fromTemplate('FT-COMM    , unconditionalize('State  , 'Condition , '_|_, 
 
 reduce wellFormed(fromTemplate('DIJKSTRA   , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA   , false))))) .
 reduce wellFormed(fromTemplate('BAKERY-FVP , unconditionalize('BState , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('BAKERY-FVP , false))))) .
-reduce wellFormed(fromTemplate('FT-COMM    , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('FT-COMM    , false))))) .
+reduce wellFormed(fromTemplate('FT-COMM    , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL-NAT-RENAMED, asTemplate(upModule('FT-COMM    , false))))) .

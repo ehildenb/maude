@@ -9,7 +9,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
 rewrites: 124
-result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool* ; 'CProc ; 'Conf ;
+result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
     'NCProc ; 'NCProcSet ; 'Proc ; 'ProcSet ; 'State ; 'WProc ; 'WProcSet .)
 subsort '2Proc < '2ProcSet .
 subsort '2Proc < 'NCProc .
@@ -22,15 +22,15 @@ subsort 'Proc < 'ProcSet .
 subsort 'WProc < 'NCProc .
 subsort 'WProc < 'WProcSet .
 subsort 'WProcSet < 'NCProcSet .
-eq '_and*_['B:Bool*,'ff.Bool*] = 'ff.Bool* [variant] .
-eq '_and*_['B:Bool*,'tt.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'ff.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'tt.Bool*] = 'tt.Bool* [variant] .
-eq 'not*_['ff.Bool*] = 'tt.Bool* [variant] .
-eq 'not*_['tt.Bool*] = 'ff.Bool* [variant] .
-eq 'safe?['P:2ProcSet] = 'ff.Bool* [none] .
-eq 'safe?['P:WProcSet] = 'tt.Bool* [none] .
-eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool* [none] .
+eq '_/\_['ff.Bool,'B:Bool] = 'ff.Bool [variant] .
+eq '_/\_['tt.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_\/_['ff.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_\/_['tt.Bool,'B:Bool] = 'tt.Bool [variant] .
+eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
+eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
+eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+eq '~_['ff.Bool] = 'tt.Bool [variant] .
+eq '~_['tt.Bool] = 'ff.Bool [variant] .
 rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
     'stop)] .
 rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
@@ -65,15 +65,15 @@ rl '<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
 rl '<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]] => '<_>['_|_['`{0`,try`}.WProc,
     'PS:ProcSet]] [label('exit-crit2)] .
 op '<_> : 'Conf -> 'State [ctor] .
-op '_==_ : 'Bool* 'Bool* -> 'Bool* [none] .
+op '_/\_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+op '_==_ : 'Bool 'Bool -> 'Bool [none] .
+op '_\/_ : 'Bool 'Bool -> 'Bool [assoc comm] .
 op '__ : '2ProcSet '2ProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : '2ProcSet 'WProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : 'NCProcSet 'NCProcSet -> 'NCProcSet [assoc comm ctor id('mt.WProcSet)]
     .
 op '__ : 'ProcSet 'ProcSet -> 'ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : 'WProcSet 'WProcSet -> 'WProcSet [assoc comm ctor id('mt.WProcSet)] .
-op '_and*_ : 'Bool* 'Bool* -> 'Bool* [none] .
-op '_or*_ : 'Bool* 'Bool* -> 'Bool* [none] .
 op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
 op '`[_`] : 'Conf -> 'State [ctor] .
 op '`{0`,try`} : nil -> 'WProc [ctor] .
@@ -83,11 +83,11 @@ op '`{1`,upt`} : nil -> 'WProc [ctor] .
 op '`{2`,chf`} : nil -> '2Proc [ctor] .
 op '`{2`,crt`} : nil -> 'CProc [ctor] .
 op '`{2`,ext`} : nil -> '2Proc [ctor] .
-op 'ff : nil -> 'Bool* [ctor] .
+op 'ff : nil -> 'Bool [ctor] .
 op 'mt : nil -> 'WProcSet [none] .
-op 'not*_ : 'Bool* -> 'Bool* [none] .
-op 'safe? : 'ProcSet -> 'Bool* [none] .
-op 'tt : nil -> 'Bool* [ctor] .
+op 'safe? : 'ProcSet -> 'Bool [none] .
+op 'tt : nil -> 'Bool [ctor] .
+op '~_ : 'Bool -> 'Bool [none] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
@@ -131,99 +131,104 @@ op 'wait : nil -> 'NcMode [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('FT-COMM,
     true))) .
-rewrites: 120
-result NeModuleDeclSet: (sorts 'Bool* ; 'ListNat* ; 'MaybeNat* ; 'MaybePairNat*
-    ; 'Nat* ; 'NeListNat* ; 'NzNat* ; 'PairNat* ; 'State .)
-subsort 'Nat* < 'MaybeNat* .
-subsort 'Nat* < 'NeListNat* .
-subsort 'NeListNat* < 'ListNat* .
-subsort 'NzNat* < 'Nat* .
-subsort 'PairNat* < 'MaybePairNat* .
-eq '_<=Nat_['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = 'tt.Bool* [variant] .
-eq '_<=Nat_['_:+_['p:NzNat*,'n:Nat*],'n:Nat*] = 'ff.Bool* [variant] .
-eq '_<Nat_['n:Nat*,'_:+_['p:NzNat*,'n:Nat*]] = 'tt.Bool* [variant] .
-eq '_<Nat_['_:+_['n:Nat*,'m:Nat*],'n:Nat*] = 'ff.Bool* [variant] .
-eq '_and*_['B:Bool*,'ff.Bool*] = 'ff.Bool* [variant] .
-eq '_and*_['B:Bool*,'tt.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'ff.Bool*] = 'B:Bool* [variant] .
-eq '_or*_['B:Bool*,'tt.Bool*] = 'tt.Bool* [variant] .
-eq 'head['N:Nat*] = 'N:Nat* [variant] .
-eq 'head['__['N:Nat*,'L:NeListNat*]] = 'N:Nat* [variant] .
-eq 'max['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = '_:+_['n:Nat*,'m:Nat*] [variant] .
-eq 'min['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = 'n:Nat* [variant] .
-eq 'not*_['ff.Bool*] = 'tt.Bool* [variant] .
-eq 'not*_['tt.Bool*] = 'ff.Bool* [variant] .
-eq 's['n:Nat*] = '_:+_['1.NzNat*,'n:Nat*] [variant] .
-eq 'sd['n:Nat*,'_:+_['n:Nat*,'m:Nat*]] = '0.Nat* [variant] .
-eq 'sd['_:+_['n:Nat*,'m:Nat*],'n:Nat*] = 'm:Nat* [variant] .
-rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'k:Nat*,'pa?:MaybePairNat*,
-    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
-    'null.MaybeNat*,'pa?:MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-ack)]
+rewrites: 136
+result NeModuleDeclSet: (sorts 'Bool ; 'ListNat ; 'MaybeNat ; 'MaybePairNat ;
+    'Nat ; 'NeListNat ; 'NzNat ; 'PairNat ; 'State .)
+subsort 'Nat < 'MaybeNat .
+subsort 'Nat < 'NeListNat .
+subsort 'NeListNat < 'ListNat .
+subsort 'NzNat < 'Nat .
+subsort 'PairNat < 'MaybePairNat .
+eq '_/\_['ff.Bool,'B:Bool] = 'ff.Bool [variant] .
+eq '_/\_['tt.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'tt.Bool [variant] .
+eq '_<=_['_+_['NzN:NzNat,'N:Nat],'N:Nat] = 'ff.Bool [variant] .
+eq '_<_['N:Nat,'_+_['NzN:NzNat,'N:Nat]] = 'tt.Bool [variant] .
+eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'ff.Bool [variant] .
+eq '_=/=_['MN:MaybeNat,'MN':MaybeNat] = '~_['_==_['MN:MaybeNat,'MN':MaybeNat]]
+    [variant] .
+eq '_=/=_['N:Nat,'N':Nat] = '~_['_==_['N:Nat,'N':Nat]] [variant] .
+eq '_==_['N:Nat,'N:Nat] = 'tt.Bool [variant] .
+eq '_==_['N:Nat,'_+_['NzN:NzNat,'N:Nat]] = 'ff.Bool [variant] .
+eq '_==_['null.MaybeNat,'N:Nat] = 'ff.Bool [variant] .
+eq '_==_['null.MaybeNat,'null.MaybeNat] = 'tt.Bool [variant] .
+eq '_\/_['ff.Bool,'B:Bool] = 'B:Bool [variant] .
+eq '_\/_['tt.Bool,'B:Bool] = 'tt.Bool [variant] .
+eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+eq 'head['N:Nat] = 'N:Nat [variant] .
+eq 'head['__['N:Nat,'L:NeListNat]] = 'N:Nat [variant] .
+eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+eq '~_['ff.Bool] = 'tt.Bool [variant] .
+eq '~_['tt.Bool] = 'ff.Bool [variant] .
+rl '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'k:Nat,'pa?:MaybePairNat,'l2:ListNat,
+    'm:Nat] => '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'null.MaybeNat,
+    'pa?:MaybePairNat,'l2:ListNat,'m:Nat] [label('drop-ack)] .
+rl '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'pa:PairNat,'l2:ListNat,
+    'm:Nat] => '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,
+    'nullp.MaybePairNat,'l2:ListNat,'m:Nat] [label('drop-snd)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,
+    'q:NzNat],'l':NeListNat,'q:NzNat] => '`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'q:NzNat,'nullp.MaybePairNat,'l':NeListNat,'q:NzNat] [label(
+    'resend-ack)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,'_+_[
+    '1.NzNat,'m:Nat]],'l':NeListNat,'m:Nat] => '`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'_+_['1.NzNat,'m:Nat],'nullp.MaybePairNat,'__['l':NeListNat,
+    'n:Nat],'_+_['1.NzNat,'m:Nat]] [label('rec-+)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,'_+_[
+    '1.NzNat,'m:Nat]],'nil.ListNat,'m:Nat] => '`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'_+_['1.NzNat,'m:Nat],'nullp.MaybePairNat,'n:Nat,'_+_[
+    '1.NzNat,'m:Nat]] [label('rec-1)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l1:ListNat,'m:Nat] => '`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat] [label('resend-1)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'p:NzNat,'pa?:MaybePairNat,'l:NeListNat,
+    'q:NzNat] => '`[_::_|_|_|_::_`]['p:NzNat,'nil.ListNat,'null.MaybeNat,
+    'nullp.MaybePairNat,'l:NeListNat,'q:NzNat] [label('rec-ack-1)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'n?:MaybeNat,
+    'nullp.MaybePairNat,'l1:ListNat,'m:Nat] => '`[_::_|_|_|_::_`]['p:NzNat,'__[
+    'n:Nat,'l:NeListNat],'null.MaybeNat,'`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,
+    'm:Nat] [label('resend-+)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat],'p:NzNat,'pa?:MaybePairNat,
+    'l:NeListNat,'q:NzNat] => '`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],
+    'm:Nat,'null.MaybeNat,'`[_`,_`]['m:Nat,'_+_['1.NzNat,'p:NzNat]],
+    'l:NeListNat,'q:NzNat] [label('rec-ack-2)] .
+rl '`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat,'l':NeListNat],'p:NzNat,
+    'pa?:MaybePairNat,'l:NeListNat,'q:NzNat] => '`[_::_|_|_|_::_`]['_+_[
+    '1.NzNat,'p:NzNat],'__['m:Nat,'l':NeListNat],'null.MaybeNat,'`[_`,_`][
+    'm:Nat,'_+_['1.NzNat,'p:NzNat]],'l:NeListNat,'q:NzNat] [label('rec-ack-+)]
     .
-rl '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,'pa:PairNat*,
-    'l2:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,
-    'n?:MaybeNat*,'nullp.MaybePairNat*,'l2:ListNat*,'m:Nat*] [label('drop-snd)]
-    .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
-    'q:NzNat*],'l':NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['p:NzNat*,
-    'l:NeListNat*,'q:NzNat*,'nullp.MaybePairNat*,'l':NeListNat*,'q:NzNat*] [
-    label('resend-ack)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
-    '_:+_['1.NzNat*,'m:Nat*]],'l':NeListNat*,'m:Nat*] => '`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'__[
-    'l':NeListNat*,'n:Nat*],'_:+_['1.NzNat*,'m:Nat*]] [label('rec-+)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`]['n:Nat*,
-    '_:+_['1.NzNat*,'m:Nat*]],'nil.ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,
-    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]] [label('rec-1)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'n?:MaybeNat*,'nullp.MaybePairNat*,
-    'l1:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,
-    'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],'l1:ListNat*,'m:Nat*] [label(
-    'resend-1)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'p:NzNat*,'pa?:MaybePairNat*,
-    'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['p:NzNat*,'nil.ListNat*,
-    'null.MaybeNat*,'nullp.MaybePairNat*,'l:NeListNat*,'q:NzNat*] [label(
-    'rec-ack-1)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'l:NeListNat*],'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*] => '`[_::_|_|_|_::_`]['p:NzNat*,
-    '__['n:Nat*,'l:NeListNat*],'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],
-    'l1:ListNat*,'m:Nat*] [label('resend-+)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*],'p:NzNat*,
-    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['_:+_[
-    '1.NzNat*,'p:NzNat*],'m:Nat*,'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_[
-    '1.NzNat*,'p:NzNat*]],'l:NeListNat*,'q:NzNat*] [label('rec-ack-2)] .
-rl '`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*,'l':NeListNat*],'p:NzNat*,
-    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*] => '`[_::_|_|_|_::_`]['_:+_[
-    '1.NzNat*,'p:NzNat*],'__['m:Nat*,'l':NeListNat*],'null.MaybeNat*,'`[_`,_`][
-    'm:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],'l:NeListNat*,'q:NzNat*] [label(
-    'rec-ack-+)] .
-op '0 : nil -> 'Nat* [ctor] .
-op '1 : nil -> 'NzNat* [ctor] .
-op '_:+_ : 'Nat* 'Nat* -> 'Nat* [assoc comm ctor id('0.Nat*)] .
-op '_:+_ : 'NzNat* 'Nat* -> 'NzNat* [assoc comm ctor id('0.Nat*)] .
-op '_<=Nat_ : 'Nat* 'Nat* -> 'Bool* [none] .
-op '_<Nat_ : 'Nat* 'Nat* -> 'Bool* [none] .
-op '_=/=_ : 'MaybeNat* 'MaybeNat* -> 'Bool* [none] .
-op '_=/=_ : 'Nat* 'Nat* -> 'Bool* [none] .
-op '_==_ : 'MaybeNat* 'MaybeNat* -> 'Bool* [none] .
-op '_==_ : 'Nat* 'Nat* -> 'Bool* [none] .
-op '__ : 'NeListNat* 'NeListNat* -> 'NeListNat* [assoc ctor] .
-op '_and*_ : 'Bool* 'Bool* -> 'Bool* [none] .
-op '_or*_ : 'Bool* 'Bool* -> 'Bool* [none] .
-op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
-    'Nat* -> 'State [ctor] .
-op '`[_`,_`] : 'Nat* 'NzNat* -> 'PairNat* [ctor] .
-op 'ff : nil -> 'Bool* [ctor] .
-op 'head : 'NeListNat* -> 'Nat* [none] .
-op 'max : 'Nat* 'Nat* -> 'Nat* [comm] .
-op 'min : 'Nat* 'Nat* -> 'Nat* [comm] .
-op 'nil : nil -> 'ListNat* [ctor] .
-op 'not*_ : 'Bool* -> 'Bool* [none] .
-op 'null : nil -> 'MaybeNat* [ctor] .
-op 'nullp : nil -> 'MaybePairNat* [ctor] .
-op 's : 'Nat* -> 'Nat* [none] .
-op 'sd : 'Nat* 'Nat* -> 'Nat* [none] .
-op 'tt : nil -> 'Bool* [ctor] .
+op '0 : nil -> 'Nat [ctor] .
+op '1 : nil -> 'NzNat [ctor] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+op '_/\_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+op '_=/=_ : 'MaybeNat 'MaybeNat -> 'Bool [comm] .
+op '_=/=_ : 'Nat 'Nat -> 'Bool [comm] .
+op '_==_ : 'MaybeNat 'MaybeNat -> 'Bool [comm] .
+op '_==_ : 'Nat 'Nat -> 'Bool [comm] .
+op '_\/_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+op '__ : 'NeListNat 'NeListNat -> 'NeListNat [assoc ctor] .
+op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
+op '`[_::_|_|_|_::_`] : 'Nat 'ListNat 'MaybeNat 'MaybePairNat 'ListNat 'Nat ->
+    'State [ctor] .
+op '`[_`,_`] : 'Nat 'NzNat -> 'PairNat [ctor] .
+op 'ff : nil -> 'Bool [ctor] .
+op 'head : 'NeListNat -> 'Nat [none] .
+op 'max : 'Nat 'Nat -> 'Nat [comm] .
+op 'min : 'Nat 'Nat -> 'Nat [comm] .
+op 'nil : nil -> 'ListNat [ctor] .
+op 'null : nil -> 'MaybeNat [ctor] .
+op 'nullp : nil -> 'MaybePairNat [ctor] .
+op 's : 'Nat -> 'Nat [none] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm] .
+op 'tt : nil -> 'Bool [ctor] .
+op '~_ : 'Bool -> 'Bool [none] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('QLOCK-STATE,
     true))) .
@@ -262,7 +267,7 @@ result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('FT-COMM, stripConditions(
     asTemplate(upModule('FT-COMM, true))))) .
-rewrites: 124
+rewrites: 140
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
@@ -284,16 +289,16 @@ rl '_|_['<_>['_|_['P:Proc,'__['`{1`,upf`}.WProc,'PS:ProcSet]]],'#makeVariable`(<
     '`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upf`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`):Condition] [label('set-flag1)] .
 rl '_|_['<_>['_|_['P:Proc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upt`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[`{1`,upf`}.WProc`,__`[P:Proc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_[
     '`{1`,upf`}.WProc,'__['P:Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upt`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[`{1`,upf`}.WProc`,__`[P:Proc`,PS:ProcSet`]`]`]`):Condition] [label('set-turn1)] .
-rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
-    'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
-    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
-    ''PS:ProcSet.Variable]]],''tt.Bool*.Constant]],''tt.Bool*.Constant]]] [
-    label('go-crit1)] .
-rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
-    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
-    '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
-    ''PS:ProcSet.Variable]]],''ff.Bool*.Constant]],''tt.Bool*.Constant]]] [
-    label('fail-crit1)] .
+rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['<_>['_|_['P:Proc,
+    '__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_['_`[_`][
+    ''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''tt.Bool.Constant]],''tt.Bool.Constant]]] [label(
+    'go-crit1)] .
+rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['<_>['_|_['P:Proc,
+    '__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_['_`[_`][
+    ''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
+    ''PS:ProcSet.Variable]]],''ff.Bool.Constant]],''tt.Bool.Constant]]] [label(
+    'fail-crit1)] .
 rl '_|_['<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_['P:Proc,'__[
     '`{2`,ext`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`):Condition] [label('done-crit1)] .
 rl '_|_['<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{0`,try`}.WProc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_['P:Proc,'__[
@@ -353,51 +358,53 @@ rewrites: 1133
 result NeModuleDeclSet: pr 'FT-COMM-DATA .
 pr 'META-LEVEL .
 (sorts 'CState ; 'State .)
-rl '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'k:Nat*,'pa?:MaybePairNat*,
-    'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,k:Nat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,null.MaybeNat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'null.MaybeNat*,
-    'pa?:MaybePairNat*,'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,k:Nat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,null.MaybeNat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] [label('drop-ack)] .
-rl '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,'pa:PairNat*,
-    'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,pa:PairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,pa:PairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] [label('drop-snd)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'q:NzNat*],'l':NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,q:NzNat*`]`,l':NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,q:NzNat*`,nullp.MaybePairNat*`,l':NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'q:NzNat*,'nullp.MaybePairNat*,'l':NeListNat*,
-    'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,q:NzNat*`]`,l':NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,q:NzNat*`,nullp.MaybePairNat*`,l':NeListNat*`,q:NzNat*`]`):Condition] [label('resend-ack)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'l':NeListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,l':NeListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,__`[l':NeListNat*`,n:Nat*`]`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'__[
-    'l':NeListNat*,'n:Nat*],'_:+_['1.NzNat*,'m:Nat*]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,l':NeListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,__`[l':NeListNat*`,n:Nat*`]`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] [label('rec-+)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'nil.ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,nil.ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'_:+_[
-    '1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,nil.ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] [label('rec-1)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_[
-    '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'null.MaybeNat*,'`[_`,_`]['n:Nat*,
-    'p:NzNat*],'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
-    '_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],''tt.Bool*.Constant]]]
-    [label('resend-1)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'p:NzNat*,'pa?:MaybePairNat*,
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,nil.ListNat*`,null.MaybeNat*`,nullp.MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'nil.ListNat*,
-    'null.MaybeNat*,'nullp.MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,nil.ListNat*`,null.MaybeNat*`,nullp.MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`):Condition] [label('rec-ack-1)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'l:NeListNat*],'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,
-    'l:NeListNat*],'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],'l1:ListNat*,
-    'm:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_[
-    '_`[_`][''_=/=_.Sort,'_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],
-    ''tt.Bool*.Constant]]] [label('resend-+)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*],'p:NzNat*,
-    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,m:Nat*`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['_:+_['1.NzNat*,'p:NzNat*],'m:Nat*,
-    'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,m:Nat*`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] [label(
-    'rec-ack-2)] .
-rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*,'l':NeListNat*],
-    'p:NzNat*,'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`,l':NeListNat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,__`[m:Nat*`,l':NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_[
-    '`[_::_|_|_|_::_`]['_:+_['1.NzNat*,'p:NzNat*],'__['m:Nat*,'l':NeListNat*],
-    'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`,l':NeListNat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,__`[m:Nat*`,l':NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] [label('rec-ack-+)] .
+rl '_|_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'k:Nat,'pa?:MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,k:Nat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,null.MaybeNat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'null.MaybeNat,'pa?:MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,k:Nat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,null.MaybeNat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] [label(
+    'drop-ack)] .
+rl '_|_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'pa:PairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,pa:PairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,nullp.MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,pa:PairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,nullp.MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] [label(
+    'drop-snd)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,
+    'q:NzNat],'l':NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,q:NzNat`]`,l':NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,q:NzNat`,nullp.MaybePairNat`,l':NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,
+    'q:NzNat,'nullp.MaybePairNat,'l':NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,q:NzNat`]`,l':NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,q:NzNat`,nullp.MaybePairNat`,l':NeListNat`,q:NzNat`]`):Condition] [label('resend-ack)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,
+    '_+_['1.NzNat,'m:Nat]],'l':NeListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,l':NeListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,__`[l':NeListNat`,n:Nat`]`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'_+_['1.NzNat,
+    'm:Nat],'nullp.MaybePairNat,'__['l':NeListNat,'n:Nat],'_+_['1.NzNat,
+    'm:Nat]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,l':NeListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,__`[l':NeListNat`,n:Nat`]`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] [label('rec-+)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`]['n:Nat,
+    '_+_['1.NzNat,'m:Nat]],'nil.ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,nil.ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'_+_['1.NzNat,'m:Nat],
+    'nullp.MaybePairNat,'n:Nat,'_+_['1.NzNat,'m:Nat]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,nil.ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] [
+    label('rec-1)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l1:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
+    '_`,_[''p:NzNat.Variable,''n?:MaybeNat.Variable]],''tt.Bool.Constant]]] [
+    label('resend-1)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'p:NzNat,'pa?:MaybePairNat,
+    'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,nil.ListNat`,null.MaybeNat`,nullp.MaybePairNat`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'nil.ListNat,'null.MaybeNat,
+    'nullp.MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,nil.ListNat`,null.MaybeNat`,nullp.MaybePairNat`,l:NeListNat`,q:NzNat`]`):Condition] [label('rec-ack-1)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'n?:MaybeNat,
+    'nullp.MaybePairNat,'l1:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition] =>
+    '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,'_`,_[''p:NzNat.Variable,
+    ''n?:MaybeNat.Variable]],''tt.Bool.Constant]]] [label('resend-+)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat],'p:NzNat,
+    'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,m:Nat`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],'m:Nat,'null.MaybeNat,'`[_`,_`][
+    'm:Nat,'_+_['1.NzNat,'p:NzNat]],'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,m:Nat`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition]
+    [label('rec-ack-2)] .
+rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat,'l':NeListNat],'p:NzNat,
+    'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`,l':NeListNat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,__`[m:Nat`,l':NeListNat`]`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],'__[
+    'm:Nat,'l':NeListNat],'null.MaybeNat,'`[_`,_`]['m:Nat,'_+_['1.NzNat,
+    'p:NzNat]],'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`,l':NeListNat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,__`[m:Nat`,l':NeListNat`]`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] [label('rec-ack-+)] .
 op '_|_ : 'State 'Condition -> 'CState [none] .
-op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
-    'Nat* -> 'State [ctor] .
+op '`[_::_|_|_|_::_`] : 'Nat 'ListNat 'MaybeNat 'MaybePairNat 'ListNat 'Nat ->
+    'State [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : fromTemplate('DIJKSTRA, unconditionalize('State,
     'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA, false)))) .
@@ -421,16 +428,16 @@ result SModule: mod 'DIJKSTRA is
     '`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upf`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`):Condition] [label('set-flag1)] .
   rl '_|_['<_>['_|_['P:Proc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upt`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[`{1`,upf`}.WProc`,__`[P:Proc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_[
     '`{1`,upf`}.WProc,'__['P:Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{1`,upt`}.WProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[`{1`,upf`}.WProc`,__`[P:Proc`,PS:ProcSet`]`]`]`):Condition] [label('set-turn1)] .
-  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
-    'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'tt.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
     '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
-    ''PS:ProcSet.Variable]]],''tt.Bool*.Constant]],''tt.Bool*.Constant]]] [
-    label('go-crit1)] .
-  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['<_>['_|_[
-    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool*.Constant`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
+    ''PS:ProcSet.Variable]]],''tt.Bool.Constant]],''tt.Bool.Constant]]] [label(
+    'go-crit1)] .
+  rl '_|_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['<_>['_|_[
+    'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'_/\_['#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,chf`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,_=_`[_`[_`]`['_==_.Sort`,_`,_`[_`[_`]`['safe?.Sort`,_`[_`]`['__.Sort`,_`,_`['P:Proc.Variable`,'PS:ProcSet.Variable`]`]`]`,'ff.Bool.Constant`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_==_.Sort,'_`,_[
     '_`[_`][''safe?.Sort,'_`[_`][''__.Sort,'_`,_[''P:Proc.Variable,
-    ''PS:ProcSet.Variable]]],''ff.Bool*.Constant]],''tt.Bool*.Constant]]] [
-    label('fail-crit1)] .
+    ''PS:ProcSet.Variable]]],''ff.Bool.Constant]],''tt.Bool.Constant]]] [label(
+    'fail-crit1)] .
   rl '_|_['<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_['P:Proc,'__[
     '`{2`,ext`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,crt`}.CProc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`):Condition] [label('done-crit1)] .
   rl '_|_['<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],'#makeVariable`(<_>`[_|_`[P:Proc`,__`[`{2`,ext`}.2Proc`,PS:ProcSet`]`]`]`,<_>`[_|_`[P:Proc`,__`[`{0`,try`}.WProc`,PS:ProcSet`]`]`]`):Condition] => '_|_['<_>['_|_['P:Proc,'__[
@@ -494,51 +501,56 @@ result SModule: mod 'FT-COMM is
   sorts 'CState ; 'State .
   none
   op '_|_ : 'State 'Condition -> 'CState [none] .
-  op '`[_::_|_|_|_::_`] : 'Nat* 'ListNat* 'MaybeNat* 'MaybePairNat* 'ListNat*
-    'Nat* -> 'State [ctor] .
+  op '`[_::_|_|_|_::_`] : 'Nat 'ListNat 'MaybeNat 'MaybePairNat 'ListNat 'Nat
+    -> 'State [ctor] .
   none
   none
-  rl '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'k:Nat*,'pa?:MaybePairNat*,
-    'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,k:Nat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,null.MaybeNat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'null.MaybeNat*,
-    'pa?:MaybePairNat*,'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,k:Nat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,null.MaybeNat*`,pa?:MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] [label('drop-ack)] .
-  rl '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,'pa:PairNat*,
-    'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,pa:PairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['n:Nat*,'l1:ListNat*,'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l2:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,pa:PairNat*`,l2:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[n:Nat*`,l1:ListNat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l2:ListNat*`,m:Nat*`]`):Condition] [label('drop-snd)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'q:NzNat*],'l':NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,q:NzNat*`]`,l':NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,q:NzNat*`,nullp.MaybePairNat*`,l':NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'q:NzNat*,'nullp.MaybePairNat*,'l':NeListNat*,
-    'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,q:NzNat*`]`,l':NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,q:NzNat*`,nullp.MaybePairNat*`,l':NeListNat*`,q:NzNat*`]`):Condition] [label('resend-ack)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'l':NeListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,l':NeListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,__`[l':NeListNat*`,n:Nat*`]`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`][
-    'p:NzNat*,'l:NeListNat*,'_:+_['1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'__[
-    'l':NeListNat*,'n:Nat*],'_:+_['1.NzNat*,'m:Nat*]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,l':NeListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,__`[l':NeListNat*`,n:Nat*`]`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] [label('rec-+)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'n?:MaybeNat*,'`[_`,_`][
-    'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'nil.ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,nil.ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'l:NeListNat*,'_:+_[
-    '1.NzNat*,'m:Nat*],'nullp.MaybePairNat*,'n:Nat*,'_:+_['1.NzNat*,'m:Nat*]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,n?:MaybeNat*`,`[_`,_`]`[n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`,nil.ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,l:NeListNat*`,_:+_`[1.NzNat*`,m:Nat*`]`,nullp.MaybePairNat*`,n:Nat*`,_:+_`[1.NzNat*`,m:Nat*`]`]`):Condition] [label('rec-1)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'n?:MaybeNat*,
-    'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_[
-    '`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'null.MaybeNat*,'`[_`,_`]['n:Nat*,
-    'p:NzNat*],'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
-    '_`,_[''n?:MaybeNat*.Variable,''p:NzNat*.Variable]],''tt.Bool*.Constant]]]
-    [label('resend-1)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'n:Nat*,'p:NzNat*,'pa?:MaybePairNat*,
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,nil.ListNat*`,null.MaybeNat*`,nullp.MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'nil.ListNat*,
-    'null.MaybeNat*,'nullp.MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,n:Nat*`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,nil.ListNat*`,null.MaybeNat*`,nullp.MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`):Condition] [label('rec-ack-1)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'l:NeListNat*],
-    'n?:MaybeNat*,'nullp.MaybePairNat*,'l1:ListNat*,'m:Nat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__[
-    'n:Nat*,'l:NeListNat*],'null.MaybeNat*,'`[_`,_`]['n:Nat*,'p:NzNat*],
-    'l1:ListNat*,'m:Nat*],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,n?:MaybeNat*`,nullp.MaybePairNat*`,l1:ListNat*`,m:Nat*`]`,`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,l:NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[n:Nat*`,p:NzNat*`]`,l1:ListNat*`,m:Nat*`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['n?:MaybeNat*.Variable`,'p:NzNat*.Variable`]`]`,'tt.Bool*.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,'_`,_[''n?:MaybeNat*.Variable,
-    ''p:NzNat*.Variable]],''tt.Bool*.Constant]]] [label('resend-+)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*],'p:NzNat*,
-    'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,m:Nat*`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['_:+_['1.NzNat*,'p:NzNat*],'m:Nat*,
-    'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,m:Nat*`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] [label(
-    'rec-ack-2)] .
-  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat*,'__['n:Nat*,'m:Nat*,'l':NeListNat*],
-    'p:NzNat*,'pa?:MaybePairNat*,'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`,l':NeListNat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,__`[m:Nat*`,l':NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] => '_|_[
-    '`[_::_|_|_|_::_`]['_:+_['1.NzNat*,'p:NzNat*],'__['m:Nat*,'l':NeListNat*],
-    'null.MaybeNat*,'`[_`,_`]['m:Nat*,'_:+_['1.NzNat*,'p:NzNat*]],
-    'l:NeListNat*,'q:NzNat*],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat*`,__`[n:Nat*`,m:Nat*`,l':NeListNat*`]`,p:NzNat*`,pa?:MaybePairNat*`,l:NeListNat*`,q:NzNat*`]`,`[_::_|_|_|_::_`]`[_:+_`[1.NzNat*`,p:NzNat*`]`,__`[m:Nat*`,l':NeListNat*`]`,null.MaybeNat*`,`[_`,_`]`[m:Nat*`,_:+_`[1.NzNat*`,p:NzNat*`]`]`,l:NeListNat*`,q:NzNat*`]`):Condition] [label('rec-ack-+)] .
+  rl '_|_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'k:Nat,'pa?:MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,k:Nat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,null.MaybeNat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'null.MaybeNat,'pa?:MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,k:Nat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,null.MaybeNat`,pa?:MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] [label(
+    'drop-ack)] .
+  rl '_|_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'pa:PairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,pa:PairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,nullp.MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l2:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,pa:PairNat`,l2:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[n:Nat`,l1:ListNat`,n?:MaybeNat`,nullp.MaybePairNat`,l2:ListNat`,m:Nat`]`):Condition] [label(
+    'drop-snd)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'q:NzNat],'l':NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,q:NzNat`]`,l':NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,q:NzNat`,nullp.MaybePairNat`,l':NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'q:NzNat,'nullp.MaybePairNat,'l':NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,q:NzNat`]`,l':NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,q:NzNat`,nullp.MaybePairNat`,l':NeListNat`,q:NzNat`]`):Condition] [label(
+    'resend-ack)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'_+_['1.NzNat,'m:Nat]],'l':NeListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,l':NeListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,__`[l':NeListNat`,n:Nat`]`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'_+_[
+    '1.NzNat,'m:Nat],'nullp.MaybePairNat,'__['l':NeListNat,'n:Nat],'_+_[
+    '1.NzNat,'m:Nat]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,l':NeListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,__`[l':NeListNat`,n:Nat`]`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] [label(
+    'rec-+)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'_+_['1.NzNat,'m:Nat]],'nil.ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,nil.ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] =>
+    '_|_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'_+_['1.NzNat,'m:Nat],
+    'nullp.MaybePairNat,'n:Nat,'_+_['1.NzNat,'m:Nat]],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,n?:MaybeNat`,`[_`,_`]`[n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`,nil.ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,l:NeListNat`,_+_`[1.NzNat`,m:Nat`]`,nullp.MaybePairNat`,n:Nat`,_+_`[1.NzNat`,m:Nat`]`]`):Condition] [
+    label('rec-1)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l1:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,
+    '_`,_[''p:NzNat.Variable,''n?:MaybeNat.Variable]],''tt.Bool.Constant]]] [
+    label('resend-1)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'p:NzNat,'pa?:MaybePairNat,
+    'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,nil.ListNat`,null.MaybeNat`,nullp.MaybePairNat`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['p:NzNat,'nil.ListNat,'null.MaybeNat,
+    'nullp.MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,n:Nat`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,nil.ListNat`,null.MaybeNat`,nullp.MaybePairNat`,l:NeListNat`,q:NzNat`]`):Condition] [label('rec-ack-1)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'n?:MaybeNat,
+    'nullp.MaybePairNat,'l1:ListNat,'m:Nat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition] =>
+    '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat],'_/\_['#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,n?:MaybeNat`,nullp.MaybePairNat`,l1:ListNat`,m:Nat`]`,`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,l:NeListNat`]`,null.MaybeNat`,`[_`,_`]`[n:Nat`,p:NzNat`]`,l1:ListNat`,m:Nat`]`,_=_`[_`[_`]`['_=/=_.Sort`,_`,_`['p:NzNat.Variable`,'n?:MaybeNat.Variable`]`]`,'tt.Bool.Constant`]`):Condition,'_=_['_`[_`][''_=/=_.Sort,'_`,_[''p:NzNat.Variable,
+    ''n?:MaybeNat.Variable]],''tt.Bool.Constant]]] [label('resend-+)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat],'p:NzNat,
+    'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,m:Nat`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_[
+    '`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],'m:Nat,'null.MaybeNat,'`[_`,_`][
+    'm:Nat,'_+_['1.NzNat,'p:NzNat]],'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,m:Nat`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition]
+    [label('rec-ack-2)] .
+  rl '_|_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat,'l':NeListNat],
+    'p:NzNat,'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`,l':NeListNat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,__`[m:Nat`,l':NeListNat`]`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] => '_|_['`[_::_|_|_|_::_`]['_+_['1.NzNat,
+    'p:NzNat],'__['m:Nat,'l':NeListNat],'null.MaybeNat,'`[_`,_`]['m:Nat,'_+_[
+    '1.NzNat,'p:NzNat]],'l:NeListNat,'q:NzNat],'#makeVariable`(`[_::_|_|_|_::_`]`[p:NzNat`,__`[n:Nat`,m:Nat`,l':NeListNat`]`,p:NzNat`,pa?:MaybePairNat`,l:NeListNat`,q:NzNat`]`,`[_::_|_|_|_::_`]`[_+_`[1.NzNat`,p:NzNat`]`,__`[m:Nat`,l':NeListNat`]`,null.MaybeNat`,`[_`,_`]`[m:Nat`,_+_`[1.NzNat`,p:NzNat`]`]`,l:NeListNat`,q:NzNat`]`):Condition] [label('rec-ack-+)] .
 endm
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
@@ -554,8 +566,8 @@ rewrites: 595
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('FT-COMM,
-    unconditionalize('State, 'Condition, '_|_, 'META-LEVEL, asTemplate(
-    upModule('FT-COMM, false))))) .
+    unconditionalize('State, 'Condition, '_|_, 'META-LEVEL-NAT-RENAMED,
+    asTemplate(upModule('FT-COMM, false))))) .
 rewrites: 1139
 result Bool: true
 Bye.

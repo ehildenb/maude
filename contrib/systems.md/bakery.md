@@ -6,7 +6,7 @@ The details differ among implementations, but the same basic ingredients are the
 Processes wait to receive some token, and upon receiving the token are scheduled until they give up the token.
 
 ```maude
-load ../tools/varsat/numbers.maude
+load ../tools/fvp/numbers.maude
 ```
 
 Version 1 - RL
@@ -14,38 +14,38 @@ Version 1 - RL
 
 ```maude
 fmod BAKERY-STATE is
-  pr NAT* .
+  pr FVP-NAT .
   sort Conf .
   sort Mode ModeWait ModeIdle .
   subsort ModeIdle ModeWait < Mode .
   sort ProcIdle ProcWait Proc ProcSet .
   subsort ProcIdle ProcWait < Proc < ProcSet .
 
-  op idle  :                   -> ModeIdle [ctor] .
-  op wait  : Nat*              -> ModeWait [ctor] .
-  op crit  : Nat*              -> Mode     [ctor] .
-  op [_,_] : Nat* ModeIdle     -> ProcIdle  [ctor] .
-  op [_,_] : Nat* ModeWait     -> ProcWait  [ctor] .
-  op [_,_] : Nat* Mode         -> Proc      [ctor] .
-  op none  :                   -> ProcSet   [ctor] .
-  op __    : ProcSet ProcSet   -> ProcSet   [ctor assoc comm id: none] .
+  op idle  :                 -> ModeIdle [ctor] .
+  op wait  : Nat             -> ModeWait [ctor] .
+  op crit  : Nat             -> Mode     [ctor] .
+  op [_,_] : Nat ModeIdle    -> ProcIdle [ctor] .
+  op [_,_] : Nat ModeWait    -> ProcWait [ctor] .
+  op [_,_] : Nat Mode        -> Proc     [ctor] .
+  op none  :                 -> ProcSet  [ctor] .
+  op __    : ProcSet ProcSet -> ProcSet  [ctor assoc comm id: none] .
 
-  op _;_;_ : Nat* Nat* ProcSet -> Conf  [ctor] .
+  op _;_;_ : Nat Nat ProcSet -> Conf  [ctor] .
 endfm
 
 mod REVERSE-BAKERY is
   pr BAKERY-STATE .
   sort State .
 
-  op <_>   : Conf              -> State [ctor] .
-  op [_]   : Conf              -> State [ctor] .
+  op <_> : Conf -> State [ctor] .
+  op [_] : Conf -> State [ctor] .
 
-  var N M I : Nat* .
+  var N M I : Nat .
   var S : ProcSet .
 
-  rl [wake]: < N :+ 1 ; M      ; [I,wait(N)] S > => < N ; M ; [I,idle   ] S > .
-  rl [crit]: < N      ; M      ; [I,crit(M)] S > => < N ; M ; [I,wait(M)] S > .
-  rl [exit]: < N      ; M :+ 1 ; [I,idle   ] S > => < N ; M ; [I,crit(M)] S > .
+  rl [wake]: < N + 1 ; M     ; [I,wait(N)] S > => < N ; M ; [I,idle   ] S > .
+  rl [crit]: < N     ; M     ; [I,crit(M)] S > => < N ; M ; [I,wait(M)] S > .
+  rl [exit]: < N     ; M + 1 ; [I,idle   ] S > => < N ; M ; [I,crit(M)] S > .
   rl [term]: < C:Conf > => [ C:Conf ] .
 endm
 ```

@@ -67,6 +67,25 @@ build_tangle() {
     )
 }
 
+build_test() {
+    local test_name test_file test_dir exit_status
+    test_name="$1" && shift
+    exit_status='0'
+
+    test_file="$(find 'tests/' -iname "$test_name.maude")"
+    test_dir="$(dirname "$test_file")"
+
+    build_tangle
+
+    {   cd "$test_dir"
+        if ! make check TESTS=$test_name; then
+            git --no-pager diff --no-index $test_name.{expected,out}
+            exit_status='1'
+        fi
+    }
+    exit "$exit_status"
+}
+
 # Main
 # ----
 
@@ -76,14 +95,17 @@ case "$build_command" in
     deps)   build_deps   "$@" ;;
     maude)  build_maude  "$@" ;;
     tangle) build_tangle "$@" ;;
+    test)   build_test   "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
            $0 maude <options>
+           $0 test  <test-name>
 
-    $0 clean:           remove build directory '$build_dir', and call 'make clean'.
-    $0 deps:            clone git submodules and build CVC4.
-    $0 maude <options>: build maude passing <options> to the ./configure step.
-    $0 tangle:          generate '*.maude' files from '*.md' files in '$contrib_dir'.
+    $0 clean:            remove build directory '$build_dir', and call 'make clean'.
+    $0 deps:             clone git submodules and build CVC4.
+    $0 maude <options>:  build maude passing <options> to the ./configure step.
+    $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
+    $0 test <test-name>: find <test-name> and execute the given test.
 
     Note: CI servers should:
         $0 clean
