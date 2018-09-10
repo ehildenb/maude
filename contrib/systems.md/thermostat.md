@@ -7,7 +7,7 @@ A simple thermostat in maude, which switches between on/off based on some thresh
 load ../tools/fvp/numbers.maude
 
 mod THERMOSTAT is
-   protecting PRED-FVP-NAT .
+   protecting FVP-NAT-PRED .
 
     sort Conf .
     -----------

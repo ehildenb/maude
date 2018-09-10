@@ -30,7 +30,7 @@ Here we extend FVP numbers with pairs and lists.
 load ../tools/fvp/numbers.maude
 
 fmod MAYBE-FVP-NAT is
-   protecting PRED-FVP-NAT .
+   protecting FVP-NAT-PRED .
 
     sort MaybeNat .
     ---------------

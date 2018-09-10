@@ -14,7 +14,7 @@ The variant-satisfiability data-structures are used here.
 
 ```maude
 fmod IMP-DATA is
-   protecting MULT-LOCALLY-FVP-NAT + PRED-FVP-NAT + FVP-NUMBERS .
+   protecting FVP-NAT-MULT + FVP-NAT-PRED + FVP-NUMBERS .
 
     sort Id .
     ---------
