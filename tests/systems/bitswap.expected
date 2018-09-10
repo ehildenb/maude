@@ -1,0 +1,3241 @@
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(3,['a naive ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['b naive ('p, 'q, 'r) ('x, 'y, 'z)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'b sent block 'p to 'a
+---- Tick -----------------
+    'a sent block 'y to 'b
+    'b sent block 'q to 'a
+---- Tick -----------------
+    'a sent block 'z to 'b
+    'b sent block 'r to 'a
+---- Tick -----------------
+rewrites: 164
+result WorldState: ['a naive ('p, 'q, 'r, 'x, 'y, 'z) empty]
+['b naive ('p, 'q, 'r, 'x, 'y, 'z) empty]
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(3,['a naive ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['needy naive empty ('x, 'y, 'z)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'needy
+---- Tick -----------------
+    'a sent block 'y to 'needy
+---- Tick -----------------
+    'a sent block 'z to 'needy
+---- Tick -----------------
+rewrites: 92
+result WorldState: ['a naive ('x, 'y, 'z) ('p, 'q, 'r)]
+['needy naive ('x, 'y, 'z) empty]
+==========================================
+search in BITSWAP-TURN-BASED-GAME : 
+  tick(3,(['b selfish ('p, 'q, 'r) ('x, 'y, 'z)]
+          ['c naive ('p, 'q, 'r) ('x, 'y, 'z)])
+          ['a naive ('x, 'y, 'z) ('p, 'q, 'r)])
+ =>* NS
+['c naive ('p, 'q, 'r) ('x, 'y, 'z)] .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+---- Tick -----------------
+
+Solution 1 (state 716)
+states: 717  rewrites: 4358
+NS --> ['a naive ('p, 'q, 'r, 'x, 'y, 'z) empty]
+['b selfish ('p, 'q, 'r, 'x, 'y, 'z) empty]
+
+No more solutions.
+states: 717  rewrites: 4358
+==========================================
+search in BITSWAP-TURN-BASED-GAME : 
+  tick(3,(['b selfish ('p, 'q, 'r) ('x, 'y, 'z)]
+          ['c round-robin('a 'b) ('p, 'q, 'r) ('x, 'y, 'z)])
+          ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)])
+ =>! NS
+['b naive ('p, 'q, 'r) ('x, 'y, 'z)] .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'c sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'q to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'x to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'x to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+
+No solution.
+states: 2390  rewrites: 14931
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(5,(['b selfish ('p, 'q, 'r) ('x, 'y, 'z)]
+          ['c tit-for-tat(('b |-> 0),'a |-> 0) ('p, 'q, 'r) ('x, 'y, 'z)])
+          ['a tit-for-tat(('b |-> 0),'c |-> 0) ('x, 'y, 'z) ('p, 'q, 'r)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'c sent block 'p to 'a
+---- Tick -----------------
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+---- Tick -----------------
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+---- Tick -----------------
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 360
+result WorldState: ['a tit-for-tat(('b |-> -1),'c |-> 0) ('p, 'q, 'r, 'x, 'y,
+    'z) empty]
+['b selfish ('p, 'q, 'r, 'x, 'y) 'z]
+['c tit-for-tat(('b |-> -1),'a |-> 0) ('p, 'q, 'r, 'x, 'y, 'z) empty]
+==========================================
+search in BITSWAP-TURN-BASED-GAME : 
+  tick(5,(['b selfish ('p, 'q, 'r) ('x, 'y, 'z)]
+          ['c tit-for-tat(('b |-> 0),'a |-> 0) ('p, 'q, 'r) ('x, 'y, 'z)])
+          ['a tit-for-tat(('b |-> 0),'c |-> 0) ('x, 'y, 'z) ('p, 'q, 'r)])
+ =>* NS
+['b selfish ('p, 'q, 'r) ('x, 'y, 'z)] .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+    'a sent block 'x to 'b
+    'a sent block 'y to 'b
+    'a sent block 'z to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'z to 'b
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'x to 'b
+    'a sent block 'x to 'c
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'q to 'a
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'y to 'b
+    'c sent block 'z to 'b
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'x to 'b
+    'c sent block 'z to 'b
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'a sent block 'y to 'c
+    'a sent block 'x to 'c
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'x to 'b
+    'c sent block 'y to 'b
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+---- Tick -----------------
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'r to 'a
+    'a sent block 'x to 'c
+    'c sent block 'q to 'a
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'a sent block 'y to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+    'c sent block 'r to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'z to 'c
+    'c sent block 'q to 'a
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'c sent block 'r to 'a
+    'c sent block 'q to 'a
+    'a sent block 'y to 'c
+    'c sent block 'r to 'a
+    'a sent block 'y to 'c
+    'c sent block 'q to 'a
+    'a sent block 'x to 'c
+    'c sent block 'p to 'a
+    'c sent block 'p to 'a
+    'a sent block 'z to 'c
+    'a sent block 'z to 'c
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+
+No solution.
+states: 6374  rewrites: 55033
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(3,['a tit-for-tat('needy |-> 0) ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['needy naive empty ('x, 'y, 'z)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'needy
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 77
+result WorldState: ['a tit-for-tat('needy |-> -1) ('x, 'y, 'z) ('p, 'q, 'r)]
+['needy naive 'x ('y, 'z)]
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(7,['a tft-generous(0, 'needy |-> 0) ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['needy naive empty ('x, 'y, 'z)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'needy
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'y to 'needy
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'z to 'needy
+---- Tick -----------------
+rewrites: 219
+result WorldState: ['a tft-generous(7, 'needy |-> -3) ('x, 'y, 'z) ('p, 'q,
+    'r)]
+['needy naive ('x, 'y, 'z) empty]
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(4,(['b tft-generous(0, ('c |-> 0),'a |-> 0) ('l, 'm) ('p, 'q)]
+          ['c tft-generous(0, ('a |-> 0),'b |-> 0) ('p, 'q) ('x, 'y)])
+          ['a tft-generous(0, ('b |-> 0),'c |-> 0) ('x, 'y) ('l, 'm)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'c
+    'b sent block 'l to 'a
+    'c sent block 'p to 'b
+---- Tick -----------------
+---- Tick -----------------
+---- Tick -----------------
+    'a sent block 'y to 'c
+    'b sent block 'm to 'a
+    'c sent block 'q to 'b
+---- Tick -----------------
+rewrites: 365
+result WorldState: ['a tft-generous(4, ('b |-> 2),'c |-> -2) ('l, 'm, 'x, 'y)
+    empty]
+['b tft-generous(4, ('c |-> 2),'a |-> -2) ('l, 'm, 'p, 'q) empty]
+['c tft-generous(4, ('a |-> 2),'b |-> -2) ('p, 'q, 'x, 'y) empty]
+==========================================
+reduce in BITSWAP-TURN-BASED-GAME : could-send-to(('p, 'q, 'r), ['a
+    round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BITSWAP-TURN-BASED-GAME : could-send-to(('x, 'p, 'z), ['a
+    round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BITSWAP-TURN-BASED-GAME : could-send-to(('x, 'y, 'z), ['a
+    round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == (empty).QidSet .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in BITSWAP-TURN-BASED-GAME : take(intersection(('a, 'b, 'c), ('b, 'c,
+    'd, 'e))) .
+rewrites: 11
+result BlockSet: take(('b, 'c))
+==========================================
+reduce in BITSWAP-TURN-BASED-GAME : take(intersection(('a, 'b, 'c), ('d, 'e)))
+    == (empty).QidSet .
+rewrites: 12
+result Bool: false
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(2,empty)
+ .
+---- Begin -----------------
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 7
+result WorldState: (empty).WorldState
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(2,['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)])
+ .
+---- Begin -----------------
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 22
+result Node: ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(4,['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['b round-robin('a 'c) ('p, 'q, 'r) ('x, 'y, 'z)])
+ .
+---- Begin -----------------
+    'a sent block 'x to 'b
+    'b sent block 'p to 'a
+---- Tick -----------------
+    'a sent block 'y to 'b
+    'b sent block 'q to 'a
+---- Tick -----------------
+    'a sent block 'z to 'b
+    'b sent block 'r to 'a
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 186
+result WorldState: ['a round-robin('c 'b) ('p, 'q, 'r, 'x, 'y, 'z) empty]
+['b round-robin('c 'a) ('p, 'q, 'r, 'x, 'y, 'z) empty]
+==========================================
+rewrite in BITSWAP-TURN-BASED-GAME : 
+  tick(2,['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]
+          ['b round-robin('a 'c) ('x, 'y, 'z) ('p, 'q, 'r)])
+ .
+---- Begin -----------------
+---- Tick -----------------
+---- Tick -----------------
+rewrites: 41
+result WorldState: ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]
+['b round-robin('a 'c) ('x, 'y, 'z) ('p, 'q, 'r)]
+Bye.

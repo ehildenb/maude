@@ -1,0 +1,385 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+load ../../contrib/systems/bitswap.maude
+
+
+
+set print attribute on .
+rewrite tick(3, [ 'a naive ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+            ) .
+
+
+
+
+
+
+rewrite tick(3, [ 'a     naive ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'needy naive empty        ('x, 'y, 'z) ]
+            ) .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+search tick(3, [ 'a naive   ('x, 'y, 'z) ('p, 'q, 'r) ]
+               [ 'b selfish ('p, 'q, 'r) ('x, 'y, 'z) ]
+               [ 'c naive   ('p, 'q, 'r) ('x, 'y, 'z) ]
+           )
+   =>* [ 'c naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+       NS
+    .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+search tick(3, [ 'a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r) ]
+               [ 'b selfish            ('p, 'q, 'r) ('x, 'y, 'z) ]
+               [ 'c round-robin('a 'b) ('p, 'q, 'r) ('x, 'y, 'z) ]
+           )
+   =>! [ 'b naive ('p, 'q, 'r) ('x, 'y, 'z) ]
+       NS
+    .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rewrite tick(5, [ 'a tit-for-tat((('b |-> 0), ('c |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b selfish                               ('p, 'q, 'r) ('x, 'y, 'z) ]
+                [ 'c tit-for-tat((('b |-> 0), ('a |-> 0))) ('p, 'q, 'r) ('x, 'y, 'z) ]
+            )
+        .
+
+
+
+
+
+search tick(5, [ 'a tit-for-tat((('b |-> 0), ('c |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
+               [ 'b selfish                               ('p, 'q, 'r) ('x, 'y, 'z) ]
+               [ 'c tit-for-tat((('b |-> 0), ('a |-> 0))) ('p, 'q, 'r) ('x, 'y, 'z) ]
+            )
+    =>* [ 'b selfish ('p, 'q, 'r) ('x, 'y, 'z) ]
+       NS
+       .
+
+
+
+
+
+
+rewrite tick(3, [ 'a     tit-for-tat((('needy |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'needy naive                         empty        ('x, 'y, 'z) ]
+            ) .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+set print attribute on .
+rewrite tick(7, [ 'a     tft-generous(0, (('needy |-> 0))) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'needy naive                            empty        ('x, 'y, 'z) ]
+            ) .
+
+
+
+
+
+set print attribute on .
+rewrite tick(4, [ 'a     tft-generous(0, (('b |-> 0), ('c |-> 0))) ('x, 'y) ('l, 'm) ]
+                [ 'b     tft-generous(0, (('c |-> 0), ('a |-> 0))) ('l, 'm) ('p, 'q) ]
+                [ 'c     tft-generous(0, (('a |-> 0), ('b |-> 0))) ('p, 'q) ('x, 'y) ]
+            ) .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+reduce could-send-to(('p, 'q, 'r), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
+reduce could-send-to(('x, 'p, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == 'a .
+reduce could-send-to(('x, 'y, 'z), ['a round-robin('b 'c) ('x, 'y, 'z) ('p, 'q, 'r)]) == empty .
+
+reduce take(intersection(('a, 'b, 'c), ('b, 'c, 'd, 'e))) .
+reduce take(intersection(('a, 'b, 'c), ('d, 'e))) == empty .
+
+rewrite tick(2, empty) .
+
+rewrite tick(2, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]) .
+rewrite tick(4, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b round-robin(('a 'c)) ('p, 'q, 'r) ('x, 'y, 'z) ]
+            ) .
+rewrite tick(2, [ 'a round-robin(('b 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+                [ 'b round-robin(('a 'c)) ('x, 'y, 'z) ('p, 'q, 'r) ]
+            ) .
+
+
+
+
+
