@@ -131,7 +131,7 @@ result Constant: 'ff.Bool>
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
     'a.PreState], 0) .
 rewrites: 12
-result NarrowStepResults: {'a2b : 'f['b.PreState],none} || {'a2c : 'g[
+result NeNarrowStepResults: {'a2b : 'f['b.PreState],none} || {'a2c : 'g[
     'c.PreState],none}
 ==========================================
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
@@ -167,7 +167,7 @@ result NarrowStepResult: {'a-enter : '`{_`}['`[_`,crit`]['a.Name]],none}
 reduce in NARROWING : allNarrowSteps(upModule('2TOKEN, true), '`{_`}['__[
     'T:Token,'P:Proc]], 0) .
 rewrites: 19
-result NarrowStepResults: {'a-enter : '`{_`}['`[_`,crit`]['a.Name]],
+result NeNarrowStepResults: {'a-enter : '`{_`}['`[_`,crit`]['a.Name]],
   'P:Proc <- '`[_`,wait`]['a.Name] ; 
   'T:Token <- '$.Token} || {'a-exit : '`{_`}['__['*.Token,'@1:Token,
     '`[_`,wait`]['a.Name]]],
@@ -198,7 +198,7 @@ result NarrowStepResult: {'wake : '_;_;_['__['s.Name,'@1:Name],'@2:Name,'__[
 reduce in NARROWING : narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,
     'M:Name,'WS:ProcWaitSet]) .
 rewrites: 12
-result NarrowStepResults: {'crit : '_;_;_['@1:Name,'@2:Name,'__[
+result NeNarrowStepResults: {'crit : '_;_;_['@1:Name,'@2:Name,'__[
     '@3:ProcWaitSet,'`[_`]['crit['@2:Name]]]],
   'M:Name <- '@2:Name ; 
   'N:Name <- '@1:Name ; 
