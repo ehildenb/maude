@@ -86,16 +86,26 @@ build_test() {
     exit "$exit_status"
 }
 
+build_test_all() {
+    build_clean
+    build_deps
+    build_maude
+    build_tangle
+    make check "$@"
+    git checkout -- src/Mixfix/tokenizer.cc
+}
+
 # Main
 # ----
 
 build_command="$1" ; shift
 case "$build_command" in
-    clean)  build_clean  "$@" ;;
-    deps)   build_deps   "$@" ;;
-    maude)  build_maude  "$@" ;;
-    tangle) build_tangle "$@" ;;
-    test)   build_test   "$@" ;;
+    clean)    build_clean    "$@" ;;
+    deps)     build_deps     "$@" ;;
+    maude)    build_maude    "$@" ;;
+    tangle)   build_tangle   "$@" ;;
+    test)     build_test     "$@" ;;
+    test-all) build_test_all "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
            $0 maude <options>
@@ -105,12 +115,11 @@ case "$build_command" in
     $0 deps:             clone git submodules and build CVC4.
     $0 maude <options>:  build maude passing <options> to the ./configure step.
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
-    $0 test <test-name>: find <test-name> and execute the given test.
 
-    Note: CI servers should:
-        $0 clean
-        $0 deps
-        $0 maude
-        $0 tangle
+    developers: $0 test <test-name>
+                $0 test-all
+
+    $0 test <test-name>: find <test-name> and execute the given test.
+    $0 test-all:         Clean build and test for CI servers.
 " ;;
 esac
