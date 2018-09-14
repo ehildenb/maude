@@ -59,17 +59,17 @@ build_tangle() {
 }
 
 build_test() {
-    local test_name test_file test_dir exit_status
-    test_name="$1" && shift
+    local test_file_name test_name test_dir exit_status
+    test_file_name="$1" && shift
     exit_status='0'
 
-    test_file="$(find 'tests/' -iname "$test_name.maude")"
-    test_dir="$(dirname "$test_file")"
+    test_name="$(basename "$test_file_name")"
+    test_dir="$(dirname "$test_file_name")"
 
     build_tangle
 
     {   cd "$test_dir"
-        if ! make check TESTS=$test_name; then
+        if ! make check TESTS=$test_name ; then
             git --no-pager diff --no-index $test_name.{expected,out}
             exit_status='1'
         fi
@@ -110,7 +110,7 @@ case "$build_command" in
     developers: $0 test <test-name>
                 $0 test-all
 
-    $0 test <test-name>: find <test-name> and execute the given test.
+    $0 test <test-path>: run test at <test-path> (eg. tests/tools/fvp/numbers).
     $0 test-all:         Clean build and test for CI servers.
 " ;;
 esac
