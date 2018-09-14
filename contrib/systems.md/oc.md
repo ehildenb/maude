@@ -61,9 +61,6 @@ fmod ASSOC-LIST { X :: TRIV } is
     eq head(N L) = N [variant] .
 endfm
 
-view Bool from TRIV to FVP-BOOL-CTOR is sort Elt to Bool . endv
-view Nat  from TRIV to FVP-NAT-CTOR  is sort Elt to Nat  . endv
-
 fmod ASSOC-LIST-FVP-NAT is
    protecting FVP-NAT .
    protecting ASSOC-LIST{Nat} * ( sort NeList{Nat} to NeListNat

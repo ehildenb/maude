@@ -52,3 +52,16 @@ get variants NzI:Int <= I:Int .
 get variants   NzI:NzInt <= - NzI':NzInt .
 get variants - NzI:NzInt <=   NzI':NzInt .
 get variants - NzI:NzInt <= - NzI':NzInt .
+
+fmod FVP-EQFORM-VIEWS-TEST is
+   protecting FVP-BOOL-EQFORM
+            + FVP-NAT-EQFORM
+            + FVP-NAT
+            + FVP-NAT-PRED .
+endfm
+
+reduce true ?= true .
+reduce N:Nat ?= N:Nat + N':Nat .
+reduce tt /\ N:Nat ?= NzN:Nat .
+reduce true ?= N:Nat < N':Nat .
+reduce true ?= N:Nat < (N':Nat + NzN':Nat) .

@@ -1013,4 +1013,24 @@ NzI':NzInt --> - %2:NzNat
 
 No more variants.
 rewrites: 11
+==========================================
+reduce in FVP-EQFORM-VIEWS-TEST : true ?= true .
+rewrites: 0
+result PosEqLit{Bool}: true ?= true
+==========================================
+reduce in FVP-EQFORM-VIEWS-TEST : N:Nat ?= N:Nat + N':Nat .
+rewrites: 0
+result PosEqLit{Nat}: N:Nat ?= N:Nat + N':Nat
+==========================================
+reduce in FVP-EQFORM-VIEWS-TEST : N:Nat ?= NzN:Nat .
+rewrites: 0
+result PosEqLit{Nat}: N:Nat ?= NzN:Nat
+==========================================
+reduce in FVP-EQFORM-VIEWS-TEST : true ?= N:Nat < N':Nat .
+rewrites: 0
+result PosEqLit{Bool}: true ?= N:Nat < N':Nat
+==========================================
+reduce in FVP-EQFORM-VIEWS-TEST : true ?= N:Nat < N':Nat + NzN':Nat .
+rewrites: 0
+result PosEqLit{Bool}: true ?= N:Nat < N':Nat + NzN':Nat
 Bye.

@@ -7,6 +7,12 @@ set include NAT  off .
 set include INT  off .
 ```
 
+For instantiating for formulae over FVP naturals, we'll use the `eqform` package.
+
+```maude
+load ../meta/eqform.maude
+```
+
 FVP Booleans
 ------------
 
@@ -111,13 +117,18 @@ FVP Integer Extension
 ---------------------
 
 ```maude
-fmod FVP-INT is
-   protecting FVP-NAT .
+fmod FVP-INT-SORT is
+   protecting FVP-NAT-SORT .
 
     sorts NzNeg Int NzInt .
     -----------------------
     subsort    Nat               < Int .
     subsorts NzNat NzNeg < NzInt < Int .
+endfm
+
+fmod FVP-INT is
+   protecting FVP-NAT .
+   protecting FVP-INT-SORT .
 
     vars   N   N' :   Nat .
     vars NzN NzN' : NzNat .
@@ -227,4 +238,17 @@ fmod FVP-INT-MULT is
 
     eq I * (NzI + NzI') = (I * NzI) + (I * NzI') .
 endfm
+```
+
+Formulae over FVP Naturals
+--------------------------
+
+```maude
+view Bool from TRIV to FVP-BOOL-CTOR is sort Elt to Bool . endv
+view Nat  from TRIV to FVP-NAT-SORT  is sort Elt to Nat  . endv
+view Int  from TRIV to FVP-INT-SORT  is sort Elt to Int  . endv
+
+fmod FVP-BOOL-EQFORM is protecting EQFORM-IMPL{Bool} . endfm
+fmod FVP-NAT-EQFORM  is protecting EQFORM-IMPL{Nat}  . endfm
+fmod FVP-INT-EQFORM  is protecting EQFORM-IMPL{Int}  . endfm
 ```
