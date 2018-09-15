@@ -31,27 +31,26 @@ purposes:
 -   `NoTrueForm`  - `NonTrivForm` or `TrueLit`
 -   `NoFalseForm` - `NonTrivForm` or `FalseLit`
 
-Q:  Why are these seemingly weird sorts needed?
+Q: Why are these seemingly weird sorts needed?
 
-A:  Because `tt` and `ff` are actually _identities_ for the operators `/\` and
-    `\/` respectively. Sorts `NoTrueForm` and `NoFalseForm` allow us to recurse
-    properly inside a `/\` or `\/` operator respectively because they forbid
-    their respective identities from appearing. If we forget to use them and use
-    variables of sort Form instead, with very high probability, the code will
-    fail to terminate, e.g. if the equation (a) `g(F /\ G) = g(F) /\ g(G)` has
-    variables `F` and `G` of sort `Form`, when we write `g(S ?= T)`, then (a)
-    will apply because `S ?= T` equals `S ?= T /\ tt` by the identity laws, so
-    that, `g(S ?= T)` equals `g(S ?= T) /\ g(tt)`.
+A: Because `tt` and `ff` are actually _identities_ for the operators `/\` and
+`\/` respectively. Sorts `NoTrueForm` and `NoFalseForm` allow us to recurse
+properly inside a `/\` or `\/` operator respectively because they forbid their
+respective identities from appearing. If we forget to use them and use variables
+of sort Form instead, with very high probability, the code will not terminate,
+e.g. if the equation (a) `g(F /\ G) = g(F) /\ g(G)` has variables `F` and `G` of
+sort `Form`, when we write `g(S ?= T)`, then equation (a) will apply because
+`S ?= T` equals `S ?= T /\ tt` by the identity laws, so that, `g(S ?= T)` equals
+`g(S ?= T) /\ g(tt)`.
 
-    On the other hand, the fact that `/\` and `\/` are also sets allows us to
-    extract certain subformulas directly using pattern matching alone. When we
-    are performing operations over these operators as sets, we use `tt` and `ff`
-    as the set identity operators respectively.
+On the other hand, the fact that `/\` and `\/` are also sets allows us to
+extract certain subformulas directly using pattern matching alone. When we are
+performing operations over these operators as sets, we use `tt` and `ff` as the
+set identity operators respectively.
 
-    See the NNF module below to see how to traverse over formulas as TREES. See
-    the NEF, DNF, and CNF modules below for more SET-like examples. Note that
-    NEF stands for Normal Equational Form. It converts formulas of type Form
-    into type NormForm.
+See the NNF module below to see how to traverse over formulas as TREES. See the
+NEF, DNF, and CNF modules below for more SET-like examples. Note NEF stands for
+Normal Equational Form. It converts formulas of type Form into type NormForm.
 
 [1] More precisely, these claims depend on the underlying formula structure. If
 it exposes positive and negative equality literals, as we do, then alll claims
