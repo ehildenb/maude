@@ -1,24 +1,27 @@
+Warning: sort declarations for operator if_then_else_fi failed preregularity
+    check on 96 out of 13122 sort tuples. First such tuple is (Bool,
+    TrivTrueForm, EqForm).
 ==========================================
-reduce in EQFORM-TEST : ('_*_['Y:Nat,'X:Nat] ?= '_+_['1.Nat,'X:Nat] /\
-    'true.Bool != '_<_['Y:Nat,'Z:Nat]) << (
-  'Y:Nat <- '3.Nat) == ('_*_['3.Nat,'X:Nat] ?= '_+_['1.Nat,'X:Nat] /\
-    'true.Bool != '_<_['3.Nat,'Z:Nat]) .
-rewrites: 33
+reduce in EQFORM-TEST : ('_+_['1.Nat,'X:Nat] ?= '_*_['Y:Nat,'X:Nat] /\ '_<_[
+    'Y:Nat,'Z:Nat] != 'true.Bool) << (
+  'Y:Nat <- '3.Nat) == ('_+_['1.Nat,'X:Nat] ?= '_*_['3.Nat,'X:Nat] /\ '_<_[
+    '3.Nat,'Z:Nat] != 'true.Bool) .
+rewrites: 30
 result Bool: true
 ==========================================
-reduce in EQFORM-TEST : ('true.Bool != '_<_['Y:Nat,'Z:Nat] \/ '_*_['Y:Nat,
-    'X:Nat] != '_+_['1.Nat,'X:Nat]) << (
-  'X:Nat <- '7.Nat) == ('true.Bool != '_<_['Y:Nat,'Z:Nat] \/ '_*_['Y:Nat,
-    '7.Nat] != '_+_['1.Nat,'7.Nat]) .
-rewrites: 36
+reduce in EQFORM-TEST : ('_+_['1.Nat,'X:Nat] != '_*_['Y:Nat,'X:Nat] \/ '_<_[
+    'Y:Nat,'Z:Nat] != 'true.Bool) << (
+  'X:Nat <- '7.Nat) == ('_+_['1.Nat,'7.Nat] != '_*_['Y:Nat,'7.Nat] \/ '_<_[
+    'Y:Nat,'Z:Nat] != 'true.Bool) .
+rewrites: 30
 result Bool: true
 ==========================================
 reduce in EQFORM-TEST : f1 :: Form .
-rewrites: 7
+rewrites: 6
 result Bool: true
 ==========================================
 reduce in EQFORM-TEST : f2 :: Form .
-rewrites: 11
+rewrites: 9
 result Bool: true
 ==========================================
 reduce in EQFORM-TEST : ff .
@@ -38,44 +41,45 @@ rewrites: 0
 result Form: F:Form
 ==========================================
 reduce in EQFORM-TEST : nnf(f1) .
-rewrites: 111
-result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
-    'I:Wop /\ 'H:Baz != 'I:Wop
+rewrites: 18
+result NonTrivForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop
+    /\ 'H:Baz != 'I:Wop) \/ t1 != t2 /\ tt \/ 'F:Foo != 'G:Bar
 ==========================================
 reduce in EQFORM-TEST : nnf(f2) .
-rewrites: 132
-result EqForm: 'U:Stu != 'W:Roc /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1
-    != t2 \/ 'H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop
+rewrites: 27
+result NonTrivForm: 'U:Stu != 'W:Roc /\ (tt \/ 'H:Baz != 'I:Wop) /\ 'F:Foo ?=
+    'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop) \/ t1
+    != t2 /\ tt \/ 'F:Foo != 'G:Bar
 ==========================================
 reduce in EQFORM-TEST : nef(f1) .
-rewrites: 113
+rewrites: 32
 result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
     'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : nef(f2) .
-rewrites: 134
+rewrites: 47
 result EqForm: 'U:Stu != 'W:Roc /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1
     != t2 \/ 'H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : cnf(f1) .
-rewrites: 628
+rewrites: 72
 result EqForm: ('F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/ 'F:Foo != 'G:Bar \/ t1
     != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ 'H:Baz != 'I:Wop \/ t1 !=
     t2
 ==========================================
 reduce in EQFORM-TEST : cnf(f2) .
-rewrites: 695
+rewrites: 91
 result EqForm: 'U:Stu != 'W:Roc /\ ('F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/
     'F:Foo != 'G:Bar \/ t1 != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/
     'H:Baz != 'I:Wop \/ t1 != t2
 ==========================================
 reduce in EQFORM-TEST : dnf(f1) .
-rewrites: 238
+rewrites: 46
 result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
     'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : dnf(f2) .
-rewrites: 543
+rewrites: 93
 result EqForm: ('F:Foo ?= 'G:Bar /\ 'U:Stu != 'W:Roc) \/ ('F:Foo != 'G:Bar /\
     'U:Stu != 'W:Roc) \/ ('U:Stu != 'W:Roc /\ t1 != t2) \/ 'H:Baz ?= 'I:Wop /\
     'H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc

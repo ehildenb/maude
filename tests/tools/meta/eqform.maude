@@ -7,7 +7,7 @@ fmod EQFORM-TEST is
   inc EQFORM-SET .
 
   ops t1 t2 : -> Term .
-  ops a b c d e : -> Lit .
+  ops a b c d e : -> EqLit .
 
   eq a = 'F:Foo ?= 'G:Bar .
   eq b = 'F:Foo != 'G:Bar .
