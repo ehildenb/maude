@@ -150,6 +150,13 @@ fmod EQFORM is
   sort Form .
   subsort NoTrueForm NoFalseForm NormForm < Form .
 
+  --- needed for preregularity with if_then_else_fi
+  sort Eq+TrueLit Eq+FalseLit Eq+TrivTrueForm Eq+TrivFalseForm .
+  subsort EqLit  TrueLit       < Eq+TrueLit       < Eq+TrivTrueForm  NormLit  .
+  subsort EqLit  FalseLit      < Eq+FalseLit      < Eq+TrivFalseForm NormLit  .
+  subsort EqForm TrivTrueForm  < Eq+TrivTrueForm  < NoFalseForm      NormForm .
+  subsort EqForm TrivFalseForm < Eq+TrivFalseForm < NoTrueForm       NormForm .
+
   op tt   :           -> TrueLit     [ctor] .
   op ff   :           -> FalseLit    [ctor] .
   op _?=_ : Term Term -> PosEqLit    [ctor prec 50] .

@@ -1,6 +1,3 @@
-Warning: sort declarations for operator if_then_else_fi failed preregularity
-    check on 96 out of 13122 sort tuples. First such tuple is (Bool,
-    TrivTrueForm, EqForm).
 ==========================================
 reduce in EQFORM-TEST : ('_+_['1.Nat,'X:Nat] ?= '_*_['Y:Nat,'X:Nat] /\ '_<_[
     'Y:Nat,'Z:Nat] != 'true.Bool) << (
