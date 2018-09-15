@@ -1,49 +1,65 @@
 Equational Formulas
 ===================
 
-For theorem proving purposes with equational logic, there are essentially three kinds of quantifier free formulas that we care about:
+For theorem proving purposes with equational logic, there are essentially three
+kinds of quantifier free formulas that we care about:
 
-1.  true
-2.  false
-3.  any formula without true, false, or negation
+-   true
+-   false
+-   any formula without true, false, or negation [1]
 
 This follows because:
 
--   any formula with negation is equivalent to one without negation
--   any formula without negation is equivalent to a formula in one of the three cases above by evaluating away true and false
+-   any formula with negation is logically equivalent to one without negation
+-   any formula without negation is logically equivalent to a formula in one of
+    the three cases above by evaluating away true and false [1]
 
 This library provides formula sorts to cover these core cases and more:
 
-4.  `True`     - the sort of the formula in case [1] above
-5.  `False`    - the sort of the formula in case [2] above
-6.  `EqLit`    - positive (`_?=_`) or (`_!=_`) negative equality literals
-7.  `EqForm`   - the sort of formulas in case [3] above
-8.  `NormForm` - the sort containing all formulas in cases [1-3] above
-9.  `Form`     - the sort of all quantifier-free equational formulas
+-   `TrueLit`  - the formula `tt`, i.e. the true literal
+-   `FalseLit` - the formula `ff`, i.e. the false literal
+-   `EqLit`    - positive `_?=_` or `_!=_` negative equality literals
+-   `EqForm`   - recursive applications of `/\` and `\/` over `EqLit`formulas
+-   `NormForm` - `TrueLit`, `FalseLit`, or `EqForm`
+-   `Form`     - the sort of all quantifier-free equational formulas
 
-This library also provides other formula sorts that are needed for programming purposes:
+This library also provides other formula sorts that are needed for programming
+purposes:
 
-10. `NoTrueForm`  - Formulas over ...
-11. `NoFalseForm` - Formulas over ...
+-   `NonTrivForm` - syntactically non-trivial formulas, i.e. formulas that
+                    do not evaluate to `tt` or `ff` by identity equations alone
+-   `NoTrueForm`  - `NonTrivForm` or `TrueLit`
+-   `NoFalseForm` - `NonTrivForm` or `FalseLit`
 
 Q:  Why are these seemingly weird sorts needed?
 
-A:  Because true and false are actually _identities_ for the operators
-    `/\` and `\/` respectively. Sorts [12] and [13] allow us to recurse properly
-    inside a `/\` or `\/` operator respectively because they forbid their
-    respective identities from appearing. If we forget to use them and use
-    variables of sort Form instead, with very high probability, the code
-    will fail to terminate.
+A:  Because `tt` and `ff` are actually _identities_ for the operators `/\` and
+    `\/` respectively. Sorts `NoTrueForm` and `NoFalseForm` allow us to recurse
+    properly inside a `/\` or `\/` operator respectively because they forbid
+    their respective identities from appearing. If we forget to use them and use
+    variables of sort Form instead, with very high probability, the code will
+    fail to terminate, e.g. if the equation (a) `g(F /\ G) = g(F) /\ g(G)` has
+    variables `F` and `G` of sort `Form`, when we write `g(S ?= T)`, then (a)
+    will apply because `S ?= T` equals `S ?= T /\ tt` by the identity laws, so
+    that, `g(S ?= T)` equals `g(S ?= T) /\ g(tt)`.
 
     On the other hand, the fact that `/\` and `\/` are also sets allows us to
-    extract certain subformulas directly using pattern matching alone. When
-    we are performing operations over these operators as sets, we use true
-    and false as the set identity operators respectively.
+    extract certain subformulas directly using pattern matching alone. When we
+    are performing operations over these operators as sets, we use `tt` and `ff`
+    as the set identity operators respectively.
 
-    See the NNF module below to see how to traverse over formulas as TREES.
-    See the NEF, DNF, and CNF modules below for more SET-like examples.
-    Note that NEF stands for Normal Equational Form. It converts formulas
-    of type Form into type NormForm.
+    See the NNF module below to see how to traverse over formulas as TREES. See
+    the NEF, DNF, and CNF modules below for more SET-like examples. Note that
+    NEF stands for Normal Equational Form. It converts formulas of type Form
+    into type NormForm.
+
+[1] More precisely, these claims depend on the underlying formula structure. If
+it exposes positive and negative equality literals, as we do, then alll claims
+hold. If the negative equality literal is represented by negating a positive
+equality literal, then negations cannot be totally evaluated away; in that case,
+one would consider a formula to be normalized if it (a) true and false literals
+did not appear anywhere (b) negation only appeared directly above a positive
+equality literal.
 
 Style Notes
 -----------
@@ -71,23 +87,23 @@ Currently, this list includes:
 -   Lists of formulas
 -   Sets of formulas
 
-Note that, due to preregularity requirements, the number of sorts grows
-in a multiplicative fashion every time one applies a functor to the
-formula data strcuture. For this reason, to avoid generating many unneeded
-sorts, we only generate functor liftings for:
+Note that, due to preregularity requirements, the number of sorts grows in a
+multiplicative fashion every time one applies a functor to the formula data
+strcuture. For this reason, to avoid generating many unneeded sorts, we only
+generate functor liftings for:
 
-A.  Subsorts of EqForm (12 sorts in total)
-B.  NormForm
-C.  Form
+-   Subsorts of `EqForm` (12 sorts in total)
+-   `NormForm`
+-   `Form`
 
 In practice, these are the primary cases that we care about, due to the
 considerations mentioned above.
 
 Note: many data functors (such as list and set) generate a unique sort for
 non-empty and possibly empty data structures, so that we actually generate
-2 * N + 1 additional sorts each time, where the extra sort comes from a
-base sort which helps ensure preregularity in complex cases (this gives
-29 sorts generated for both the list and set functor assuming the 14 above).
+2 * N + 1 additional sorts each time, where the extra sort comes from a base
+sort which helps ensure preregularity in complex cases (this gives 29 sorts
+generated for both the list and set functor assuming the 14 above).
 
 ```maude
 load terms.maude
@@ -98,25 +114,25 @@ fmod EQFORM is
   pr META-TERM .
   pr SUBSTITUTION-SET .
 
-  sort TrueLit  FalseLit        .
-  sort PosEqLit NegEqLit EqLit  .
-  sort PosConj  NegConj  EqConj .
-  sort PosDisj  NegDisj  EqDisj .
-  sort PosForm  NegForm  EqForm .
+  sort TrueLit   FalseLit         .
+  sort PosEqLit  NegEqLit  EqLit  .
+  sort PosEqConj NegEqConj EqConj .
+  sort PosEqDisj NegEqDisj EqDisj .
+  sort PosEqForm NegEqForm EqForm .
 
   subsort PosEqLit NegEqLit < EqLit .
   ---
-  subsort PosEqLit < PosConj PosDisj .
-  subsort NegEqLit < NegConj NegDisj .
-  subsort EqLit    < EqConj  EqDisj  .
+  subsort PosEqLit < PosEqConj PosEqDisj .
+  subsort NegEqLit < NegEqConj NegEqDisj .
+  subsort EqLit    < EqConj    EqDisj    .
   ---
-  subsort PosConj NegConj < EqConj .
-  subsort PosDisj NegDisj < EqDisj .
-  subsort PosForm NegForm < EqForm .
+  subsort PosEqConj NegEqConj < EqConj .
+  subsort PosEqDisj NegEqDisj < EqDisj .
+  subsort PosEqForm NegEqForm < EqForm .
   ---
-  subsort PosConj PosDisj < PosForm .
-  subsort NegConj NegDisj < NegForm .
-  subsort EqConj  EqDisj  < EqForm  .
+  subsort PosEqConj PosEqDisj < PosEqForm .
+  subsort NegEqConj NegEqDisj < NegEqForm .
+  subsort EqConj    EqDisj    < EqForm    .
 
   sort TrivTrueForm TrivFalseForm NonTrivForm .
   subsort TrueLit  < TrivTrueForm  .
@@ -148,11 +164,11 @@ fmod EQFORM is
   op _/\_ : TrivTrueForm   NonTrivForm    -> NonTrivForm   [ditto] .
   op _/\_ : TrivFalseForm  NonTrivForm    -> NonTrivForm   [ditto] .
   ---
-  op _/\_ : PosConj        PosConj        -> PosConj       [ditto] .
-  op _/\_ : NegConj        NegConj        -> NegConj       [ditto] .
+  op _/\_ : PosEqConj      PosEqConj      -> PosEqConj     [ditto] .
+  op _/\_ : NegEqConj      NegEqConj      -> NegEqConj     [ditto] .
   op _/\_ : EqConj         EqConj         -> EqConj        [ditto] .
-  op _/\_ : PosForm        PosForm        -> PosForm       [ditto] .
-  op _/\_ : NegForm        NegForm        -> NegForm       [ditto] .
+  op _/\_ : PosEqForm      PosEqForm      -> PosEqForm     [ditto] .
+  op _/\_ : NegEqForm      NegEqForm      -> NegEqForm     [ditto] .
   op _/\_ : EqForm         EqForm         -> EqForm        [ditto] .
   op _/\_ : NonTrivForm    NonTrivForm    -> NonTrivForm   [ditto] .
   op _/\_ : Form           Form           -> Form          [ditto] .
@@ -164,11 +180,11 @@ fmod EQFORM is
   op _\/_ : TrivFalseForm  NonTrivForm    -> NonTrivForm   [ditto] .
   op _\/_ : TrivTrueForm   NonTrivForm    -> NonTrivForm   [ditto] .
   ---
-  op _\/_ : PosDisj        PosDisj        -> PosDisj       [ditto] .
-  op _\/_ : NegDisj        NegDisj        -> NegDisj       [ditto] .
+  op _\/_ : PosEqDisj      PosEqDisj      -> PosEqDisj     [ditto] .
+  op _\/_ : NegEqDisj      NegEqDisj      -> NegEqDisj     [ditto] .
   op _\/_ : EqDisj         EqDisj         -> EqDisj        [ditto] .
-  op _\/_ : PosForm        PosForm        -> PosForm       [ditto] .
-  op _\/_ : NegForm        NegForm        -> NegForm       [ditto] .
+  op _\/_ : PosEqForm      PosEqForm      -> PosEqForm     [ditto] .
+  op _\/_ : NegEqForm      NegEqForm      -> NegEqForm     [ditto] .
   op _\/_ : EqForm         EqForm         -> EqForm        [ditto] .
   op _\/_ : NonTrivForm    NonTrivForm    -> NonTrivForm   [ditto] .
   op _\/_ : Form           Form           -> Form          [ditto] .
@@ -302,24 +318,24 @@ fmod EQFORM-LIST is
   pr EQFORM .
 
   sort EmptyFormList .
-  sort PosEqLitList PosConjList PosDisjList PosFormList .
-  sort NegEqLitList NegConjList NegDisjList NegFormList .
+  sort PosEqLitList PosEqConjList PosEqDisjList PosEqFormList .
+  sort NegEqLitList NegEqConjList NegEqDisjList NegEqFormList .
   sort EqLitList    EqConjList    EqDisjList    EqFormList    .
   sort NormFormList FormList .
 
-  sort PosEqLitNeList PosConjNeList PosDisjNeList PosFormNeList .
-  sort NegEqLitNeList NegConjNeList NegDisjNeList NegFormNeList .
+  sort PosEqLitNeList PosEqConjNeList PosEqDisjNeList PosEqFormNeList .
+  sort NegEqLitNeList NegEqConjNeList NegEqDisjNeList NegEqFormNeList .
   sort EqLitNeList    EqConjNeList    EqDisjNeList    EqFormNeList    .
   sort NormFormNeList FormNeList .
 
   subsort PosEqLit  < PosEqLitNeList  < PosEqLitList  .
-  subsort PosConj < PosConjNeList < PosConjList .
-  subsort PosDisj < PosDisjNeList < PosDisjList .
-  subsort PosForm < PosFormNeList < PosFormList .
+  subsort PosEqConj < PosEqConjNeList < PosEqConjList .
+  subsort PosEqDisj < PosEqDisjNeList < PosEqDisjList .
+  subsort PosEqForm < PosEqFormNeList < PosEqFormList .
   subsort NegEqLit  < NegEqLitNeList  < NegEqLitList  .
-  subsort NegConj < NegConjNeList < NegConjList .
-  subsort NegDisj < NegDisjNeList < NegDisjList .
-  subsort NegForm < NegFormNeList < NegFormList .
+  subsort NegEqConj < NegEqConjNeList < NegEqConjList .
+  subsort NegEqDisj < NegEqDisjNeList < NegEqDisjList .
+  subsort NegEqForm < NegEqFormNeList < NegEqFormList .
   subsort EqLit     < EqLitNeList     < EqLitList     .
   subsort EqConj    < EqConjNeList    < EqConjList    .
   subsort EqDisj    < EqDisjNeList    < EqDisjList    .
@@ -328,103 +344,103 @@ fmod EQFORM-LIST is
   subsort Form      < FormNeList      < FormList      .
 
   --- List Functor
-  --- Apply Pos/Neg Functor To Sorts
+  --- Apply PosEq/NegEq Functor To Sorts
   subsort PosEqLitList  NegEqLitList  < EqLitList  .
-  subsort PosConjList NegConjList < EqConjList .
-  subsort PosDisjList NegDisjList < EqDisjList .
-  subsort PosFormList NegFormList < EqFormList .
-  --- Apply Pos/Neg Functor To Subsort Arrows
-  subsort PosEqLitList < PosConjList PosDisjList < PosFormList .
-  subsort NegEqLitList < NegConjList NegDisjList < NegFormList .
+  subsort PosEqConjList NegEqConjList < EqConjList .
+  subsort PosEqDisjList NegEqDisjList < EqDisjList .
+  subsort PosEqFormList NegEqFormList < EqFormList .
+  --- Apply PosEq/NegEq Functor To Subsort Arrows
+  subsort PosEqLitList < PosEqConjList PosEqDisjList < PosEqFormList .
+  subsort NegEqLitList < NegEqConjList NegEqDisjList < NegEqFormList .
   subsort EqLitList    < EqConjList    EqDisjList    < EqFormList    .
   --- Other Cases
   subsort EmptyFormList < PosEqLitList NegEqLitList FormList .
   subsort EqFormList < NormFormList < FormList .
 
   --- NeList Functor
-  --- Apply Pos/Neg Functor To Sorts
+  --- Apply PosEq/NegEq Functor To Sorts
   subsort PosEqLitNeList  NegEqLitNeList  < EqLitNeList  .
-  subsort PosConjNeList NegConjNeList < EqConjNeList .
-  subsort PosDisjNeList NegDisjNeList < EqDisjNeList .
-  subsort PosFormNeList NegFormNeList < EqFormNeList .
-  --- Apply Pos/Neg Functor To Subsort Arrows
-  subsort PosEqLitNeList < PosConjNeList PosDisjNeList < PosFormNeList .
-  subsort NegEqLitNeList < NegConjNeList NegDisjNeList < NegFormNeList .
+  subsort PosEqConjNeList NegEqConjNeList < EqConjNeList .
+  subsort PosEqDisjNeList NegEqDisjNeList < EqDisjNeList .
+  subsort PosEqFormNeList NegEqFormNeList < EqFormNeList .
+  --- Apply PosEq/NegEq Functor To Subsort Arrows
+  subsort PosEqLitNeList < PosEqConjNeList PosEqDisjNeList < PosEqFormNeList .
+  subsort NegEqLitNeList < NegEqConjNeList NegEqDisjNeList < NegEqFormNeList .
   subsort EqLitNeList    < EqConjNeList    EqDisjNeList    < EqFormNeList    .
   --- Other Cases
   subsort EqFormNeList < NormFormNeList < FormNeList .
 
-  op mtFormList :                            -> EmptyFormList   [ctor] .
-  op (_;_) : EmptyFormList   EmptyFormList   -> EmptyFormList   [ctor assoc id: mtFormList] .
+  op mtFormList :                              -> EmptyFormList   [ctor] .
+  op (_;_) : EmptyFormList    EmptyFormList    -> EmptyFormList   [ctor assoc id: mtFormList] .
 
-  op (_;_) : PosEqLitList    PosEqLitList    -> PosEqLitList    [ctor ditto] .
-  op (_;_) : PosConjList   PosConjList   -> PosConjList   [ctor ditto] .
-  op (_;_) : PosDisjList   PosDisjList   -> PosDisjList   [ctor ditto] .
-  op (_;_) : PosFormList   PosFormList   -> PosFormList   [ctor ditto] .
-  op (_;_) : NegEqLitList    NegEqLitList    -> NegEqLitList    [ctor ditto] .
-  op (_;_) : NegConjList   NegConjList   -> NegConjList   [ctor ditto] .
-  op (_;_) : NegDisjList   NegDisjList   -> NegDisjList   [ctor ditto] .
-  op (_;_) : NegFormList   NegFormList   -> NegFormList   [ctor ditto] .
-  op (_;_) : EqLitList       EqLitList       -> EqLitList       [ctor ditto] .
-  op (_;_) : EqConjList      EqConjList      -> EqConjList      [ctor ditto] .
-  op (_;_) : EqDisjList      EqDisjList      -> EqDisjList      [ctor ditto] .
-  op (_;_) : EqFormList      EqFormList      -> EqFormList      [ctor ditto] .
-  op (_;_) : NormFormList    NormFormList    -> NormFormList    [ctor ditto] .
-  op (_;_) : FormList        FormList        -> FormList        [ctor ditto] .
+  op (_;_) : PosEqLitList     PosEqLitList     -> PosEqLitList    [ctor ditto] .
+  op (_;_) : PosEqConjList    PosEqConjList    -> PosEqConjList   [ctor ditto] .
+  op (_;_) : PosEqDisjList    PosEqDisjList    -> PosEqDisjList   [ctor ditto] .
+  op (_;_) : PosEqFormList    PosEqFormList    -> PosEqFormList   [ctor ditto] .
+  op (_;_) : NegEqLitList     NegEqLitList     -> NegEqLitList    [ctor ditto] .
+  op (_;_) : NegEqConjList    NegEqConjList    -> NegEqConjList   [ctor ditto] .
+  op (_;_) : NegEqDisjList    NegEqDisjList    -> NegEqDisjList   [ctor ditto] .
+  op (_;_) : NegEqFormList    NegEqFormList    -> NegEqFormList   [ctor ditto] .
+  op (_;_) : EqLitList        EqLitList        -> EqLitList       [ctor ditto] .
+  op (_;_) : EqConjList       EqConjList       -> EqConjList      [ctor ditto] .
+  op (_;_) : EqDisjList       EqDisjList       -> EqDisjList      [ctor ditto] .
+  op (_;_) : EqFormList       EqFormList       -> EqFormList      [ctor ditto] .
+  op (_;_) : NormFormList     NormFormList     -> NormFormList    [ctor ditto] .
+  op (_;_) : FormList         FormList         -> FormList        [ctor ditto] .
 
-  op (_;_) : PosEqLitNeList  PosEqLitList    -> PosEqLitNeList  [ctor ditto] .
-  op (_;_) : PosConjNeList PosConjList   -> PosConjNeList [ctor ditto] .
-  op (_;_) : PosDisjNeList PosDisjList   -> PosDisjNeList [ctor ditto] .
-  op (_;_) : PosFormNeList PosFormList   -> PosFormNeList [ctor ditto] .
-  op (_;_) : NegEqLitNeList  NegEqLitList    -> NegEqLitNeList  [ctor ditto] .
-  op (_;_) : NegConjNeList NegConjList   -> NegConjNeList [ctor ditto] .
-  op (_;_) : NegDisjNeList NegDisjList   -> NegDisjNeList [ctor ditto] .
-  op (_;_) : NegFormNeList NegFormList   -> NegFormNeList [ctor ditto] .
-  op (_;_) : EqLitNeList     EqLitList       -> EqLitNeList     [ctor ditto] .
-  op (_;_) : EqConjNeList    EqConjList      -> EqConjNeList    [ctor ditto] .
-  op (_;_) : EqDisjNeList    EqDisjList      -> EqDisjNeList    [ctor ditto] .
-  op (_;_) : EqFormNeList    EqFormList      -> EqFormNeList    [ctor ditto] .
-  op (_;_) : NormFormNeList  NormFormList    -> NormFormNeList  [ctor ditto] .
-  op (_;_) : FormNeList      FormList        -> FormNeList      [ctor ditto] .
+  op (_;_) : PosEqLitNeList   PosEqLitList     -> PosEqLitNeList  [ctor ditto] .
+  op (_;_) : PosEqConjNeList  PosEqConjList    -> PosEqConjNeList [ctor ditto] .
+  op (_;_) : PosEqDisjNeList  PosEqDisjList    -> PosEqDisjNeList [ctor ditto] .
+  op (_;_) : PosEqFormNeList  PosEqFormList    -> PosEqFormNeList [ctor ditto] .
+  op (_;_) : NegEqLitNeList   NegEqLitList     -> NegEqLitNeList  [ctor ditto] .
+  op (_;_) : NegEqConjNeList  NegEqConjList    -> NegEqConjNeList [ctor ditto] .
+  op (_;_) : NegEqDisjNeList  NegEqDisjList    -> NegEqDisjNeList [ctor ditto] .
+  op (_;_) : NegEqFormNeList  NegEqFormList    -> NegEqFormNeList [ctor ditto] .
+  op (_;_) : EqLitNeList      EqLitList        -> EqLitNeList     [ctor ditto] .
+  op (_;_) : EqConjNeList     EqConjList       -> EqConjNeList    [ctor ditto] .
+  op (_;_) : EqDisjNeList     EqDisjList       -> EqDisjNeList    [ctor ditto] .
+  op (_;_) : EqFormNeList     EqFormList       -> EqFormNeList    [ctor ditto] .
+  op (_;_) : NormFormNeList   NormFormList     -> NormFormNeList  [ctor ditto] .
+  op (_;_) : FormNeList       FormList         -> FormNeList      [ctor ditto] .
 
-  op (_;_) : PosEqLitList    PosEqLitNeList  -> PosEqLitNeList  [ctor ditto] .
-  op (_;_) : PosConjList   PosConjNeList -> PosConjNeList [ctor ditto] .
-  op (_;_) : PosDisjList   PosDisjNeList -> PosDisjNeList [ctor ditto] .
-  op (_;_) : PosFormList   PosFormNeList -> PosFormNeList [ctor ditto] .
-  op (_;_) : NegEqLitList    NegEqLitNeList  -> NegEqLitNeList  [ctor ditto] .
-  op (_;_) : NegConjList   NegConjNeList -> NegConjNeList [ctor ditto] .
-  op (_;_) : NegDisjList   NegDisjNeList -> NegDisjNeList [ctor ditto] .
-  op (_;_) : NegFormList   NegFormNeList -> NegFormNeList [ctor ditto] .
-  op (_;_) : EqLitList       EqLitNeList     -> EqLitNeList     [ctor ditto] .
-  op (_;_) : EqConjList      EqConjNeList    -> EqConjNeList    [ctor ditto] .
-  op (_;_) : EqDisjList      EqDisjNeList    -> EqDisjNeList    [ctor ditto] .
-  op (_;_) : EqFormList      EqFormNeList    -> EqFormNeList    [ctor ditto] .
-  op (_;_) : NormFormList    NormFormNeList  -> NormFormNeList  [ctor ditto] .
-  op (_;_) : FormList        FormNeList      -> FormNeList      [ctor ditto] .
+  op (_;_) : PosEqLitList     PosEqLitNeList   -> PosEqLitNeList  [ctor ditto] .
+  op (_;_) : PosEqConjList    PosEqConjNeList  -> PosEqConjNeList [ctor ditto] .
+  op (_;_) : PosEqDisjList    PosEqDisjNeList  -> PosEqDisjNeList [ctor ditto] .
+  op (_;_) : PosEqFormList    PosEqFormNeList  -> PosEqFormNeList [ctor ditto] .
+  op (_;_) : NegEqLitList     NegEqLitNeList   -> NegEqLitNeList  [ctor ditto] .
+  op (_;_) : NegEqConjList    NegEqConjNeList  -> NegEqConjNeList [ctor ditto] .
+  op (_;_) : NegEqDisjList    NegEqDisjNeList  -> NegEqDisjNeList [ctor ditto] .
+  op (_;_) : NegEqFormList    NegEqFormNeList  -> NegEqFormNeList [ctor ditto] .
+  op (_;_) : EqLitList        EqLitNeList      -> EqLitNeList     [ctor ditto] .
+  op (_;_) : EqConjList       EqConjNeList     -> EqConjNeList    [ctor ditto] .
+  op (_;_) : EqDisjList       EqDisjNeList     -> EqDisjNeList    [ctor ditto] .
+  op (_;_) : EqFormList       EqFormNeList     -> EqFormNeList    [ctor ditto] .
+  op (_;_) : NormFormList     NormFormNeList   -> NormFormNeList  [ctor ditto] .
+  op (_;_) : FormList         FormNeList       -> FormNeList      [ctor ditto] .
 endfm
 
 fmod EQFORM-SET is
   pr EQFORM .
 
   sort EmptyFormSet .
-  sort PosEqLitSet PosConjSet PosDisjSet PosFormSet .
-  sort NegEqLitSet NegConjSet NegDisjSet NegFormSet .
+  sort PosEqLitSet PosEqConjSet PosEqDisjSet PosEqFormSet .
+  sort NegEqLitSet NegEqConjSet NegEqDisjSet NegEqFormSet .
   sort EqLitSet    EqConjSet    EqDisjSet    EqFormSet    .
   sort NormFormSet FormSet .
 
-  sort PosEqLitNeSet PosConjNeSet PosDisjNeSet PosFormNeSet .
-  sort NegEqLitNeSet NegConjNeSet NegDisjNeSet NegFormNeSet .
+  sort PosEqLitNeSet PosEqConjNeSet PosEqDisjNeSet PosEqFormNeSet .
+  sort NegEqLitNeSet NegEqConjNeSet NegEqDisjNeSet NegEqFormNeSet .
   sort EqLitNeSet    EqConjNeSet    EqDisjNeSet    EqFormNeSet    .
   sort NormFormNeSet FormNeSet .
 
   subsort PosEqLit  < PosEqLitNeSet  < PosEqLitSet  .
-  subsort PosConj < PosConjNeSet < PosConjSet .
-  subsort PosDisj < PosDisjNeSet < PosDisjSet .
-  subsort PosForm < PosFormNeSet < PosFormSet .
+  subsort PosEqConj < PosEqConjNeSet < PosEqConjSet .
+  subsort PosEqDisj < PosEqDisjNeSet < PosEqDisjSet .
+  subsort PosEqForm < PosEqFormNeSet < PosEqFormSet .
   subsort NegEqLit  < NegEqLitNeSet  < NegEqLitSet  .
-  subsort NegConj < NegConjNeSet < NegConjSet .
-  subsort NegDisj < NegDisjNeSet < NegDisjSet .
-  subsort NegForm < NegFormNeSet < NegFormSet .
+  subsort NegEqConj < NegEqConjNeSet < NegEqConjSet .
+  subsort NegEqDisj < NegEqDisjNeSet < NegEqDisjSet .
+  subsort NegEqForm < NegEqFormNeSet < NegEqFormSet .
   subsort EqLit     < EqLitNeSet     < EqLitSet     .
   subsort EqConj    < EqConjNeSet    < EqConjSet    .
   subsort EqDisj    < EqDisjNeSet    < EqDisjSet    .
@@ -433,63 +449,63 @@ fmod EQFORM-SET is
   subsort Form      < FormNeSet      < FormSet      .
 
   --- Set Functor
-  --- Apply Pos/Neg Functor To Sorts
+  --- Apply PosEq/NegEq Functor To Sorts
   subsort PosEqLitSet  NegEqLitSet  < EqLitSet  .
-  subsort PosConjSet NegConjSet < EqConjSet .
-  subsort PosDisjSet NegDisjSet < EqDisjSet .
-  subsort PosFormSet NegFormSet < EqFormSet .
-  --- Apply Pos/Neg Functor To Subsort Arrows
-  subsort PosEqLitSet < PosConjSet PosDisjSet < PosFormSet .
-  subsort NegEqLitSet < NegConjSet NegDisjSet < NegFormSet .
+  subsort PosEqConjSet NegEqConjSet < EqConjSet .
+  subsort PosEqDisjSet NegEqDisjSet < EqDisjSet .
+  subsort PosEqFormSet NegEqFormSet < EqFormSet .
+  --- Apply PosEq/NegEq Functor To Subsort Arrows
+  subsort PosEqLitSet < PosEqConjSet PosEqDisjSet < PosEqFormSet .
+  subsort NegEqLitSet < NegEqConjSet NegEqDisjSet < NegEqFormSet .
   subsort EqLitSet    < EqConjSet    EqDisjSet    < EqFormSet    .
   --- Other Cases
   subsort EmptyFormSet < PosEqLitSet NegEqLitSet FormSet .
   subsort EqFormSet < NormFormSet < FormSet .
 
   --- NeSet Functor
-  --- Apply Pos/Neg Functor To Sorts
+  --- Apply PosEq/NegEq Functor To Sorts
   subsort PosEqLitNeSet  NegEqLitNeSet  < EqLitNeSet  .
-  subsort PosConjNeSet NegConjNeSet < EqConjNeSet .
-  subsort PosDisjNeSet NegDisjNeSet < EqDisjNeSet .
-  subsort PosFormNeSet NegFormNeSet < EqFormNeSet .
-  --- Apply Pos/Neg Functor To Subsort Arrows
-  subsort PosEqLitNeSet < PosConjNeSet PosDisjNeSet < PosFormNeSet .
-  subsort NegEqLitNeSet < NegConjNeSet NegDisjNeSet < NegFormNeSet .
+  subsort PosEqConjNeSet NegEqConjNeSet < EqConjNeSet .
+  subsort PosEqDisjNeSet NegEqDisjNeSet < EqDisjNeSet .
+  subsort PosEqFormNeSet NegEqFormNeSet < EqFormNeSet .
+  --- Apply PosEq/NegEq Functor To Subsort Arrows
+  subsort PosEqLitNeSet < PosEqConjNeSet PosEqDisjNeSet < PosEqFormNeSet .
+  subsort NegEqLitNeSet < NegEqConjNeSet NegEqDisjNeSet < NegEqFormNeSet .
   subsort EqLitNeSet    < EqConjNeSet    EqDisjNeSet    < EqFormNeSet    .
   --- Other Cases
   subsort EqFormNeSet < NormFormNeSet < FormNeSet .
 
   op mtFormSet :                           -> EmptyFormSet   [ctor] .
-  op (_|_) : EmptyFormSet   EmptyFormSet   -> EmptyFormSet   [ctor assoc comm id: mtFormSet] .
+  op (_|_) : EmptyFormSet    EmptyFormSet  -> EmptyFormSet   [ctor assoc comm id: mtFormSet] .
 
-  op (_|_) : PosEqLitSet    PosEqLitSet    -> PosEqLitSet    [ctor ditto] .
-  op (_|_) : PosConjSet   PosConjSet   -> PosConjSet   [ctor ditto] .
-  op (_|_) : PosDisjSet   PosDisjSet   -> PosDisjSet   [ctor ditto] .
-  op (_|_) : PosFormSet   PosFormSet   -> PosFormSet   [ctor ditto] .
-  op (_|_) : NegEqLitSet    NegEqLitSet    -> NegEqLitSet    [ctor ditto] .
-  op (_|_) : NegConjSet   NegConjSet   -> NegConjSet   [ctor ditto] .
-  op (_|_) : NegDisjSet   NegDisjSet   -> NegDisjSet   [ctor ditto] .
-  op (_|_) : NegFormSet   NegFormSet   -> NegFormSet   [ctor ditto] .
-  op (_|_) : EqLitSet       EqLitSet       -> EqLitSet       [ctor ditto] .
-  op (_|_) : EqConjSet      EqConjSet      -> EqConjSet      [ctor ditto] .
-  op (_|_) : EqDisjSet      EqDisjSet      -> EqDisjSet      [ctor ditto] .
-  op (_|_) : EqFormSet      EqFormSet      -> EqFormSet      [ctor ditto] .
-  op (_|_) : NormFormSet    NormFormSet    -> NormFormSet    [ctor ditto] .
-  op (_|_) : FormSet        FormSet        -> FormSet        [ctor ditto] .
+  op (_|_) : PosEqLitSet     PosEqLitSet   -> PosEqLitSet    [ctor ditto] .
+  op (_|_) : PosEqConjSet    PosEqConjSet  -> PosEqConjSet   [ctor ditto] .
+  op (_|_) : PosEqDisjSet    PosEqDisjSet  -> PosEqDisjSet   [ctor ditto] .
+  op (_|_) : PosEqFormSet    PosEqFormSet  -> PosEqFormSet   [ctor ditto] .
+  op (_|_) : NegEqLitSet     NegEqLitSet   -> NegEqLitSet    [ctor ditto] .
+  op (_|_) : NegEqConjSet    NegEqConjSet  -> NegEqConjSet   [ctor ditto] .
+  op (_|_) : NegEqDisjSet    NegEqDisjSet  -> NegEqDisjSet   [ctor ditto] .
+  op (_|_) : NegEqFormSet    NegEqFormSet  -> NegEqFormSet   [ctor ditto] .
+  op (_|_) : EqLitSet        EqLitSet      -> EqLitSet       [ctor ditto] .
+  op (_|_) : EqConjSet       EqConjSet     -> EqConjSet      [ctor ditto] .
+  op (_|_) : EqDisjSet       EqDisjSet     -> EqDisjSet      [ctor ditto] .
+  op (_|_) : EqFormSet       EqFormSet     -> EqFormSet      [ctor ditto] .
+  op (_|_) : NormFormSet     NormFormSet   -> NormFormSet    [ctor ditto] .
+  op (_|_) : FormSet         FormSet       -> FormSet        [ctor ditto] .
 
-  op (_|_) : PosEqLitNeSet  PosEqLitSet    -> PosEqLitNeSet  [ctor ditto] .
-  op (_|_) : PosConjNeSet PosConjSet   -> PosConjNeSet [ctor ditto] .
-  op (_|_) : PosDisjNeSet PosDisjSet   -> PosDisjNeSet [ctor ditto] .
-  op (_|_) : PosFormNeSet PosFormSet   -> PosFormNeSet [ctor ditto] .
-  op (_|_) : NegEqLitNeSet  NegEqLitSet    -> NegEqLitNeSet  [ctor ditto] .
-  op (_|_) : NegConjNeSet NegConjSet   -> NegConjNeSet [ctor ditto] .
-  op (_|_) : NegDisjNeSet NegDisjSet   -> NegDisjNeSet [ctor ditto] .
-  op (_|_) : NegFormNeSet NegFormSet   -> NegFormNeSet [ctor ditto] .
-  op (_|_) : EqLitNeSet     EqLitSet       -> EqLitNeSet     [ctor ditto] .
-  op (_|_) : EqConjNeSet    EqConjSet      -> EqConjNeSet    [ctor ditto] .
-  op (_|_) : EqDisjNeSet    EqDisjSet      -> EqDisjNeSet    [ctor ditto] .
-  op (_|_) : EqFormNeSet    EqFormSet      -> EqFormNeSet    [ctor ditto] .
-  op (_|_) : NormFormNeSet  NormFormSet    -> NormFormNeSet  [ctor ditto] .
-  op (_|_) : FormNeSet      FormSet        -> FormNeSet      [ctor ditto] .
+  op (_|_) : PosEqLitNeSet   PosEqLitSet   -> PosEqLitNeSet  [ctor ditto] .
+  op (_|_) : PosEqConjNeSet  PosEqConjSet  -> PosEqConjNeSet [ctor ditto] .
+  op (_|_) : PosEqDisjNeSet  PosEqDisjSet  -> PosEqDisjNeSet [ctor ditto] .
+  op (_|_) : PosEqFormNeSet  PosEqFormSet  -> PosEqFormNeSet [ctor ditto] .
+  op (_|_) : NegEqLitNeSet   NegEqLitSet   -> NegEqLitNeSet  [ctor ditto] .
+  op (_|_) : NegEqConjNeSet  NegEqConjSet  -> NegEqConjNeSet [ctor ditto] .
+  op (_|_) : NegEqDisjNeSet  NegEqDisjSet  -> NegEqDisjNeSet [ctor ditto] .
+  op (_|_) : NegEqFormNeSet  NegEqFormSet  -> NegEqFormNeSet [ctor ditto] .
+  op (_|_) : EqLitNeSet      EqLitSet      -> EqLitNeSet     [ctor ditto] .
+  op (_|_) : EqConjNeSet     EqConjSet     -> EqConjNeSet    [ctor ditto] .
+  op (_|_) : EqDisjNeSet     EqDisjSet     -> EqDisjNeSet    [ctor ditto] .
+  op (_|_) : EqFormNeSet     EqFormSet     -> EqFormNeSet    [ctor ditto] .
+  op (_|_) : NormFormNeSet   NormFormSet   -> NormFormNeSet  [ctor ditto] .
+  op (_|_) : FormNeSet       FormSet       -> FormNeSet      [ctor ditto] .
 endfm
 ```
