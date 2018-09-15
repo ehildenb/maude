@@ -157,10 +157,18 @@ fmod EQFORM is
   subsort EqForm TrivTrueForm  < Eq+TrivTrueForm  < NoFalseForm      NormForm .
   subsort EqForm TrivFalseForm < Eq+TrivFalseForm < NoTrueForm       NormForm .
 
+  --- add these subsorts and (op ~_ : Lit -> NonTrivLit) to get proper literals
+  sort NonTrivLit NoFalseLit NoTrueLit Lit .
+  subsort EqLit < NonTrivLit < NonTrivForm .
+  subsort NormLit NoFalseLit NoTrueLit < Lit < Form .
+  subsort NonTrivLit Eq+TrueLit  < NoFalseLit < NoFalseForm .
+  subsort NonTrivLit Eq+FalseLit < NoTrueLit  < NoTrueForm  .
+
   op tt   :           -> TrueLit     [ctor] .
   op ff   :           -> FalseLit    [ctor] .
   op _?=_ : Term Term -> PosEqLit    [ctor prec 50] .
   op _!=_ : Term Term -> NegEqLit    [ctor prec 50] .
+  op ~_   : Lit       -> NonTrivLit  [ctor prec 51] .
   op ~_   : Form      -> NonTrivForm [ctor prec 51] .
 
   op _/\_ : TrivTrueForm   TrivTrueForm   -> TrivTrueForm  [ctor assoc comm id: tt prec 52] .
