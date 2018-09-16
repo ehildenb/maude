@@ -45,7 +45,7 @@ fmod SUBSTITUTION-SET is
     subsort Substitution < NeSubstitutionSet < SubstitutionSet .
 
     vars SUB : Substitution . var NeSUBS : NeSubstitutionSet . var SUBS : SubstitutionSet .
-    var T : Term . var C : Constant . var V : Variable . var Q : Qid .
+    var T : Term . var C : Constant . vars V V' : Variable . var Q : Qid .
     var NeTL : NeTermList . var TL : TermList .
     var NeTS : NeTermSet . var TS : TermSet .
 
@@ -57,11 +57,11 @@ fmod SUBSTITUTION-SET is
 
     op _<<_ : Term Substitution -> Term .
     -------------------------------------
-    eq    TL << none             = TL .
-    eq     C << SUB              = C .
-    eq     V << ((V <- T) ; SUB) = T .
-    eq     V << SUB              = V [owise] .
-    eq Q[TL] << SUB              = Q[TL << SUB] .
+    eq    TL << none              = TL .
+    eq     C << SUB               = C .
+    eq     V << ((V' <- T) ; SUB) = if V == V' then T else V << SUB fi .
+    eq     V << none              = V .
+    eq Q[TL] << SUB               = Q[TL << SUB] .
 
     op _<<_ : TermList Substitution -> TermList .
     ---------------------------------------------

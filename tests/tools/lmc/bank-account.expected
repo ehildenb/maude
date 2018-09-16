@@ -277,7 +277,7 @@ rewrites: 3
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(4)) .
-rewrites: 20
+rewrites: 43
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(5)) .
@@ -289,7 +289,7 @@ rewrites: 3
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M, pred(7)) .
-rewrites: 16
+rewrites: 47
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : leastSort(#M, cinit(0)) .
@@ -429,7 +429,7 @@ Warning: unsafe variable name @1:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
 Warning: unsafe variable name @3:Nat in variant narrowing problem.
-rewrites: 710
+rewrites: 950
 result FoldedLabeledGraph?: (0 -[label('deposit, 
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '%2:Nat ; 
