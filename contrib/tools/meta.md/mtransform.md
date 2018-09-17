@@ -2,7 +2,7 @@ Module Transformations
 ======================
 
 ```maude
-load cterms.maude
+load purification.maude
 load mconstruction.maude
 load variables.maude
 ```
@@ -23,7 +23,7 @@ When rewrite theory $\R$ protects sub-theory $(\Sigma_1, B_1 \cup E_1)$, define 
 
 ```maude
 fmod SUBTHEORY-ABSTRACTION is
-   protecting CTERM-SET .
+   protecting CTERM-SET-SIMPLIFICATION .
    protecting MODULE-TEMPLATE .
    protecting PURIFICATION .
 
@@ -41,12 +41,12 @@ fmod SUBTHEORY-ABSTRACTION is
     eq subtheoryAbstract(NeMDS NeMDS',             M, M') = subtheoryAbstract(NeMDS, M, M') subtheoryAbstract(NeMDS', M, M') .
 
    ceq subtheoryAbstract(( rl L => R [AS] . ), M, M') = ( crl L' => R' if unif(CL' /\ CR') [AS] . )
-    if L' | CL' := subtheoryPurify(asTemplate(M), M', L)
-    /\ R' | CR' := subtheoryPurify(asTemplate(M), M', R) .
+    if L' st CL' := subtheoryPurify(asTemplate(M), M', L)
+    /\ R' st CR' := subtheoryPurify(asTemplate(M), M', R) .
 
    ceq subtheoryAbstract(( crl L => R if C [AS] . ), M, M') = ( crl L' => R' if C /\ unif(CL' /\ CR') [AS] . )
-    if L' | CL' := subtheoryPurify(asTemplate(M), M', L)
-    /\ R' | CR' := subtheoryPurify(asTemplate(M), M', R) .
+    if L' st CL' := subtheoryPurify(asTemplate(M), M', L)
+    /\ R' st CR' := subtheoryPurify(asTemplate(M), M', R) .
 
     op subtheoryAbstract : Module Module -> [Module] .
     --------------------------------------------------

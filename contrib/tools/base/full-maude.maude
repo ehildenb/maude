@@ -41,9 +41,9 @@ fmod OPDECL-TYPING is
   --- INP: Term
   --- PRE: None
   --- OUT: The list of subterms from this term
-  eq subterms(Q[NTL])      = NTL .
-  eq subterms(C)           = empty .
-  eq subterms(V)           = empty .
+  eq subterms(Q[NTL]) = NTL .
+  eq subterms(C)      = empty .
+  eq subterms(V)      = empty .
 
   --- INP: Module TermList
   --- PRE: Term well-defined in Module
@@ -102,10 +102,10 @@ fmod TERM-EXTRA is
   --- PRE: None
   --- OUT: SubstitutionSet where each substitution binding V <- T is
   ---      filtered out V occurs in QS
-  eq filterNotIn(S | SS,QS)      = filterNotIn*(S,QS) | filterNotIn(SS,QS) .
-  eq filterNotIn(empty,QS)       = empty .
-  eq filterNotIn*(V <- T ; S,QS) = if V in QS then none else V <- T fi ; filterNotIn*(S,QS) .
-  eq filterNotIn*(none,QS)       = none .
+  eq filterNotIn(S | SS,QS)           = filterNotIn*(S,QS) | filterNotIn(SS,QS) .
+  eq filterNotIn(.SubstitutionSet,QS) = .SubstitutionSet .
+  eq filterNotIn*(V <- T ; S,QS)      = if V in QS then none else V <- T fi ; filterNotIn*(S,QS) .
+  eq filterNotIn*(none,QS)            = none .
 
   --- INP: Substitution
   --- PRE: None
@@ -174,10 +174,10 @@ fmod VARIABLES-TO-CONSTANTS is
   eq constsToVars(S,Q,(T,TL),TL')  = constsToVars(S,Q,TL,(TL',constsToVars(S,T))) .
   eq constsToVars(S,Q,empty,TL')   = Q[TL'] .
   ---
-  eq constsToVars(S,S | S' | SS)             = constsToVars(S,S) | constsToVars(S,S' | SS) .
-  eq constsToVars(S,(empty).SubstitutionSet) = (empty).SubstitutionSet .
-  eq constsToVars(S,V <- T ; S')             = V <- constsToVars(S,T) ; constsToVars(S,S') .
-  eq constsToVars(S,(none).Substitution)     = (none).Substitution .
+  eq constsToVars(S,S | S' | SS)         = constsToVars(S,S) | constsToVars(S,S' | SS) .
+  eq constsToVars(S,.SubstitutionSet)    = .SubstitutionSet .
+  eq constsToVars(S,V <- T ; S')         = V <- constsToVars(S,T) ; constsToVars(S,S') .
+  eq constsToVars(S,(none).Substitution) = (none).Substitution .
 
 
   --- INP: QidSet
@@ -190,7 +190,7 @@ fmod VARIABLES-TO-CONSTANTS is
 endfm
 
 fmod APPLY-SUBS is
-  pr TERMSET .
+  pr TERM-SET .
   pr SUBSTITUTIONSET .
 
   var S : Substitution .
@@ -199,7 +199,7 @@ fmod APPLY-SUBS is
 
   op apply : SubstitutionSet Term -> TermSet .
   eq apply(S | SS,T) = (T << S) | apply(SS,T) .
-  eq apply(none,T) = emptyTermSet .
+  eq apply(none,T) = .TermSet .
 endfm
 
 fmod MODULE-DATABASE-IMP{X :: TRIV} is

@@ -4,7 +4,7 @@ Structured Names
 For substutions:
 
 ```maude
-load metalevel-ext.maude
+load cterms.maude
 ```
 
 First, we'll need a way to generate variables at the object level because writing all our syntax at the meta-level can be a pain.
@@ -15,7 +15,8 @@ For this, a few constructors are provided.
 
 ```maude
 fmod STRUCTURED-NAME is
-   protecting SUBSTITUTIONSET .
+   protecting META-LEVEL .
+   protecting SUBSTITUTION-SET .
 
     vars I I' : Import . vars IL IL' : ImportList . vars S S' S'' : Sort . var SS : SortSet . var SSDS : SubsortDeclSet .
     vars H H' : Header . vars Q Q' : Qid . vars A A' : Attr . var AS : AttrSet . var SU : Substitution .

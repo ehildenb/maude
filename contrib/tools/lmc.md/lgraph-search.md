@@ -283,12 +283,13 @@ Instantiation to Narrowing
 fmod FVP-NARROWING-GRAPH is
    protecting NARROWING .
    protecting VARIABLE-NUMBERS .
+   protecting SUBSTITUTION-SET .
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
 
-    var TYPE : Type . vars T T' : Term . var M : Module . var SUB : Substitution .
-    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RS : RuleSet .
-    var RL : Qid .
+    vars T T' : Term . var M : Module .
+    var SUB : Substitution . var SUBS : SubstitutionSet .
+    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RL : Qid .
 
     op label : Qid Substitution -> Label .
     --------------------------------------

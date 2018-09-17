@@ -16,7 +16,7 @@ load ../meta/sort-ops.maude
 load ctor-var-unif.maude
 
 fmod WRAPPED-TERMS is
-  pr TERMSET .
+  pr TERM-SET .
   sort WTerm WTermList .
   subsort WTerm < WTermList .
   op _;_ : WTermList WTermList -> WTermList [ctor assoc id: tlnil] .
@@ -32,7 +32,7 @@ fmod WRAPPED-TERMS is
   eq [{T} ; TL] = T, [TL] .
   eq [tlnil] = empty .
   eq wrap(T | TS) = {T} ; wrap(TS) .
-  eq wrap(emptyTermSet) = tlnil .
+  eq wrap(.TermSet) = tlnil .
 endfm
 
 view WTermList from UNIT-LIST to WRAPPED-TERMS is
@@ -151,7 +151,7 @@ fmod VAR-SAT is
   var WTL : WTermList . var T T' : Term .
 
   eq fin-sorts(FM,C,FSS,ISS) = FSS ; get-finite-sorts(ctor-sig(FM),sorts(vars(C)) - (FSS ; ISS)) .
-  eq not-empty?(SBS) = SBS =/= empty .
+  eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
   eq nf-ctor-variants(FM,NC) = toDUPs(getTerms(ctor-variants(kl-ext(FM),toKPL(FM,NC)))) .
   eq $renameForm(M,CS) = downTerm(renameTmpVar(M,upTerm(CS)),ff) .
   eq $renameForm(M,F?) = downTerm(renameTmpVar(M,upTerm(F?)),ff) .

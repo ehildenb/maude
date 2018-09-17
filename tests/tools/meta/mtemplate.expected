@@ -1,5 +1,5 @@
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
+    on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out
@@ -28,7 +28,7 @@ reduce in MODULE-DECLARATION : sortSet((sorts 'Q ; 'T .)
 rewrites: 3
 result NeSortSet: 'Q ; 'S ; 'T
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
+    on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out
@@ -394,7 +394,7 @@ reduce in MODULE-TEMPLATE : wellFormed(fromTemplate('BAKERY-FVP, asTemplate(
 rewrites: 7
 result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
+    on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out
@@ -404,7 +404,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
 reduce in PRINT-MODULE-TEMPLATE : printDecls(sorts 'A ; 'B ; 'C ; 'D .,
     upModule('BOOL)) .
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 39 sort tuples. First such tuple is (Type).
+    on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out

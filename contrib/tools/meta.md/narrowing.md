@@ -2,6 +2,11 @@ Narrowing
 =========
 
 Several narrowing utilities/wrappers are provided here.
+Much of this code is extracted from Santiago Escobar's [unification.md].
+
+```maude
+load cterms.maude
+```
 
 Variant Sets
 ------------
@@ -47,16 +52,17 @@ Narrowing using Core Maude
 fmod NARROWING is
    protecting VARIANT-SET .
 
-    sorts NarrowStepResult NarrowStepResults .
-    ------------------------------------------
-    subsort NarrowStepResult < NarrowStepResults .
-
-    op .NarrowStepResults :                                     -> NarrowStepResults .
-    op _||_               : NarrowStepResults NarrowStepResults -> NarrowStepResults [assoc comm id: .NarrowStepResults] .
-    ----------------------------------------------------------------------------------------------------------------------
+    sorts NarrowStepResult NeNarrowStepResults NarrowStepResults .
+    --------------------------------------------------------------
+    subsort NarrowStepResult < NeNarrowStepResults < NarrowStepResults .
 
     op {_:_,_} : Qid Term Substitution -> NarrowStepResult .
     --------------------------------------------------------
+
+    op .NarrowStepResults :                                       ->   NarrowStepResults .
+    op _||_               : NarrowStepResults   NarrowStepResults ->   NarrowStepResults [assoc comm id: .NarrowStepResults] .
+    op _||_               : NarrowStepResults NeNarrowStepResults -> NeNarrowStepResults [ditto] .
+    ----------------------------------------------------------------------------------------------
 
     var N : Nat . vars Q RL : Qid .
     var TYPE : Type . var CTX : Context .

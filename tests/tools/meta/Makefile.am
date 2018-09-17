@@ -1,9 +1,9 @@
 include ../../test.Makefile
 
 TESTS = \
-	metalevel-ext.maude \
 	structured-names.maude \
 	cterms.maude \
+	terms.maude \
 	foform.maude \
 	eqform.maude \
 	mtemplate.maude \
@@ -12,12 +12,13 @@ TESTS = \
 	sort-ops.maude \
 	unification.maude \
 	variables.maude \
-	narrowing.maude
+	narrowing.maude \
+	purification.maude
 
 RESULT_FILES = \
-	metalevel-ext.expected \
 	structured-names.expected \
 	cterms.expected \
+	terms.expected \
 	foform.expected \
 	eqform.expected \
 	mtemplate.expected \
@@ -26,6 +27,7 @@ RESULT_FILES = \
 	sort-ops.expected \
 	unification.expected \
 	variables.expected \
-	narrowing.expected
+	narrowing.expected \
+	purification.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

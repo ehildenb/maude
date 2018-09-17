@@ -111,7 +111,7 @@ endfm
 ----   - A new version of the narrowing/unification stuff by S. Escobar fixing a bug in the
 ----     getVariants function and incorporating some other changes.
 ----     To integrate it into Full Maude:
-----     - The TERMSET module is moved, so that now Full Maude uses it instead of its
+----     - The TERM-SET module is moved, so that now Full Maude uses it instead of its
 ----       definition of term sets. In the original module by Santiago this module imported
 ----       the SUBSTITUTION-HANDLING module; this importation is now commented out.
 ---- - October 4th, 2009
@@ -1203,7 +1203,7 @@ fmod EXT-SORT is
   pr EXT-BOOL .
   pr VIEW-EXPR-TO-QID .
   pr EXT-QID-LIST .
-  pr TERMSET .
+  pr TERM-SET .
 
 *** We define operations extending the built-in functions \texttt{sameKind}
 *** and \texttt{leastSort}, respectively, to lists of sorts and
@@ -1259,7 +1259,7 @@ fmod EXT-SORT is
   op eLeastSort : Module TermSet ~> TypeSet .
   eq eLeastSort(M, (T:Term | TS:TermSet))
     = (leastSort(M, T:Term) ; eLeastSort(M, TS:TermSet)) .
-  eq eLeastSort(M, emptyTermSet) = none .
+  eq eLeastSort(M, .TermSet) = none .
   eq eLeastSort(M, qidError(QIL)) = qidError(QIL) .
 
   op qidError : QidList -> [Sort] .
@@ -6255,10 +6255,10 @@ endfm
 -------------------------------------------------------------------------------
 
 fmod EXT-TERMSET is
-  protecting TERMSET .
+  protecting TERM-SET .
   op |_| : TermSet -> Nat .
   eq | X:Term | T:TermSet | = 1 + | T:TermSet | .
-  eq | emptyTermSet | = 0 .
+  eq | .TermSet | = 0 .
 endfm
 
 view TermSet from TRIV to EXT-TERMSET is
@@ -6465,9 +6465,9 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
   op crtObject2 : Term Variable TermList TermList AttrDeclSet TermSet Nat QidList -> Tuple{TermList, TermSet, Nat, QidList} .
   op crtObject3 : Term Qid TermList AttrDeclSet TermSet Nat QidList -> Tuple{TermList, TermSet, Nat, QidList} .
 
-  eq prepLHS(qidError(QIL), CDS, I) = < qidError(QIL) ; emptyTermSet ; I ; nil > .
-  eq prepLHS(F, CDS, I) = < F ; emptyTermSet ; I ; nil > .
-  eq prepLHS(Ct, CDS, I) = < Ct ; emptyTermSet ; I ; nil > .
+  eq prepLHS(qidError(QIL), CDS, I) = < qidError(QIL) ; .TermSet ; I ; nil > .
+  eq prepLHS(F, CDS, I) = < F ; .TermSet ; I ; nil > .
+  eq prepLHS(Ct, CDS, I) = < Ct ; .TermSet ; I ; nil > .
 
 *** \texttt{prepLHS} on a list of terms $\texttt{(}T\texttt{,\ }TL\texttt{)}$,
 *** with $T$ a term and $TL$ a list of terms, has to make a call to itself with
@@ -6498,13 +6498,13 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
         prepLHS('none.AttributeSet, ((class C | ADS .) CDS), I))
     if getName(Ct) == C .
   eq prepLHS('<_:_|_>[O, V, T], CDS, I)
-    = < '<_:_|_>[O, V, T] ; emptyTermSet ; I ; nil > .
+    = < '<_:_|_>[O, V, T] ; .TermSet ; I ; nil > .
                                                       *** is this eq necessary?
   eq prepLHS('<_:_|`>[O, T], CDS, I)
     = prepLHS('<_:_|_>[O, T, 'none.AttributeSet], CDS, I) .
 
   eq prepLHS('<_:_|_>[O, T, T'], none, I)
-    = < qidError('Error: 'undefined 'class T '\n) ; emptyTermSet ; I ; nil > .
+    = < qidError('Error: 'undefined 'class T '\n) ; .TermSet ; I ; nil > .
 
   eq crtObject(O, C, ADS, < T ; TS ; I ; QIL >)
     = crtObject2(O, newVar(C, I), T, 'none.AttributeSet, ADS, TS, (I + 1), QIL) .
@@ -6635,7 +6635,7 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
            fi
       else adjustObjectRHS(TS, '<_:_|_>[O', Ct, T'])
       fi .
-  eq adjustObjectRHS(emptyTermSet, '<_:_|_>[O, Ct, T]) = '<_:_|_>[O, Ct, T] .
+  eq adjustObjectRHS(.TermSet, '<_:_|_>[O, Ct, T]) = '<_:_|_>[O, Ct, T] .
 
 ***  eq adjustObjectRHS(_|_('<_:_|_>[Ct, C, T], TS), '<_:_|_>[O, Ct', T'])
 ***    = adjustObjectRHS(TS, '<_:_|_>[O, Ct', T']) .
@@ -6645,7 +6645,7 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
 ***      then '<_:_|_>[Ct, Ct'', adjustAttrsObjectRHS(T, T')]
 ***      else adjustObjectRHS(TS, '<_:_|_>[Ct', Ct'', T'])
 ***      fi .
-***  eq adjustObjectRHS(emptyTermSet, '<_:_|_>[Ct, Ct', T])
+***  eq adjustObjectRHS(.TermSet, '<_:_|_>[Ct, Ct', T])
 ***    = '<_:_|_>[Ct, Ct', T] .
 
 *** The function \texttt{adjustAttrsObjectRHS} completes the set of
@@ -6673,7 +6673,7 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
   eq A attrInTermSet _|_(V, TS) = A attrInTermSet TS .
   eq A attrInTermSet _|_(A'[T], TS)
     = (A == A') or-else (A attrInTermSet TS) .
-  eq A attrInTermSet emptyTermSet = false .
+  eq A attrInTermSet .TermSet = false .
 
   ceq termAttrListToTermSet((T, TL))
     = if T == 'none.AttributeSet
@@ -6683,7 +6683,7 @@ fmod O-O-TO-SYSTEM-MOD-TRANSF is
     if TL =/= empty .
   eq termAttrListToTermSet(T)
     = if T == 'none.AttributeSet
-      then emptyTermSet
+      then .TermSet
       else T
       fi .
 
@@ -14087,7 +14087,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'unifier
             else procIdUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14096,7 +14096,7 @@ fmod COMMAND-PROCESSING is
     if X:[SubstitutionSet] := metaACUUnify(M, T, T') .
   eq procIdUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procIdUnify3(M, UP, I, empty)
+  eq procIdUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procIdUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14128,7 +14128,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'variant 'unifier
             else procVariantUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14146,7 +14146,7 @@ fmod COMMAND-PROCESSING is
           ) .
   eq procVariantUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procVariantUnify3(M, UP, I, empty)
+  eq procVariantUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procVariantUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14181,7 +14181,7 @@ fmod COMMAND-PROCESSING is
             if D == unbounded then nil else '\s '`[ qid(string(D, 10)) '`] '\s fi
             'in eMetaPrettyPrint(getName(M)) ':
             eMetaPrettyPrint(M, T =? T')
-            if X:[SubstitutionSet] == empty
+            if X:[SubstitutionSet] == .SubstitutionSet
             then '\n 'No 'asymmetric 'unifier
             else procAsymmetricVariantUnify3(M, T =? T', 0, X:[SubstitutionSet])
             fi)
@@ -14199,7 +14199,7 @@ fmod COMMAND-PROCESSING is
           ) .
   eq procAsymmetricVariantUnify2(M?, UP??:[UnificationProblem], D?) = getMsg(M?) [owise] .
 
-  eq procAsymmetricVariantUnify3(M, UP, I, empty)
+  eq procAsymmetricVariantUnify3(M, UP, I, .SubstitutionSet)
    = ('\n '\n 'No 'more 'solutions. '\n) .
   eq procAsymmetricVariantUnify3(M, UP, I, S:Substitution | SS:SubstitutionSet)
    = '\n '\n 'Solution qid(string(I + 1, 10))
@@ -14725,19 +14725,19 @@ fmod MODULE-VARIANTS is
 
   eq getVariants(M, T, Subst | SubstS)
     = {getTerm(metaNormalize(M, T << Subst)), Subst, 0,none,true} | getVariants(M, T, SubstS) .
-  eq getVariants(M, T, empty) = {T, none, 0, none, true} .
+  eq getVariants(M, T, .SubstitutionSet) = {T, none, 0, none, true} .
 
   eq getSubstitutions(M, V ; VS, ODS, N)
     = < combineSubsts(
           getSubst(getSubstitutions1(M, V, ODS, N)),
           getSubst(getSubstitutions(M, VS, ODS, getIndex(getSubstitutions1(M, V, ODS, N))))) ;
         getIndex(getSubstitutions(M, VS, ODS, getIndex(getSubstitutions1(M, V, ODS, N)))) > .
-  eq getSubstitutions(M, none, ODS, N) = < empty ; N > .
+  eq getSubstitutions(M, none, ODS, N) = < .SubstitutionSet ; N > .
 
   eq combineSubsts(Subst | SubstS, Subst' | SubstS')
     = (Subst ; Subst') | combineSubsts(SubstS, Subst' | SubstS') | combineSubsts(Subst, SubstS') .
-  eq combineSubsts(SubstS, empty) = SubstS .
-  eq combineSubsts(empty, SubstS) = SubstS .
+  eq combineSubsts(SubstS, .SubstitutionSet) = SubstS .
+  eq combineSubsts(.SubstitutionSet, SubstS) = SubstS .
 
   ceq getSubstitutions1(M, V, op F : TpL -> Tp [id(T) AtS] . ODS, N)
     = < (V <- T) |
@@ -14745,7 +14745,7 @@ fmod MODULE-VARIANTS is
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- (F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]))
            | (V <- (F[T, qid("X@" + string(s N, 10) + ":" + string(Tp))]))
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
@@ -14755,7 +14755,7 @@ fmod MODULE-VARIANTS is
         if (assoc in AtS and-then not comm in AtS)
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- F[T, qid("X@" + string(N, 10) + ":" + string(Tp))])
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
@@ -14765,12 +14765,12 @@ fmod MODULE-VARIANTS is
         if (assoc in AtS and-then not comm in AtS)
            and-then sortLeq(M, leastSort(M, F[qid("X@" + string(N, 10) + ":" + string(Tp)), T]), getType(V))
         then (V <- F[qid("X@" + string(s N, 10) + ":" + string(Tp)), T])
-        else empty
+        else .SubstitutionSet
         fi |
         getSubst(getSubstitutions1(M, V, ODS, s s N)) ;
         getIndex(getSubstitutions1(M, V, ODS, s s N)) >
     if sortLeq(M, leastSort(M, T), getType(V)) . ----  ls[e] <= s ls[f(y,e)] <= s
-  eq getSubstitutions1(M, V, ODS, N) = < empty ; N > [owise] .
+  eq getSubstitutions1(M, V, ODS, N) = < .SubstitutionSet ; N > [owise] .
 
   ------------------------------------------------------------------------------
   ---- Given a module with axioms B where for each f we have B_f \in {A_f,C_f},
