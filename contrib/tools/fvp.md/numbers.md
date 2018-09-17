@@ -16,29 +16,12 @@ load ../meta/eqform.maude
 FVP Booleans
 ------------
 
+We'll re-use the Maude `Bool` sorts for the target of FVP predicates.
+This enables using concrete syntax in side conditions of rules.
+
 ```maude
 fmod FVP-BOOL-CTOR is
    protecting TRUTH-VALUE .
-endfm
-
-fmod FVP-BOOL is
-   protecting FVP-BOOL-CTOR .
-
-    var B : Bool .
-
-    op _/\_ : Bool Bool -> Bool [assoc comm] .
-    op _\/_ : Bool Bool -> Bool [assoc comm] .
-    ------------------------------------------
-    eq true  /\ B = B [variant] .
-    eq false \/ B = B [variant] .
-
-    eq false /\ B = false [variant] .
-    eq true  \/ B = true  [variant] .
-
-    op ~_ : Bool -> Bool .
-    ----------------------
-    eq ~ true  = false [variant] .
-    eq ~ false = true  [variant] .
 endfm
 ```
 
@@ -241,7 +224,13 @@ view Bool from TRIV to FVP-BOOL-CTOR is sort Elt to Bool . endv
 view Nat  from TRIV to FVP-NAT-SORT  is sort Elt to Nat  . endv
 view Int  from TRIV to FVP-INT-SORT  is sort Elt to Int  . endv
 
-fmod FVP-BOOL-EQFORM is protecting EQFORM-IMPL{Bool} . endfm
-fmod FVP-NAT-EQFORM  is protecting EQFORM-IMPL{Nat}  . endfm
-fmod FVP-INT-EQFORM  is protecting EQFORM-IMPL{Int}  . endfm
+fmod FVP-BOOL-EQFORM is
+   protecting EQFORM-IMPL{Bool} .
+
+    eq false ?= true = ff .
+    eq false != true = tt .
+endfm
+
+fmod FVP-NAT-EQFORM is protecting EQFORM-IMPL{Nat} . endfm
+fmod FVP-INT-EQFORM is protecting EQFORM-IMPL{Int} . endfm
 ```

@@ -1,10 +1,5 @@
 load ../../../contrib/tools/fvp/numbers.maude
 
-select FVP-BOOL .
-
-get variants B:Bool .
-get variants B:Bool /\ ~ B:Bool .
-
 select FVP-NAT .
 
 get variants N:Nat .
@@ -42,26 +37,33 @@ get variants N:Nat <= NzN:NzNat .
 select FVP-INT-PRED .
 
 get variants I:Int < NzI:NzInt .
-get variants NzI:Int < I:Int .
+get variants NzI:NzInt < I:Int .
 get variants   NzI:NzInt < - NzI':NzInt .
 get variants - NzI:NzInt <   NzI':NzInt .
 get variants - NzI:NzInt < - NzI':NzInt .
 
 get variants I:Int <= NzI:NzInt .
-get variants NzI:Int <= I:Int .
+get variants NzI:NzInt <= I:Int .
 get variants   NzI:NzInt <= - NzI':NzInt .
 get variants - NzI:NzInt <=   NzI':NzInt .
 get variants - NzI:NzInt <= - NzI':NzInt .
 
-fmod FVP-EQFORM-VIEWS-TEST is
-   protecting FVP-BOOL-EQFORM
-            + FVP-NAT-EQFORM
-            + FVP-NAT
-            + FVP-NAT-PRED .
-endfm
+select FVP-BOOL-EQFORM .
 
 reduce true ?= true .
+
+fmod TEST-FVP-NAT-EQFORM is
+   protecting FVP-NAT-EQFORM + FVP-NAT-PRED .
+endfm
+
 reduce N:Nat ?= N:Nat + N':Nat .
 reduce tt /\ N:Nat ?= NzN:Nat .
+
+fmod TEST-FVP-BOOL-EQFORM is
+    protecting FVP-BOOL-EQFORM + FVP-NAT-PRED .
+endfm
+
 reduce true ?= N:Nat < N':Nat .
 reduce true ?= N:Nat < (N':Nat + NzN':Nat) .
+reduce true ?= N:Nat <= N':Nat /\ false ?= N:Nat < N':Nat .
+reduce N:Nat <= N':Nat ?= N':Nat < N:Nat .

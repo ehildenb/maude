@@ -1,34 +1,4 @@
 ==========================================
-get variants in FVP-BOOL : B .
-
-Variant #1
-rewrites: 0
-Bool: #1:Bool
-B --> #1:Bool
-
-No more variants.
-rewrites: 0
-==========================================
-get variants in FVP-BOOL : B /\ ~ B .
-
-Variant #1
-rewrites: 0
-Bool: #1:Bool /\ ~ #1:Bool
-B --> #1:Bool
-
-Variant #2
-rewrites: 3
-Bool: false
-B --> true
-
-Variant #3
-rewrites: 3
-Bool: false
-B --> false
-
-No more variants.
-rewrites: 3
-==========================================
 get variants in FVP-NAT : N .
 
 Variant #1
@@ -471,58 +441,64 @@ NzI:NzInt --> - (#1:NzNat + #2:Nat)
 No more variants.
 rewrites: 7
 ==========================================
-get variants in FVP-INT-PRED : NzI:Int < I .
+get variants in FVP-INT-PRED : NzI:NzInt < I .
 
 Variant #1
 rewrites: 0
-Bool: #1:Int < #2:Int
-NzI:Int --> #1:Int
+Bool: #1:NzInt < #2:Int
+NzI:NzInt --> #1:NzInt
 I --> #2:Int
 
 Variant #2
-rewrites: 5
+rewrites: 6
 Bool: true
-NzI:Int --> - %1:NzNat
+NzI:NzInt --> - %1:NzNat
 I --> %2:Nat
 
 Variant #3
-rewrites: 5
+rewrites: 6
 Bool: false
-NzI:Int --> %2:Nat
+NzI:NzInt --> %2:NzNat
 I --> - %1:NzNat
 
 Variant #4
-rewrites: 5
+rewrites: 6
 Bool: %2:NzNat < %1:NzNat
-NzI:Int --> - %1:NzNat
+NzI:NzInt --> - %1:NzNat
 I --> - %2:NzNat
 
 Variant #5
-rewrites: 5
+rewrites: 6
 Bool: true
-NzI:Int --> %2:Nat
-I --> %1:NzNat + %2:Nat
+NzI:NzInt --> %2:NzNat
+I --> %1:NzNat + %2:NzNat
 
 Variant #6
-rewrites: 5
+rewrites: 6
 Bool: false
-NzI:Int --> %1:Nat + %2:Nat
-I --> %1:Nat
+NzI:NzInt --> %1:NzNat + %2:Nat
+I --> %1:NzNat
 
 Variant #7
-rewrites: 7
-Bool: true
-NzI:Int --> - (#1:NzNat + #2:NzNat)
-I --> - #2:NzNat
+rewrites: 6
+Bool: false
+NzI:NzInt --> %2:NzNat + %1:Nat
+I --> %1:Nat
 
 Variant #8
-rewrites: 7
+rewrites: 8
+Bool: true
+NzI:NzInt --> - (#1:NzNat + #2:NzNat)
+I --> - #2:NzNat
+
+Variant #9
+rewrites: 8
 Bool: false
-NzI:Int --> - #1:NzNat
+NzI:NzInt --> - #1:NzNat
 I --> - (#1:NzNat + #2:Nat)
 
 No more variants.
-rewrites: 7
+rewrites: 8
 ==========================================
 get variants in FVP-INT-PRED : NzI:NzInt < - NzI':NzInt .
 
@@ -772,54 +748,54 @@ NzI:NzInt --> - (#1:NzNat + #2:NzNat)
 No more variants.
 rewrites: 8
 ==========================================
-get variants in FVP-INT-PRED : NzI:Int <= I .
+get variants in FVP-INT-PRED : NzI:NzInt <= I .
 
 Variant #1
 rewrites: 0
-Bool: #1:Int <= #2:Int
-NzI:Int --> #1:Int
+Bool: #1:NzInt <= #2:Int
+NzI:NzInt --> #1:NzInt
 I --> #2:Int
 
 Variant #2
 rewrites: 5
 Bool: true
-NzI:Int --> - %1:NzNat
+NzI:NzInt --> - %1:NzNat
 I --> %2:Nat
 
 Variant #3
 rewrites: 5
 Bool: false
-NzI:Int --> %2:Nat
+NzI:NzInt --> %2:NzNat
 I --> - %1:NzNat
 
 Variant #4
 rewrites: 5
 Bool: %2:NzNat <= %1:NzNat
-NzI:Int --> - %1:NzNat
+NzI:NzInt --> - %1:NzNat
 I --> - %2:NzNat
 
 Variant #5
 rewrites: 5
 Bool: true
-NzI:Int --> %1:Nat
-I --> %1:Nat + %2:Nat
+NzI:NzInt --> %1:NzNat
+I --> %1:NzNat + %2:Nat
 
 Variant #6
 rewrites: 5
 Bool: false
-NzI:Int --> %1:NzNat + %2:Nat
+NzI:NzInt --> %1:NzNat + %2:Nat
 I --> %2:Nat
 
 Variant #7
 rewrites: 7
 Bool: true
-NzI:Int --> - (#1:NzNat + #2:Nat)
+NzI:NzInt --> - (#1:NzNat + #2:Nat)
 I --> - #1:NzNat
 
 Variant #8
 rewrites: 7
 Bool: false
-NzI:Int --> - #2:NzNat
+NzI:NzInt --> - #2:NzNat
 I --> - (#1:NzNat + #2:NzNat)
 
 No more variants.
@@ -1014,23 +990,32 @@ NzI':NzInt --> - %2:NzNat
 No more variants.
 rewrites: 11
 ==========================================
-reduce in FVP-EQFORM-VIEWS-TEST : true ?= true .
+reduce in FVP-BOOL-EQFORM : true ?= true .
 rewrites: 0
 result PosEqLit{Bool}: true ?= true
 ==========================================
-reduce in FVP-EQFORM-VIEWS-TEST : N:Nat ?= N:Nat + N':Nat .
+reduce in TEST-FVP-NAT-EQFORM : N:Nat ?= N:Nat + N':Nat .
 rewrites: 0
 result PosEqLit{Nat}: N:Nat ?= N:Nat + N':Nat
 ==========================================
-reduce in FVP-EQFORM-VIEWS-TEST : N:Nat ?= NzN:Nat .
+reduce in TEST-FVP-NAT-EQFORM : N:Nat ?= NzN:Nat .
 rewrites: 0
 result PosEqLit{Nat}: N:Nat ?= NzN:Nat
 ==========================================
-reduce in FVP-EQFORM-VIEWS-TEST : true ?= N:Nat < N':Nat .
+reduce in TEST-FVP-BOOL-EQFORM : true ?= N:Nat < N':Nat .
 rewrites: 0
 result PosEqLit{Bool}: true ?= N:Nat < N':Nat
 ==========================================
-reduce in FVP-EQFORM-VIEWS-TEST : true ?= N:Nat < N':Nat + NzN':Nat .
+reduce in TEST-FVP-BOOL-EQFORM : true ?= N:Nat < N':Nat + NzN':Nat .
 rewrites: 0
 result PosEqLit{Bool}: true ?= N:Nat < N':Nat + NzN':Nat
+==========================================
+reduce in TEST-FVP-BOOL-EQFORM : true ?= N:Nat <= N':Nat /\ false ?= N:Nat <
+    N':Nat .
+rewrites: 0
+result PosEqConj{Bool}: true ?= N:Nat <= N':Nat /\ false ?= N:Nat < N':Nat
+==========================================
+reduce in TEST-FVP-BOOL-EQFORM : N:Nat <= N':Nat ?= N':Nat < N:Nat .
+rewrites: 0
+result PosEqLit{Bool}: N:Nat <= N':Nat ?= N':Nat < N:Nat
 Bye.
