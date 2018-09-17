@@ -189,6 +189,15 @@ fmod EQFORM-IMPL{X :: TRIV} is
   op _\/_ : NoTrueForm{X} NoTrueForm{X} -> NoTrueForm{X} [ctor ditto] .
   op _\/_ : NoFalseForm{X} NoFalseForm{X} -> NoFalseForm{X} [ctor ditto] .
   op _\/_ : Form{X} Form{X} -> Form{X} [ctor ditto] .
+
+  vars F F' : Form{X} .
+
+  --- Implication
+  op _=>_  : Form{X} Form{X} -> Form{X} .
+  op _<=>_ : Form{X} Form{X} -> Form{X} .
+  ---------------------------------------
+  eq F  => F' = (~ F) \/ F' .
+  eq F <=> F' = (F => F') /\ (F' => F) .
 endfm
 
 view Term from TRIV to META-TERM is sort Elt to Term . endv
