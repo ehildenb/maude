@@ -11,15 +11,15 @@ rewrites: 4
 result Bool: true
 ==========================================
 reduce in CTERM-SET : ('_*_['Y:Nat,'X:Nat] st 'Y:Nat ?= '_*_['X:Nat,'Z:NzNat])
-    ?= ('_+_['Y:Nat,'X:Nat] st 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat]) == 'Y:Nat ?=
+    ?= ('_+_['Y:Nat,'X:Nat] st 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat]) == ('Y:Nat ?=
     '_*_['X:Nat,'Z:NzNat] /\ 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat] /\ '_*_['Y:Nat,
-    'X:Nat] ?= '_+_['Y:Nat,'X:Nat] .
+    'X:Nat] ?= '_+_['Y:Nat,'X:Nat]) .
 rewrites: 14
 result Bool: true
 ==========================================
 reduce in CTERM-SET : '_*_['Y:Nat,'X:Nat] ?= ('_+_['Y:Nat,'X:Nat] st 'Y:Nat ?=
-    '_+_['X:Nat,'Z:NzNat]) == 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat] /\ '_*_['Y:Nat,
-    'X:Nat] ?= '_+_['Y:Nat,'X:Nat] .
+    '_+_['X:Nat,'Z:NzNat]) == ('Y:Nat ?= '_+_['X:Nat,'Z:NzNat] /\ '_*_['Y:Nat,
+    'X:Nat] ?= '_+_['Y:Nat,'X:Nat]) .
 rewrites: 10
 result Bool: true
 Bye.

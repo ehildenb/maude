@@ -56,8 +56,7 @@ fmod MYLISTNAT is
 endfm
 
 fmod TEST-PURIFY is
-    protecting FOFORM .
-    protecting FOFORMSET .
+    protecting EQFORM .
     protecting PURIFICATION .
     op natMultMod  : -> Module . eq natMultMod  = upModule('FVP-NAT-MULT, true) .
     op natOrderMod : -> Module . eq natOrderMod = upModule('FVP-NAT-PRED, true) .
