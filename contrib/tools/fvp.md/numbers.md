@@ -156,28 +156,19 @@ Predicates over Numbers
 ```maude
 fmod FVP-NAT-PRED is
    protecting FVP-NAT .
-   protecting FVP-BOOL .
+   protecting FVP-BOOL-CTOR .
 
     vars   N N' :   Nat .
     var  NzN    : NzNat .
 
-    op _==_  : Nat Nat -> Bool [comm] .
-    op _=/=_ : Nat Nat -> Bool [comm] .
-    -----------------------------------
-    eq N       == N = tt [variant] .
-    eq N + NzN == N = ff [variant] .
-
-    eq N =/= N' = ~ (N == N') [variant] .
-
-    op _<_ : Nat Nat -> Bool .
-    --------------------------
-    eq N      < N + NzN = tt [variant] .
-    eq N + N' < N       = ff [variant] .
-
+    op _<_  : Nat Nat -> Bool .
     op _<=_ : Nat Nat -> Bool .
     ---------------------------
-    eq N + NzN <= N      = ff [variant] .
-    eq N       <= N + N' = tt [variant] .
+    eq N <  N + NzN  = tt [variant] .
+    eq N <= N +   N' = tt [variant] .
+
+    eq N +   N' <  N = ff [variant] .
+    eq N + NzN  <= N = ff [variant] .
 endfm
 ```
 
@@ -189,14 +180,6 @@ fmod FVP-INT-PRED is
     vars   N   N' :   Nat .
     var  NzN NzN' : NzNat .
     vars   I   I' :   Int .
-
-    op _==_  : Int Int -> Bool [ditto] .
-    op _=/=_ : Int Int -> Bool [ditto] .
-    ------------------------------------
-    eq - NzN ==   NzN' = ff          [variant] .
-    eq - NzN == - NzN' = NzN == NzN' [variant] .
-
-    eq I =/= I' = ~ (I == I') [variant] .
 
     op _<_  : Int Int -> Bool [ditto] .
     op _<=_ : Int Int -> Bool [ditto] .

@@ -332,75 +332,6 @@ NzN:NzNat --> 1
 No more variants.
 rewrites: 2
 ==========================================
-get variants in FVP-NAT-PRED : N == N + NzN .
-
-Variant #1
-rewrites: 1
-Bool: ff
-N --> #1:Nat
-NzN --> #2:NzNat
-
-No more variants.
-rewrites: 1
-==========================================
-get variants in FVP-NAT-PRED : N == NzN .
-
-Variant #1
-rewrites: 0
-Bool: #1:Nat == #2:NzNat
-N --> #1:Nat
-NzN --> #2:NzNat
-
-Variant #2
-rewrites: 3
-Bool: tt
-N --> %1:NzNat
-NzN --> %1:NzNat
-
-Variant #3
-rewrites: 3
-Bool: ff
-N --> %1:Nat
-NzN --> %1:Nat + %2:NzNat
-
-Variant #4
-rewrites: 3
-Bool: ff
-N --> %1:NzNat + %2:NzNat
-NzN --> %1:NzNat
-
-No more variants.
-rewrites: 3
-==========================================
-get variants in FVP-NAT-PRED : N =/= N' .
-
-Variant #1
-rewrites: 1
-Bool: ~ (#1:Nat == #2:Nat)
-N --> #1:Nat
-N' --> #2:Nat
-
-Variant #2
-rewrites: 7
-Bool: ff
-N --> %1:Nat
-N' --> %1:Nat
-
-Variant #3
-rewrites: 7
-Bool: tt
-N --> %1:Nat
-N' --> %1:Nat + %2:NzNat
-
-Variant #4
-rewrites: 7
-Bool: tt
-N --> %1:Nat + %2:NzNat
-N' --> %1:Nat
-
-No more variants.
-rewrites: 7
-==========================================
 get variants in FVP-NAT-PRED : NzN < N + NzN .
 
 Variant #1
@@ -468,188 +399,24 @@ NzN --> #2:NzNat
 
 Variant #2
 rewrites: 3
-Bool: ff
-N --> %1:NzNat + %2:NzNat
-NzN --> %1:NzNat
-
-Variant #3
-rewrites: 3
 Bool: tt
 N --> %1:NzNat
 NzN --> %2:Nat + %1:NzNat
 
-Variant #4
+Variant #3
 rewrites: 3
 Bool: tt
 N --> %1:Nat
 NzN --> %1:Nat + %2:NzNat
 
+Variant #4
+rewrites: 3
+Bool: ff
+N --> %1:NzNat + %2:NzNat
+NzN --> %1:NzNat
+
 No more variants.
 rewrites: 3
-==========================================
-get variants in FVP-INT-PRED : I == I + NzI:NzInt .
-
-Variant #1
-rewrites: 0
-Bool: #1:Int == #1:Int + #2:NzInt
-I --> #1:Int
-NzI:NzInt --> #2:NzInt
-
-Variant #2
-rewrites: 6
-Bool: ff
-I --> %1:Nat
-NzI:NzInt --> %2:NzNat
-
-Variant #3
-rewrites: 6
-Bool: ff
-I --> - %2:NzNat
-NzI:NzInt --> - %1:NzNat
-
-Variant #4
-rewrites: 6
-Bool: - %3:Nat == %1:Nat + - (%2:NzNat + %1:Nat + %3:Nat)
-I --> %1:Nat + - (%2:NzNat + %1:Nat + %3:Nat)
-NzI:NzInt --> %2:NzNat
-
-Variant #5
-rewrites: 6
-Bool: %1:NzNat == - %2:Nat
-I --> %1:NzNat
-NzI:NzInt --> - (%1:NzNat + %2:Nat)
-
-Variant #6
-rewrites: 12
-Bool: ff
-I --> - (#1:NzNat + #2:NzNat)
-NzI:NzInt --> #1:NzNat
-
-Variant #7
-rewrites: 12
-Bool: 0 == #1:Nat + - (#2:NzNat + #1:Nat)
-I --> #1:Nat + - (#2:NzNat + #1:Nat)
-NzI:NzInt --> #2:NzNat
-
-Variant #8
-rewrites: 12
-Bool: ff
-I --> #1:NzNat
-NzI:NzInt --> - (#1:NzNat + #2:NzNat)
-
-Variant #9
-rewrites: 12
-Bool: ff
-I --> #1:NzNat
-NzI:NzInt --> - #1:NzNat
-
-No more variants.
-rewrites: 12
-==========================================
-get variants in FVP-INT-PRED : I == NzI:NzInt .
-
-Variant #1
-rewrites: 0
-Bool: #1:Int == #2:NzInt
-I --> #1:Int
-NzI:NzInt --> #2:NzInt
-
-Variant #2
-rewrites: 6
-Bool: ff
-I --> %2:NzNat
-NzI:NzInt --> - %1:NzNat
-
-Variant #3
-rewrites: 6
-Bool: ff
-I --> - %1:NzNat
-NzI:NzInt --> %2:NzNat
-
-Variant #4
-rewrites: 6
-Bool: %1:NzNat == %2:NzNat
-I --> - %1:NzNat
-NzI:NzInt --> - %2:NzNat
-
-Variant #5
-rewrites: 6
-Bool: tt
-I --> %1:NzNat
-NzI:NzInt --> %1:NzNat
-
-Variant #6
-rewrites: 6
-Bool: ff
-I --> %2:Nat
-NzI:NzInt --> %1:NzNat + %2:Nat
-
-Variant #7
-rewrites: 6
-Bool: ff
-I --> %1:NzNat + %2:NzNat
-NzI:NzInt --> %2:NzNat
-
-Variant #8
-rewrites: 9
-Bool: tt
-I --> - #1:NzNat
-NzI:NzInt --> - #1:NzNat
-
-Variant #9
-rewrites: 9
-Bool: ff
-I --> - #2:NzNat
-NzI:NzInt --> - (#1:NzNat + #2:NzNat)
-
-Variant #10
-rewrites: 9
-Bool: ff
-I --> - (#1:NzNat + #2:NzNat)
-NzI:NzInt --> - #2:NzNat
-
-No more variants.
-rewrites: 9
-==========================================
-get variants in FVP-INT-PRED : NzN' == - NzN .
-
-Variant #1
-rewrites: 1
-Bool: ff
-NzN' --> #1:NzNat
-NzN --> #2:NzNat
-
-No more variants.
-rewrites: 1
-==========================================
-get variants in FVP-INT-PRED : N =/= N' .
-
-Variant #1
-rewrites: 1
-Bool: ~ (#1:Nat == #2:Nat)
-N --> #1:Nat
-N' --> #2:Nat
-
-Variant #2
-rewrites: 7
-Bool: ff
-N --> %1:Nat
-N' --> %1:Nat
-
-Variant #3
-rewrites: 7
-Bool: tt
-N --> %2:Nat
-N' --> %1:NzNat + %2:Nat
-
-Variant #4
-rewrites: 7
-Bool: tt
-N --> %1:NzNat + %2:Nat
-N' --> %2:Nat
-
-No more variants.
-rewrites: 7
 ==========================================
 get variants in FVP-INT-PRED : I < NzI:NzInt .
 
@@ -974,33 +741,33 @@ NzI:NzInt --> - %2:NzNat
 
 Variant #5
 rewrites: 6
-Bool: ff
-I --> %1:NzNat + %2:NzNat
-NzI:NzInt --> %2:NzNat
-
-Variant #6
-rewrites: 6
 Bool: tt
 I --> %1:NzNat
 NzI:NzInt --> %1:NzNat + %2:Nat
 
-Variant #7
+Variant #6
 rewrites: 6
 Bool: tt
 I --> %1:Nat
 NzI:NzInt --> %2:NzNat + %1:Nat
 
-Variant #8
-rewrites: 8
+Variant #7
+rewrites: 6
 Bool: ff
-I --> - #2:NzNat
-NzI:NzInt --> - (#1:NzNat + #2:NzNat)
+I --> %1:NzNat + %2:NzNat
+NzI:NzInt --> %2:NzNat
 
-Variant #9
+Variant #8
 rewrites: 8
 Bool: tt
 I --> - (#1:NzNat + #2:Nat)
 NzI:NzInt --> - #1:NzNat
+
+Variant #9
+rewrites: 8
+Bool: ff
+I --> - #2:NzNat
+NzI:NzInt --> - (#1:NzNat + #2:NzNat)
 
 No more variants.
 rewrites: 8
@@ -1033,27 +800,27 @@ I --> - %2:NzNat
 
 Variant #5
 rewrites: 5
-Bool: ff
-NzI:Int --> %1:NzNat + %2:Nat
-I --> %2:Nat
-
-Variant #6
-rewrites: 5
 Bool: tt
 NzI:Int --> %1:Nat
 I --> %1:Nat + %2:Nat
 
-Variant #7
-rewrites: 7
+Variant #6
+rewrites: 5
 Bool: ff
-NzI:Int --> - #2:NzNat
-I --> - (#1:NzNat + #2:NzNat)
+NzI:Int --> %1:NzNat + %2:Nat
+I --> %2:Nat
 
-Variant #8
+Variant #7
 rewrites: 7
 Bool: tt
 NzI:Int --> - (#1:NzNat + #2:Nat)
 I --> - #1:NzNat
+
+Variant #8
+rewrites: 7
+Bool: ff
+NzI:Int --> - #2:NzNat
+I --> - (#1:NzNat + #2:NzNat)
 
 No more variants.
 rewrites: 7
@@ -1086,15 +853,15 @@ NzI':NzInt --> - %1:NzNat
 
 Variant #5
 rewrites: 8
-Bool: ff
-NzI:NzInt --> - #2:NzNat
-NzI':NzInt --> #1:NzNat + #2:NzNat
-
-Variant #6
-rewrites: 8
 Bool: tt
 NzI:NzInt --> - (#1:NzNat + #2:Nat)
 NzI':NzInt --> #1:NzNat
+
+Variant #6
+rewrites: 8
+Bool: ff
+NzI:NzInt --> - #2:NzNat
+NzI':NzInt --> #1:NzNat + #2:NzNat
 
 Variant #7
 rewrites: 8
@@ -1104,15 +871,15 @@ NzI':NzInt --> - #2:NzNat
 
 Variant #8
 rewrites: 8
-Bool: ff
-NzI:NzInt --> #1:NzNat + #2:NzNat
-NzI':NzInt --> - #2:NzNat
-
-Variant #9
-rewrites: 8
 Bool: tt
 NzI:NzInt --> #1:NzNat
 NzI':NzInt --> - (#1:NzNat + #2:Nat)
+
+Variant #9
+rewrites: 8
+Bool: ff
+NzI:NzInt --> #1:NzNat + #2:NzNat
+NzI':NzInt --> - #2:NzNat
 
 No more variants.
 rewrites: 8
@@ -1145,15 +912,15 @@ NzI':NzInt --> %2:NzInt
 
 Variant #5
 rewrites: 8
-Bool: ff
-NzI:NzInt --> #2:NzNat
-NzI':NzInt --> - (#1:NzNat + #2:NzNat)
-
-Variant #6
-rewrites: 8
 Bool: tt
 NzI:NzInt --> #1:NzNat + #2:Nat
 NzI':NzInt --> - #1:NzNat
+
+Variant #6
+rewrites: 8
+Bool: ff
+NzI:NzInt --> #2:NzNat
+NzI':NzInt --> - (#1:NzNat + #2:NzNat)
 
 Variant #7
 rewrites: 8
@@ -1163,15 +930,15 @@ NzI':NzInt --> - #1:NzNat
 
 Variant #8
 rewrites: 8
-Bool: ff
-NzI:NzInt --> - (#1:NzNat + #2:NzNat)
-NzI':NzInt --> #2:NzNat
-
-Variant #9
-rewrites: 8
 Bool: tt
 NzI:NzInt --> - #1:NzNat
 NzI':NzInt --> #1:NzNat + #2:Nat
+
+Variant #9
+rewrites: 8
+Bool: ff
+NzI:NzInt --> - (#1:NzNat + #2:NzNat)
+NzI':NzInt --> #2:NzNat
 
 No more variants.
 rewrites: 8
@@ -1204,15 +971,15 @@ NzI':NzInt --> - %1:NzNat
 
 Variant #5
 rewrites: 9
-Bool: ff
-NzI:NzInt --> #2:NzNat
-NzI':NzInt --> #1:NzNat + #2:NzNat
-
-Variant #6
-rewrites: 9
 Bool: tt
 NzI:NzInt --> #1:NzNat + #2:Nat
 NzI':NzInt --> #1:NzNat
+
+Variant #6
+rewrites: 9
+Bool: ff
+NzI:NzInt --> #2:NzNat
+NzI':NzInt --> #1:NzNat + #2:NzNat
 
 Variant #7
 rewrites: 9
@@ -1234,15 +1001,15 @@ NzI':NzInt --> - #2:NzNat
 
 Variant #10
 rewrites: 11
-Bool: ff
-NzI:NzInt --> - (%1:NzNat + %2:NzNat)
-NzI':NzInt --> - %2:NzNat
-
-Variant #11
-rewrites: 11
 Bool: tt
 NzI:NzInt --> - %1:NzNat
 NzI':NzInt --> - (%1:NzNat + %2:Nat)
+
+Variant #11
+rewrites: 11
+Bool: ff
+NzI:NzInt --> - (%1:NzNat + %2:NzNat)
+NzI':NzInt --> - %2:NzNat
 
 No more variants.
 rewrites: 11

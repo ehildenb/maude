@@ -13,7 +13,7 @@ Version 1 - RL
 
 ```maude
 fmod DIJKSTRA-DATA is
-  protecting FVP-BOOL .
+  protecting FVP-BOOL-CTOR + TRUTH .
 
   --- Processes
   sort WProc 2Proc NCProc CProc Proc .
@@ -47,7 +47,6 @@ fmod DIJKSTRA-DATA is
   op  mt     : -> WProcSet .
 
   --- Auxiliary Operators
-  op _==_  : Bool Bool -> Bool .
   op safe? : ProcSet -> Bool .
   ---
   eq safe?(P:WProcSet)       = tt .
@@ -73,8 +72,8 @@ mod DIJKSTRA is
   rl [chk-turn1]  : < {0,try} | {1,try} PS  > => < {0,try} | {1,upt} PS > .
   rl [set-turn1]  : <  P      | {1,upt} PS  > => < {1,upf} |  P      PS > .
   rl [set-flag1]  : <  P      | {1,upf} PS  > => <  P      | {2,chf} PS > .
- crl [go-crit1]   : <  P      | {2,chf} PS  > => <  P      | {2,crt} PS > if (safe?(P PS) == tt) = tt .
- crl [fail-crit1] : <  P      | {2,chf} PS  > => <  P      | {2,ext} PS > if (safe?(P PS) == ff) = tt .
+ crl [go-crit1]   : <  P      | {2,chf} PS  > => <  P      | {2,crt} PS > if safe?(P PS) == tt .
+ crl [fail-crit1] : <  P      | {2,chf} PS  > => <  P      | {2,ext} PS > if safe?(P PS) == ff .
   rl [done-crit1] : <  P      | {2,crt} PS  > => <  P      | {2,ext} PS > .
   rl [exit-crit1] : <  P      | {2,ext} PS  > => <  P      | {0,try} PS > .
 

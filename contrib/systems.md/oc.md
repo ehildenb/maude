@@ -30,7 +30,7 @@ Here we extend FVP numbers with pairs and lists.
 load ../tools/fvp/numbers.maude
 
 fmod MAYBE-FVP-NAT is
-   protecting FVP-NAT-PRED .
+   protecting FVP-NAT-PRED + TRUTH .
 
     sort MaybeNat .
     ---------------
@@ -41,14 +41,6 @@ fmod MAYBE-FVP-NAT is
 
     op null : -> MaybeNat [ctor] .
     ------------------------------
-
-    op _=/=_ : MaybeNat MaybeNat -> Bool [ditto] .
-    op _==_  : MaybeNat MaybeNat -> Bool [ditto] .
-    ----------------------------------------------
-    eq null == N    = ff [variant] .
-    eq null == null = tt [variant] .
-
-    eq MN =/= MN' = ~ (MN == MN') [variant] .
 endfm
 
 fmod ASSOC-LIST { X :: TRIV } is
@@ -69,8 +61,8 @@ fmod ASSOC-LIST { X :: TRIV } is
     eq head(N L) = N [variant] .
 endfm
 
-view Nat  from TRIV to FVP-NAT-SORT is sort Elt to Nat  . endv
-view Bool from TRIV to     FVP-BOOL is sort Elt to Bool . endv
+view Bool from TRIV to FVP-BOOL-CTOR is sort Elt to Bool . endv
+view Nat  from TRIV to FVP-NAT-CTOR  is sort Elt to Nat  . endv
 
 fmod ASSOC-LIST-FVP-NAT is
    protecting FVP-NAT .
@@ -80,7 +72,7 @@ fmod ASSOC-LIST-FVP-NAT is
 endfm
 
 fmod ASSOC-LIST-FVP-BOOL is
-   protecting FVP-BOOL .
+   protecting FVP-BOOL-CTOR .
    protecting ASSOC-LIST{Bool} * ( sort NeList{Bool} to NeBoolList
                                  , sort   List{Bool} to   BoolList
                                  ) .

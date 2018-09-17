@@ -8,7 +8,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
-rewrites: 124
+rewrites: 114
 result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
     'NCProc ; 'NCProcSet ; 'Proc ; 'ProcSet ; 'State ; 'WProc ; 'WProcSet .)
 subsort '2Proc < '2ProcSet .
@@ -22,15 +22,9 @@ subsort 'Proc < 'ProcSet .
 subsort 'WProc < 'NCProc .
 subsort 'WProc < 'WProcSet .
 subsort 'WProcSet < 'NCProcSet .
-eq '_/\_['ff.Bool,'B:Bool] = 'ff.Bool [variant] .
-eq '_/\_['tt.Bool,'B:Bool] = 'B:Bool [variant] .
-eq '_\/_['ff.Bool,'B:Bool] = 'B:Bool [variant] .
-eq '_\/_['tt.Bool,'B:Bool] = 'tt.Bool [variant] .
 eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
 eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
 eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
-eq '~_['ff.Bool] = 'tt.Bool [variant] .
-eq '~_['tt.Bool] = 'ff.Bool [variant] .
 rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
     'stop)] .
 rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
@@ -65,9 +59,14 @@ rl '<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]] => '<_>['_|_['`{2`,ext`}.2Proc,
 rl '<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]] => '<_>['_|_['`{0`,try`}.WProc,
     'PS:ProcSet]] [label('exit-crit2)] .
 op '<_> : 'Conf -> 'State [ctor] .
-op '_/\_ : 'Bool 'Bool -> 'Bool [assoc comm] .
-op '_==_ : 'Bool 'Bool -> 'Bool [none] .
-op '_\/_ : 'Bool 'Bool -> 'Bool [assoc comm] .
+op '_=/=_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+    id-hook('EqualitySymbol, nil) 
+    term-hook('equalTerm, 'false.Bool) 
+    term-hook('notEqualTerm, 'true.Bool))] .
+op '_==_ : 'Universal 'Universal -> 'Bool [prec(51) poly(1 2) special(
+    id-hook('EqualitySymbol, nil) 
+    term-hook('equalTerm, 'true.Bool) 
+    term-hook('notEqualTerm, 'false.Bool))] .
 op '__ : '2ProcSet '2ProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : '2ProcSet 'WProcSet -> '2ProcSet [assoc comm ctor id('mt.WProcSet)] .
 op '__ : 'NCProcSet 'NCProcSet -> 'NCProcSet [assoc comm ctor id('mt.WProcSet)]
@@ -83,11 +82,19 @@ op '`{1`,upt`} : nil -> 'WProc [ctor] .
 op '`{2`,chf`} : nil -> '2Proc [ctor] .
 op '`{2`,crt`} : nil -> 'CProc [ctor] .
 op '`{2`,ext`} : nil -> '2Proc [ctor] .
+op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
 op 'ff : nil -> 'Bool [ctor] .
+op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0)
+    special(
+    id-hook('BranchSymbol, nil) 
+    term-hook('1, 'true.Bool) 
+    term-hook('2, 'false.Bool))] .
 op 'mt : nil -> 'WProcSet [none] .
 op 'safe? : 'ProcSet -> 'Bool [none] .
+op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
 op 'tt : nil -> 'Bool [ctor] .
-op '~_ : 'Bool -> 'Bool [none] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
@@ -156,7 +163,7 @@ op 'tt : nil -> 'Bool* [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
     stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
-rewrites: 128
+rewrites: 118
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
