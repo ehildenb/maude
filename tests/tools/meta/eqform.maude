@@ -22,6 +22,13 @@ fmod EQFORM-TEST is
   eq f2 = (f1 /\ ~ e) /\ (d \/ tt) .
 endfm
 
+--- substitutions
+reduce ('_+_['1.Nat, 'X:Nat] ?= '_*_['Y:Nat, 'X:Nat] /\ '_<_['Y:Nat, 'Z:Nat] != 'true.Bool) << ('Y:Nat <- '3.Nat)
+    == ('_+_['1.Nat, 'X:Nat] ?= '_*_['3.Nat, 'X:Nat] /\ '_<_['3.Nat, 'Z:Nat] != 'true.Bool) .
+
+reduce ('_+_['1.Nat, 'X:Nat] != '_*_['Y:Nat, 'X:Nat] \/ '_<_['Y:Nat, 'Z:Nat] != 'true.Bool) << ('X:Nat <- '7.Nat)
+    == ('_+_['1.Nat, '7.Nat] != '_*_['Y:Nat, '7.Nat] \/ '_<_['Y:Nat, 'Z:Nat] != 'true.Bool) .
+
 --- sort check
 reduce f1 :: Form .
 reduce f2 :: Form .

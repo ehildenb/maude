@@ -92,6 +92,8 @@ base sort which helps ensure preregularity in complex cases (this gives
 29 sorts generated for both the list and set functor assuming the 14 above).
 
 ```maude
+load terms.maude
+
 set include BOOL off .
 
 fmod EQFORM-IMPL{X :: TRIV} is
@@ -192,6 +194,7 @@ endfm
 view Term from TRIV to META-TERM is sort Elt to Term . endv
 
 fmod EQFORM is
+   pr SUBSTITUTION-SET .
    pr EQFORM-IMPL{Term} * (
       --- Map Formulas Over Equalities
       sort PosEqLit{Term} to PosEqLit,
@@ -238,6 +241,21 @@ fmod EQFORM is
       sort NoFalseForm{Term} to NoFalseForm,
       sort NormForm{Term} to NormForm,
       sort Form{Term} to Form) .
+
+  vars T T' : Term . vars F F' : Form . var SUB : Substitution .
+
+  op _<<_ : Form Substitution -> [Form] .
+  ---------------------------------------
+  eq tt << SUB = tt .
+  eq ff << SUB = ff .
+
+  eq (T ?= T') << SUB = (T << SUB) ?= (T' << SUB) .
+  eq (T != T') << SUB = (T << SUB) != (T' << SUB) .
+
+  eq (~ F) << SUB = ~ (F << SUB) .
+
+ ceq (F /\ F') << SUB = (F << SUB) /\ (F' << SUB) if F =/= tt /\ F' =/= tt .
+ ceq (F \/ F') << SUB = (F << SUB) \/ (F' << SUB) if F =/= ff /\ F' =/= ff .
 endfm
 
 fmod EQFORM-NNF is
