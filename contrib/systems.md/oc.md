@@ -36,9 +36,6 @@ fmod MAYBE-FVP-NAT is
     ---------------
     subsort Nat < MaybeNat .
 
-    var   N     : Nat .
-    vars MN MN' : MaybeNat .
-
     op null : -> MaybeNat [ctor] .
     ------------------------------
 endfm
@@ -122,8 +119,8 @@ mod FT-COMM is
   rl [rec-ack-1] :  [p :: n      | p    | pa?       | l   :: q] => [p     :: nil  | null  | nullp     | l    :: q    ] .
   rl [rec-ack-2] :  [p :: n m    | p    | pa?       | l   :: q] => [p + 1 :: m    | null  | [m,p + 1] | l    :: q    ] .
   rl [rec-ack-+] :  [p :: n m l' | p    | pa?       | l   :: q] => [p + 1 :: m l' | null  | [m,p + 1] | l    :: q    ] .
- crl [resend-1] :   [p :: n      | n?   | nullp     | l1  :: m] => [p     :: n    | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
- crl [resend-+] :   [p :: n l    | n?   | nullp     | l1  :: m] => [p     :: n l  | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
+ crl [resend-1] :   [p :: n      | n?   | nullp     | l1  :: m] => [p     :: n    | null  | [n,p]     | l1   :: m    ] if n? =/= p .
+ crl [resend-+] :   [p :: n l    | n?   | nullp     | l1  :: m] => [p     :: n l  | null  | [n,p]     | l1   :: m    ] if n? =/= p .
   rl [resend-ack] : [p :: l      | n?   | [n,q]     | l'  :: q] => [p     :: l    | q     | nullp     | l'   :: q    ] .
   rl [drop-snd] :   [n :: l1     | n?   | pa        | l2  :: m] => [n     :: l1   | n?    | nullp     | l2   :: m    ] .
   rl [drop-ack] :   [n :: l1     | k    | pa?       | l2  :: m] => [n     :: l1   | null  | pa?       | l2   :: m    ] .

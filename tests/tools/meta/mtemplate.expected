@@ -104,9 +104,9 @@ subsort 'Proc < 'ProcSet .
 subsort 'WProc < 'NCProc .
 subsort 'WProc < 'WProcSet .
 subsort 'WProcSet < 'NCProcSet .
-eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
-eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
-eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+eq 'safe?['P:2ProcSet] = 'false.Bool [none] .
+eq 'safe?['P:WProcSet] = 'true.Bool [none] .
+eq 'safe?['__['C:Proc,'P:ProcSet]] = 'false.Bool [none] .
 rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
     'stop)] .
 rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
@@ -162,7 +162,6 @@ op '`{2`,crt`} : nil -> 'CProc [ctor] .
 op '`{2`,ext`} : nil -> '2Proc [ctor] .
 op 'false : nil -> 'Bool [ctor special(
     id-hook('SystemFalse, nil))] .
-op 'ff : nil -> 'Bool [ctor] .
 op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0)
     special(
     id-hook('BranchSymbol, nil) 
@@ -172,13 +171,12 @@ op 'mt : nil -> 'WProcSet [none] .
 op 'safe? : 'ProcSet -> 'Bool [none] .
 op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
-op 'tt : nil -> 'Bool [ctor] .
 crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'tt.Bool] = 'true.Bool [label('go-crit1)] .
+    'PS:ProcSet]],'true.Bool] = 'true.Bool [label('go-crit1)] .
 crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'ff.Bool] = 'true.Bool [label('fail-crit1)] .
+    'PS:ProcSet]],'false.Bool] = 'true.Bool [label('fail-crit1)] .
 ==========================================
 reduce in MODULE-TEMPLATE : asTemplate(upModule('BAKERY-FVP, true)) .
 rewrites: 3
@@ -292,7 +290,6 @@ result SModule: mod 'DIJKSTRA is
   op '`{2`,ext`} : nil -> '2Proc [ctor] .
   op 'false : nil -> 'Bool [ctor special(
     id-hook('SystemFalse, nil))] .
-  op 'ff : nil -> 'Bool [ctor] .
   op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0)
     special(
     id-hook('BranchSymbol, nil) 
@@ -302,11 +299,10 @@ result SModule: mod 'DIJKSTRA is
   op 'safe? : 'ProcSet -> 'Bool [none] .
   op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
-  op 'tt : nil -> 'Bool [ctor] .
   none
-  eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
-  eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
-  eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+  eq 'safe?['P:2ProcSet] = 'false.Bool [none] .
+  eq 'safe?['P:WProcSet] = 'true.Bool [none] .
+  eq 'safe?['__['C:Proc,'P:ProcSet]] = 'false.Bool [none] .
   rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [
     label('stop)] .
   rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_[
@@ -338,10 +334,10 @@ result SModule: mod 'DIJKSTRA is
     'PS:ProcSet]] [label('exit-crit2)] .
   crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'tt.Bool] = 'true.Bool [label('go-crit1)] .
+    'PS:ProcSet]],'true.Bool] = 'true.Bool [label('go-crit1)] .
   crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
     'P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]] if '_==_['safe?['__['P:Proc,
-    'PS:ProcSet]],'ff.Bool] = 'true.Bool [label('fail-crit1)] .
+    'PS:ProcSet]],'false.Bool] = 'true.Bool [label('fail-crit1)] .
 endm
 ==========================================
 reduce in MODULE-TEMPLATE : fromTemplate('BAKERY-FVP, asTemplate(upModule(
@@ -556,10 +552,10 @@ result NeQidList: 'mod 'DIJKSTRA 'is '\n ' ' ' ' 'pr 'DIJKSTRA-DATA '. '\n '\n
     'Conf ' '`[ 'ctor '`] '. '\n ' ' ' ' 'op '<_> ': 'Conf '-> 'State ' '`[
     'ctor '`] '. '\n '\n '\n '\n '\n '\n ' ' ' ' 'crl '< 'P:Proc '| '`{ '2 '`,
     'chf '`} 'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '2 '`, 'ext '`} 'PS:ProcSet
-    '> 'if 'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'ff '= 'true ' '`[ 'label '`(
-    'fail-crit1 '`) '`] '. '\n ' ' ' ' 'crl '< 'P:Proc '| '`{ '2 '`, 'chf '`}
-    'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '2 '`, 'crt '`} 'PS:ProcSet '> 'if
-    'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'tt '= 'true ' '`[ 'label '`(
+    '> 'if 'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'false '= 'true ' '`[ 'label
+    '`( 'fail-crit1 '`) '`] '. '\n ' ' ' ' 'crl '< 'P:Proc '| '`{ '2 '`, 'chf
+    '`} 'PS:ProcSet '> '=> '< 'P:Proc '| '`{ '2 '`, 'crt '`} 'PS:ProcSet '> 'if
+    'safe? '`( 'P:Proc 'PS:ProcSet '`) '== 'true '= 'true ' '`[ 'label '`(
     'go-crit1 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'ext '`} '| 'PS:ProcSet
     '> '=> '< '`{ '0 '`, 'try '`} '| 'PS:ProcSet '> ' '`[ 'label '`(
     'exit-crit2 '`) '`] '. '\n ' ' ' ' 'rl '< '`{ '2 '`, 'crt '`} '|
@@ -598,5 +594,5 @@ result String: "fmod BOOL-OPS is\n    pr TRUTH-VALUE .\n\n\n\n\n\n    op not_ : 
 reduce in PRINT-MODULE-TEMPLATE : printTokens(printTemplate(asTemplate'(
     upModule('DIJKSTRA)))) .
 rewrites: 615
-result String: "mod DIJKSTRA is\n    pr DIJKSTRA-DATA .\n\n    sorts Conf State .\n\n\n\n    op `[_`] : Conf -> State [ctor] .\n    op _|_ : Proc ProcSet -> Conf [ctor] .\n    op <_> : Conf -> State [ctor] .\n\n\n\n\n\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == ff = true [label(fail-crit1)] .\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, crt} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == tt = true [label(go-crit1)] .\n    rl <{2, ext} | PS:ProcSet > => <{0, try} | PS:ProcSet > [label(exit-crit2)] .\n    rl <{2, crt} | PS:ProcSet > => <{2, ext} | PS:ProcSet > [label(done-crit2)] .\n    rl <{2, chf} | WPS:WProcSet > => <{2, crt} | WPS:WProcSet > [label(go-crit2)] .\n    rl <{2, chf} | 2PS:2ProcSet > => <{2, ext} | 2PS:2ProcSet > [label(fail-crit2)] .\n    rl <{1, upf} | PS:ProcSet > => <{2, chf} | PS:ProcSet > [label(set-flag2)] .\n    rl <{1, try} | PS:ProcSet > => <{1, upf} | PS:ProcSet > [label(chk-turn2)] .\n    rl <{0, try} |{1, try} PS:ProcSet > => <{0, try} |{1, upt} PS:ProcSet > [label(chk-turn1)] .\n    rl <{0, try} | PS:ProcSet > => <{1, try} | PS:ProcSet > [label(start2)] .\n    rl < P:Proc |{2, ext} PS:ProcSet > => < P:Proc |{0, try} PS:ProcSet > [label(exit-crit1)] .\n    rl < P:Proc |{2, crt} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > [label(done-crit1)] .\n    rl < P:Proc |{1, upt} PS:ProcSet > => <{1, upf} | P:Proc PS:ProcSet > [label(set-turn1)] .\n    rl < P:Proc |{1, upf} PS:ProcSet > => < P:Proc |{2, chf} PS:ProcSet > [label(set-flag1)] .\n    rl < P:Proc |{0, try} PS:ProcSet > => < P:Proc |{1, try} PS:ProcSet > [label(start1)] .\n    rl < P:Proc | PS:ProcSet > =>[P:Proc | PS:ProcSet] [label(stop)] .\nendm"
+result String: "mod DIJKSTRA is\n    pr DIJKSTRA-DATA .\n\n    sorts Conf State .\n\n\n\n    op `[_`] : Conf -> State [ctor] .\n    op _|_ : Proc ProcSet -> Conf [ctor] .\n    op <_> : Conf -> State [ctor] .\n\n\n\n\n\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == false = true [label(fail-crit1)] .\n    crl < P:Proc |{2, chf} PS:ProcSet > => < P:Proc |{2, crt} PS:ProcSet > if safe?(P:Proc PS:ProcSet) == true = true [label(go-crit1)] .\n    rl <{2, ext} | PS:ProcSet > => <{0, try} | PS:ProcSet > [label(exit-crit2)] .\n    rl <{2, crt} | PS:ProcSet > => <{2, ext} | PS:ProcSet > [label(done-crit2)] .\n    rl <{2, chf} | WPS:WProcSet > => <{2, crt} | WPS:WProcSet > [label(go-crit2)] .\n    rl <{2, chf} | 2PS:2ProcSet > => <{2, ext} | 2PS:2ProcSet > [label(fail-crit2)] .\n    rl <{1, upf} | PS:ProcSet > => <{2, chf} | PS:ProcSet > [label(set-flag2)] .\n    rl <{1, try} | PS:ProcSet > => <{1, upf} | PS:ProcSet > [label(chk-turn2)] .\n    rl <{0, try} |{1, try} PS:ProcSet > => <{0, try} |{1, upt} PS:ProcSet > [label(chk-turn1)] .\n    rl <{0, try} | PS:ProcSet > => <{1, try} | PS:ProcSet > [label(start2)] .\n    rl < P:Proc |{2, ext} PS:ProcSet > => < P:Proc |{0, try} PS:ProcSet > [label(exit-crit1)] .\n    rl < P:Proc |{2, crt} PS:ProcSet > => < P:Proc |{2, ext} PS:ProcSet > [label(done-crit1)] .\n    rl < P:Proc |{1, upt} PS:ProcSet > => <{1, upf} | P:Proc PS:ProcSet > [label(set-turn1)] .\n    rl < P:Proc |{1, upf} PS:ProcSet > => < P:Proc |{2, chf} PS:ProcSet > [label(set-flag1)] .\n    rl < P:Proc |{0, try} PS:ProcSet > => < P:Proc |{1, try} PS:ProcSet > [label(start1)] .\n    rl < P:Proc | PS:ProcSet > =>[P:Proc | PS:ProcSet] [label(stop)] .\nendm"
 Bye.

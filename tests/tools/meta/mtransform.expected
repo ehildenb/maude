@@ -8,7 +8,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
-rewrites: 114
+rewrites: 110
 result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
     'NCProc ; 'NCProcSet ; 'Proc ; 'ProcSet ; 'State ; 'WProc ; 'WProcSet .)
 subsort '2Proc < '2ProcSet .
@@ -22,9 +22,9 @@ subsort 'Proc < 'ProcSet .
 subsort 'WProc < 'NCProc .
 subsort 'WProc < 'WProcSet .
 subsort 'WProcSet < 'NCProcSet .
-eq 'safe?['P:2ProcSet] = 'ff.Bool [none] .
-eq 'safe?['P:WProcSet] = 'tt.Bool [none] .
-eq 'safe?['__['C:Proc,'P:ProcSet]] = 'ff.Bool [none] .
+eq 'safe?['P:2ProcSet] = 'false.Bool [none] .
+eq 'safe?['P:WProcSet] = 'true.Bool [none] .
+eq 'safe?['__['C:Proc,'P:ProcSet]] = 'false.Bool [none] .
 rl '<_>['_|_['P:Proc,'PS:ProcSet]] => '`[_`]['_|_['P:Proc,'PS:ProcSet]] [label(
     'stop)] .
 rl '<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]] => '<_>['_|_['P:Proc,
@@ -84,7 +84,6 @@ op '`{2`,crt`} : nil -> 'CProc [ctor] .
 op '`{2`,ext`} : nil -> '2Proc [ctor] .
 op 'false : nil -> 'Bool [ctor special(
     id-hook('SystemFalse, nil))] .
-op 'ff : nil -> 'Bool [ctor] .
 op 'if_then_else_fi : 'Bool 'Universal 'Universal -> 'Universal [poly(2 3 0)
     special(
     id-hook('BranchSymbol, nil) 
@@ -94,7 +93,6 @@ op 'mt : nil -> 'WProcSet [none] .
 op 'safe? : 'ProcSet -> 'Bool [none] .
 op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
-op 'tt : nil -> 'Bool [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
@@ -163,7 +161,7 @@ op 'tt : nil -> 'Bool* [ctor] .
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
     stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
-rewrites: 118
+rewrites: 114
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,

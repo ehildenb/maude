@@ -49,11 +49,7 @@ fmod ASSOC-LIST { X :: TRIV } is
     eq head(N L) = N [variant] .
 endfm
 
-view Nat  from TRIV to FVP-NAT-SORT is sort Elt to Nat  . endv
-view Bool from TRIV to FVP-BOOL     is sort Elt to Bool . endv
-
 fmod MYLISTNAT is
-    protecting FVP-NAT-SORT .
     protecting ASSOC-LIST{Nat} *
         (sort NeList{Nat} to NeNatList, sort List{Nat} to NatList) .
 endfm
@@ -114,14 +110,14 @@ reduce purify(natOrderMod, natMultMod, deepMixed) .
 --- -------------------------
 
 reduce purify('MYLISTNAT, 'FVP-NAT-PRED,
-        '_<_['head['L1:NeNatList], 'head['L2:NeNatList]] ?= 'tt.Bool) .
+        '_<_['head['L1:NeNatList], 'head['L2:NeNatList]] ?= 'true.Bool) .
 reduce purify('FVP-NAT-PRED, 'MYLISTNAT,
-    'tt.Bool != '_<_['_+_['head['L':NeNatList]
-                         ,'head['L':NeNatList]]
-                    ,'_+_['head['L:NeNatList]
-                         ,'head['L:NeNatList]]]) .
+    'true.Bool != '_<_['_+_['head['L':NeNatList]
+                           ,'head['L':NeNatList]]
+                      ,'_+_['head['L:NeNatList]
+                           ,'head['L:NeNatList]]]) .
 reduce purify('MYLISTNAT, 'FVP-NAT-PRED,
-    'tt.Bool != '_<_['_+_['head['L':NeNatList]
-                         ,'head['L':NeNatList]]
-                    ,'_+_['head['L:NeNatList]
-                         ,'head['L:NeNatList]]]) .
+    'false.Bool != '_<_['_+_['head['L':NeNatList]
+                            ,'head['L':NeNatList]]
+                       ,'_+_['head['L:NeNatList]
+                            ,'head['L:NeNatList]]]) .

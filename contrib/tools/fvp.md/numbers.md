@@ -17,15 +17,8 @@ FVP Booleans
 ------------
 
 ```maude
-fmod FVP-BOOL-SORT is
-    sort Bool .
-endfm
-
 fmod FVP-BOOL-CTOR is
-   protecting FVP-BOOL-SORT .
-
-   ops tt ff : -> Bool [ctor] .
-   ----------------------------
+   protecting TRUTH-VALUE .
 endfm
 
 fmod FVP-BOOL is
@@ -36,16 +29,16 @@ fmod FVP-BOOL is
     op _/\_ : Bool Bool -> Bool [assoc comm] .
     op _\/_ : Bool Bool -> Bool [assoc comm] .
     ------------------------------------------
-    eq tt /\ B = B [variant] .
-    eq ff \/ B = B [variant] .
+    eq true  /\ B = B [variant] .
+    eq false \/ B = B [variant] .
 
-    eq ff /\ B = ff [variant] .
-    eq tt \/ B = tt [variant] .
+    eq false /\ B = false [variant] .
+    eq true  \/ B = true  [variant] .
 
     op ~_ : Bool -> Bool .
     ----------------------
-    eq ~ tt = ff [variant] .
-    eq ~ ff = tt [variant] .
+    eq ~ true  = false [variant] .
+    eq ~ false = true  [variant] .
 endfm
 ```
 
@@ -175,11 +168,11 @@ fmod FVP-NAT-PRED is
     op _<_  : Nat Nat -> Bool .
     op _<=_ : Nat Nat -> Bool .
     ---------------------------
-    eq N <  N + NzN  = tt [variant] .
-    eq N <= N +   N' = tt [variant] .
+    eq N <  N + NzN  = true [variant] .
+    eq N <= N +   N' = true [variant] .
 
-    eq N +   N' <  N = ff [variant] .
-    eq N + NzN  <= N = ff [variant] .
+    eq N +   N' <  N = false [variant] .
+    eq N + NzN  <= N = false [variant] .
 endfm
 ```
 
@@ -195,11 +188,11 @@ fmod FVP-INT-PRED is
     op _<_  : Int Int -> Bool [ditto] .
     op _<=_ : Int Int -> Bool [ditto] .
     -----------------------------------
-    eq - NzN <  N' = tt [variant] .
-    eq - NzN <= N' = tt [variant] .
+    eq - NzN <  N' = true [variant] .
+    eq - NzN <= N' = true [variant] .
 
-    eq N <  - NzN' = ff [variant] .
-    eq N <= - NzN' = ff [variant] .
+    eq N <  - NzN' = false [variant] .
+    eq N <= - NzN' = false [variant] .
 
     eq - NzN <  - NzN' = NzN' <  NzN [variant] .
     eq - NzN <= - NzN' = NzN' <= NzN [variant] .
