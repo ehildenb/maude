@@ -2,29 +2,59 @@ Thermostat
 ==========
 
 A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
+The state components of the thermostate are the current time, the temperature, and the mode (on, off, turning on, turning off).
 
 ```maude
 load ../tools/fvp/numbers.maude
 
 mod THERMOSTAT is
+   protecting FVP-NUMBERS .
    protecting FVP-NAT-PRED .
+
+    sorts DelayMode InMode Mode .
+    -----------------------------
+    subsorts DelayMode InMode < Mode .
 
     sort Conf .
     -----------
+    vars TIME TIME' TMP TMP' : Nat .
+    var MODE : Mode . var IM : InMode . var DM : DelayMode .
 
-    var TIME TMP TMP@0 BND MIN MAX : Nat .
-    var MODE : Bool .
+   ops on off :        -> InMode    [ctor] .
+    op delay  : InMode -> DelayMode [ctor] .
+    ----------------------------------------
 
-    op <_,_,_,_,_,_> : Nat Nat Bool Nat Nat Nat -> Conf [ctor] .
-    op {_,_,_,_,_,_} : Nat Nat Bool Nat Nat Nat -> Conf [ctor] .
-    op [_,_,_,_,_,_] : Nat Nat Bool Nat Nat Nat -> Conf [ctor] .
-    ------------------------------------------------------------
+    op <_,_,_> : Nat Nat Mode -> Conf [ctor] .
+    op {_,_,_} : Nat Nat Mode -> Conf [ctor] .
+    ------------------------------------------
+    rl [tick] : < TIME , TMP                  , MODE >
+             => { TIME , heat-rate(MODE, TMP) , MODE } .
 
-   crl [on]    : < TIME,TMP,MODE,BND,MIN,MAX > => { TIME    ,TMP  ,tt,BND,MIN,MAX } if TMP   < MIN + BND = tt .
-   crl [off]   : < TIME,TMP,MODE,BND,MIN,MAX > => { TIME    ,TMP  ,ff,BND,MIN,MAX } if MAX   < TMP + BND = tt .
-   crl [tick1] : { TIME,TMP,tt,  BND,MIN,MAX } => < TIME + 1,TMP@0,tt,BND,MIN,MAX > if TMP   < TMP@0     = tt /\ TMP@0 < TMP   + BND = tt [nonexec] .
-   crl [tick2] : { TIME,TMP,ff,  BND,MIN,MAX } => < TIME + 1,TMP@0,ff,BND,MIN,MAX > if TMP@0 < TMP       = tt /\ TMP   < TMP@0 + BND = tt [nonexec] .
-    rl [stop1] : < TIME,TMP,MODE,BND,MIN,MAX > => [ TIME,TMP,MODE,BND,MIN,MAX ] .
-    rl [stop2] : { TIME,TMP,MODE,BND,MIN,MAX } => [ TIME,TMP,MODE,BND,MIN,MAX ] .
+   crl [turning-off] : { TIME            , TMP , on         }
+                    => < time-until(off) , TMP , delay(off) >
+                    if max < TMP + bound = true .
+
+   crl [turning-on] : { TIME           , TMP , off       }
+                   => < time-until(on) , TMP , delay(on) >
+                   if TMP < min + bound = true .
+
+    rl [delaying] : { TIME + 1 , TMP , DM }
+                 => < TIME     , TMP , DM > .
+
+    rl [delay-over] : { 0 , TMP , delay(IM) }
+                   => < 0 , TMP , IM        > .
+```
+
+The following are parameters which must be filled in for your particular thermostat.
+
+```maude
+   ops min max bound : -> Nat .
+   ----------------------------
+
+   ops time-until : InMode -> Nat .
+   --------------------------------
+
+    op heat-rate : Mode Nat -> Nat .
+    --------------------------------
 endm
 ```

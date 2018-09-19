@@ -7,39 +7,21 @@ set include NAT  off .
 set include INT  off .
 ```
 
+For instantiating for formulae over FVP naturals, we'll use the `eqform` package.
+
+```maude
+load ../meta/eqform.maude
+```
+
 FVP Booleans
 ------------
 
+We'll re-use the Maude `Bool` sorts for the target of FVP predicates.
+This enables using concrete syntax in side conditions of rules.
+
 ```maude
-fmod FVP-BOOL-SORT is
-    sort Bool .
-endfm
-
 fmod FVP-BOOL-CTOR is
-   protecting FVP-BOOL-SORT .
-
-   ops tt ff : -> Bool [ctor] .
-   ----------------------------
-endfm
-
-fmod FVP-BOOL is
-   protecting FVP-BOOL-CTOR .
-
-    var B : Bool .
-
-    op _/\_ : Bool Bool -> Bool [assoc comm] .
-    op _\/_ : Bool Bool -> Bool [assoc comm] .
-    ------------------------------------------
-    eq tt /\ B = B [variant] .
-    eq ff \/ B = B [variant] .
-
-    eq ff /\ B = ff [variant] .
-    eq tt \/ B = tt [variant] .
-
-    op ~_ : Bool -> Bool .
-    ----------------------
-    eq ~ tt = ff [variant] .
-    eq ~ ff = tt [variant] .
+   protecting TRUTH-VALUE .
 endfm
 ```
 
@@ -111,13 +93,18 @@ FVP Integer Extension
 ---------------------
 
 ```maude
-fmod FVP-INT is
-   protecting FVP-NAT .
+fmod FVP-INT-SORT is
+   protecting FVP-NAT-SORT .
 
     sorts NzNeg Int NzInt .
     -----------------------
     subsort    Nat               < Int .
     subsorts NzNat NzNeg < NzInt < Int .
+endfm
+
+fmod FVP-INT is
+   protecting FVP-NAT .
+   protecting FVP-INT-SORT .
 
     vars   N   N' :   Nat .
     vars NzN NzN' : NzNat .
@@ -156,28 +143,19 @@ Predicates over Numbers
 ```maude
 fmod FVP-NAT-PRED is
    protecting FVP-NAT .
-   protecting FVP-BOOL .
+   protecting FVP-BOOL-CTOR .
 
     vars   N N' :   Nat .
     var  NzN    : NzNat .
 
-    op _==_  : Nat Nat -> Bool [comm] .
-    op _=/=_ : Nat Nat -> Bool [comm] .
-    -----------------------------------
-    eq N       == N = tt [variant] .
-    eq N + NzN == N = ff [variant] .
-
-    eq N =/= N' = ~ (N == N') [variant] .
-
-    op _<_ : Nat Nat -> Bool .
-    --------------------------
-    eq N      < N + NzN = tt [variant] .
-    eq N + N' < N       = ff [variant] .
-
+    op _<_  : Nat Nat -> Bool .
     op _<=_ : Nat Nat -> Bool .
     ---------------------------
-    eq N + NzN <= N      = ff [variant] .
-    eq N       <= N + N' = tt [variant] .
+    eq N <  N + NzN  = true [variant] .
+    eq N <= N +   N' = true [variant] .
+
+    eq N +   N' <  N = false [variant] .
+    eq N + NzN  <= N = false [variant] .
 endfm
 ```
 
@@ -190,22 +168,14 @@ fmod FVP-INT-PRED is
     var  NzN NzN' : NzNat .
     vars   I   I' :   Int .
 
-    op _==_  : Int Int -> Bool [ditto] .
-    op _=/=_ : Int Int -> Bool [ditto] .
-    ------------------------------------
-    eq - NzN ==   NzN' = ff          [variant] .
-    eq - NzN == - NzN' = NzN == NzN' [variant] .
-
-    eq I =/= I' = ~ (I == I') [variant] .
-
     op _<_  : Int Int -> Bool [ditto] .
     op _<=_ : Int Int -> Bool [ditto] .
     -----------------------------------
-    eq - NzN <  N' = tt [variant] .
-    eq - NzN <= N' = tt [variant] .
+    eq - NzN <  N' = true [variant] .
+    eq - NzN <= N' = true [variant] .
 
-    eq N <  - NzN' = ff [variant] .
-    eq N <= - NzN' = ff [variant] .
+    eq N <  - NzN' = false [variant] .
+    eq N <= - NzN' = false [variant] .
 
     eq - NzN <  - NzN' = NzN' <  NzN [variant] .
     eq - NzN <= - NzN' = NzN' <= NzN [variant] .
@@ -244,4 +214,23 @@ fmod FVP-INT-MULT is
 
     eq I * (NzI + NzI') = (I * NzI) + (I * NzI') .
 endfm
+```
+
+Formulae over FVP Naturals
+--------------------------
+
+```maude
+view Bool from TRIV to FVP-BOOL-CTOR is sort Elt to Bool . endv
+view Nat  from TRIV to FVP-NAT-SORT  is sort Elt to Nat  . endv
+view Int  from TRIV to FVP-INT-SORT  is sort Elt to Int  . endv
+
+fmod FVP-BOOL-EQFORM is
+   protecting EQFORM-IMPL{Bool} .
+
+    eq false ?= true = ff .
+    eq false != true = tt .
+endfm
+
+fmod FVP-NAT-EQFORM is protecting EQFORM-IMPL{Nat} . endfm
+fmod FVP-INT-EQFORM is protecting EQFORM-IMPL{Int} . endfm
 ```

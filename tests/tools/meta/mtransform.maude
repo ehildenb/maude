@@ -2,7 +2,6 @@
 
 load ../../../contrib/systems/dijkstra.maude
 load ../../../contrib/systems/bakery.maude
-load ../../../contrib/systems/oc.maude
 load ../../../contrib/systems/qlock.maude
 load ../../../contrib/tools/meta/mtransform.maude
 
@@ -30,22 +29,8 @@ select UNCONDITIONALIZE .
 
 reduce stripConditions(asTemplate(upModule('DIJKSTRA    , true))) .
 reduce stripConditions(asTemplate(upModule('BAKERY-FVP  , true))) .
-reduce stripConditions(asTemplate(upModule('FT-COMM     , true))) .
 reduce stripConditions(asTemplate(upModule('QLOCK-STATE , true))) .
 
 reduce wellFormed(fromTemplate('DIJKSTRA    , stripConditions(asTemplate(upModule('DIJKSTRA    , true))))) .
 reduce wellFormed(fromTemplate('BAKERY-FVP  , stripConditions(asTemplate(upModule('BAKERY-FVP  , true))))) .
-reduce wellFormed(fromTemplate('FT-COMM     , stripConditions(asTemplate(upModule('FT-COMM     , true))))) .
 reduce wellFormed(fromTemplate('QLOCK-STATE , stripConditions(asTemplate(upModule('QLOCK-STATE , true))))) .
-
-reduce unconditionalize('State  , 'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA   , false))) .
-reduce unconditionalize('BState , 'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('BAKERY-FVP , false))) .
-reduce unconditionalize('State  , 'Condition, '_|_, 'META-LEVEL, asTemplate(upModule('FT-COMM    , false))) .
-
-reduce fromTemplate('DIJKSTRA   , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA   , false)))) .
-reduce fromTemplate('BAKERY-FVP , unconditionalize('BState , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('BAKERY-FVP , false)))) .
-reduce fromTemplate('FT-COMM    , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('FT-COMM    , false)))) .
-
-reduce wellFormed(fromTemplate('DIJKSTRA   , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('DIJKSTRA   , false))))) .
-reduce wellFormed(fromTemplate('BAKERY-FVP , unconditionalize('BState , 'Condition , '_|_, 'META-LEVEL, asTemplate(upModule('BAKERY-FVP , false))))) .
-reduce wellFormed(fromTemplate('FT-COMM    , unconditionalize('State  , 'Condition , '_|_, 'META-LEVEL-NAT-RENAMED, asTemplate(upModule('FT-COMM    , false))))) .

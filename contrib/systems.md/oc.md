@@ -30,25 +30,14 @@ Here we extend FVP numbers with pairs and lists.
 load ../tools/fvp/numbers.maude
 
 fmod MAYBE-FVP-NAT is
-   protecting FVP-NAT-PRED .
+   protecting FVP-NAT-PRED + TRUTH .
 
     sort MaybeNat .
     ---------------
     subsort Nat < MaybeNat .
 
-    var   N     : Nat .
-    vars MN MN' : MaybeNat .
-
     op null : -> MaybeNat [ctor] .
     ------------------------------
-
-    op _=/=_ : MaybeNat MaybeNat -> Bool [ditto] .
-    op _==_  : MaybeNat MaybeNat -> Bool [ditto] .
-    ----------------------------------------------
-    eq null == N    = ff [variant] .
-    eq null == null = tt [variant] .
-
-    eq MN =/= MN' = ~ (MN == MN') [variant] .
 endfm
 
 fmod ASSOC-LIST { X :: TRIV } is
@@ -69,9 +58,6 @@ fmod ASSOC-LIST { X :: TRIV } is
     eq head(N L) = N [variant] .
 endfm
 
-view Nat  from TRIV to FVP-NAT-SORT is sort Elt to Nat  . endv
-view Bool from TRIV to     FVP-BOOL is sort Elt to Bool . endv
-
 fmod ASSOC-LIST-FVP-NAT is
    protecting FVP-NAT .
    protecting ASSOC-LIST{Nat} * ( sort NeList{Nat} to NeListNat
@@ -80,7 +66,7 @@ fmod ASSOC-LIST-FVP-NAT is
 endfm
 
 fmod ASSOC-LIST-FVP-BOOL is
-   protecting FVP-BOOL .
+   protecting FVP-BOOL-CTOR .
    protecting ASSOC-LIST{Bool} * ( sort NeList{Bool} to NeBoolList
                                  , sort   List{Bool} to   BoolList
                                  ) .
@@ -133,8 +119,8 @@ mod FT-COMM is
   rl [rec-ack-1] :  [p :: n      | p    | pa?       | l   :: q] => [p     :: nil  | null  | nullp     | l    :: q    ] .
   rl [rec-ack-2] :  [p :: n m    | p    | pa?       | l   :: q] => [p + 1 :: m    | null  | [m,p + 1] | l    :: q    ] .
   rl [rec-ack-+] :  [p :: n m l' | p    | pa?       | l   :: q] => [p + 1 :: m l' | null  | [m,p + 1] | l    :: q    ] .
- crl [resend-1] :   [p :: n      | n?   | nullp     | l1  :: m] => [p     :: n    | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
- crl [resend-+] :   [p :: n l    | n?   | nullp     | l1  :: m] => [p     :: n l  | null  | [n,p]     | l1   :: m    ] if n? =/= p = tt .
+ crl [resend-1] :   [p :: n      | n?   | nullp     | l1  :: m] => [p     :: n    | null  | [n,p]     | l1   :: m    ] if n? =/= p .
+ crl [resend-+] :   [p :: n l    | n?   | nullp     | l1  :: m] => [p     :: n l  | null  | [n,p]     | l1   :: m    ] if n? =/= p .
   rl [resend-ack] : [p :: l      | n?   | [n,q]     | l'  :: q] => [p     :: l    | q     | nullp     | l'   :: q    ] .
   rl [drop-snd] :   [n :: l1     | n?   | pa        | l2  :: m] => [n     :: l1   | n?    | nullp     | l2   :: m    ] .
   rl [drop-ack] :   [n :: l1     | k    | pa?       | l2  :: m] => [n     :: l1   | null  | pa?       | l2   :: m    ] .

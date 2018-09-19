@@ -1,1 +1,105 @@
+==========================================
+get variants in THERMOSTAT-COMFORTABLE : heat-rate(MODE, TMP) .
+
+Variant #1
+rewrites: 0
+Nat: heat-rate(#1:Mode, #2:Nat)
+MODE --> #1:Mode
+TMP --> #2:Nat
+
+Variant #2
+rewrites: 6
+NzNat: 1 + 1 + %1:Nat
+MODE --> on
+TMP --> %1:Nat
+
+Variant #3
+rewrites: 6
+Nat: %1:Nat
+MODE --> off
+TMP --> 1 + 1 + 1 + %1:Nat
+
+Variant #4
+rewrites: 6
+Nat: %1:Nat
+MODE --> delay(on)
+TMP --> 1 + %1:Nat
+
+Variant #5
+rewrites: 6
+Nat: %1:Nat
+MODE --> delay(off)
+TMP --> 1 + %1:Nat
+
+No more variants.
+rewrites: 6
+==========================================
+search in THERMOSTAT-COMFORTABLE : {0,10 + 10,off} =>* C:Conf .
+
+Solution 1 (state 0)
+states: 1  rewrites: 18
+C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+    + 1 + 1 + 1,off}
+
+Solution 2 (state 1)
+states: 2  rewrites: 65
+C:Conf --> < 1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+    1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on) >
+
+Solution 3 (state 2)
+states: 3  rewrites: 67
+C:Conf --> {1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+    + 1 + 1 + 1 + 1 + 1,delay(on)}
+
+Solution 4 (state 3)
+states: 4  rewrites: 68
+C:Conf --> < 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+    1 + 1 + 1 + 1 + 1,delay(on) >
+
+Solution 5 (state 4)
+states: 5  rewrites: 70
+C:Conf --> {1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+    + 1 + 1 + 1,delay(on)}
+
+Solution 6 (state 5)
+states: 6  rewrites: 71
+C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+    1 + 1 + 1,delay(on) >
+
+Solution 7 (state 6)
+states: 7  rewrites: 73
+C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+    + 1,delay(on)}
+
+Solution 8 (state 7)
+states: 8  rewrites: 74
+C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+    1,delay(on) >
+
+Solution 9 (state 8)
+states: 9  rewrites: 76
+C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+    delay(on)}
+
+Solution 10 (state 9)
+states: 10  rewrites: 77
+C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
+    delay(on) >
+
+Solution 11 (state 10)
+states: 11  rewrites: 79
+C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(
+    on)}
+
+Solution 12 (state 11)
+states: 12  rewrites: 80
+C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on >
+
+Solution 13 (state 12)
+states: 13  rewrites: 84
+C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+    1,on}
+
+No more solutions.
+states: 13  rewrites: 119
 Bye.

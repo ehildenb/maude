@@ -77,14 +77,14 @@ fmod IMP-SYNTAX is
 
     op val? : Exp -> Bool .
     ------------------------
-    eq val?(Q:Id)    = ff [variant] .
-    eq val?(A + A')  = ff [variant] .
-    eq val?(A * A')  = ff [variant] .
-    eq val?(A - A')  = ff [variant] .
-    eq val?(! B)     = ff [variant] .
-    eq val?(A < A')  = ff [variant] .
-    eq val?(B && B') = ff [variant] .
-    eq val?(V:Value) = tt [variant] .
+    eq val?(Q:Id)    = false [variant] .
+    eq val?(A + A')  = false [variant] .
+    eq val?(A * A')  = false [variant] .
+    eq val?(A - A')  = false [variant] .
+    eq val?(! B)     = false [variant] .
+    eq val?(A < A')  = false [variant] .
+    eq val?(B && B') = false [variant] .
+    eq val?(V:Value) = true  [variant] .
 endfm
 ```
 
@@ -153,18 +153,18 @@ mod IMP-SEMANTICS is
     --- ----------------
 
     --- Heating
-   crl [#if]       : < if (BE) S else S' ~> K | E >  => < BE ~> if ([]) S else S' ~> K | E > if val?(BE) = ff .
-   crl [#assign]   : < (Q = AE ;)        ~> K | E >  => < AE ~> Q = [];           ~> K | E > if val?(AE) = ff .
-   crl [#add-lft]  : < AE +  AE'         ~> K | E >  => < AE ~> [] + AE'          ~> K | E > if val?(AE) = ff .
-   crl [#add-rght] : < N  +  AE          ~> K | E >  => < AE ~> N  + []           ~> K | E > if val?(AE) = ff .
-   crl [#mul-lft]  : < AE *  AE'         ~> K | E >  => < AE ~> [] * AE'          ~> K | E > if val?(AE) = ff .
-   crl [#mul-rght] : < N  *  AE          ~> K | E >  => < AE ~> N  * []           ~> K | E > if val?(AE) = ff .
-   crl [#sub-lft]  : < AE -  AE'         ~> K | E >  => < AE ~> [] - AE'          ~> K | E > if val?(AE) = ff .
-   crl [#sub-rght] : < N  -  AE          ~> K | E >  => < AE ~> N  - []           ~> K | E > if val?(AE) = ff .
-   crl [#and]      : < BE && BE'         ~> K | E >  => < BE ~> [] && BE'         ~> K | E > if val?(BE) = ff .
-   crl [#lt-lft]   : < AE <  AE'         ~> K | E >  => < AE ~> [] < AE'          ~> K | E > if val?(AE) = ff .
-   crl [#lt-rght]  : < N  <  AE          ~> K | E >  => < AE ~> N  < []           ~> K | E > if val?(AE) = ff .
-   crl [#not]      : < ! BE              ~> K | E >  => < BE ~> ! []              ~> K | E > if val?(BE) = ff .
+   crl [#if]       : < if (BE) S else S' ~> K | E >  => < BE ~> if ([]) S else S' ~> K | E > if val?(BE) = false .
+   crl [#assign]   : < (Q = AE ;)        ~> K | E >  => < AE ~> Q = [];           ~> K | E > if val?(AE) = false .
+   crl [#add-lft]  : < AE +  AE'         ~> K | E >  => < AE ~> [] + AE'          ~> K | E > if val?(AE) = false .
+   crl [#add-rght] : < N  +  AE          ~> K | E >  => < AE ~> N  + []           ~> K | E > if val?(AE) = false .
+   crl [#mul-lft]  : < AE *  AE'         ~> K | E >  => < AE ~> [] * AE'          ~> K | E > if val?(AE) = false .
+   crl [#mul-rght] : < N  *  AE          ~> K | E >  => < AE ~> N  * []           ~> K | E > if val?(AE) = false .
+   crl [#sub-lft]  : < AE -  AE'         ~> K | E >  => < AE ~> [] - AE'          ~> K | E > if val?(AE) = false .
+   crl [#sub-rght] : < N  -  AE          ~> K | E >  => < AE ~> N  - []           ~> K | E > if val?(AE) = false .
+   crl [#and]      : < BE && BE'         ~> K | E >  => < BE ~> [] && BE'         ~> K | E > if val?(BE) = false .
+   crl [#lt-lft]   : < AE <  AE'         ~> K | E >  => < AE ~> [] < AE'          ~> K | E > if val?(AE) = false .
+   crl [#lt-rght]  : < N  <  AE          ~> K | E >  => < AE ~> N  < []           ~> K | E > if val?(AE) = false .
+   crl [#not]      : < ! BE              ~> K | E >  => < BE ~> ! []              ~> K | E > if val?(BE) = false .
 
     --- Cooling
     rl [@if]       : < B ~> if ([]) S else S' ~> K | E > => < if (B) S else S' ~> K | E > .
@@ -184,26 +184,26 @@ mod IMP-SEMANTICS is
     --- --------------
 
     --- Stmts
-    rl [emp-block] : < {}                ~> K | E > => <                                       K | E > .
-    rl [stmtlist]  : < S S'              ~> K | E > => < S ~> S'                            ~> K | E > .
-    rl [block]     : < {S}               ~> K | E > => < S                                  ~> K | E > .
-    rl [if-true]   : < if (tt) S else S' ~> K | E > => < S                                  ~> K | E > .
-    rl [if-false]  : < if (ff) S else S' ~> K | E > => < S'                                 ~> K | E > .
-    rl [while]     : < while (BE) {S}    ~> K | E > => < if (BE) {S while (BE) {S}} else {} ~> K | E > .
+    rl [emp-block] : < {}                   ~> K | E > => <                                       K | E > .
+    rl [stmtlist]  : < S S'                 ~> K | E > => < S ~> S'                            ~> K | E > .
+    rl [block]     : < {S}                  ~> K | E > => < S                                  ~> K | E > .
+    rl [if-true]   : < if (true)  S else S' ~> K | E > => < S                                  ~> K | E > .
+    rl [if-false]  : < if (false) S else S' ~> K | E > => < S'                                 ~> K | E > .
+    rl [while]     : < while (BE) {S}       ~> K | E > => < if (BE) {S while (BE) {S}} else {} ~> K | E > .
 
     --- Assignemnt/lookup rules assume memory locations exist and are unique
     rl [assign] : < (Q = N ;) ~> K | E * Q |-> M > => <      K | E * Q |-> N > .
     rl [lookup] : < Q         ~> K | E * Q |-> N > => < N ~> K | E * Q |-> N > .
 
     --- Expressions
-    rl [add]       : < N + M    ~> K | E > => < (N +Nat M) ~> K | E > .
-    rl [mul]       : < N * M    ~> K | E > => < (N *Nat M) ~> K | E > .
-    rl [sub]       : < N - M    ~> K | E > => < sd(N,M)    ~> K | E > .
-    rl [lt]        : < N < M    ~> K | E > => < (N <Nat M) ~> K | E > .
-    rl [not-1]     : < ! tt     ~> K | E > => < ff         ~> K | E > .
-    rl [not-2]     : < ! ff     ~> K | E > => < tt         ~> K | E > .
-    rl [and-true]  : < tt && BE ~> K | E > => < BE         ~> K | E > .
-    rl [and-false] : < ff && BE ~> K | E > => < ff         ~> K | E > .
+    rl [add]       : < N + M       ~> K | E > => < (N +Nat M) ~> K | E > .
+    rl [mul]       : < N * M       ~> K | E > => < (N *Nat M) ~> K | E > .
+    rl [sub]       : < N - M       ~> K | E > => < sd(N,M)    ~> K | E > .
+    rl [lt]        : < N < M       ~> K | E > => < (N <Nat M) ~> K | E > .
+    rl [not-1]     : < ! true      ~> K | E > => < false      ~> K | E > .
+    rl [not-2]     : < ! false     ~> K | E > => < true       ~> K | E > .
+    rl [and-true]  : < true  && BE ~> K | E > => < BE         ~> K | E > .
+    rl [and-false] : < false && BE ~> K | E > => < false      ~> K | E > .
 endm
 ```
 
@@ -219,7 +219,7 @@ mod NONSEQ-IMP-SEMANTICS is
     var N : Nat .
     var K : Continuation .
 
-   crl [@add-rght] : < AE + AE'      ~> K | E > => < AE' ~> AE + [] ~> K | E > if val?(AE) = ff .
+   crl [@add-rght] : < AE + AE'      ~> K | E > => < AE' ~> AE + [] ~> K | E > if val?(AE) = false .
     rl [#add-rght] : < N  ~> AE + [] ~> K | E > => < AE + N         ~> K | E > .
 endm
 ```

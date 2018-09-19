@@ -1,10 +1,5 @@
 load ../../../contrib/tools/fvp/numbers.maude
 
-select FVP-BOOL .
-
-get variants B:Bool .
-get variants B:Bool /\ ~ B:Bool .
-
 select FVP-NAT .
 
 get variants N:Nat .
@@ -33,11 +28,6 @@ get variants NzI:NzInt * NzN:NzNat .
 
 select FVP-NAT-PRED .
 
-get variants N:Nat == N:Nat + NzN:NzNat .
-get variants N:Nat == NzN:NzNat .
-
-get variants N':Nat =/= N:Nat .
-
 get variants NzN:NzNat < N:Nat + NzN:NzNat .
 get variants N:Nat < NzN:NzNat .
 
@@ -46,20 +36,34 @@ get variants N:Nat <= NzN:NzNat .
 
 select FVP-INT-PRED .
 
-get variants I:Int == I:Int + NzI:NzInt .
-get variants I:Int == NzI:NzInt .
-get variants - NzN:NzNat == NzN':NzNat .
-
-get variants N':Nat =/= N:Nat .
-
 get variants I:Int < NzI:NzInt .
-get variants NzI:Int < I:Int .
+get variants NzI:NzInt < I:Int .
 get variants   NzI:NzInt < - NzI':NzInt .
 get variants - NzI:NzInt <   NzI':NzInt .
 get variants - NzI:NzInt < - NzI':NzInt .
 
 get variants I:Int <= NzI:NzInt .
-get variants NzI:Int <= I:Int .
+get variants NzI:NzInt <= I:Int .
 get variants   NzI:NzInt <= - NzI':NzInt .
 get variants - NzI:NzInt <=   NzI':NzInt .
 get variants - NzI:NzInt <= - NzI':NzInt .
+
+select FVP-BOOL-EQFORM .
+
+reduce true ?= true .
+
+fmod TEST-FVP-NAT-EQFORM is
+   protecting FVP-NAT-EQFORM + FVP-NAT-PRED .
+endfm
+
+reduce N:Nat ?= N:Nat + N':Nat .
+reduce tt /\ N:Nat ?= NzN:Nat .
+
+fmod TEST-FVP-BOOL-EQFORM is
+    protecting FVP-BOOL-EQFORM + FVP-NAT-PRED .
+endfm
+
+reduce true ?= N:Nat < N':Nat .
+reduce true ?= N:Nat < (N':Nat + NzN':Nat) .
+reduce true ?= N:Nat <= N':Nat /\ false ?= N:Nat < N':Nat .
+reduce N:Nat <= N':Nat ?= N':Nat < N:Nat .
