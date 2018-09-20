@@ -629,17 +629,9 @@ fmod SUBSTITUTION-HANDLING is
 endfm
 
 fmod SUBSTITUTIONSET is
+  protecting SUBSTITUTION-SET .
   protecting SUBSTITUTION-HANDLING .
   protecting TERMSET-FM .
-
-  sort SubstitutionSet NeSubstitutionSet .
-  subsort Substitution < NeSubstitutionSet < SubstitutionSet .
-  op empty : -> SubstitutionSet [ctor] .
-  op _|_ : SubstitutionSet SubstitutionSet -> SubstitutionSet
-    [ctor assoc comm id: empty format (d n d d)] .
-  op _|_ : NeSubstitutionSet SubstitutionSet -> NeSubstitutionSet
-    [ctor ditto] .
-  eq X:Substitution | X:Substitution = X:Substitution .
 
   vars SS SS' : SubstitutionSet .
   vars S S' Subst : Substitution .
@@ -648,14 +640,10 @@ fmod SUBSTITUTIONSET is
   vars N N' : Nat .
   var V : Variable .
 
-  op _<<_ : Substitution SubstitutionSet -> SubstitutionSet .
-  eq S << empty = empty .
-  ceq S << (S' | SS') = (S << S') | (S << SS') if SS' =/= empty .
-
   op _..._ : SubstitutionSet [SubstitutionSet]
           -> SubstitutionSet [strat (1) gather (e E)] .
 
-  eq empty ... SS':[SubstitutionSet] = empty .
+  eq .SubstitutionSet ... SS':[SubstitutionSet] = .SubstitutionSet .
   eq (S | SS) ... SS':[SubstitutionSet]
    = (S ...' SS':[SubstitutionSet])
      |
@@ -663,8 +651,8 @@ fmod SUBSTITUTIONSET is
 
   op _...'_ : Substitution SubstitutionSet -> SubstitutionSet .
 
-  eq S ...' empty
-   = empty .
+  eq S ...' .SubstitutionSet
+   = .SubstitutionSet .
 
   eq S ...' (S' | SS')
    = (S .. S')
@@ -783,29 +771,29 @@ fmod SUBSTITUTIONSET-AUX is
   --- OUT: QidSet composed of domain() of each substitution
   op domain : SubstitutionSet -> VariableSet .
   eq domain(S | S' | SS) = domain(S) ; domain(S' | SS) .
-  eq domain(empty)       = none .
+  eq domain(.SubstitutionSet) = none .
 
   --- OUT: SubstitutionSet where each substitution binding V <- T is
   ---      filtered out if V occurs in QS
   op filterNotIn : SubstitutionSet VariableSet -> SubstitutionSet .
   eq filterNotIn(S | S' | SS,QS) = filterNotIn(S,QS) | filterNotIn(S' | SS,QS) .
-  eq filterNotIn(empty,QS)       = empty .
+  eq filterNotIn(.SubstitutionSet,QS) = .SubstitutionSet .
 
   --- OUT: A TermSet of instances of Term by application with each Substitution in SubstitutionSet
   op _<<_ : Term SubstitutionSet -> TermSet .
   eq T << (S | S' | SS) = (T << S) | (T << (S' | SS)) .
-  eq T << empty         = .TermSet .
+  eq T << .SubstitutionSet = .TermSet .
 
 
   --- OUT: A SubstitutionSet identical to input but where each assignment in Substitution is removed
   op remove : SubstitutionSet Substitution -> SubstitutionSet .
   eq remove(S | S' | SS,S2) = remove(S,S2) | remove(S | S' | SS,S2) .
-  eq remove(empty,S2)       = empty .
+  eq remove(.SubstitutionSet,S2) = .SubstitutionSet .
 
   --- OUT: A SubstitutionSet of Assignments built by blowing this Substitution apart
   op explode : Substitution -> SubstitutionSet .
   eq explode(V <- T ; S) = (V <- T) | explode(S) .
-  eq explode(none) = empty .
+  eq explode(none) = .SubstitutionSet .
 
   --- OUT: Get first error from SubstitutionSet
   eq errsubMsg(errsub(QL:QidList) | SSK) = QL:QidList .
@@ -838,7 +826,7 @@ fmod RECLAIM-VARS is
   eq reclaim'(VS,none,S')       = S' .
 
   eq reclaim(VS,S | SS) = reclaim'(VS,S) | reclaim(VS,SS) .
-  eq reclaim(VS,empty)  = empty .
+  eq reclaim(VS,.SubstitutionSet) = .SubstitutionSet .
 
   --- INP: SubsitutionSet
   --- PRE: None
@@ -858,7 +846,7 @@ fmod SUBSTITUTION-STREAM is
   op set : Stream{Substitution} -> SubstitutionSet .
   var X : Substitution . var S : [Stream{Substitution}] .
   eq set(X & S) = X | set(S) .
-  eq set(end) = empty .
+  eq set(end) = .SubstitutionSet .
 endfm
 
 ---
@@ -893,16 +881,16 @@ fmod TERMSUBSTPAIRSET is
 
   var TPS : TermSubstPairSet . var TP TP' : TermSubstPair . var T : Term . var S S' : Substitution . var SS : SubstitutionSet .
 
-  eq tsp-term(TPS | (T,S))    = T | tsp-term(TPS) .
-  eq tsp-term(emptyTPS)       = .TermSet .
-  eq tsp-sub(TPS | (T,S))     = S | tsp-sub(TPS) .
-  eq tsp-sub(emptyTPS)        = empty .
+  eq tsp-term(TPS | (T,S)) = T | tsp-term(TPS) .
+  eq tsp-term(emptyTPS)    = .TermSet .
+  eq tsp-sub(TPS | (T,S))  = S | tsp-sub(TPS) .
+  eq tsp-sub(emptyTPS)     = .SubstitutionSet .
 
-  eq (TP | TP' | TPS) << SS            = (TP << SS) | ((TP' | TPS) << SS) .
-  eq  emptyTPS        << SS            = emptyTPS .
-  eq  TP              << (S | S' | SS) = (TP << S) | (TP << (S' | SS)) .
-  eq  TP              << empty         = emptyTPS .
-  eq (T,S)            << S'            = (T << S',S << S') .
+  eq (TP | TP' | TPS) << SS               = (TP << SS) | ((TP' | TPS) << SS) .
+  eq  emptyTPS        << SS               = emptyTPS .
+  eq  TP              << (S | S' | SS)    = (TP << S) | (TP << (S' | SS)) .
+  eq  TP              << .SubstitutionSet = emptyTPS .
+  eq (T,S)            << S'               = (T << S',S << S') .
 endfm
 
 ---
@@ -948,7 +936,7 @@ fmod VARIANT is
   eq getSubstitutions({T:Term,S:Substitution,NextVar:Nat,P:Parent,B:Bool}
               | R:VariantTripleSet) = S:Substitution | getSubstitutions(R:VariantTripleSet) .
   eq getSubstitutions((empty).VariantTripleSet)
-   = empty .
+   = .SubstitutionSet .
 endfm
 
 ---
@@ -1742,10 +1730,10 @@ fmod VARIABLES-TO-CONSTANTS is
   eq constsToVars(CS,Q,(T,TL),TL')       = constsToVars(CS,Q,TL,(TL',constsToVars(CS,T))) .
   eq constsToVars(CS,Q,empty,TL')        = Q[TL'] .
   ---
-  eq constsToVars(CS,S | S' | SS)             = constsToVars(CS,S) | constsToVars(CS,S' | SS) .
-  eq constsToVars(CS,(empty).SubstitutionSet) = (empty).SubstitutionSet .
-  eq constsToVars(CS,V <- T ; S)              = V <- constsToVars(CS,T) ; constsToVars(CS,S) .
-  eq constsToVars(CS,(none).Substitution)     = (none).Substitution .
+  eq constsToVars(CS,S | S' | SS)         = constsToVars(CS,S) | constsToVars(CS,S' | SS) .
+  eq constsToVars(CS,.SubstitutionSet)    = .SubstitutionSet .
+  eq constsToVars(CS,V <- T ; S)          = V <- constsToVars(CS,T) ; constsToVars(CS,S) .
+  eq constsToVars(CS,(none).Substitution) = (none).Substitution .
 endfm
 
 --- Module checks if all the rules in the module we are analyzing in the same kind.

@@ -123,10 +123,10 @@ fmod CTOR-LIFT is
   eq lift-term(M,(T,L)) = lift-term(M,T), lift-term(M,L) .
   eq lift-term(M,empty) = empty .
 
-  eq lift-sub(M,V <- T ; B)  = lift-term(M,V) <- lift-term(M,T) ; lift-sub(M,B) .
-  eq lift-sub(M,none)        = none .
-  eq lift-sub(M,B | B' | BS) = lift-sub(M,B) | lift-sub(M,B' | BS) .
-  eq lift-sub(M,empty)       = empty .
+  eq lift-sub(M,V <- T ; B)       = lift-term(M,V) <- lift-term(M,T) ; lift-sub(M,B) .
+  eq lift-sub(M,none)             = none .
+  eq lift-sub(M,B | B' | BS)      = lift-sub(M,B) | lift-sub(M,B' | BS) .
+  eq lift-sub(M,.SubstitutionSet) = .SubstitutionSet .
 endfm
 
 --- this module computes most general constructor instances;
@@ -155,7 +155,7 @@ fmod MGCI is
 
   eq mgci(M,T)                     = mgci(M,T,0) .
   eq mgci(M,T,I)                   = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
-  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),empty) .
+  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),.SubstitutionSet) .
   eq $mgci(M,CM,UP,N,noUnifier,SS) = lift-sub(M,SS) .
   eq $mgci(M,CM,UP,N,{S,S',I},SS)  = $mgci(M,CM,UP,s(N),metaDisjointUnify(CM,UP,s(I),s(N)),SS | S) .
 

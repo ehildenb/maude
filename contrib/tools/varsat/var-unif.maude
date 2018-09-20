@@ -120,15 +120,15 @@ fmod EQ-VARIANT is
   eq $variants(M,T,I,noVariant,VS)        = VS .
   eq $variants(M,T,I,{T',S,J,P,B},VS)     = $variants(M,T,s(I),metaGetVariant(M,T,empty,s(J),s(I)),{T',S,J,P,B} | VS) .
   eq  var-unifiers(M,UP)                  = getss(#var-unifiers(M,UP)) .
-  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),empty) .
+  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),.SubstitutionSet) .
   eq $var-unifiers(M,UP,I,J,noUnifier,SS) = ssnp(SS,J) .
   eq $var-unifiers(M,UP,I,J,{S,J'},SS)    = $var-unifiers(M,UP,s(I),s(J'),metaVariantUnify(M,UP,empty,s(J'),s(I)),SS | S) .
 
-  eq applySubs({T,S,I,P,B},S' | SS) = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
-  eq applySubs({T,S,I,P,B},empty)   = empty .
+  eq applySubs({T,S,I,P,B},S' | SS)          = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
+  eq applySubs({T,S,I,P,B},.SubstitutionSet) = empty .
 
   eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
-  eq getSubs(empty)             = empty .
+  eq getSubs(empty)             = .SubstitutionSet .
   eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
   eq getTerms(empty)            = .TermSet .
   eq getss(ssnp(SS,I))          = SS .

@@ -727,8 +727,8 @@ fmod FOFORM-SUBSTITUTIONSET is
   ---
   var S S' : Substitution . var SS : SubstitutionSet . var F : FOForm? .
   --- base case
-  eq F << empty         = mtFormSet .
-  eq F << (S | S' | SS) = (F << S) | (F << S' | SS) .
+  eq F << .SubstitutionSet = mtFormSet .
+  eq F << (S | S' | SS)    = (F << S) | (F << S' | SS) .
 endfm
 
 fmod FOFORMSUBSTITUTION-PAIRSET is
@@ -762,14 +762,14 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   --- INP: FOForm? SubstitutionSet
   --- PRE: None
   --- OUT: An FOFormSubstPairSet built by pairing FOForm? with each Substitution
-  eq build(F,S | SS)      = (F,S) | build(F,SS) .
-  eq build(F,empty)       = mtFSPS .
+  eq build(F,S | SS)           = (F,S) | build(F,SS) .
+  eq build(F,.SubstitutionSet) = mtFSPS .
 
   --- projections
   eq getForm((F,S) | FPS) = F | getForm(FPS) .
   eq getForm(mtFSPS)      = mtFormSet .
   eq getSub((F,S) | FPS)  = S | getSub(FPS) .
-  eq getSub(mtFSPS)       = empty .
+  eq getSub(mtFSPS)       = .SubstitutionSet .
 
   --- INP: FOFormSubstPairSet
   --- PRE: Each FOForm in the argument is also a Conj?
@@ -778,15 +778,15 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   eq dnf-join(mtFSPS)       = mtForm .
 
   --- Substitution Functions
-  eq (FP | FP' | FPS) << SS            = (FP << SS) | ((FP' | FPS) << SS) .
-  eq mtFSPS           << SS            = mtFSPS .
-  eq FPS              << empty         = mtFSPS .
-  eq FP               << (S | S' | SS) = (FP << S) | (FP << (S' | SS)) .
+  eq (FP | FP' | FPS) << SS               = (FP << SS) | ((FP' | FPS) << SS) .
+  eq mtFSPS           << SS               = mtFSPS .
+  eq FPS              << .SubstitutionSet = mtFSPS .
+  eq FP               << (S | S' | SS)    = (FP << S) | (FP << (S' | SS)) .
 
   --- Construct pairs from one side
-  eq F Pair<< (S | S' | SS)   = (F Pair<< S) | (F Pair<< (S' | SS)) .
-  eq F Pair<< empty           = mtFSPS .
-  eq F Pair<< errsub(QL) | SK = errFOFormSubstPair(QL) [owise] .
+  eq F Pair<< (S | S' | SS)    = (F Pair<< S) | (F Pair<< (S' | SS)) .
+  eq F Pair<< .SubstitutionSet = mtFSPS .
+  eq F Pair<< errsub(QL) | SK  = errFOFormSubstPair(QL) [owise] .
 
   --- Apply the idempotency equation
   eq idem(FP | FP | FPS) = idem(FP | FPS) .

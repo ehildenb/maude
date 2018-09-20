@@ -264,7 +264,7 @@ fmod VAR-SAT is
   eq fin-sorts(FM,QF,FSS,ISS) = FSS ; get-finite-sorts(ctor-sig(FM),getType(vars(QF)) - (FSS ; ISS)) .
 
   op not-empty? : SubstitutionSet -> Bool .
-  eq not-empty?(SBS) = SBS =/= empty .
+  eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
 
   op $renameForm : Module ConjSet -> ConjSet .
   op $renameForm : Module FOForm? -> FOForm? .
