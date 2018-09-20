@@ -1,35 +1,100 @@
-load ../base/prelude-aux.maude
+--- file: var-unif.maude
+--- reqs:
+--- info: this file wraps the built-in metaMatch, metaUnify, and metaVariantUnify commands
+---       and provides a simpler interface where variable renaming is done auto-magically
 
 fmod UNIFIERS is
-  pr SUBSTITUTION-SET .
-  pr META-LEVEL .
+  pr VARIABLES-TO-CONSTANTS .
+  pr SUBSTITUTIONSET        .
+  pr TERMSET-FM             .
+  pr TERMSET-RENAME         .
+  pr TERMSUBSTSETPAIR       .
+  pr SUBSTITUTION-STREAM    .
+  ---
+  op  unifiers   : Module VariableSet NeTermSet -> SubstitutionSet  .
+  op  unifiers   : TermSubstPairSet             -> SubstitutionSet  .
+  op #unifiers   : Module VariableSet NeTermSet -> TermSubstSetPair .
+  op #unifiers   : Module TermSubstPairSet      -> TermSubstSetPair .
+  op #unifiers   : TermSubstPairSet             -> TermSubstSetPair .
+  ---
+  op  unifiers   : Module UnificationProblem                      -> SubstitutionSet .
+  op #unifiers   : Module UnificationProblem Nat UnificationPair? -> Stream{Substitution} .
+  ---
+  op  matches    : Module Term Term                   -> SubstitutionSet .
+  op #matches    : Module Term Term Nat Substitution? -> Stream{Substitution} .
+  ---
+  op  toUnifProb : NeTermSet      -> UnificationProblem .
+  op  toUnifProb : Term NeTermSet -> UnificationProblem .
 
-  op unifiers  : Module UnificationProblem -> SubstitutionSet .
-  op $unifiers : Module UnificationProblem Nat UnificationPair? SubstitutionSet -> SubstitutionSet .
-  op matches   : Module Term Term -> SubstitutionSet .
-  op $matches  : Module Term Term Nat Substitution? -> SubstitutionSet .
-
-  var M : Module .
-  var UP : UnificationProblem .
-  var I J : Nat .
+  var M    : Module .
+  var UP   : UnificationProblem .
+  var I J  : Nat .
   var S S' : Substitution .
-  var SS : SubstitutionSet .
+  var SS   : SubstitutionSet .
   var T T' : Term .
+  var NTS  : NeTermSet .
+  var QS   : QidSet .
+  var TPS  : TermSubstPairSet .
+  var TP   : TermSubstPair .
+  var SharedVars : VariableSet .
 
-  eq unifiers(M,UP) = $unifiers(M,UP,0,metaUnify(M,UP,0,0),.SubstitutionSet) .
-  eq $unifiers(M,UP,I,{S,J},SS) = $unifiers(M,UP,s(I),metaUnify(M,UP,s(J),s(I)),SS | S) .
-  eq $unifiers(M,UP,I,noUnifier,SS) = SS .
+  --- TODO: Does this even work/make sense? Revisit this later.
+  --- INP: Module QidSet NeTermSet
+  --- PRE: NeTermSet has at least two elements; is well-formed in Module
+  --- OUT: A unification problem unifying all of the terms in NeTermSet where
+  ---      all variables have been renamed except for QS
+  --- NB:  #unifiers returns the renamed set of unified terms each with a
+  ---      substitution that unifies it with the rest of the terms
+  eq   unifiers(M,QS,T | NTS)    = unifiers(#unifiers(M,QS,T | NTS)) .
+  eq   unifiers((T,SS))          = SS .
+  eq  #unifiers(M,QS,T | NTS)    = #unifiers(M,#renameAllExcept(M,QS,T | NTS)) .
+  eq  #unifiers(M,TPS)           = #unifiers(TPS << unifiers(M,toUnifProb(tsp-term(TPS)))) .
+  eq  #unifiers(TP | TPS)        = (tsp-term(TP),tsp-sub(TP | TPS)) .
 
-  eq matches(M,T,T') = $matches(M,T,T',0,metaMatch(M,T,T',nil,0)) .
-  eq $matches(M,T,T',I,S) = S | $matches(M,T,T',s(I),metaMatch(M,T,T',nil,s(I))) .
-  eq $matches(M,T,T',I,noMatch) = .SubstitutionSet .
+  --- INP: Module UnificationProblem
+  --- PRE: Unification problem is well-formed in Module
+  --- OUT: A complete set of unifiers
+  --- NB:  #unifiers returns a stream of unifiers (useful for applications where the
+  ---      process may take a long time)
+  eq  unifiers(M,UP)             = set(#unifiers(M,UP,0,metaUnify(M,UP,0,0))) .
+  eq #unifiers(M,UP,I,{S,J})     = S & #unifiers(M,UP,s(I),metaUnify(M,UP,s(J),s(I))) .
+  eq #unifiers(M,UP,I,noUnifier) = end .
+
+  --- INP: Module Term1 Term2
+  --- PRE: Terms are well-formed in Module
+  --- OUT: A complete set of matching substitutions from Term1 to Term2
+  --- NB:  #matches returns a stream of matches (useful for applications where the
+  ---      process may take a long time)
+  eq  matches(M,T,T')            = set(#matches(M,T,T',0,metaMatch(M,T,T',nil,0))) .
+  eq #matches(M,T,T',I,S)        = S & #matches(M,T,T',s(I),metaMatch(M,T,T',nil,s(I))) .
+  eq #matches(M,T,T',I,noMatch)  = end .
+
+  --- INP: NeTermSet
+  --- PRE: NeTermSet has at least two elements
+  --- OUT: A unification problem unifying all of the terms in the TermSet
+  eq toUnifProb(T | NTS)         = toUnifProb(T,NTS) .
+  eq toUnifProb(T,T' | NTS)      = T =? T' /\ toUnifProb(T,NTS) .
+  eq toUnifProb(T,T')            = T =? T' .
+
+  --- PRE: [1] Terms are well-defined in module
+  ---      [2] Terms have disjoint variables, ignoring variables passed in as optional argument
+  --- OUT: The standard unification/matching results
+  op safeUnify  : Module Term Term -> SubstitutionSet .
+  op safeUnify  : Module VariableSet Term Term -> SubstitutionSet .
+  op safeMatch  : Module Term Term -> SubstitutionSet .
+  op safeMatch  : Module VariableSet Term Term -> SubstitutionSet .
+ ceq safeUnify(M,SharedVars,T,T') = unifiers(M,T =? T') if intersection(vars(T),vars(T')) \ SharedVars == none .
+  eq safeUnify(M,SharedVars,T,T') = errsub('Unification 'unexpected 'shared 'variable) [owise print "Safe Unify Variable Error"] .
+  eq safeUnify(M,T,T')            = safeUnify(M,none,T,T') .
+ ceq safeMatch(M,SharedVars,T,T') = matches(M,T,T') if intersection(vars(T),vars(T')) \ SharedVars == none .
+  eq safeMatch(M,SharedVars,T,T') = errsub('Match 'unexpected 'shared 'variable) [owise print "Safe Match Variable Error"] .
+  eq safeMatch(M,T,T')            = safeMatch(M,none,T,T') .
 endfm
 
 fmod EQ-VARIANT is
   --- renaming needed to avoid a billion conflicts later...
   pr VARIANT * (op addOps to MHaddOps, op addEqs to MHaddEqs, op addSorts to MHaddSorts) .
-  pr SUBSTITUTION-SET .
-  pr VARIABLESET .
+  pr SUBSTITUTIONSET .
 
   --- sort to collect variant unifier results
   sort SubstSetNatPair .
@@ -55,17 +120,17 @@ fmod EQ-VARIANT is
   eq $variants(M,T,I,noVariant,VS)        = VS .
   eq $variants(M,T,I,{T',S,J,P,B},VS)     = $variants(M,T,s(I),metaGetVariant(M,T,empty,s(J),s(I)),{T',S,J,P,B} | VS) .
   eq  var-unifiers(M,UP)                  = getss(#var-unifiers(M,UP)) .
-  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),.SubstitutionSet) .
+  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),empty) .
   eq $var-unifiers(M,UP,I,J,noUnifier,SS) = ssnp(SS,J) .
   eq $var-unifiers(M,UP,I,J,{S,J'},SS)    = $var-unifiers(M,UP,s(I),s(J'),metaVariantUnify(M,UP,empty,s(J'),s(I)),SS | S) .
 
-  eq applySubs({T,S,I,P,B},S' | SS)          = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
-  eq applySubs({T,S,I,P,B},.SubstitutionSet) = empty .
+  eq applySubs({T,S,I,P,B},S' | SS) = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
+  eq applySubs({T,S,I,P,B},empty)   = empty .
 
   eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
-  eq getSubs(empty)             = .SubstitutionSet .
+  eq getSubs(empty)             = empty .
   eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
-  eq getTerms(empty)            = .TermSet .
+  eq getTerms(empty)            = emptyTermSet .
   eq getss(ssnp(SS,I))          = SS .
 endfm
 
