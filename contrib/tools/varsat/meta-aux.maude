@@ -7,6 +7,8 @@
 ---# TERMS, TERMSETS, QIDSETS, AND REFINEMENTS
 ---
 
+load ../meta/terms.maude
+
 fmod TERM-EXTRA is
   pr META-LEVEL .
   op vars            : Term                 -> QidSet .
@@ -77,50 +79,7 @@ endfm
 
 fmod TERMSET-FM is
   pr META-LEVEL .
-
-  sort TermSet NeTermSet .
-  subsort Term < NeTermSet < TermSet .
-  op emptyTermSet : -> TermSet [ctor] .
-  op _|_ : TermSet TermSet -> TermSet [ctor assoc comm id: emptyTermSet format (d n d d)] .
-  op _|_ : TermSet NeTermSet -> NeTermSet [ctor ditto] .
-
-  var U : Module .
-  var T : Term . var TS : TermSet . var NTS : NeTermSet . var TL : TermList .
-  var Y : Type .
-  var V : Variable .
-
-  eq T | T = T .
-
-  op _in_ : Term TermSet -> Bool .
-  eq T in (T | TS) = true .
-  eq T in TS = false [owise] .
-
-  op TermSet : TermList -> TermSet .
-  eq TermSet(empty) = emptyTermSet .
-  eq TermSet((T,TL)) = T | TermSet(TL) .
-
-  op setsize : TermSet -> Nat .
-  eq setsize(T | TS) = s(size(TS)) .
-  eq setsize(emptyTermSet) = 0 .
-
-  --- OUT: return all terms in the termset that are less than
-  ---      the given type
-  op allInSort : Module TermSet Type -> TermSet .
-  eq allInSort(U,T | TS,Y) =
-    if sortLeq(U,leastSort(U,T),Y) then T else emptyTermSet fi |
-    allInSort(U,TS,Y) .
-  eq allInSort(U,emptyTermSet,Y) = emptyTermSet .
-
-  --- OUT: return the set of TypeSet containing all the types
-  ---      of the terms in this TermSet
-  op tsleastSort : Module TermSet -> [TypeSet] .
-  eq tsleastSort(U,emptyTermSet) = none .
-  eq tsleastSort(U,T | NTS) = leastSort(U,T) ; tsleastSort(U,NTS) .
-
-  --- OUT: a substitution built from mapping the variable to each term
-  op tsBuildSub : Variable TermSet -> Substitution .
-  eq tsBuildSub(V,T | TS) = V <- T ; tsBuildSub(V,TS) .
-  eq tsBuildSub(V,emptyTermSet) = none .
+  pr TERM-SET .
 endfm
 
 fmod QIDSET-REFINEMENT is
@@ -835,7 +794,7 @@ fmod SUBSTITUTIONSET-AUX is
   --- OUT: A TermSet of instances of Term by application with each Substitution in SubstitutionSet
   op _<<_ : Term SubstitutionSet -> TermSet .
   eq T << (S | S' | SS) = (T << S) | (T << (S' | SS)) .
-  eq T << empty         = emptyTermSet .
+  eq T << empty         = .TermSet .
 
 
   --- OUT: A SubstitutionSet identical to input but where each assignment in Substitution is removed
@@ -935,7 +894,7 @@ fmod TERMSUBSTPAIRSET is
   var TPS : TermSubstPairSet . var TP TP' : TermSubstPair . var T : Term . var S S' : Substitution . var SS : SubstitutionSet .
 
   eq tsp-term(TPS | (T,S))    = T | tsp-term(TPS) .
-  eq tsp-term(emptyTPS)       = emptyTermSet .
+  eq tsp-term(emptyTPS)       = .TermSet .
   eq tsp-sub(TPS | (T,S))     = S | tsp-sub(TPS) .
   eq tsp-sub(emptyTPS)        = empty .
 
@@ -983,7 +942,7 @@ fmod VARIANT is
               | R:VariantTripleSet)
    = T:Term | getTerms(R:VariantTripleSet) .
   eq getTerms((empty).VariantTripleSet)
-   = emptyTermSet .
+   = .TermSet .
 
   op getSubstitutions : VariantTripleSet -> SubstitutionSet .
   eq getSubstitutions({T:Term,S:Substitution,NextVar:Nat,P:Parent,B:Bool}
@@ -2093,7 +2052,7 @@ fmod GENERIC-PRINTER is
   --- print termsets
   eq print(M,T | T' | TS)      = metaPrettyPrint(M,T) '`, print(M,T' | TS) .
   eq print(M,T)                = metaPrettyPrint(M,T) .
-  eq print(M,emptyTermSet)     = &mt .
+  eq print(M,.TermSet)         = &mt .
   --- print substitutions
   eq printSub(M,V <- T)        = metaPrettyPrint(M,V) '<- metaPrettyPrint(M,T) .
   eq printSub(M,A ; A' ; SB)   = printSub(M,A) '; printSub(M,A' ; SB) .

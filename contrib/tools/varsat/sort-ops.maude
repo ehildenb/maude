@@ -229,7 +229,7 @@ fmod SORT-GEN-REWTH is
 
   eq sort-gen(FM,S) = sort-gen(FM,S,unbounded) .
   eq sort-gen(FM,S,B) =
-    sort-gen(sgrewth(FM),S,0,B,emptyTermSet,sort-gen1(sgrewth(FM),S,0)) .
+    sort-gen(sgrewth(FM),S,0,B,.TermSet,sort-gen1(sgrewth(FM),S,0)) .
   eq sort-gen(SM,S,N,B,TS,RT?) =
     if RT? =/= failure and (B == unbounded or-else N <= B) then
       sort-gen(SM,S,s(N),B,TS | getTerm(RT?),sort-gen1(SM,S,s(N)))

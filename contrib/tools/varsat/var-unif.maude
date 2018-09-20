@@ -130,7 +130,7 @@ fmod EQ-VARIANT is
   eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
   eq getSubs(empty)             = empty .
   eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
-  eq getTerms(empty)            = emptyTermSet .
+  eq getTerms(empty)            = .TermSet .
   eq getss(ssnp(SS,I))          = SS .
 endfm
 

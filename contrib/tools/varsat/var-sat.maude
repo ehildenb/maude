@@ -56,7 +56,7 @@ fmod WRAPPED-TERMS is
   eq [{T} ; TL] = T, [TL] .
   eq [tlnil] = empty .
   eq wrap(T | TS) = {T} ; wrap(TS) .
-  eq wrap(emptyTermSet) = tlnil .
+  eq wrap(.TermSet) = tlnil .
 endfm
 
 view WrapTermList from UNIT-LIST to WRAPPED-TERMS is
@@ -277,5 +277,5 @@ fmod VAR-SAT is
 
   op toDUPs : TermSet ~> NegEqConjSet .
   eq toDUPs(T | TS) = TLToNegEqConj((toTL(T))) | toDUPs(TS) .
-  eq toDUPs(emptyTermSet) = mtFormSet .
+  eq toDUPs(.TermSet) = mtFormSet .
 endfm

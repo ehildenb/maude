@@ -549,7 +549,7 @@ fmod TERMSET-RENAME is
   eq #renameAllExcept(M,QS,TS)                   = #renameAllExcept(M,QS,none,0,TS,emptyTPS) .
  ceq #renameAllExcept(M,QS,S,I,T | TS,TPS)       = #renameAllExcept(M,QS,S',J,TS,TPS | (T',S'))
   if (S',T',J) := #renameAllVar(M,S |>* varsToTermList(QS),I,T) .
-  eq #renameAllExcept(M,QS,S,I,emptyTermSet,TPS) = TPS .
+  eq #renameAllExcept(M,QS,S,I,.TermSet,TPS) = TPS .
 endfm
 
 eof
