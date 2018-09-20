@@ -3,6 +3,9 @@
 --- info: this file wraps the built-in metaMatch, metaUnify, and metaVariantUnify commands
 ---       and provides a simpler interface where variable renaming is done auto-magically
 
+load meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
+load renaming.maude       --- next-gen renaming library
+
 fmod UNIFIERS is
   pr VARIABLES-TO-CONSTANTS .
   pr SUBSTITUTIONSET        .

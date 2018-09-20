@@ -1,7 +1,7 @@
 
 
 load ../../../contrib/tools/fvp/numbers.maude
-load ../../../contrib/tools/varsat/load-varsat.maude
+load ../../../contrib/tools/varsat/var-sat.maude
 
 fmod TEST-NAT is
   pr VAR-SAT .

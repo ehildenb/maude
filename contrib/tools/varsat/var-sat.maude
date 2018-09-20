@@ -12,6 +12,10 @@
 ---       [3] Checking that there exists an assignment such
 ---           that the disequalities are consistent modulo B
 
+load sort-ops.maude       --- empty and finite sort constructions
+load ctor-var-unif.maude  --- computing constructor variants and unifiers
+load foform.maude         --- formula data structure
+
 fmod FORMS-TERMS-AUX is
   pr FOFORM .
 

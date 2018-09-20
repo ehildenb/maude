@@ -11,6 +11,9 @@
 ---       into one in the original signature---and then
 ---       lifts operation to substitutions.
 
+load meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
+load renaming.maude       --- next-gen renaming library
+
 fmod CTOR-REFINE is
   pr META-LEVEL .
   pr KIND-CHECK .    --- for kind checks

@@ -112,6 +112,8 @@
 ---           NOTE: using "cat metafresh.maude | egrep -v "^[ ]*---" | egrep -v "^[ ]*$" | wc -l"
 ---                 to count code lines (excl. comments/blanks) last gave slightly >250
 
+load prelude-aux.maude
+
 fmod RENAME-DATA is
   pr META-LEVEL .
   pr SUBSTITUTION-REFINEMENT .

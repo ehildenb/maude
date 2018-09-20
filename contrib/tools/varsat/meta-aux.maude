@@ -8,6 +8,7 @@
 ---
 
 load ../meta/terms.maude
+load prelude-aux.maude
 
 fmod TERM-EXTRA is
   pr META-LEVEL .

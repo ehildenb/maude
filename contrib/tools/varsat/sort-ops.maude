@@ -6,6 +6,8 @@
 ---       [2] Compute which sorts are finite (but not empty modulo B)
 ---       [3] If a sort is finite modulo B, generate all of the terms in it
 
+load meta-aux.maude
+
 fmod EMPTY-SORT-REWTH is
   pr META-LEVEL .
   pr QID-JOIN .
