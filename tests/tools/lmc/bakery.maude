@@ -2,7 +2,6 @@ set show timing off .
 
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
-load ../../../contrib/tools/meta/narrowing.maude
 
 fmod RENAMED-FVP-NARROWING-GRAPH is
    protecting ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
@@ -144,9 +143,11 @@ reduce states(2) <= states(1) .
 
 reduce state('wait.NcMode)           <= state('PC:Mode) .
 reduce state('_+_['1.NzNat,'V3:Nat]) <= state('Y1:NzNat) .
---- reduce state('Y1:NzNat)             <= state('_+_['1.NzNat,'V3:Nat]) .
 reduce state('V2:NcMode)             <= state('QNC:NcMode) .
 reduce state('V3:Nat)                <= state('Y2:Nat) .
+
+--- TODO: It would be nice to be able to prove the following
+reduce state('Y1:NzNat) <= state('_+_['1.NzNat,'V3:Nat]) .
 
 reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'V3:Nat] ,  'V2:NcMode , 'V3:Nat ])
     <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat              , 'QNC:NcMode , 'Y2:Nat ]) .

@@ -572,6 +572,11 @@ reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state('V3:Nat) <= state('Y2:Nat) .
 rewrites: 5
 result Bool: true
 ==========================================
+reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state('Y1:NzNat) <= state('_+_[
+    '1.NzNat,'V3:Nat]) .
+rewrites: 3
+result [Bool]: state('Y1:NzNat) <= state('_+_['1.NzNat,'V3:Nat])
+==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : state('<_`,_`,_`,_>['wait.NcMode,
     '_+_['1.NzNat,'V3:Nat],'V2:NcMode,'V3:Nat]) <= state('<_`,_`,_`,_>[
     'PC:Mode,'Y1:NzNat,'QNC:NcMode,'Y2:Nat]) .
