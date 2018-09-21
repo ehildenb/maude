@@ -1,0 +1,72 @@
+load ../../../contrib/systems/thermostat.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+
+set include BOOL off .
+
+mod THERMOSTAT-NARROWING-GRAPH is
+   protecting NAT .
+    extending CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    extending UNCONDITIONALIZE-FVP-BOOL .
+
+    vars TMP T T' : Term . vars N M : Nat . var L : Label .
+
+    eq #tSort = 'Conf .
+    eq #MO    = upModule('THERMOSTAT-INT-COMFORTABLE, true) .
+
+    op init : Nat Term -> [Term] .
+    ------------------------------
+    eq init(0, TMP) = '`{_`,_`,_`}[ '0.Nat , TMP , 'on.InMode          ] .
+    eq init(1, TMP) = '`{_`,_`,_`}[ '0.Nat , TMP , 'off.InMode         ] .
+    eq init(2, TMP) = '`{_`,_`,_`}[ '0.Nat , TMP , 'delay['off.InMode] ] .
+    eq init(3, TMP) = '`{_`,_`,_`}[ '0.Nat , TMP , 'delay['on.InMode]  ] .
+
+    eq init(4, TMP) = '`{_`,_`,_`}[ 'TIME:Nat , TMP , 'IM:InMode    ] .
+    eq init(5, TMP) = '`{_`,_`,_`}[ 'TIME:Nat , TMP , 'DM:DelayMode ] .
+    eq init(6, TMP) = '`{_`,_`,_`}[ 'TIME:Nat , TMP , 'M:Mode       ] .
+
+   ops lt le : Term Term -> [Term] .
+   ---------------------------------
+    eq lt(T, T') = '_?=_['_<_[T, T'], 'true.Bool] .
+    eq le(T, T') = '_?=_['_<=_[T, T'], 'true.Bool] .
+
+    op cond : Nat Term -> [Term] .
+    ------------------------------
+    eq cond(0, TMP) = '_/\_[lt('min.Nat, TMP), lt(TMP, 'max.Nat)] .
+
+    eq cond(1, TMP) = '_/\_[lt(TMP,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])
+                           ,le('_+_['1.NzNat,'1.NzNat,'1.NzNat,TMP],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])] .
+
+    eq cond(2, TMP) = '_/\_[lt(TMP, 20), lt(20, TMP)] .
+
+
+    op cinit : Nat Nat Term -> [Term] .
+    -----------------------------------
+    eq cinit(N, M, T) = '_st_[init(N, T), cond(M, T)] .
+
+    op 20 : -> Term .
+    -----------------
+    eq 20 = '_+_['10.NzNat, '10.NzNat] .
+endm
+
+reduce wellFormed(#M, init(0, 20)) .
+reduce wellFormed(#M, init(1, 20)) .
+reduce wellFormed(#M, init(2, 20)) .
+reduce wellFormed(#M, init(3, 20)) .
+reduce wellFormed(#M, init(4, 20)) .
+reduce wellFormed(#M, init(5, 20)) .
+reduce wellFormed(#M, init(6, 20)) .
+
+reduce wellFormed(#M, cond(0, 'TMP:Nat)) .
+reduce wellFormed(#M, cond(0, '_+_['TMP:Nat, '1.NzNat])) .
+
+reduce wellFormed(#M, cinit(0, 0, 'TMP:Nat)) .
+reduce wellFormed(#M, cinit(1, 0, '_+_['TMP:Nat, '1.NzNat])) .
+
+reduce step(state(cinit(0,0,'TMP:Nat))) .
+
+reduce bfs(state(cinit(0,0,20)), 5) .
+reduce bfs(state(cinit(0,0,'TMP:Nat)), 1) .
+reduce bfs(state(cinit(0,1,'TMP:Nat)), 2) .
+
+reduce state(init(0, 20)) <= state(init(4, 20)) .
+reduce state(init(2, 20)) <= state(init(4, 20)) .

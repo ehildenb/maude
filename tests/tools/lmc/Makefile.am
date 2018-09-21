@@ -5,6 +5,7 @@ TESTS = \
 	bank-account.maude \
 	lgraph-search.maude \
 	lmc.maude \
+	thermostat.maude \
 	token.maude
 
 RESULT_FILES = \
@@ -12,6 +13,7 @@ RESULT_FILES = \
 	bank-account.expected \
 	lgraph-search.expected \
 	lmc.expected \
+	thermostat.expected \
 	token.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)
