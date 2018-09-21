@@ -991,8 +991,8 @@ No more variants.
 rewrites: 11
 ==========================================
 reduce in FVP-BOOL-EQFORM : true ?= true .
-rewrites: 0
-result PosEqLit{Bool}: true ?= true
+rewrites: 1
+result TrueLit{Bool}: tt
 ==========================================
 reduce in TEST-FVP-NAT-EQFORM : N:Nat ?= N:Nat + N':Nat .
 rewrites: 0

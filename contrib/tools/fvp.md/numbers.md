@@ -227,8 +227,13 @@ view Int  from TRIV to FVP-INT-SORT  is sort Elt to Int  . endv
 fmod FVP-BOOL-EQFORM is
    protecting EQFORM-IMPL{Bool} .
 
-    eq false ?= true = ff .
-    eq false != true = tt .
+    eq true  ?= true  = tt .
+    eq false ?= false = tt .
+    eq false ?= true  = ff .
+
+    eq true  != true  = ff .
+    eq false != false = ff .
+    eq false != true  = tt .
 endfm
 
 fmod FVP-NAT-EQFORM is protecting EQFORM-IMPL{Nat} . endfm
