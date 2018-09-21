@@ -1015,7 +1015,7 @@ reduce in TEST-FVP-BOOL-EQFORM : true ?= N:Nat <= N':Nat /\ false ?= N:Nat <
 rewrites: 0
 result PosEqConj{Bool}: true ?= N:Nat <= N':Nat /\ false ?= N:Nat < N':Nat
 ==========================================
-reduce in TEST-FVP-BOOL-EQFORM : N:Nat <= N':Nat ?= N':Nat < N:Nat .
+reduce in TEST-FVP-BOOL-EQFORM : N':Nat < N:Nat ?= N:Nat <= N':Nat .
 rewrites: 0
-result PosEqLit{Bool}: N:Nat <= N':Nat ?= N':Nat < N:Nat
+result PosEqLit{Bool}: N':Nat < N:Nat ?= N:Nat <= N':Nat
 Bye.
