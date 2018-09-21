@@ -2,7 +2,7 @@ Warning: "bank-account.maude", line 127 (mod BANK-ACCOUNT): variable m is used
     before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs .
-Warning: "bank-account.maude", line 185 (mod BANK-ACCOUNT-CTOR): variable m is
+Warning: "bank-account.maude", line 189 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: ff > # msgs => < bal: n + m pend: x overdraft:
     ff > # msgs [narrowing label deposit] .
