@@ -37,7 +37,7 @@ result Transition: < label('a-enter, none),state('`{_`}['__['`[_`,crit`][
     'a.Name],'`[_`,wait`]['b.Name]]]) >
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : step(state(init(1))) .
-rewrites: 18
+rewrites: 17
 result NeTransitionSet: < label('a-enter, 
   'T:Token <- '$.Token),state('`{_`}['__['`[_`,crit`]['a.Name],'`[_`,wait`][
     'b.Name]]]) >,< label('b-enter, 
@@ -71,7 +71,7 @@ result NeTransitionSet: < label('a-enter,
     '`[_`,wait`]['a.Name]]]) >
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : step(state(init(5))) .
-rewrites: 22
+rewrites: 23
 result NeTransitionSet: < label('a-enter, 
   'P:Proc <- '@1:Proc),state('`{_`}['__['@1:Proc,'`[_`,crit`]['a.Name]]]) >,<
     label('a-exit, 
@@ -81,7 +81,7 @@ result NeTransitionSet: < label('a-enter,
     '`[_`,wait`]['a.Name],'`[_`,wait`]['b.Name]]]) >
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : step(state(init(6))) .
-rewrites: 22
+rewrites: 23
 result NeTransitionSet: < label('a-exit, 
   'P:Proc <- '`[_`,crit`]['a.Name]),state('`{_`}['__['*.Token,'*.Token,
     '`[_`,wait`]['a.Name],'`[_`,wait`]['a.Name]]]) >,< label('b-enter, 
@@ -146,7 +146,7 @@ result FoldedLabeledGraph: (0 -[label('a-enter, none)]-> 2
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(1))) .
-rewrites: 156
+rewrites: 155
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'T:Token <- '$.Token)]-> 2
 0 -[label('b-enter, 
@@ -186,7 +186,7 @@ result FoldedLabeledGraph: (0 -[label('a-exit, none)]-> 2
 | 9
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(4))) .
-rewrites: 406
+rewrites: 403
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'T':Token <- '$.Token ; 
   'T:Token <- '@1:Token)]-> 2
@@ -223,7 +223,7 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 | 21
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(5))) .
-rewrites: 1348
+rewrites: 1347
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'P:Proc <- '@1:Proc)]-> 2
 0 -[label('a-exit, 
@@ -273,7 +273,7 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 | 35
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(6))) .
-rewrites: 1518
+rewrites: 1515
 result FoldedLabeledGraph: (0 -[label('a-exit, 
   'P:Proc <- '`[_`,crit`]['a.Name])]-> 2
 0 -[label('b-enter, 
@@ -316,7 +316,7 @@ result FoldedLabeledGraph: (0 -[label('a-exit,
 | 35
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
-rewrites: 901
+rewrites: 897
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'P:Proc <- '@1:Proc ; 
   'T:Token <- '$.Token)]-> 2
@@ -377,7 +377,7 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 | 31
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
-rewrites: 901
+rewrites: 897
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'P:Proc <- '@1:Proc ; 
   'T:Token <- '$.Token)]-> 2
@@ -439,6 +439,6 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : check state(init(0)) stable in state(init(1))
     ; state(init(2)) ; state(init(3)) .
-rewrites: 252
+rewrites: 251
 result Bool: true
 Bye.

@@ -305,16 +305,16 @@ fmod NARROWING-GRAPH-COMMON is
     extending META-LMC-PARAMETERS .
 
     vars T T' : Term . var NeTS : NeTermSet . var M : Module . var SUB : Substitution .
-    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RL : Qid .
+    vars NSR NSR' : NarrowStepResult . var NeNSRS : NeNarrowStepResults . var NSRS : NarrowStepResults . var RL : Qid .
 
     op label : Qid Substitution -> Label .
     --------------------------------------
 
     op transition : NarrowStepResults -> [TransitionSet] .
     ------------------------------------------------------
-    eq transition({RL : T , SUB })     = < label(RL, SUB) , state(T) > .
-    eq transition(.NarrowStepResults)  = .TransitionSet .
-    eq transition(NSR || NSR' || NSRS) = transition(NSR) , transition(NSR') , transition(NSRS) .
+    eq transition({RL : T , SUB })    = < label(RL, SUB) , state(T) > .
+    eq transition(.NarrowStepResults) = .TransitionSet .
+    eq transition(NSR || NeNSRS)      = transition(NSR) , transition(NeNSRS) .
 
     op fold : SubstitutionSet -> Fold .
     -----------------------------------
