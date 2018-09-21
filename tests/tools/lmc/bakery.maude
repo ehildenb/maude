@@ -53,7 +53,7 @@ reduce step(state(init(3))) .
 
 --- ### Function `fold`
 
-reduce fold ( state('_;_;_['__['s.Name,'@1:Name],'__['s.Name,'@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+reduce fold ( state('_;_;_['__['s.Name,'V1:Name],'__['s.Name,'V1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             , state('_;_;_['X:Name,              'Y:Name,              '__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             ) .
 reduce fold(state(init(1)), state(init(2))) .
@@ -143,33 +143,33 @@ reduce states(1) <= states(1 ; 2) .
 reduce states(2) <= states(1) .
 
 reduce state('wait.NcMode)           <= state('PC:Mode) .
-reduce state('_+_['1.NzNat,'@3:Nat]) <= state('Y1:NzNat) .
---- reduce state('Y1:NzNat)             <= state('_+_['1.NzNat,'@3:Nat]) .
-reduce state('@2:NcMode)             <= state('QNC:NcMode) .
-reduce state('@3:Nat)                <= state('Y2:Nat) .
+reduce state('_+_['1.NzNat,'V3:Nat]) <= state('Y1:NzNat) .
+--- reduce state('Y1:NzNat)             <= state('_+_['1.NzNat,'V3:Nat]) .
+reduce state('V2:NcMode)             <= state('QNC:NcMode) .
+reduce state('V3:Nat)                <= state('Y2:Nat) .
 
-reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'@3:Nat] ,  '@2:NcMode , '@3:Nat ])
-   <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat               , 'QNC:NcMode , 'Y2:Nat ]) .
+reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'V3:Nat] ,  'V2:NcMode , 'V3:Nat ])
+    <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat              , 'QNC:NcMode , 'Y2:Nat ]) .
 
 
 reduce state('sleep.NcMode) <= state('PNC:NcMode) .
 reduce state('0.Nat)        <= state('X1:Nat) .
-reduce state('@2:NcMode)    <= state('QC:Mode) .
-reduce state('@3:Nat)       <= state('X2:NzNat) .
+reduce state('V2:NcMode)    <= state('QC:Mode) .
+reduce state('V3:Nat)       <= state('X2:NzNat) .
 
-reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat  , '@2:NcMode , '@3:Nat   ])
-   <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat , 'QC:Mode   , 'X2:NzNat ]) .
+reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat  , 'V2:NcMode , 'V3:Nat   ])
+    <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat , 'QC:Mode   , 'X2:NzNat ]) .
 
-reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , '@2:NcMode    , '@3:Nat   ])
-   <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ])
+reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'V2:NcMode    , 'V3:Nat   ])
+    <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ])
        ; state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:NzNat ])
        ; state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'sleep.NcMode , '0.Nat    ])
        ) .
 
-reduce intersect(state('@2:NzNat), state('@3:Nat)) .
-reduce intersect(state('@2:NzNat), state('@3:Nat)) .
-reduce intersect( state('<_`,_`,_`,_>['@1:Mode,'0.Nat,'crit.Mode,'@2:Nat])
-                , state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat,'@3:NzNat],'crit.Mode,'@2:Nat])
+reduce intersect(state('V2:NzNat), state('V3:Nat)) .
+reduce intersect(state('V2:NzNat), state('V3:Nat)) .
+reduce intersect( state('<_`,_`,_`,_>['V1:Mode,'0.Nat,'crit.Mode,'V2:Nat])
+                , state('<_`,_`,_`,_>['V1:Mode,'_+_['V2:Nat,'V3:NzNat],'crit.Mode,'V2:Nat])
                 ) .
 
 --- both initial states yield finite state-graphs
