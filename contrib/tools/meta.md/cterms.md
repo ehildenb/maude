@@ -58,11 +58,11 @@ fmod CTERM-SET is
 `EqConj` is extended to handle constrained terms.
 
 ```maude
-    op _?=_ : CTerm CTerm -> EqConj [ditto] .
-    op _!=_ : CTerm CTerm -> EqConj [ditto] .
-    -----------------------------------------
-    eq T ?= (T' st EqC) = (T ?= T') /\ EqC .
-    eq T != (T' st EqC) = (T != T') /\ EqC .
+    op _?=_ : CTerm CTerm -> [FOForm] [ditto] .
+    op _!=_ : CTerm CTerm -> [FOForm] [ditto] .
+    -------------------------------------------
+   ceq CT ?= (T' st F) = (CT ?= T') /\ F if F =/= tt .
+   ceq CT != (T' st F) = (CT != T') /\ F if F =/= tt .
 endfm
 ```
 

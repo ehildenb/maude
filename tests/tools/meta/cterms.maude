@@ -13,3 +13,9 @@ reduce ('_+_['Y:Nat, 'X:Nat, 'Y:Nat] st 'Y:Nat ?= '_*_['0.Nat,'1.Nat] st 'Y:Nat 
 
 reduce ('_+_['Y:Nat, ('X:Nat st 'Z:Nat ?= '_*_['1.Nat, '0.Nat]), 'Z:Nat])
     == ('_+_['Y:Nat, 'X:Nat, 'Z:Nat] st 'Z:Nat ?= '_*_['1.Nat, '0.Nat]) .
+
+reduce ('_+_['Y:Nat, 'X:Nat] st ('Y:Nat ?= '_+_['X:Nat, 'Z:NzNat])) ?= ('_*_['Y:Nat, 'X:Nat] st ('Y:Nat ?= '_*_['X:Nat, 'Z:NzNat]))
+    == ('Y:Nat ?= '_*_['X:Nat,'Z:NzNat] /\ 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat] /\ '_*_['Y:Nat,'X:Nat] ?= '_+_['Y:Nat,'X:Nat]) .
+
+reduce ('_+_['Y:Nat,'X:Nat] st 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat]) ?= '_*_['Y:Nat,'X:Nat]
+    == ('_+_['Y:Nat,'X:Nat] ?= '_*_['Y:Nat,'X:Nat] /\ 'Y:Nat ?= '_+_['X:Nat,'Z:NzNat]) .
