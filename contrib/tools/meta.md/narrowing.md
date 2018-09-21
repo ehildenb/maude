@@ -2,11 +2,6 @@ Narrowing
 =========
 
 Several narrowing utilities/wrappers are provided here.
-Much of this code is extracted from Santiago Escobar's [unification.md].
-
-```maude
-load cterms.maude
-```
 
 ```maude
 load terms.maude
