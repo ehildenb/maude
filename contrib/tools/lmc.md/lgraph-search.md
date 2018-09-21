@@ -85,14 +85,27 @@ fmod GRAPH-FOLDING-SEARCH is
     vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
     var L : Label . vars LG LG' LG'' LG''' : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
 
-    sort Fold .
-    -----------
+    sort Fold NeFoldSet FoldSet .
+    -----------------------------
+    subsort Fold < NeFoldSet < FoldSet .
+
     vars F F' : Fold . var F? : [Fold] .
 
     op .Fold : -> Fold .
-    op fold  : Node Node -> [Fold] .
-    --------------------------------
-    eq fold(ND, ND) = .Fold .
+    --------------------
+
+    op .FoldSet :                   ->   FoldSet .
+    op __       : FoldSet   FoldSet ->   FoldSet [assoc comm id: .FoldSet] .
+    op __       : FoldSet NeFoldSet -> NeFoldSet [ditto] .
+    ------------------------------------------------------
+    eq F F = F .
+
+    op fold : NodeSet Node -> [FoldSet] .
+    -------------------------------------
+    eq fold(.NodeSet  , ND') = .Fold .
+    eq fold(ND        , ND)  = .Fold .
+   ceq fold(ND ; NeNS , ND') = F F' if F  := fold(ND, ND')
+                                    /\ F' := fold(NeNS, ND') .
 
     op step : Node -> [TransitionSet] .
     -----------------------------------
@@ -280,6 +293,9 @@ Instantiation to Narrowing
 
 ### Common Narrowing
 
+**TODO**: Support partial folds?
+          Would need a pattern like `T /\ not (T_1 \/ ... \/ T_i)` for `T_1 \/ ... \/ T_i` the folded component.
+
 ```maude
 fmod NARROWING-GRAPH-COMMON is
    protecting NARROWING .
@@ -300,8 +316,8 @@ fmod NARROWING-GRAPH-COMMON is
     eq transition(.NarrowStepResults)  = .TransitionSet .
     eq transition(NSR || NSR' || NSRS) = transition(NSR) , transition(NSR') , transition(NSRS) .
 
-    op fold : Substitution -> Fold .
-    --------------------------------
+    op fold : SubstitutionSet -> Fold .
+    -----------------------------------
     eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
 

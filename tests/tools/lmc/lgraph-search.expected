@@ -28,7 +28,7 @@ result Fold: <
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : fold(E, D) .
 rewrites: 0
-result [Fold]: fold(E, D)
+result [FoldSet]: fold(E, D)
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : B <= (A ; B ; C) .
 rewrites: 4

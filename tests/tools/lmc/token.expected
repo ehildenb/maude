@@ -117,13 +117,13 @@ result Fold: fold(
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : fold(state(init(0)), state(init(6))) .
 rewrites: 4
-result [Fold]: fold(state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],
+result [FoldSet]: fold(state('`{_`}['__['$.Token,'`[_`,wait`]['a.Name],
     '`[_`,wait`]['b.Name]]]), state('`{_`}['__['*.Token,'P:Proc,'`[_`,wait`][
     'a.Name]]]))
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : fold(state(init(1)), state(init(6))) .
 rewrites: 4
-result [Fold]: fold(state('`{_`}['__['T:Token,'`[_`,wait`]['a.Name],
+result [FoldSet]: fold(state('`{_`}['__['T:Token,'`[_`,wait`]['a.Name],
     '`[_`,wait`]['b.Name]]]), state('`{_`}['__['*.Token,'P:Proc,'`[_`,wait`][
     'a.Name]]]))
 ==========================================
