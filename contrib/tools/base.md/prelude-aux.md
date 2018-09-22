@@ -1,12 +1,12 @@
---- file: prelude-aux.maude
---- reqs: prelude
---- desc: This file extends the basic datatypes in the prelude
----       with many additional operations
+Prelude Extensions
+==================
 
----
----# Extensions of BOOL, NAT, QID, and STRING
----
+This file extends the basic datatypes in the prelude with many additional operations
 
+Extensions of BOOL, NAT, QID, and STRING
+----------------------------------------
+
+```maude
 fmod MAYBE-BOOL is
   pr EXT-BOOL .
   pr QID-LIST .
@@ -161,35 +161,36 @@ fmod STRING-PAIR is
   eq rsplit(S,S')  = split(S,rfind(S,S',length(S)),length(S')) .
   eq  split(S,B,L) = (substr(S,0,B),substr(S,B + L,length(S))) .
 endfm
+```
 
----
----# Data Structures: Typed Dictionary, Map, Stream, Stream Tupling, and N-Tree
----
+Data Structures: Typed Dictionary, Map, Stream, Stream Tupling, and N-Tree
+---------------------------------------------------------------------------
 
---- NOTE: these are used for creating views from the empty theory
----       into the empty module so that Maude will automatically
----       rename sorts for us in parameterized modules
+NOTE: these are used for creating views from the empty theory
+      into the empty module so that Maude will automatically
+      rename sorts for us in parameterized modules
+```maude
 fmod EMPTY-MOD is endfm
 fth  EMPTY     is endfth
+```
 
---- NOTE: this module is declared over an empty theory
----       because that allows us to create isomorphic copies
----       of this sort and the only operator which will
----       fail the sensibility criterion is the reference
----       operator since it has a shared domain Qid
---- NOTE: after this module is instantiated, the user
----       will need to add injections into the value sort, e.g.
----       for a view called MyView, we will need:
----
----       op ty : Type -> TypedVal{MyView} .
----
----       for each Type we want to put into the dictionary.
----       If wanted, can also add:
----
----       op @ty : TypedDict{MyView} NamedValRef{X} -> Type .
----
----       Note any injections/projections with the same name
----       on isormorphic copies of Dict will clash.
+NOTE: this module is declared over an empty theory
+      because that allows us to create isomorphic copies
+      of this sort and the only operator which will
+      fail the sensibility criterion is the reference
+      operator since it has a shared domain Qid
+
+NOTE: after this module is instantiated, the user
+      will need to add injections into the value sort, e.g.
+      for a view called MyView, we will need:
+      op ty : Type -> TypedVal{MyView} .
+      for each Type we want to put into the dictionary.
+      If wanted, can also add:
+      op @ty : TypedDict{MyView} NamedValRef{X} -> Type .
+      Note any injections/projections with the same name
+      on isormorphic copies of Dict will clash.
+
+```maude
 fmod TYPED-DICTIONARY{X :: EMPTY} is
   pr QID .
   sort TypedVal{X} NamedVal{X} NamedRef{X} .
@@ -415,34 +416,36 @@ fmod N-TREE{X :: TRIV,Y :: TRIV} is
   eq depth(X : Y : T | BS,N)           = depth(BS,max(depth(T),N)) .
   eq depth(nobranch,N)                 = N .
 endfm
+```
 
----
----# Miscellaneous
----
+Miscellaneous
+-------------
 
----
---- prints string messsage
---- for debugging use. Example:
----
---- eq foo(...) = case1() .
---- ...
---- eq foo(...) = caseN() .
---- ceq foo(X) = any-value if debug-print("My message") [owise] .
----
---- where X is a totally generic variable tuple at the kind
----
---- By owise, foo(X) will only be called if none of the other
---- equations apply. Since it is fully general, it will always
---- execute. But it will generate an error message when it is
---- executed and then fail to evaluate.
----
---- NOTE: this may break if a function defined earlier is later
----       extended with more cases any any of those cases has
----       the owise property, in which case, the message will
----       print but evaluation will continue.
----
+Prints string messsage for debugging use. Example:
+
+```
+eq foo(...) = case1() .
+...
+eq foo(...) = caseN() .
+ceq foo(X) = any-value if debug-print("My message") [owise] .
+```
+
+where X is a totally generic variable tuple at the kind.
+
+By owise, foo(X) will only be called if none of the other
+equations apply. Since it is fully general, it will always
+execute. But it will generate an error message when it is
+executed and then fail to evaluate.
+
+NOTE: this may break if a function defined earlier is later
+      extended with more cases any any of those cases has
+      the owise property, in which case, the message will
+      print but evaluation will continue.
+
+```maude
 fmod DEBUG-PRINT is
   pr STRING .
   op debug-print : String -> Bool .
   eq debug-print(S:String) = false [print S:String] .
 endfm
+```
