@@ -46,16 +46,4 @@ lib*.a
 /contrib/systems/*
 /contrib/tools/fvp/*
 /contrib/tools/lmc/*
-/contrib/tools/meta/cterms.maude
-/contrib/tools/meta/eqform.maude
-/contrib/tools/meta/foform.maude
-/contrib/tools/meta/mconstruction.maude
-/contrib/tools/meta/metalevel-ext.maude
-/contrib/tools/meta/mtemplate.maude
-/contrib/tools/meta/mtransform.maude
-/contrib/tools/meta/narrowing.maude
-/contrib/tools/meta/purification.maude
-/contrib/tools/meta/structured-names.maude
-/contrib/tools/meta/terms.maude
-/contrib/tools/meta/unification.maude
-/contrib/tools/meta/variables.maude
+/contrib/tools/meta/*

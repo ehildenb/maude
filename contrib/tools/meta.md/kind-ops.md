@@ -1,15 +1,13 @@
---- name: sortify.maude
---- reqs: prelude, full-maude
---- desc: The module also contains code to check that a module does not mention
----       kinds at all. In that case, sortify conversion is not necessary.
----       The module KIND-CHECK contains the function kinds?() which when given
----       a piece of a module that could contain kinds, it will check if it
----       does. It has a boolean flag which controls how strictly it checks:
----       if the flag is false, it will only check for direct occurences of
----       kinds in the program text. If true, it will check that all terms
----       appearing in the program have a least type that is not a kind.
----
+Kind Operations
+===============
 
+The module also contains code to check that a module does not mention kinds at all.
+In that case, sortify conversion is not necessary.
+The module KIND-CHECK contains the function kinds?() which when given a piece of a module that could contain kinds, it will check if it does.
+It has a boolean flag which controls how strictly it checks: if the flag is false, it will only check for direct occurences of kinds in the program text.
+If true, it will check that all terms appearing in the program have a least type that is not a kind.
+
+```maude
 load foform.maude
 
 fmod KIND-CHECK is
@@ -226,3 +224,4 @@ fmod KIND-LIST-EXT is
   eq $toDUP(Q[T,T'])     = T != T' .
   eq $toDUP((T,TL))      = $toDUP(T) /\ $toDUP(TL) .
 endfm
+```

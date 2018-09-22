@@ -1,9 +1,10 @@
 # Settings
 # --------
 
-meta_names:=cterms           eqform     foform      mconstruction \
-            mtemplate        mtransform narrowing   purification  \
-            structured-names terms      unification variables
+meta_names:=cterms        eqform    foform           kind-ops  \
+            mconstruction mtemplate mtransform       narrowing \
+            purification  sort-ops  structured-names terms     \
+            unification   unsortify variables
 meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
 
 lmc_names:=lgraph-search lmc
