@@ -10,6 +10,10 @@ This isolates the modules from one another and simplifies the algorithm design.
 ```maude
 load variables.maude
 
+fmod BOOL-ERR is
+   protecting MAYBE-BOOL * ( sort MaybeBool to Bool? ) .
+endfm
+
 fmod REFLECT is
   pr META-LEVEL .
   op redReflect  : Qid Term      -> [Term] .

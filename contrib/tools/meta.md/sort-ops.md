@@ -9,7 +9,7 @@ This module implements a few empty and finite sort constructions; in particular,
 
 ```maude
 load ../base/model-checker.maude
-load ../base/prelude-aux.maude
+load ../meta/meta-aux.maude
 load ../meta/unification.maude
 
 fmod EMPTY-SORT-REWTH is
