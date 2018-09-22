@@ -72,8 +72,8 @@ mod DIJKSTRA is
   rl [chk-turn1]  : < {0,try} | {1,try} PS  > => < {0,try} | {1,upt} PS > .
   rl [set-turn1]  : <  P      | {1,upt} PS  > => < {1,upf} |  P      PS > .
   rl [set-flag1]  : <  P      | {1,upf} PS  > => <  P      | {2,chf} PS > .
- crl [go-crit1]   : <  P      | {2,chf} PS  > => <  P      | {2,crt} PS > if safe?(P PS) == true  .
- crl [fail-crit1] : <  P      | {2,chf} PS  > => <  P      | {2,ext} PS > if safe?(P PS) == false .
+ crl [go-crit1]   : <  P      | {2,chf} PS  > => <  P      | {2,crt} PS > if safe?(P PS) = true  .
+ crl [fail-crit1] : <  P      | {2,chf} PS  > => <  P      | {2,ext} PS > if safe?(P PS) = false .
   rl [done-crit1] : <  P      | {2,crt} PS  > => <  P      | {2,ext} PS > .
   rl [exit-crit1] : <  P      | {2,ext} PS  > => <  P      | {0,try} PS > .
 
