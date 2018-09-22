@@ -9,8 +9,7 @@ This module implements a few empty and finite sort constructions; in particular,
 
 ```maude
 load ../base/model-checker.maude
-load ../meta/meta-aux.maude
-load ../meta/unification.maude
+load meta-aux.maude
 
 fmod EMPTY-SORT-REWTH is
   pr META-LEVEL .
@@ -60,7 +59,7 @@ fmod EMPTY-SORT-REWTH is
 
   eq esrewth(FM) =
     mod join((getName(FM) '-ESTH)) is
-     (protecting 'BOOL .)
+     nil
      sorts 'Sort ; 'SortSet .
      (subsort 'Sort < 'SortSet .)
      (op 'set : 'SortSet 'SortSet -> 'SortSet [assoc comm id('mt.Sort)] .
@@ -103,24 +102,21 @@ fmod FIN-SORT-REWTH is
 
   op get-finite-sorts : FModule SortSet -> SortSet .
   op sort-finite? : FModule Sort ~> Bool [memo] .
-  op sort-finite1? : FModule SModule Sort ~> Term .
-  op mc-check-res : Term ~> Bool .
-  op fs-form : SortSet -> Term .
-  op cycle-sorts : FModule SModule SortSet -> SortSet [memo] .
-  op cycle-sorts1 : FModule SModule SortSet -> SortSet .
-  op sch-check-res : Term ResultTriple? -> Bool .
   op fsrewth : FModule -> SModule [memo] .
-  op fs-sort-op : Sort -> Term .
+  op cysrewth : FModule -> SModule [memo] .
+  op fs-sort-op : Sort SortSet -> Term .
+  op fs-sort-ops : SortSet SortSet -> OpDeclSet .
   op fs-tltoss : TypeList -> SortSet .
-  op fs-sort-ops : SortSet -> OpDeclSet .
-  op fs-op-rls : FModule OpDeclSet -> RuleSet .
-  op fs-op-rls1 : SortSet SortSet -> RuleSet .
-  op fs-op-rls2 : Sort SortSet -> RuleSet .
+  op fs-op-rls : FModule OpDeclSet SortSet -> RuleSet .
+  op fs-op-rls1 : SortSet SortSet SortSet -> RuleSet .
+  op fs-op-rls2 : Sort SortSet SortSet -> RuleSet .
+  op cycle-sorts : FModule -> SortSet [memo] .
+  op cycle-sorts1 : FModule SModule SortSet -> SortSet .
 
   var FM : FModule .
   var SM : SModule .
   var S S' : Sort .
-  var SS SS' : SortSet .
+  var SS SS' CYS : SortSet .
   var SSDS : SubsortDeclSet .
   var N : Nat .
   var B : Bound .
@@ -139,107 +135,69 @@ fmod FIN-SORT-REWTH is
     get-finite-sorts(FM,SS) .
   eq get-finite-sorts(FM,none) = none .
 
-  eq mc-check-res('true.Bool)            = true .
-  eq mc-check-res('counterexample[NTML]) = false .
+  eq sort-finite?(FM,S) = not metaSearch(fsrewth(FM),fs-sort-op(S,cycle-sorts(FM)),'S:CycleSort,nil,'*,unbounded,0) :: ResultTriple .
 
-  eq sort-finite?(FM,S) = mc-check-res(sort-finite1?(FM,fsrewth(FM),S)) .
-  eq sort-finite1?(FM,SM,S) =
-    getTerm(metaReduce(SM,
-      'modelCheck[fs-sort-op(S),'`[`]_[fs-form(cycle-sorts(FM,SM,getSorts(FM)))]])
-    ) .
-  eq fs-form(S ; SS) =
-    '_/\_[
-      '<>_['`[`]_['~_['@[fs-sort-op(S)]]]],
-      fs-form(SS)
-    ] .
-  eq fs-form(none) = 'True.Formula .
-
+  --- this theory is used to detect finite sorts
   eq fsrewth(FM) =
     (mod join((getName(FM) '-FSTH)) is
-     protecting 'MODEL-CHECKER .
-     sorts none .
+     nil
+     sorts 'CycleSort ; 'Sort .
+     subsort 'CycleSort < 'Sort .
+     fs-sort-ops(getSorts(FM),cycle-sorts(FM))
      none
-     fs-sort-ops(getSorts(FM))
-     op '@ : 'State -> 'Prop [none] .
      none
-     eq '_|=_['S:State,'@['S':State]] = '_==_['S:State,'S':State] [none] .
-     fs-op-rls(FM,getOps(FM))
+     fs-op-rls(FM,getOps(FM),cycle-sorts(FM))
     endm) .
 
-  eq fs-sort-op(S) = join(S '.State) .
+  eq fs-sort-op(S,CYS) = join(S if S in CYS then '.CycleSort else '.Sort fi) .
 
-  eq fs-sort-ops(S ; SS) =
-    op S : nil -> 'State [none] .
-    fs-sort-ops(SS) .
-  eq fs-sort-ops(none) = none .
+  eq fs-sort-ops(S ; SS,CYS) =
+    op S : nil -> if S in CYS then 'CycleSort else 'Sort fi [none] .
+    fs-sort-ops(SS,CYS) .
+  eq fs-sort-ops(none,CYS) = none .
+
+  eq fs-op-rls(FM,op Q : NTL -> S [AS] . ODS,CYS) =
+    if sorts-nonempty?(FM,NTL) then
+      fs-op-rls1(greaterSorts(FM,S),fs-tltoss(NTL),CYS)
+    else
+      none
+    fi
+    fs-op-rls(FM,ODS,CYS) .
+  eq fs-op-rls(FM,op Q : nil -> S [AS] . ODS,CYS) = fs-op-rls(FM,ODS,CYS) .
+  eq fs-op-rls(FM,none,CYS) = none .
+
+  eq fs-op-rls1(S ; SS,SS',CYS) = fs-op-rls2(S,SS',CYS) fs-op-rls1(SS,SS',CYS) .
+  eq fs-op-rls1(none,SS',CYS) = none .
+
+  eq fs-op-rls2(S,S' ; SS',CYS) =
+    rl fs-sort-op(S,CYS) => fs-sort-op(S',CYS) [none] .
+    fs-op-rls2(S,SS',CYS) .
+  eq fs-op-rls2(S,none,CYS) = none .
 
   eq fs-tltoss(S TL) = S ; fs-tltoss(TL) .
   eq fs-tltoss(nil) = none .
 
-  eq fs-op-rls(FM,op Q : NTL -> S [AS] . ODS) =
-    if sorts-nonempty?(FM,NTL) then
-      fs-op-rls1(greaterSorts(FM,S),fs-tltoss(NTL))
-    else
-      none
-    fi
-    fs-op-rls(FM,ODS) .
-  eq fs-op-rls(FM,op Q : nil -> S [AS] . ODS) = fs-op-rls(FM,ODS) .
-  eq fs-op-rls(FM,none) = none .
+  --- this theory is used to detect cyclic sorts
+  eq cysrewth(FM) =
+    (mod join((getName(FM) '-CYSTH)) is
+     nil
+     sorts 'Sort .
+     none
+     fs-sort-ops(getSorts(FM),none)
+     none
+     none
+     fs-op-rls(FM,getOps(FM),none)
+    endm) .
 
-  eq fs-op-rls1(S ; SS,SS') = fs-op-rls2(S,SS') fs-op-rls1(SS,SS') .
-  eq fs-op-rls1(none,SS') = none .
-
-  eq fs-op-rls2(S,S' ; SS') =
-    rl fs-sort-op(S) => fs-sort-op(S') [none] .
-    fs-op-rls2(S,SS') .
-  eq fs-op-rls2(S,none) = none .
-
-  eq cycle-sorts(FM,SM,SS) = cycle-sorts1(FM,SM,SS) .
+  eq cycle-sorts(FM) = cycle-sorts1(FM,cysrewth(FM),getSorts(FM)) .
   eq cycle-sorts1(FM,SM,S ; SS) =
     if (not sort-empty?(FM,S)) and-then
-        sch-check-res(fs-sort-op(S),metaSearch(SM,fs-sort-op(S),fs-sort-op(S),nil,'+,unbounded,0)) then
+        metaSearch(SM,fs-sort-op(S,none),fs-sort-op(S,none),nil,'+,unbounded,0) :: ResultTriple then
       S
     else
       none
     fi ; cycle-sorts1(FM,SM,SS) .
   eq cycle-sorts1(FM,SM,none) = none .
-
-  eq sch-check-res(C,(failure).ResultTriple?) = false .
-  eq sch-check-res(C,{C,'State,(none).Substitution}) = true .
-endfm
-
-fmod FIN-SORT-REWTH-ALT is
-  pr FIN-SORT-REWTH .
-
-  op alt-sort-finite? : FModule Sort ~> Bool [memo] .
-  op alt-sort-finite1? : FModule Sort ~> Term .
-  op nonfinal-sorts : SModule -> SortSet [memo] .
-  op nonfinal-sorts : RuleSet -> SortSet .
-  op alt-fs-form : SortSet -> Term .
-
-  var S : Sort .
-  var SS : SortSet .
-  var C C' : Constant .
-  var RS : RuleSet .
-  var SM : SModule .
-  var FM : FModule .
-
-  eq alt-sort-finite?(FM,S) = mc-check-res(alt-sort-finite1?(fsrewth(FM),S)) .
-  eq alt-sort-finite1?(SM,S) =
-    getTerm(metaReduce(SM,
-      'modelCheck[fs-sort-op(S),'`[`]_[fs-form(nonfinal-sorts(SM))]]
-    )) .
-
-  eq alt-fs-form(S ; SS) =
-    '_/\_[
-      '_->_['@[fs-sort-op(S)],'O_['`[`]_['~_['@[fs-sort-op(S)]]]]],
-      fs-form(SS)
-    ] .
-  eq alt-fs-form(none) = 'True.Formula .
-
-  eq nonfinal-sorts(SM) = nonfinal-sorts(getRls(SM)) .
-  eq nonfinal-sorts(rl C => C' [none] . RS) = getName(C) ; nonfinal-sorts(RS) .
-  eq nonfinal-sorts(none) = none .
 endfm
 
 fmod SORT-GEN-REWTH is
