@@ -1,10 +1,21 @@
 # Settings
 # --------
 
-meta_names:=cterms        eqform    foform           kind-ops  \
-            mconstruction mtemplate mtransform       narrowing \
-            purification  sort-ops  structured-names terms     \
-            unification   unsortify variables
+meta_names:=cterms           \
+            eqform           \
+            foform           \
+            kind-ops         \
+            mconstruction    \
+            mtemplate        \
+            mtransform       \
+            narrowing        \
+            purification     \
+            sort-ops         \
+            structured-names \
+            terms            \
+            unification      \
+            unsortify        \
+            variables
 meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
 
 lmc_names:=lgraph-search lmc
@@ -13,10 +24,22 @@ lmc_files:=$(patsubst %, tools/lmc/%.maude, $(lmc_names))
 fvp_names:=numbers
 fvp_files:=$(patsubst %, tools/fvp/%.maude, $(fvp_names))
 
-system_names:=bakery     bank-account bitswap  caut \
-              choice     cycle        dijkstra imp  \
-              nim        oc           qlock    rw   \
-              thermostat token        vending
+system_names:=bakery       \
+              bank-account \
+              bitswap      \
+              caut         \
+              choice       \
+              cycle        \
+              dijkstra     \
+              imp          \
+              nim          \
+              oc           \
+              qlock        \
+              rw           \
+              thermostat   \
+              token        \
+              vending
+
 system_files:=$(patsubst %, systems/%.maude, $(system_names))
 
 tangler_repo=$(CURDIR)/pandoc-tangle
