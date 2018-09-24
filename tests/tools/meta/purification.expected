@@ -77,6 +77,11 @@ reduce in TEST-PURIFY : joint-variable(natOrderMod, natListMod, 'head[
 rewrites: 40
 result Variable: '#makeVariable`(head`[L2:NeNatList`]`):Nat
 ==========================================
+reduce in TEST-PURIFY : joint-variable(natListMod, natOrderMod, '_<_['N1:Nat,
+    'N2:Nat]) .
+rewrites: 45
+result Variable: '#makeVariable`(_<_`[N1:Nat`,N2:Nat`]`):Bool
+==========================================
 reduce in TEST-PURIFY : purify(natOrderMod, natListMod, '_<_['head[
     'L1:NeNatList],'head['L2:NeNatList]]) .
 rewrites: 93
