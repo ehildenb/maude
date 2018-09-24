@@ -59,9 +59,8 @@ build_tangle() {
 }
 
 build_test() {
-    local test_file_name test_name test_dir exit_status
+    local test_file_name test_name test_dir
     test_file_name="$1" && shift
-    exit_status='0'
 
     test_name="$(basename "$test_file_name")"
     test_dir="$(dirname "$test_file_name")"
@@ -71,10 +70,9 @@ build_test() {
     {   cd "$test_dir"
         if ! make check TESTS=$test_name ; then
             git --no-pager diff --no-index $test_name.{expected,out}
-            exit_status='1'
+            return 1
         fi
     }
-    exit "$exit_status"
 }
 
 build_test_all() {
