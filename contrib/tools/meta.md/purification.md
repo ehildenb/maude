@@ -201,9 +201,9 @@ fmod PURIFICATION is
    protecting BREAK-EQATOMS .
    protecting CTERM-SET .
 
-    var Q : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . var QFF : QFForm .
+    vars Q Q' : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . vars QFF QFF' : QFForm .
     vars ME ME' : ModuleExpression . vars M M' : Module . var MDS : ModuleDeclSet .
-    vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] .
+    vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] . var CT : CTerm .
     vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
 
     op _in_ : EqConj Module -> Bool .
@@ -270,6 +270,7 @@ Note that we take advantage of the fact that generated constraints will bubble t
     -----------------------------------------------
     eq purify(M, M', empty)      = empty .
     eq purify(M, M', (T , NeTL)) = purify(M, M', T) , purify(M, M', NeTL) .
+    eq purify(M, M', T st EqC)   = purify(M, M', T) st EqC .
 ```
 
 If the term is well-formed in the first module, return it.
@@ -277,11 +278,11 @@ If the top symbol of the term is from the first module, purify the subterms.
 Otherwise, generate an equality constraint at the top and purify with respect to the second module.
 
 ```maude
-     eq purify(M, M', T st EqC) = purify(M, M', T) st EqC .
-    ceq purify(M, M', T)        = T                                    if wellFormed(M, T) .
-    ceq purify(M, M', T)        = FV st (FV ?= T)                      if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
-    ceq purify(M, M', Q[TL])    = purify(M, M', purify(M', M, Q[TL]))  if Q inO asTemplate(M') /\ not (Q inO asTemplate(M)) .
-    ceq purify(M, M', Q[TL])    = Q[purify(M, M', TL)]                 if Q inO asTemplate(M) .
+   ceq purify(M, M', T)     = T                    if wellFormed(M, T) .
+   ceq purify(M, M', T)     = FV st (FV ?= T)      if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
+   ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)] if not wellFormed(M, Q[TL]) /\ not wellFormed(M', Q[TL]) /\      Q inO asTemplate(M) .
+   ceq purify(M, M', Q[TL]) = purify(M, M', CT)    if not wellFormed(M, Q[TL]) /\ not wellFormed(M', Q[TL]) /\ not (Q inO asTemplate(M)) /\ Q inO asTemplate(M')
+                                                   /\ CT := purify(M', M, Q[TL]) .
 ```
 
 Sometimes, we need to make sure that a term contains only symbols from a given subtheory.
