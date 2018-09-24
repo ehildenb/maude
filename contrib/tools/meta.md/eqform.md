@@ -110,115 +110,101 @@ load terms.maude
 
 set include BOOL off .
 
-fmod EQFORM is
-  pr META-TERM .
-  pr SUBSTITUTION-SET .
+fmod EQFORM-IMPL{X :: TRIV} is
 
-  sort TrueLit   FalseLit         .
-  sort PosEqLit  NegEqLit  EqLit  .
-  sort PosEqConj NegEqConj EqConj .
-  sort PosEqDisj NegEqDisj EqDisj .
-  sort PosEqForm NegEqForm EqForm .
+  sort TrueLit{X}   FalseLit{X}         .
+  sort PosEqLit{X}  NegEqLit{X}  EqLit{X}  .
+  sort PosEqConj{X} NegEqConj{X} EqConj{X} .
+  sort PosEqDisj{X} NegEqDisj{X} EqDisj{X} .
+  sort PosEqForm{X} NegEqForm{X} EqForm{X} .
 
-  subsort PosEqLit NegEqLit < EqLit .
+  subsort PosEqLit{X} NegEqLit{X} < EqLit{X} .
   ---
-  subsort PosEqLit < PosEqConj PosEqDisj .
-  subsort NegEqLit < NegEqConj NegEqDisj .
-  subsort EqLit    < EqConj    EqDisj    .
+  subsort PosEqLit{X} < PosEqConj{X} PosEqDisj{X} .
+  subsort NegEqLit{X} < NegEqConj{X} NegEqDisj{X} .
+  subsort EqLit{X}    < EqConj{X}    EqDisj{X}    .
   ---
-  subsort PosEqConj NegEqConj < EqConj .
-  subsort PosEqDisj NegEqDisj < EqDisj .
-  subsort PosEqForm NegEqForm < EqForm .
+  subsort PosEqConj{X} NegEqConj{X} < EqConj{X} .
+  subsort PosEqDisj{X} NegEqDisj{X} < EqDisj{X} .
+  subsort PosEqForm{X} NegEqForm{X} < EqForm{X} .
   ---
-  subsort PosEqConj PosEqDisj < PosEqForm .
-  subsort NegEqConj NegEqDisj < NegEqForm .
-  subsort EqConj    EqDisj    < EqForm    .
+  subsort PosEqConj{X} PosEqDisj{X} < PosEqForm{X} .
+  subsort NegEqConj{X} NegEqDisj{X} < NegEqForm{X} .
+  subsort EqConj{X}    EqDisj{X}    < EqForm{X}    .
 
-  sort TrivTrueForm TrivFalseForm NonTrivForm .
-  subsort TrueLit  < TrivTrueForm  .
-  subsort FalseLit < TrivFalseForm .
-  subsort EqForm   < NonTrivForm   .
+  sort TrivTrueForm{X} TrivFalseForm{X} NonTrivForm{X} .
+  subsort TrueLit{X}  < TrivTrueForm{X}  .
+  subsort FalseLit{X} < TrivFalseForm{X} .
+  subsort EqForm{X}   < NonTrivForm{X}   .
 
-  sort NoTrueForm NoFalseForm .
-  subsort NonTrivForm TrivFalseForm < NoTrueForm  .
-  subsort NonTrivForm TrivTrueForm  < NoFalseForm .
+  sort NoTrueForm{X} NoFalseForm{X} .
+  subsort NonTrivForm{X} TrivFalseForm{X} < NoTrueForm{X}  .
+  subsort NonTrivForm{X} TrivTrueForm{X}  < NoFalseForm{X} .
 
-  sort NormLit NormForm .
-  subsort EqLit TrueLit FalseLit < NormLit < NormForm  .
-  subsort EqForm TrivTrueForm TrivFalseForm < NormForm .
+  sort NormLit{X} NormForm{X} .
+  subsort EqLit{X} TrueLit{X} FalseLit{X} < NormLit{X} < NormForm{X}  .
+  subsort EqForm{X} TrivTrueForm{X} TrivFalseForm{X} < NormForm{X} .
 
-  sort Form .
-  subsort NoTrueForm NoFalseForm NormForm < Form .
+  sort Form{X} .
+  subsort NoTrueForm{X} NoFalseForm{X} NormForm{X} < Form{X} .
 
   --- needed for preregularity with if_then_else_fi
-  sort Eq+TrueLit Eq+FalseLit Eq+TrivTrueForm Eq+TrivFalseForm .
-  subsort EqLit  TrueLit       < Eq+TrueLit       < Eq+TrivTrueForm  NormLit  .
-  subsort EqLit  FalseLit      < Eq+FalseLit      < Eq+TrivFalseForm NormLit  .
-  subsort EqForm TrivTrueForm  < Eq+TrivTrueForm  < NoFalseForm      NormForm .
-  subsort EqForm TrivFalseForm < Eq+TrivFalseForm < NoTrueForm       NormForm .
+  sort Eq+TrueLit{X} Eq+FalseLit{X} Eq+TrivTrueForm{X} Eq+TrivFalseForm{X} .
+  subsort EqLit{X}  TrueLit{X}       < Eq+TrueLit{X}       < Eq+TrivTrueForm{X}  NormLit{X}  .
+  subsort EqLit{X}  FalseLit{X}      < Eq+FalseLit{X}      < Eq+TrivFalseForm{X} NormLit{X}  .
+  subsort EqForm{X} TrivTrueForm{X}  < Eq+TrivTrueForm{X}  < NoFalseForm{X}      NormForm{X} .
+  subsort EqForm{X} TrivFalseForm{X} < Eq+TrivFalseForm{X} < NoTrueForm{X}       NormForm{X} .
 
   --- add these subsorts and (op ~_ : Lit -> NonTrivLit) to get proper literals
-  sort NonTrivLit NoFalseLit NoTrueLit Lit .
-  subsort EqLit < NonTrivLit < NonTrivForm .
-  subsort NormLit NoFalseLit NoTrueLit < Lit < Form .
-  subsort NonTrivLit Eq+TrueLit  < NoFalseLit < NoFalseForm .
-  subsort NonTrivLit Eq+FalseLit < NoTrueLit  < NoTrueForm  .
+  sort NonTrivLit{X} NoFalseLit{X} NoTrueLit{X} Lit{X} .
+  subsort EqLit{X} < NonTrivLit{X} < NonTrivForm{X} .
+  subsort NormLit{X} NoFalseLit{X} NoTrueLit{X} < Lit{X} < Form{X} .
+  subsort NonTrivLit{X} Eq+TrueLit{X}  < NoFalseLit{X} < NoFalseForm{X} .
+  subsort NonTrivLit{X} Eq+FalseLit{X} < NoTrueLit{X}  < NoTrueForm{X}  .
 
-  op tt   :           -> TrueLit     [ctor] .
-  op ff   :           -> FalseLit    [ctor] .
-  op _?=_ : Term Term -> PosEqLit    [ctor comm prec 50] .
-  op _!=_ : Term Term -> NegEqLit    [ctor comm prec 50] .
-  op ~_   : Lit       -> NonTrivLit  [ctor prec 51] .
-  op ~_   : Form      -> NonTrivForm [ctor prec 51] .
+  op tt   :             -> TrueLit{X}     [ctor] .
+  op ff   :             -> FalseLit{X}    [ctor] .
+  op _?=_ : X$Elt X$Elt -> PosEqLit{X}    [ctor comm prec 50] .
+  op _!=_ : X$Elt X$Elt -> NegEqLit{X}    [ctor comm prec 50] .
+  op ~_   : Lit{X}      -> NonTrivLit{X}  [ctor prec 51] .
+  op ~_   : Form{X}     -> NonTrivForm{X} [ctor prec 51] .
 
-  op _/\_ : TrivTrueForm   TrivTrueForm   -> TrivTrueForm  [ctor assoc comm id: tt prec 52] .
+  op _/\_ : TrivTrueForm{X}   TrivTrueForm{X}   -> TrivTrueForm{X}  [ctor assoc comm id: tt prec 52] .
   ---
-  op _/\_ : TrivFalseForm  TrivFalseForm  -> TrivFalseForm [ditto] .
-  op _/\_ : TrivTrueForm   TrivFalseForm  -> TrivFalseForm [ditto] .
+  op _/\_ : TrivFalseForm{X}  TrivFalseForm{X}  -> TrivFalseForm{X} [ditto] .
+  op _/\_ : TrivTrueForm{X}   TrivFalseForm{X}  -> TrivFalseForm{X} [ditto] .
   ---
-  op _/\_ : TrivTrueForm   NonTrivForm    -> NonTrivForm   [ditto] .
-  op _/\_ : TrivFalseForm  NonTrivForm    -> NonTrivForm   [ditto] .
+  op _/\_ : TrivTrueForm{X}   NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
+  op _/\_ : TrivFalseForm{X}  NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
   ---
-  op _/\_ : PosEqConj      PosEqConj      -> PosEqConj     [ditto] .
-  op _/\_ : NegEqConj      NegEqConj      -> NegEqConj     [ditto] .
-  op _/\_ : EqConj         EqConj         -> EqConj        [ditto] .
-  op _/\_ : PosEqForm      PosEqForm      -> PosEqForm     [ditto] .
-  op _/\_ : NegEqForm      NegEqForm      -> NegEqForm     [ditto] .
-  op _/\_ : EqForm         EqForm         -> EqForm        [ditto] .
-  op _/\_ : NonTrivForm    NonTrivForm    -> NonTrivForm   [ditto] .
-  op _/\_ : Form           Form           -> Form          [ditto] .
+  op _/\_ : PosEqConj{X}      PosEqConj{X}      -> PosEqConj{X}     [ditto] .
+  op _/\_ : NegEqConj{X}      NegEqConj{X}      -> NegEqConj{X}     [ditto] .
+  op _/\_ : EqConj{X}         EqConj{X}         -> EqConj{X}        [ditto] .
+  op _/\_ : PosEqForm{X}      PosEqForm{X}      -> PosEqForm{X}     [ditto] .
+  op _/\_ : NegEqForm{X}      NegEqForm{X}      -> NegEqForm{X}     [ditto] .
+  op _/\_ : EqForm{X}         EqForm{X}         -> EqForm{X}        [ditto] .
+  op _/\_ : NonTrivForm{X}    NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
+  op _/\_ : Form{X}           Form{X}           -> Form{X}          [ditto] .
 
-  op _\/_ : TrivFalseForm  TrivFalseForm  -> TrivFalseForm [ctor assoc comm id: ff prec 52] .
-  op _\/_ : TrivTrueForm   TrivTrueForm   -> TrivTrueForm  [ditto] .
-  op _\/_ : TrivFalseForm  TrivTrueForm   -> TrivTrueForm  [ditto] .
+  op _\/_ : TrivFalseForm{X}  TrivFalseForm{X}  -> TrivFalseForm{X} [ctor assoc comm id: ff prec 52] .
+  op _\/_ : TrivTrueForm{X}   TrivTrueForm{X}   -> TrivTrueForm{X}  [ditto] .
+  op _\/_ : TrivFalseForm{X}  TrivTrueForm{X}   -> TrivTrueForm{X}  [ditto] .
   ---
-  op _\/_ : TrivFalseForm  NonTrivForm    -> NonTrivForm   [ditto] .
-  op _\/_ : TrivTrueForm   NonTrivForm    -> NonTrivForm   [ditto] .
+  op _\/_ : TrivFalseForm{X}  NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
+  op _\/_ : TrivTrueForm{X}   NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
   ---
-  op _\/_ : PosEqDisj      PosEqDisj      -> PosEqDisj     [ditto] .
-  op _\/_ : NegEqDisj      NegEqDisj      -> NegEqDisj     [ditto] .
-  op _\/_ : EqDisj         EqDisj         -> EqDisj        [ditto] .
-  op _\/_ : PosEqForm      PosEqForm      -> PosEqForm     [ditto] .
-  op _\/_ : NegEqForm      NegEqForm      -> NegEqForm     [ditto] .
-  op _\/_ : EqForm         EqForm         -> EqForm        [ditto] .
-  op _\/_ : NonTrivForm    NonTrivForm    -> NonTrivForm   [ditto] .
-  op _\/_ : Form           Form           -> Form          [ditto] .
+  op _\/_ : PosEqDisj{X}      PosEqDisj{X}      -> PosEqDisj{X}     [ditto] .
+  op _\/_ : NegEqDisj{X}      NegEqDisj{X}      -> NegEqDisj{X}     [ditto] .
+  op _\/_ : EqDisj{X}         EqDisj{X}         -> EqDisj{X}        [ditto] .
+  op _\/_ : PosEqForm{X}      PosEqForm{X}      -> PosEqForm{X}     [ditto] .
+  op _\/_ : NegEqForm{X}      NegEqForm{X}      -> NegEqForm{X}     [ditto] .
+  op _\/_ : EqForm{X}         EqForm{X}         -> EqForm{X}        [ditto] .
+  op _\/_ : NonTrivForm{X}    NonTrivForm{X}    -> NonTrivForm{X}   [ditto] .
+  op _\/_ : Form{X}           Form{X}           -> Form{X}          [ditto] .
+  ---------------------------------------------------------------------------
 
-  --- We want: Form = NonTrivForm | TrivTrueForm | TrivFalseForm
-  --- Thus, these are not needed
-  ---
-  --- op _/\_ : TrivTrueForm  Form -> Form [ditto] .
-  --- op _/\_ : TrivFalseForm Form -> Form [ditto] .
-  --- op _\/_ : TrivFalseForm Form -> Form [ditto] .
-  --- op _\/_ : TrivTrueForm  Form -> Form [ditto] .
-  --------------------------------------------------
-
-  var EqL : EqLit .
-  vars F F' : Form .
-  vars CF CG : NoTrueForm .
-  vars DF DG : NoFalseForm .
-  vars T T' : Term .
-  var SUB : Substitution .
+  var EqL : EqLit{X} .
+  vars F F' : Form{X} .
 
   eq ff /\ EqL = ff .
   eq tt \/ EqL = tt .
@@ -227,11 +213,54 @@ fmod EQFORM is
   eq EqL \/ EqL = EqL .
 
   --- Implication
-  op _=>_  : Form Form -> Form .
-  op _<=>_ : Form Form -> Form .
-  ------------------------------
+  op _=>_  : Form{X} Form{X} -> Form{X} .
+  op _<=>_ : Form{X} Form{X} -> Form{X} .
+  ---------------------------------------
   eq F  => F' = (~ F) \/ F' .
   eq F <=> F' = (F => F') /\ (F' => F) .
+endfm
+
+view Term from TRIV to META-TERM is sort Elt to Term . endv
+
+fmod EQFORM is
+  pr SUBSTITUTION-SET .
+  pr EQFORM-IMPL{Term} * (
+    sort TrueLit{Term}          to TrueLit,
+    sort FalseLit{Term}         to FalseLit,
+    sort PosEqLit{Term}         to PosEqLit,
+    sort NegEqLit{Term}         to NegEqLit,
+    sort EqLit{Term}            to EqLit,
+    sort PosEqConj{Term}        to PosEqConj,
+    sort NegEqConj{Term}        to NegEqConj,
+    sort EqConj{Term}           to EqConj,
+    sort PosEqDisj{Term}        to PosEqDisj,
+    sort NegEqDisj{Term}        to NegEqDisj,
+    sort EqDisj{Term}           to EqDisj,
+    sort PosEqForm{Term}        to PosEqForm,
+    sort NegEqForm{Term}        to NegEqForm,
+    sort EqForm{Term}           to EqForm,
+    sort TrivTrueForm{Term}     to TrivTrueForm,
+    sort TrivFalseForm{Term}    to TrivFalseForm,
+    sort NonTrivForm{Term}      to NonTrivForm,
+    sort NoTrueForm{Term}       to NoTrueForm,
+    sort NoFalseForm{Term}      to NoFalseForm,
+    sort NormLit{Term}          to NormLit,
+    sort NormForm{Term}         to NormForm,
+    sort Form{Term}             to Form,
+    sort Eq+TrueLit{Term}       to Eq+TrueLit,
+    sort Eq+FalseLit{Term}      to Eq+FalseLit,
+    sort Eq+TrivTrueForm{Term}  to Eq+TrivTrueForm,
+    sort Eq+TrivFalseForm{Term} to Eq+TrivFalseForm,
+    sort NonTrivLit{Term}       to NonTrivLit,
+    sort NoFalseLit{Term}       to NoFalseLit,
+    sort NoTrueLit{Term}        to NoTrueLit,
+    sort Lit{Term}              to Lit) .
+
+  var F : Form .
+  vars CF CG : NoTrueForm .
+  vars DF DG : NoFalseForm .
+  vars T T' : Term .
+  var SUB : Substitution .
 
   op _<<_ : Form Substitution -> Form .
   -------------------------------------
