@@ -166,8 +166,8 @@ fmod EQFORM is
 
   op tt   :           -> TrueLit     [ctor] .
   op ff   :           -> FalseLit    [ctor] .
-  op _?=_ : Term Term -> PosEqLit    [ctor prec 50] .
-  op _!=_ : Term Term -> NegEqLit    [ctor prec 50] .
+  op _?=_ : Term Term -> PosEqLit    [ctor comm prec 50] .
+  op _!=_ : Term Term -> NegEqLit    [ctor comm prec 50] .
   op ~_   : Lit       -> NonTrivLit  [ctor prec 51] .
   op ~_   : Form      -> NonTrivForm [ctor prec 51] .
 
