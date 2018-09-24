@@ -165,15 +165,16 @@ runtime to the bug being visible is greater than 10 seconds.\n\n";
 void
 UserLevelRewritingContext::interruptHandler(int)
 {
-  ctrlC_Flag =  true;
+  ctrlC_Flag = true;
   setTraceStatus(true);
 }
 
 void
 UserLevelRewritingContext::infoHandler(int)
 {
-  infoFlag =  true;
+  infoFlag = true;
   setTraceStatus(true);
+  // write(STDERR_FILENO, "info handler called\n", sizeof("info handler called\n") - 1);
 }
 
 void
@@ -185,6 +186,22 @@ UserLevelRewritingContext::interruptHandler2(...)
 bool
 UserLevelRewritingContext::handleInterrupt()
 {
+  if (infoFlag)
+    {
+      //
+      //	Interrupted by an info request.
+      //
+      printStatusReportCommon();
+      cerr << "Waiting for external event." << endl;
+      where(cerr);
+      cerr << endl;
+      infoFlag = false;
+      //
+      //	Clear the trace flag if nothing else is using it.
+      //
+      if (!ctrlC_Flag)
+        setTraceStatus(interpreter.getFlag(Interpreter::EXCEPTION_FLAGS));
+    }
   //
   //	This is called because a slow/blocked system call was interrupted
   //	by a signal. We return true if we dealt with the issue and want
@@ -197,6 +214,7 @@ UserLevelRewritingContext::handleInterrupt()
   //	If it was cause by an info request we want to continue as normal. If
   //	there are both ctrl-C and info events we treat it as a ctrl-C.
   //
+  //cerr << "ctrlC_Flag = " << ctrlC_Flag << endl;
   return !ctrlC_Flag;
 }
 
@@ -291,7 +309,7 @@ UserLevelRewritingContext::beginCommand()
 }
 
 void
-UserLevelRewritingContext::printStatusReport(DagNode* subject, const PreEquation* pe)
+UserLevelRewritingContext::printStatusReportCommon()
 {
   struct timeval t;
   gettimeofday(&t, 0);
@@ -317,6 +335,12 @@ UserLevelRewritingContext::printStatusReport(DagNode* subject, const PreEquation
     "\nvariant narrowing steps: " << nrTotal <<
     "\nnarrowing steps: " << vnTotal <<
     "\ntotal: " << mbTotal + eqTotal + rlTotal + nrTotal + vnTotal << '\n';
+}
+
+void
+UserLevelRewritingContext::printStatusReport(DagNode* subject, const PreEquation* pe)
+{
+  printStatusReportCommon();
 
   cerr << "About to apply ";
   if (const SortConstraint* mb = dynamic_cast<const SortConstraint*>(pe))
@@ -436,6 +460,15 @@ UserLevelRewritingContext::handleDebug(DagNode* subject, const PreEquation* pe)
 void
 UserLevelRewritingContext::where(ostream& s)
 {
+  //
+  //	In the case of a race condition between info and ctrl-C
+  //	we want ctrl-C not to terminate the info but a second
+  //	ctrl-C could. Also, once we are done we want to restore
+  //	an existing ctrl-C so we can honor it.
+  //
+  bool savedCtrlC_Flag = ctrlC_Flag;
+  ctrlC_Flag = false;
+
   static const char* purposeString[] =
   {
     "which arose while checking a condition during the evaluation of:",
@@ -448,13 +481,15 @@ UserLevelRewritingContext::where(ostream& s)
   for (UserLevelRewritingContext* p = this; p != 0; p = p->parent)
     {
       s << p->root() << '\n';
+      //
+      //	The user might reasonably terminate a huge list
+      //	of parent evaluations.
+      //
       if (ctrlC_Flag)
-	{
-	  ctrlC_Flag = false;
-	  return;
-	}
+	break;
       s << purposeString[p->purpose] << '\n';
     }
+  ctrlC_Flag = savedCtrlC_Flag;
 }
 
 bool

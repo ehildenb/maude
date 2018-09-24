@@ -1,20 +1,20 @@
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | level: 0 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | level: 0 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 6
 result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     1, 's_^4['0.Zero], 'NzNat)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | level: 1 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | level: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 11
 result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     5, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'none.AttributeSet],
     'erewroteTerm['me.Oid,'interpreter['0.Zero],'s_['0.Zero],'_`[_`][
     ''s_^4.Sort,''0.Zero.Constant],''NzNat.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | level: 2 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | level: 2 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 16
 result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     10, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'none.AttributeSet],
@@ -27,8 +27,8 @@ result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     '''0.Zero.Constant.Constant]],'''NzNat.Sort.Constant]]]],
     ''Configuration.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | level: 3 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | level: 3 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 21
 result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     15, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'none.AttributeSet],
@@ -51,8 +51,8 @@ result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     ''''NzNat.Sort.Constant.Constant]]]]]]]],
     '''Configuration.Sort.Constant]]]],''Configuration.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | level: 4 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | level: 4 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 26
 result Configuration: <> < me : User | none > erewroteTerm(me, interpreter(0),
     20, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'none.AttributeSet],

@@ -1,3 +1,20 @@
+2018-07-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* interact.cc (where): save, clear and restore ctrlC_Flag so
+	to hande siginfo/ctrl-C interactions safely
+
+2018-07-24  Steven Eker  <eker@install.csl.sri.com>
+
+	* userLevelRewritingContext.hh (ObjectSystemRewritingContext): added
+	decl for printStatusReportCommon()
+
+	* interact.cc (printStatusReportCommon): added
+	(printStatusReport): use printStatusReportCommon()
+	(handleInterrupt): check for infoFlag and produce a status report
+	if set
+
+===================================Maude118===========================================
+
 2018-07-10  Steven Eker  <eker@install.csl.sri.com>
 
 	* interpreter.hh (ViewDatabase): made beginRewriting non-static

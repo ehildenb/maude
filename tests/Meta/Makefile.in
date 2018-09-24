@@ -455,7 +455,10 @@ TESTS = \
 	metaIntReplace \
 	metaIntReplace2 \
 	russianDollsFlat \
-	russianDollsNonFlat
+	russianDollsNonFlat \
+	metaIntMatch \
+	metaIntSearch \
+	metaIntSort
 
 MAUDE_FILES = \
 	metaApply.maude \
@@ -490,7 +493,10 @@ MAUDE_FILES = \
 	metaIntReplace.maude \
 	metaIntReplace2.maude \
 	russianDollsFlat.maude \
-	russianDollsNonFlat.maude
+	russianDollsNonFlat.maude \
+	metaIntMatch.maude \
+	metaIntSearch.maude \
+	metaIntSort.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -527,7 +533,10 @@ RESULT_FILES = \
 	metaIntReplace.expected \
 	metaIntReplace2.expected \
 	russianDollsFlat.expected \
-	russianDollsNonFlat.expected
+	russianDollsNonFlat.expected \
+	metaIntMatch.expected \
+	metaIntSearch.expected \
+	metaIntSort.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
 all: all-am
@@ -939,6 +948,27 @@ russianDollsFlat.log: russianDollsFlat
 russianDollsNonFlat.log: russianDollsNonFlat
 	@p='russianDollsNonFlat'; \
 	b='russianDollsNonFlat'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntMatch.log: metaIntMatch
+	@p='metaIntMatch'; \
+	b='metaIntMatch'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntSearch.log: metaIntSearch
+	@p='metaIntSearch'; \
+	b='metaIntSearch'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntSort.log: metaIntSort
+	@p='metaIntSort'; \
+	b='metaIntSort'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

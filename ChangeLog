@@ -1,3 +1,58 @@
+2018-08-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntSort.maude: added
+
+2018-08-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/BuiltIn/string.maude: added tests for upperCase(),
+	lowerCase()
+
+2018-08-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/metaIntAscentJune2018.maude: updated
+	to new createInterpreter() convention
+
+	* tests/ResolvedBugs/metaIntImportJune2018.maude: updated
+	to new createInterpreter() convention
+
+	* tests/ResolvedBugs/metaModuleCacheJune2018.maude: updated
+	to new createInterpreter() convention
+
+	* tests/ResolvedBugs/metaIntRewriteJune2018.maude: updated
+	to new createInterpreter() convention
+
+	* tests/ResolvedBugs/showModuleJune2018.maude: updated
+	to new createInterpreter() convention
+
+	* tests/Meta/metaIntPrelude.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/metaIntReplace.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/russianDollsFlat.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/metaIntReplace2.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/russianDollsNonFlat.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/metaIntSearch.maude: updated to new
+	createInterpreter() convention
+
+	* tests/Meta/metaIntMatch.maude: updated to new
+	createInterpreter() convention
+
+2018-08-08  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntMatch.maude: added
+
+	* tests/Meta/metaIntSearch.maude: added
+
+===================================Maude118===========================================
+
 2018-07-09  Steven Eker  <eker@install.csl.sri.com>
 
 	* tests/Misc/rot13.maude: added

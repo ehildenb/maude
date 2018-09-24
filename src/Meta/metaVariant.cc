@@ -42,7 +42,7 @@ MetaLevelOpSymbol::metaGetVariant2(FreeDagNode* subject, RewritingContext& conte
 	  const mpz_class& varIndex = metaLevel->getNat(metaVarIndex);
 	  VariantSearch* vs;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, vs, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, vs, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {
@@ -149,7 +149,7 @@ MetaLevelOpSymbol::metaVariantUnify2(FreeDagNode* subject, RewritingContext& con
 	  const mpz_class& varIndex = metaLevel->getNat(metaVarIndex);
 	  VariantSearch* vs;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, vs, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, vs, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {

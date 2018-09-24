@@ -144,6 +144,7 @@ private:
   void checkForPrintAttribute(MetadataStore::ItemType itemType, const PreEquation* item);
   bool handleDebug(DagNode* subject, const PreEquation* pe);
   void where(ostream& s);
+  void printStatusReportCommon();
   void printStatusReport(DagNode* subject, const PreEquation* pe);
 
   static bool tracePostFlag;

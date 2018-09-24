@@ -1,12 +1,12 @@
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | pending: predef,level: 0 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | pending: predef,level: 0 >
+    createInterpreter(interpreterManager, me, none) .
 rewrites: 57
 result Configuration: <> < me : User | pending: nil,level: 0 > erewroteTerm(me,
     interpreter(0), 1, 's_^4['0.Zero], 'NzNat)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | pending: predef,level: 1 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | pending: predef,level: 1 >
+    createInterpreter(interpreterManager, me, none) .
 rewrites: 113
 result Configuration: <> < me : User | pending: nil,level: 1 > erewroteTerm(me,
     interpreter(0), 56, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'_`,_[
@@ -14,8 +14,8 @@ result Configuration: <> < me : User | pending: nil,level: 1 > erewroteTerm(me,
     'interpreter['0.Zero],'s_['0.Zero],'_`[_`][''s_^4.Sort,''0.Zero.Constant],
     ''NzNat.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | pending: predef,level: 2 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | pending: predef,level: 2 >
+    createInterpreter(interpreterManager, me, none) .
 rewrites: 169
 result Configuration: <> < me : User | pending: nil,level: 2 > erewroteTerm(me,
     interpreter(0), 112, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'_`,_[
@@ -30,8 +30,8 @@ result Configuration: <> < me : User | pending: nil,level: 2 > erewroteTerm(me,
     '''0.Zero.Constant.Constant]],'''NzNat.Sort.Constant]]]],
     ''Configuration.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | pending: predef,level: 3 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | pending: predef,level: 3 >
+    createInterpreter(interpreterManager, me, none) .
 rewrites: 225
 result Configuration: <> < me : User | pending: nil,level: 3 > erewroteTerm(me,
     interpreter(0), 168, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'_`,_[
@@ -60,8 +60,8 @@ result Configuration: <> < me : User | pending: nil,level: 3 > erewroteTerm(me,
     ''''NzNat.Sort.Constant.Constant]]]]]]]],
     '''Configuration.Sort.Constant]]]],''Configuration.Sort]], 'Configuration)
 ==========================================
-erewrite in RUSSIAN-DOLLS : <> createInterpreter(interpreterManager, me) < me :
-    User | pending: predef,level: 4 > .
+erewrite in RUSSIAN-DOLLS : <> < me : User | pending: predef,level: 4 >
+    createInterpreter(interpreterManager, me, none) .
 rewrites: 281
 result Configuration: <> < me : User | pending: nil,level: 4 > erewroteTerm(me,
     interpreter(0), 224, '__['<>.Portal,'<_:_|_>['me.Oid,'User.Cid,'_`,_[

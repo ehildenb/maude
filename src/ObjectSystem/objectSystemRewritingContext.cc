@@ -118,6 +118,9 @@ ObjectSystemRewritingContext::markReachableNodes()
 void
 ObjectSystemRewritingContext::externalRewrite()
 {
+  // HACK for experiments
+  const char* extBiasString = getenv("EXT_BIAS");
+  int extBias = extBiasString ? atoi(extBiasString) : 1;
   //
   //	We assume caller has already set up limit and gas for fair rewriting.
   //	We interleave fair rewriting with calls to PseudoThread::eventLoop() to
@@ -144,7 +147,8 @@ ObjectSystemRewritingContext::externalRewrite()
 	  //	external events - we're going to try more rewriting anyway
 	  //	and we prefer to handle interrupts mid-rewrite.
 	  //
-	  (void) PseudoThread::eventLoop(false);
+	  for (int i = 0; i < extBias; ++i) // HACK for experiments
+	    (void) PseudoThread::eventLoop(false);
 	}
       //
       //	If we get here, we cannot do any more local rewrites in our
@@ -156,11 +160,13 @@ ObjectSystemRewritingContext::externalRewrite()
 	break;  // nothing to wait for
       if (r & PseudoThread::INTERRUPTED)
 	{
+	  //cerr << "eventLoop() interrupted" << endl;
 	  //
 	  //	Blocking call returned because of interrupt.
 	  //
 	  if (!handleInterrupt())
 	    break;  // assume we abort
+	  //cerr << "appears to have been handled" << endl;
 	}
     }
 }

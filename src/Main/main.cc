@@ -134,6 +134,8 @@ main(int argc, char* argv[])
 	    forceInteractive = true;
 	  else if (strcmp(arg, "-print-to-stderr") == 0)
 	    UserLevelRewritingContext::setPrintAttributeStream(&cerr);
+	  else if (strcmp(arg, "-show-pid") == 0)
+	    cerr << getpid() << endl;
 	  else
 	    {
 	      IssueWarning(LineNumber(FileTable::COMMAND_LINE) <<
@@ -255,6 +257,7 @@ printHelp(const char* name)
     "  -print-to-stderr\tPrint attribute should use stderr rather than stdout\n" <<
     "  -random-seed=<int>\tSet seed for random number generator\n" <<
     "  -xml-log=<filename>\tSet file in which to produce an xml log\n" <<
+    "  -get-pid\t\tPrint process id to stderr before printing banner\n"
     "\n" <<
     "Send bug reports to: " << PACKAGE_BUGREPORT << endl;
   exit(0);

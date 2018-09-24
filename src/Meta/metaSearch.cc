@@ -90,7 +90,7 @@ MetaLevelOpSymbol::metaSearch(FreeDagNode* subject, RewritingContext& context)
 	{
 	  RewriteSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeRewriteSequenceSearch(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -140,7 +140,7 @@ MetaLevelOpSymbol::metaSearchPath(FreeDagNode* subject, RewritingContext& contex
 	{
 	  RewriteSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeRewriteSequenceSearch(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -240,7 +240,7 @@ MetaLevelOpSymbol::metaSmtSearch(FreeDagNode* subject, RewritingContext& context
 	    {
 	      SMT_RewriteSequenceSearch* smtState;
 	      Int64 lastSolutionNr;
-	      if (getCachedStateObject(m, subject, context, solutionNr, smtState, lastSolutionNr))
+	      if (m->getCachedStateObject(subject, context, solutionNr, smtState, lastSolutionNr))
 		m->protect();  // Use cached state
 	      else if ((smtState = makeSMT_RewriteSequenceSearch(m, subject, context)))
 		lastSolutionNr = -1;

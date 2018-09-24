@@ -66,17 +66,6 @@ private:
   static RewritingContext* term2RewritingContext(Term* term, RewritingContext& context);
 
   //
-  //	Try to pull a suitable object from the meta-modules cache to
-  //	continue a computation.
-  //
-  template<class T>
-  static bool getCachedStateObject(MetaModule* m,
-				   FreeDagNode* subject,
-				   RewritingContext& context,
-				   Int64 solutionNr,
-				   T*& state,
-				   Int64& lastSolutionNr);
-  //
   //	Unification is unique in that it doesn't require rewriting or
   //	a RewritingContext. Even metaMatch() requires rewriting to
   //	to evaluate membership axioms, but unification doesn't support
@@ -156,35 +145,6 @@ MetaLevelOpSymbol::getMetaLevel() const
 {
   Assert(metaLevel != 0, "null metaLevel");
   return metaLevel;
-}
-
-template<class T>
-inline bool
-MetaLevelOpSymbol::getCachedStateObject(MetaModule* m,
-					FreeDagNode* subject,
-					RewritingContext& context,
-					Int64 solutionNr,
-					T*& state,
-					Int64& lastSolutionNr)
-{
-  CacheableState* cachedState;
-  if (m->remove(subject, cachedState, lastSolutionNr))
-    {
-      DebugAdvisory("looking for solution #" << solutionNr << " and found cached solution #" << lastSolutionNr);
-      if (lastSolutionNr <= solutionNr)
-	{
-	  state = safeCast(T*, cachedState);
-	  //
-	  //	The parent context pointer of the root context in the
-	  //	state object is possibly stale.
-	  //
-	  safeCast(UserLevelRewritingContext*, state->getContext())->
-	    beAdoptedBy(safeCast(UserLevelRewritingContext*, &context));
-	  return true;
-	}
-      delete cachedState;
-    }
-  return false;
 }
 
 #endif

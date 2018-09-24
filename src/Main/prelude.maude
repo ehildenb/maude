@@ -22,7 +22,7 @@
 
 ***
 ***	Maude interpreter standard prelude.
-***	Version alpha115
+***	Version alpha118
 ***
 ***	Some of the overall structure is taken from the OBJ3
 ***	interpreter standard prelude.
@@ -749,6 +749,14 @@ fmod STRING is
                   op-hook stringSymbol (<Strings> : ~> String)
                   term-hook trueTerm (true)
                   term-hook falseTerm (false))] .
+
+  op upperCase : String -> String
+        [special (id-hook StringOpSymbol (upperCase)
+                  op-hook stringSymbol (<Strings> : ~> String))] .
+
+  op lowerCase : String -> String
+        [special (id-hook StringOpSymbol (lowerCase)
+                  op-hook stringSymbol (<Strings> : ~> String))] .
 endfm
 
 fmod CONVERSION is

@@ -110,7 +110,7 @@ MetaLevelOpSymbol::metaNarrowingSearch(FreeDagNode* subject, RewritingContext& c
 	{
 	  NarrowingSequenceSearch3* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect(); 
 	  else if ((state = makeNarrowingSequenceSearch3(m, subject, context, false)))
 	    lastSolutionNr = -1;
@@ -198,8 +198,8 @@ MetaLevelOpSymbol::metaNarrowingSearchPath(FreeDagNode* subject, RewritingContex
 	{
 	  NarrowingSequenceSearch3* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
-	    m->protect(); 
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
+	    m->protect();
 	  else if ((state = makeNarrowingSequenceSearch3(m, subject, context, true)))
 	    lastSolutionNr = -1;
 	  else

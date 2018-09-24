@@ -1,3 +1,64 @@
+2018-08-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getKind/gotKind,
+	getKinds/gotKinds
+	added getGlbTypes/gotGlbTypes
+
+2018-08-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added compareTypes/comparedTypes
+	deleted op-hook succSymbol
+
+2018-08-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getLesserSorts/gotLesserSorts,
+	getMaximalSorts/gotMaximalSorts, getMinimalSorts/gotMinimalSorts
+
+2018-08-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* prelude.maude: added upperCase(), lowerCase()
+
+2018-08-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added sorts InterpreterOption
+	InterpreterOptionSet, and constant none; createInterpreter()
+	now takes InterpreterOptionSet argument
+
+2018-08-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getXmatch/gotXmatch
+
+2018-08-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getMatch/gotMatch
+
+2018-08-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getSearchResultAndPathMsg,
+	gotSearchResultAndPathMsg
+
+2018-07-31  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: updated decl for gotSearchResult()
+
+2018-07-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* main.cc (printHelp): add -show-pid
+	(main): add -show-pid
+
+2018-07-20  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getSearchResult() and
+	gotSearchResult() messages
+	added noSuchResultMsg() message
+
+2018-07-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: use Type rather than Sort for return
+	messages
+
+===================================Maude118===========================================
+
 2018-05-30  Steven Eker  <eker@install.csl.sri.com>
 
 	* metaInterpreter.maude: added messages erewriteTerm()

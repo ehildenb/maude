@@ -640,6 +640,9 @@ op 'length : 'String -> 'Nat [special(
 op 'lesserSorts : '`[Module`] '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] [special(
     id-hook('MetaLevelOpSymbol, 'metaLesserSorts) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+op 'lowerCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'lowerCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
 op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
     id-hook('ACU_NumberOpSymbol, 'max) 
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
@@ -1133,6 +1136,9 @@ op 'upTerm : 'Universal -> 'Term [poly(1) special(
 op 'upView : '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[View`] [special(
     id-hook('MetaLevelOpSymbol, 'metaUpView) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+op 'upperCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'upperCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
 op 'variant : nil -> 'Attr [ctor] .
 op 'view_from_to_is__endv : 'Header 'ModuleExpression 'ModuleExpression
     'SortMappingSet 'OpMappingSet -> 'View [ctor gather('& '& '& '& '&) format(
@@ -2229,6 +2235,9 @@ result FModule: fmod 'META-LEVEL is
   op 'lesserSorts : '`[Module`] '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] [special(
     id-hook('MetaLevelOpSymbol, 'metaLesserSorts) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+  op 'lowerCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'lowerCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
     id-hook('ACU_NumberOpSymbol, 'max) 
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
@@ -2721,6 +2730,9 @@ result FModule: fmod 'META-LEVEL is
   op 'upView : '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[View`] [special(
     id-hook('MetaLevelOpSymbol, 'metaUpView) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+  op 'upperCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'upperCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   op 'variant : nil -> 'Attr [ctor] .
   op 'view_from_to_is__endv : 'Header 'ModuleExpression 'ModuleExpression
     'SortMappingSet 'OpMappingSet -> 'View [ctor gather('& '& '& '& '&) format(
@@ -4592,6 +4604,9 @@ result FModule: fmod 'META-LEVEL is
   op 'lesserSorts : '`[Module`] '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] [special(
     id-hook('MetaLevelOpSymbol, 'metaLesserSorts) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+  op 'lowerCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'lowerCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
     id-hook('ACU_NumberOpSymbol, 'max) 
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
@@ -5084,6 +5099,9 @@ result FModule: fmod 'META-LEVEL is
   op 'upView : '`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`] -> '`[View`] [special(
     id-hook('MetaLevelOpSymbol, 'metaUpView) 
     op-hook('shareWith, 'metaReduce, 'Module 'QidSet, 'ResultPair?))] .
+  op 'upperCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'upperCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   op 'variant : nil -> 'Attr [ctor] .
   op 'view_from_to_is__endv : 'Header 'ModuleExpression 'ModuleExpression
     'SortMappingSet 'OpMappingSet -> 'View [ctor gather('& '& '& '& '&) format(
@@ -5555,6 +5573,9 @@ result FModule: fmod 'STRING is
     id-hook('StringOpSymbol, 'length) 
     op-hook('stringSymbol, '<Strings>, nil, 'Char) 
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
+  op 'lowerCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'lowerCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   op 'max : 'Nat 'Nat -> 'Nat [assoc comm special(
     id-hook('ACU_NumberOpSymbol, 'max) 
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
@@ -5590,6 +5611,9 @@ result FModule: fmod 'STRING is
     op-hook('succSymbol, 's_, 'Nat, 'NzNat))] .
   op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
+  op 'upperCase : 'String -> 'String [special(
+    id-hook('StringOpSymbol, 'upperCase) 
+    op-hook('stringSymbol, '<Strings>, nil, 'Char))] .
   none
   eq '_and_['A:Bool,'A:Bool] = 'A:Bool [none] .
   eq '_and_['A:Bool,'_xor_['B:Bool,'C:Bool]] = '_xor_['_and_['A:Bool,'B:Bool],
@@ -6291,6 +6315,9 @@ result ResultPair: {'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,
     ''NzNat.Sort]]]],'op_:_->_`[_`].[''lesserSorts.Sort,'__[''`[Module`].Kind,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind],''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,'special['__['id-hook[
     ''MetaLevelOpSymbol.Sort,''metaLesserSorts.Sort],'op-hook[''shareWith.Sort,
     ''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],''ResultPair?.Sort]]]],
+    'op_:_->_`[_`].[''lowerCase.Sort,''String.Sort,''String.Sort,'special['__[
+    'id-hook[''StringOpSymbol.Sort,''lowerCase.Sort],'op-hook[
+    ''stringSymbol.Sort,''<Strings>.Sort,'nil.TypeList,''Char.Sort]]]],
     'op_:_->_`[_`].[''max.Sort,'__[''Nat.Sort,''Nat.Sort],''Nat.Sort,'__[
     'assoc.Attr,'comm.Attr,'special['__['id-hook[''ACU_NumberOpSymbol.Sort,
     ''max.Sort],'op-hook[''succSymbol.Sort,''s_.Sort,''Nat.Sort,
@@ -6864,7 +6891,10 @@ result ResultPair: {'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,
     'op_:_->_`[_`].[''upView.Sort,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,''`[View`].Kind,'special[
     '__['id-hook[''MetaLevelOpSymbol.Sort,''metaUpView.Sort],'op-hook[
     ''shareWith.Sort,''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],
-    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
+    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''upperCase.Sort,''String.Sort,
+    ''String.Sort,'special['__['id-hook[''StringOpSymbol.Sort,
+    ''upperCase.Sort],'op-hook[''stringSymbol.Sort,''<Strings>.Sort,
+    'nil.TypeList,''Char.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
     ''Attr.Sort,'ctor.Attr],'op_:_->_`[_`].[''view_from_to_is__endv.Sort,'__[
     ''Header.Sort,''ModuleExpression.Sort,''ModuleExpression.Sort,
     ''SortMappingSet.Sort,''OpMappingSet.Sort],''View.Sort,'__['ctor.Attr,
@@ -8112,6 +8142,9 @@ result GroundTerm: 'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,'nil.ImportList,
     ''NzNat.Sort]]]],'op_:_->_`[_`].[''lesserSorts.Sort,'__[''`[Module`].Kind,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind],''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,'special['__['id-hook[
     ''MetaLevelOpSymbol.Sort,''metaLesserSorts.Sort],'op-hook[''shareWith.Sort,
     ''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],''ResultPair?.Sort]]]],
+    'op_:_->_`[_`].[''lowerCase.Sort,''String.Sort,''String.Sort,'special['__[
+    'id-hook[''StringOpSymbol.Sort,''lowerCase.Sort],'op-hook[
+    ''stringSymbol.Sort,''<Strings>.Sort,'nil.TypeList,''Char.Sort]]]],
     'op_:_->_`[_`].[''max.Sort,'__[''Nat.Sort,''Nat.Sort],''Nat.Sort,'__[
     'assoc.Attr,'comm.Attr,'special['__['id-hook[''ACU_NumberOpSymbol.Sort,
     ''max.Sort],'op-hook[''succSymbol.Sort,''s_.Sort,''Nat.Sort,
@@ -8685,7 +8718,10 @@ result GroundTerm: 'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,'nil.ImportList,
     'op_:_->_`[_`].[''upView.Sort,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,''`[View`].Kind,'special[
     '__['id-hook[''MetaLevelOpSymbol.Sort,''metaUpView.Sort],'op-hook[
     ''shareWith.Sort,''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],
-    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
+    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''upperCase.Sort,''String.Sort,
+    ''String.Sort,'special['__['id-hook[''StringOpSymbol.Sort,
+    ''upperCase.Sort],'op-hook[''stringSymbol.Sort,''<Strings>.Sort,
+    'nil.TypeList,''Char.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
     ''Attr.Sort,'ctor.Attr],'op_:_->_`[_`].[''view_from_to_is__endv.Sort,'__[
     ''Header.Sort,''ModuleExpression.Sort,''ModuleExpression.Sort,
     ''SortMappingSet.Sort,''OpMappingSet.Sort],''View.Sort,'__['ctor.Attr,
@@ -9934,6 +9970,9 @@ result ResultPair: {'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,
     ''NzNat.Sort]]]],'op_:_->_`[_`].[''lesserSorts.Sort,'__[''`[Module`].Kind,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind],''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,'special['__['id-hook[
     ''MetaLevelOpSymbol.Sort,''metaLesserSorts.Sort],'op-hook[''shareWith.Sort,
     ''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],''ResultPair?.Sort]]]],
+    'op_:_->_`[_`].[''lowerCase.Sort,''String.Sort,''String.Sort,'special['__[
+    'id-hook[''StringOpSymbol.Sort,''lowerCase.Sort],'op-hook[
+    ''stringSymbol.Sort,''<Strings>.Sort,'nil.TypeList,''Char.Sort]]]],
     'op_:_->_`[_`].[''max.Sort,'__[''Nat.Sort,''Nat.Sort],''Nat.Sort,'__[
     'assoc.Attr,'comm.Attr,'special['__['id-hook[''ACU_NumberOpSymbol.Sort,
     ''max.Sort],'op-hook[''succSymbol.Sort,''s_.Sort,''Nat.Sort,
@@ -10507,7 +10546,10 @@ result ResultPair: {'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,
     'op_:_->_`[_`].[''upView.Sort,''`[QidSet`,QidList`,TypeListSet`,GTermList`,ParameterList`,Type?`,ModuleExpression`,Header`].Kind,''`[View`].Kind,'special[
     '__['id-hook[''MetaLevelOpSymbol.Sort,''metaUpView.Sort],'op-hook[
     ''shareWith.Sort,''metaReduce.Sort,'__[''Module.Sort,''QidSet.Sort],
-    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
+    ''ResultPair?.Sort]]]],'op_:_->_`[_`].[''upperCase.Sort,''String.Sort,
+    ''String.Sort,'special['__['id-hook[''StringOpSymbol.Sort,
+    ''upperCase.Sort],'op-hook[''stringSymbol.Sort,''<Strings>.Sort,
+    'nil.TypeList,''Char.Sort]]]],'op_:_->_`[_`].[''variant.Sort,'nil.TypeList,
     ''Attr.Sort,'ctor.Attr],'op_:_->_`[_`].[''view_from_to_is__endv.Sort,'__[
     ''Header.Sort,''ModuleExpression.Sort,''ModuleExpression.Sort,
     ''SortMappingSet.Sort,''OpMappingSet.Sort],''View.Sort,'__['ctor.Attr,

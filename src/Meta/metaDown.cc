@@ -463,6 +463,31 @@ MetaLevel::downTypeList(DagNode* metaTypeList, MixfixModule* m, Vector<Sort*>& t
 }
 
 bool
+MetaLevel::downTypeSet(DagNode* metaTypeSet, MixfixModule* m, Vector<Sort*>& typeSet)
+{
+  typeSet.clear();
+  Symbol* mt = metaTypeSet->symbol();
+  Sort* t;
+  if (mt == sortSetSymbol)
+    {
+      for (DagArgumentIterator i(metaTypeSet); i.valid(); i.next())
+	{
+	  if (!downType(i.argument(), m, t))
+	    return false;
+	  typeSet.append(t);
+	}
+    }
+  else if (mt == emptySortSetSymbol)
+    ;
+  else if (downType(metaTypeSet, m, t))
+    typeSet.append(t);
+  else
+    return false;
+  return true;
+}
+
+
+bool
 MetaLevel::downType2(int id, MixfixModule* m, Sort*& type)
 {
   switch (Token::auxProperty(id))

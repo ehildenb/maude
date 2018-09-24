@@ -72,6 +72,8 @@ private:
   static Rope substring(const Rope& subject, Rope::size_type index, Rope::size_type length);
   static int fwdFind(const Rope& subject, const Rope& pattern, Rope::size_type start);
   static int revFind(const Rope& subject, const Rope& pattern, Rope::size_type start);
+  static Rope upperCase(const Rope& subject);
+  static Rope lowerCase(const Rope& subject);
 
   int op;
   StringSymbol* stringSymbol;
