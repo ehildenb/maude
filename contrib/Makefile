@@ -1,22 +1,17 @@
 # Settings
 # --------
 
-meta_names:=cterms           eqform     foform      mconstruction \
-            mtemplate        mtransform narrowing   purification  \
-            structured-names terms      unification variables
-meta_files:=$(patsubst %, tools/meta/%.maude, $(meta_names))
+meta_md:=$(wildcard tools/meta.md/*.md)
+meta_maude:=$(patsubst tools/meta.md/%.md, tools/meta/%.maude, $(meta_md))
 
-lmc_names:=lgraph-search lmc
-lmc_files:=$(patsubst %, tools/lmc/%.maude, $(lmc_names))
+lmc_md:=$(wildcard tools/lmc.md/*.md)
+lmc_maude:=$(patsubst tools/lmc.md/%.md, tools/lmc/%.maude, $(lmc_md))
 
-fvp_names:=numbers
-fvp_files:=$(patsubst %, tools/fvp/%.maude, $(fvp_names))
+fvp_md:=$(wildcard tools/fvp.md/*.md)
+fvp_maude:=$(patsubst tools/fvp.md/%.md, tools/fvp/%.maude, $(fvp_md))
 
-system_names:=bakery     bank-account bitswap  caut \
-              choice     cycle        dijkstra imp  \
-              nim        oc           qlock    rw   \
-              thermostat token        vending
-system_files:=$(patsubst %, systems/%.maude, $(system_names))
+systems_md:=$(wildcard systems.md/*.md)
+systems_maude:=$(patsubst systems.md/%.md, systems/%.maude, $(systems_md))
 
 tangler_repo=$(CURDIR)/pandoc-tangle
 tangler=$(tangler_repo)/tangle.lua
@@ -33,7 +28,7 @@ all: \
 	systems
 
 clean:
-	rm -rf $(meta_files) $(lmc_files) $(fvp_files) $(system_files)
+	rm -rf $(meta_maude) $(lmc_maude) $(fvp_maude) $(systems_maude)
 
 # Tangler
 # -------
@@ -44,7 +39,7 @@ $(tangler):
 # Tangled Files
 # -------------
 
-tools: $(meta_files) $(lmc_files) $(fvp_files)
+tools: $(meta_maude) $(lmc_maude) $(fvp_maude)
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
@@ -57,7 +52,7 @@ tools/fvp/%.maude: tools/fvp.md/%.md
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
-systems: $(system_files)
+systems: $(systems_maude)
 systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@

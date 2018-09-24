@@ -1,17 +1,17 @@
 include ../../test.Makefile
 
 TESTS = \
-	lmc.maude \
-	lgraph-search.maude \
-	bank-account.maude \
 	bakery.maude \
+	bank-account.maude \
+	lgraph-search.maude \
+	lmc.maude \
 	token.maude
 
 RESULT_FILES = \
-	lmc.expected \
-	lgraph-search.expected \
-	bank-account.expected \
 	bakery.expected \
+	bank-account.expected \
+	lgraph-search.expected \
+	lmc.expected \
 	token.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

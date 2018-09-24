@@ -1,15 +1,21 @@
---- name: unsortify.maude
---- reqs: prelude.maude (META-LEVEL), prelude-aux.maude (QIDPAIRSET,OPDECLSET-EXTRA) full-maude.maude (UNIT)
---- note: This file implements two functions:
----       [1] unsortify(Module)     --- returns a Module with a single sort
----       [2] sortify(Term,TermSet) --- takes constants in a term that are unsorted and sorts them
----       unsortify() requires that the module to transformed has no:
----         [a] imports (can be achieved by module transformation)
----         [b] conditional equations
----         [c] memberships
----         [d] associative/id axioms
----       sortify() requires TermSet is actually a ConstantSet
+Unsortify
+=========
 
+This file implements two functions:
+
+1.  `unsortify(Module)`: returns a Module with a single sort
+2.  `sortify(Term,TermSet)`: takes constants in a term that are unsorted and sorts them
+
+`unsortify()` requires that the module to transformed has no:
+
+a. imports (can be achieved by module transformation)
+b. conditional equations
+c. memberships
+d. associative/id axioms
+
+`sortify()` requires `TermSet` is actually a `ConstantSet`.
+
+```maude
 load ../base/prelude-aux.maude
 
 fmod UNSORTIFY is
@@ -97,3 +103,4 @@ fmod SORTIFY is
   eq varsToQTS(Q ; VS)       = qt(getName(Q),':,getType(Q)) | varsToQTS(VS) .
   eq varsToQTS(none)         = none .
 endfm
+```

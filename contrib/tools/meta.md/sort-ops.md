@@ -1,11 +1,13 @@
---- name: sort-ops.maude
---- reqs: prelude, full-maude, types.maude
---- desc: This module implements a few empty and finite sort
----       constructions; in particular, in contains functionality to:
----       [1] Compute which sorts are empty (and empty modulo B)
----       [2] Compute which sorts are finite (but not empty modulo B)
----       [3] If a sort is finite modulo B, generate all of the terms in it
+Sort Operations
+===============
 
+This module implements a few empty and finite sort constructions; in particular, in contains functionality to:
+
+1.  Compute which sorts are empty (and empty modulo B)
+2.  Compute which sorts are finite (but not empty modulo B)
+3.  If a sort is finite modulo B, generate all of the terms in it
+
+```maude
 load ../base/model-checker.maude
 load ../base/prelude-aux.maude
 load ../meta/unification.maude
@@ -345,3 +347,4 @@ fmod SORT-GEN-EXTRA is
   eq sorts-gen(FM,S ; SS) = (S,sort-gen(FM,S)) , sorts-gen(FM,SS) .
   eq sorts-gen(FM,none) = mtSTM .
 endfm
+```
