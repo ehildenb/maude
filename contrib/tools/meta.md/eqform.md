@@ -212,11 +212,18 @@ fmod EQFORM is
   --- op _\/_ : TrivFalseForm Form -> Form [ditto] .
   --- op _\/_ : TrivTrueForm  Form -> Form [ditto] .
 
-  var F : Form .
+  vars F F' : Form .
   vars CF CG : NoTrueForm .
   vars DF DG : NoFalseForm .
   vars T T' : Term .
   var SUB : Substitution .
+
+  --- Implication
+  op _=>_  : Form Form -> Form .
+  op _<=>_ : Form Form -> Form .
+  ------------------------------
+  eq F  => F' = (~ F) \/ F' .
+  eq F <=> F' = (F => F') /\ (F' => F) .
 
   op _<<_ : Form Substitution -> Form .
   -------------------------------------
