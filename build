@@ -123,14 +123,14 @@ build_test_all() {
 
 build_command="$1" ; shift
 case "$build_command" in
-    clean)    build_clean    "$@" ;;
-    deps)     build_deps     "$@" ;;
-    maude)    build_maude    "$@" ;;
-    maude-cvc4)  build_maude_cvc4 "$@" ;;
-    maude-yices2) build_maude_yices2 "$@" ;;
-    tangle)   build_tangle   "$@" ;;
-    test)     build_test     "$@" ;;
-    test-all) build_test_all "$@" ;;
+    clean)          build_clean         "$@" ;;
+    deps)           build_deps          "$@" ;;
+    maude)          build_maude         "$@" ;;
+    maude-cvc4)     build_maude_cvc4    "$@" ;;
+    maude-yices2)   build_maude_yices2  "$@" ;;
+    tangle)         build_tangle        "$@" ;;
+    test)           build_test          "$@" ;;
+    test-all)       build_test_all      "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
            $0 maude <options>
