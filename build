@@ -22,10 +22,10 @@ export PATH="/usr/lib/ccache:$PATH"
 
 build_clean() {
     rm -rf "$build_dir"
-    make clean || true
+    make -s clean || true
     git clean -dfx
-    [[ ! -f "ext/cvc4/Makefile" ]]   || ( cd "ext/cvc4"   ; make distclean )
-    [[ ! -f "ext/yices2/Makefile" ]] || ( cd "ext/yices2" ; make clean     )
+    [[ ! -f "ext/cvc4/Makefile" ]]   || ( cd "ext/cvc4"   ; make -s distclean )
+    [[ ! -f "ext/yices2/Makefile" ]] || ( cd "ext/yices2" ; make -s clean     )
     ( cd "$contrib_dir"
       make clean
     )
@@ -98,7 +98,7 @@ build_test() {
     build_tangle
 
     {   cd "$test_dir"
-        if ! make check TESTS=$test_name ; then
+        if ! make -s check TESTS=$test_name ; then
             git --no-pager diff --no-index $test_name.{expected,out}
             return 1
         fi
@@ -110,7 +110,7 @@ build_test_all() {
     build_deps
     build_maude
     build_tangle
-    make check "$@"
+    make -s check "$@"
     git checkout -- src/Mixfix/tokenizer.cc
     build_maude_cvc4
     build_test tests/Misc/smtTest
