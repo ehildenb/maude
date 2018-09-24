@@ -50,13 +50,13 @@ fmod ASSOC-LIST { X :: TRIV } is
 endfm
 
 fmod MYLISTNAT is
+    protecting FVP-BOOL-CTOR .
     protecting ASSOC-LIST{Nat} *
         (sort NeList{Nat} to NeNatList, sort List{Nat} to NatList) .
 endfm
 
 fmod TEST-PURIFY is
-    protecting FOFORM .
-    protecting FOFORMSET .
+    protecting EQFORM .
     protecting PURIFICATION .
     op natMultMod  : -> Module . eq natMultMod  = upModule('FVP-NAT-MULT, true) .
     op natOrderMod : -> Module . eq natOrderMod = upModule('FVP-NAT-PRED, true) .
@@ -91,6 +91,7 @@ reduce 'NatList inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListM
 
 reduce joint-variable(natListMod, natOrderMod, 'head['L2:NeNatList]) .
 reduce joint-variable(natOrderMod, natListMod, 'head['L2:NeNatList]) .
+reduce joint-variable(natListMod, natOrderMod, '_<_['N1:Nat, 'N2:Nat]) .
 
 --- Function Purify (Terms)
 --- -----------------------

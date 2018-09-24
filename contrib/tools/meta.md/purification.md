@@ -3,6 +3,8 @@ Module Intersection
 
 ```maude
 load mtemplate.maude
+load variables.maude
+load eqform.maude
 ```
 
 This module computes module intersections over `ModuleDeclSet`.
@@ -103,7 +105,7 @@ Breaking equality atoms means taking an equality atom between terms of different
 ```maude
 fmod BREAK-EQATOMS is
    protecting INTERSECTION .
-   protecting FOFORM .
+   protecting EQFORM .
 
     vars EqC EqC' : EqConj . vars MOD MOD' : Module . vars ME ME' : ModuleExpression .
     vars T T' : Term . var NV : Variable .
@@ -144,7 +146,7 @@ fmod VABS is
     vars V FV : Variable . var C : Constant . var Q : Qid . vars T T' T'' : Term .
     vars TL TL' : TermList . vars NeTL NeTL' : NeTermList .
     var ME : ModuleExpression . var M : Module .
-    var EqA : EqAtom . vars EqC EqC' : EqConj . var TA : TruthAtom .
+    vars EqC EqC' : EqConj .
 
     op vabs : ModuleExpression EqConj -> [EqConj] .
     -----------------------------------------------
@@ -201,17 +203,20 @@ fmod PURIFICATION is
    protecting BREAK-EQATOMS .
    protecting CTERM-SET .
 
-    var Q : Qid . var TA : TruthAtom . vars EqC EqC' : EqConj . var QFF : QFForm .
+    vars Q Q' : Qid . vars F F' : Form .
     vars ME ME' : ModuleExpression . vars M M' : Module . var MDS : ModuleDeclSet .
-    vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] .
+    vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] . var CT : CTerm .
     vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
 
-    op _in_ : EqConj Module -> Bool .
-    ---------------------------------
-    eq TA            in M = true .
-    eq (EqC /\ EqC') in M = (EqC in M) and (EqC' in M) .
-    eq (T ?= T')     in M = wellFormed(M, T) and wellFormed(M, T') .
-    eq (T != T')     in M = wellFormed(M, T) and wellFormed(M, T') .
+    op _in_ : Form Module -> Bool .
+    -------------------------------
+    eq tt        in M = true .
+    eq ff        in M = true .
+    eq (~ F)     in M = F in M .
+   ceq (F /\ F') in M = (F in M) and (F' in M) if F =/= tt /\ F' =/= tt .
+   ceq (F \/ F') in M = (F in M) and (F' in M) if F =/= ff /\ F' =/= ff .
+    eq (T ?= T') in M = wellFormed(M, T) and wellFormed(M, T') .
+    eq (T != T') in M = wellFormed(M, T) and wellFormed(M, T') .
 ```
 
 Purifying Equational Conjunctions
@@ -230,14 +235,18 @@ Purification first checks if the conjunction is well-formed in one of the module
 If so, then it leaves it alone, otherwise more work is required on the equational atoms.
 
 ```maude
-    op purify : ModuleExpression ModuleExpression EqConj -> [EqConj] .
-    ------------------------------------------------------------------
-    eq purify(ME, ME', EqC) = purify(modulePair(upModule(ME, true), upModule(ME', true)), EqC) .
+    op purify : ModuleExpression ModuleExpression Form -> [Form] .
+    --------------------------------------------------------------
+    eq purify(ME, ME', F) = purify(modulePair(upModule(ME, true), upModule(ME', true)), F) .
 
-    op purify : ModulePair EqConj -> [EqConj] .
-    -------------------------------------------
-    ceq purify(modulePair(M, M'), EqC)         = EqC if (EqC in M) .
-    eq  purify(modulePair(M, M'), EqC /\ EqC') = purify(modulePair(M, M'), EqC) /\ purify(modulePair(M, M'), EqC') .
+    op purify : ModulePair Form -> [Form] .
+    ---------------------------------------
+   ceq purify(modulePair(M, M'), F)       = F if (F in M) .
+    eq purify(modulePair(M, M'), ~ F)     = ~ purify(modulePair(M, M'), F) .
+   ceq purify(modulePair(M, M'), F /\ F') = purify(modulePair(M, M'), F) /\ purify(modulePair(M, M'), F')
+                                         if F =/= tt /\ F' =/= tt .
+   ceq purify(modulePair(M, M'), F \/ F') = purify(modulePair(M, M'), F) \/ purify(modulePair(M, M'), F')
+                                         if F =/= ff /\ F' =/= ff .
 ```
 
 If a term in a (dis)equality is not `wellFormed` in either `Module`, then we purify it.
@@ -248,10 +257,10 @@ contraints each pure in one of the theories, and forced to be (dis)equal via a `
 TODO: Abstract ?= vs !=
 
 ```maude
-    ceq purify(modulePair(M, M'), Q[TL] ?= T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) ?= T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
-    ceq purify(modulePair(M, M'), Q[TL] != T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) != T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
-    ceq purify(modulePair(M, M'), T1 ?= T2) = break-eqatoms(M, M', T1 ?= T2)                           if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
-    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                                 if     wellFormed(M, T1) and wellFormed(M, T2) .
+   ceq purify(modulePair(M, M'), Q[TL] ?= T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) ?= T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
+   ceq purify(modulePair(M, M'), Q[TL] != T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) != T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
+   ceq purify(modulePair(M, M'), T1 ?= T2) = break-eqatoms(M, M', T1 ?= T2)                           if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
+   ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                                 if     wellFormed(M, T1) and wellFormed(M, T2) .
 ```
 
 Purifying Terms
@@ -270,6 +279,7 @@ Note that we take advantage of the fact that generated constraints will bubble t
     -----------------------------------------------
     eq purify(M, M', empty)      = empty .
     eq purify(M, M', (T , NeTL)) = purify(M, M', T) , purify(M, M', NeTL) .
+   ceq purify(M, M', T st F)     = purify(M, M', T) st purify(modulePair(M, M'), F) if F =/= tt .
 ```
 
 If the term is well-formed in the first module, return it.
@@ -277,11 +287,11 @@ If the top symbol of the term is from the first module, purify the subterms.
 Otherwise, generate an equality constraint at the top and purify with respect to the second module.
 
 ```maude
-     eq purify(M, M', T st EqC) = purify(M, M', T) st EqC .
-    ceq purify(M, M', T)        = T                                    if wellFormed(M, T) .
-    ceq purify(M, M', T)        = FV st (FV ?= T)                      if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
-    ceq purify(M, M', Q[TL])    = purify(M, M', purify(M', M, Q[TL]))  if Q inO asTemplate(M') /\ not (Q inO asTemplate(M)) .
-    ceq purify(M, M', Q[TL])    = Q[purify(M, M', TL)]                 if Q inO asTemplate(M) .
+   ceq purify(M, M', T)     = T                    if wellFormed(M, T) .
+   ceq purify(M, M', T)     = FV st (FV ?= T)      if wellFormed(M', T) /\ FV := joint-variable(M', M, T) .
+   ceq purify(M, M', Q[TL]) = Q[purify(M, M', TL)] if not wellFormed(M, Q[TL]) /\ not wellFormed(M', Q[TL]) /\      Q inO asTemplate(M) .
+   ceq purify(M, M', Q[TL]) = purify(M, M', CT)    if not wellFormed(M, Q[TL]) /\ not wellFormed(M', Q[TL]) /\ not (Q inO asTemplate(M)) /\ Q inO asTemplate(M')
+                                                   /\ CT := purify(M', M, Q[TL]) .
 ```
 
 Sometimes, we need to make sure that a term contains only symbols from a given subtheory.
@@ -306,7 +316,6 @@ Traversing Terms
 
 ```
 fmod TERM-TRAVERSE is
-   protecting FOFORMSIMPLIFY-IMPL .
    protecting META-LEVEL .
    protecting BREAK-EQATOMS .
 

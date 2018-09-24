@@ -6,11 +6,11 @@ Constrained terms are a term coupled with a FO-formula (provided by `foform.maud
 We should make the first part of a constrained term use Stephen Skeirik's pattern operations when it detects that the term falls in a module where that is safe.
 The formulas present are being broken into different categories based on what we have decision procedures for, so it's only natural that we use the pattern operations when they are safe.
 
-We also need to extend FOForm to handle terms which fall into CVC4's abilities directly.
+We also need to extend `Form` to handle terms which fall into CVC4's abilities directly.
 This will require infrastructure to determine whether part of a formula downs correctly into a module.
 
 ```maude
-load foform.maude
+load eqform.maude
 load terms.maude
 ```
 
@@ -19,7 +19,7 @@ Constrained Terms
 
 ```maude
 fmod CTERM-SET is
-   protecting FOFORM-SUBSTITUTION + FOFORMSIMPLIFY-IMPL + FOFORM-DEFINEDOPS .
+   protecting EQFORM .
    protecting TERM-COMPARISON .
 
     sorts CTerm NeCTermSet CTermSet .
@@ -31,10 +31,10 @@ fmod CTERM-SET is
     var Q : Qid . var S : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
     vars T T' : Term . vars TML? TML?' : [TermList] .
     var CT : CTerm . var NeCTS : NeCTermSet .
-    var F : FOForm . vars EqC EqC' : EqConj .
+    var F : Form . vars EqC EqC' : EqConj .
 
-    op _st_ : Term FOForm -> CTerm [right id: tt prec 52] .
-    -------------------------------------------------------
+    op _st_ : Term Form -> CTerm [right id: tt prec 52] .
+    -----------------------------------------------------
     eq  T         st ff               = .TermSet .
     eq (T st EqC) st EqC'             = T st (EqC /\ EqC') .
     eq Q [ TML? , (T st EqC), TML?' ] = Q[TML?, T, TML?'] st EqC .
@@ -58,11 +58,11 @@ fmod CTERM-SET is
 `EqConj` is extended to handle constrained terms.
 
 ```maude
-    op _?=_ : CTerm CTerm -> EqConj [ditto] .
-    op _!=_ : CTerm CTerm -> EqConj [ditto] .
+    op _?=_ : CTerm CTerm -> [Form] [ditto] .
+    op _!=_ : CTerm CTerm -> [Form] [ditto] .
     -----------------------------------------
-    eq T ?= (T' st EqC) = (T ?= T') /\ EqC .
-    eq T != (T' st EqC) = (T != T') /\ EqC .
+   ceq CT ?= (T' st F) = (CT ?= T') /\ F if F =/= tt .
+   ceq CT != (T' st F) = (CT != T') /\ F if F =/= tt .
 endfm
 ```
 
@@ -75,7 +75,7 @@ fmod CTERM-SET-SIMPLIFICATION is
     var Q : Qid . vars S S' : Substitution . var SS : SubstitutionSet . var NeSS : NeSubstitutionSet .
     var MOD : Module . var X : Variable . vars T T' : Term . vars TML? TML?' : [TermList] .
     vars CT CT' : CTerm . vars CTS CTS' : CTermSet . vars NeCTS NeCTS' : NeCTermSet .
-    vars F F' F'' : FOForm .
+    vars F F' F'' : Form .
 
     sort CTermSet? .
     ----------------
@@ -126,13 +126,13 @@ This should either be implemented, hooked up to an existing implementation, or w
     op #varsApart : CTerm CTerm -> [CTerm] .
     ----------------------------------------
 
-    op #disjSubsts : SubstitutionSet -> PosEqQFForm? .
-    --------------------------------------------------
+    op #disjSubsts : SubstitutionSet -> PosEqForm .
+    -----------------------------------------------
     eq #disjSubsts(.SubstitutionSet) = ff .
     eq #disjSubsts(S | SS)           = #conjSubst(S) \/ #disjSubsts(SS) .
 
-    op #conjSubst : Substitution -> PosEqConj? .
-    --------------------------------------------
+    op #conjSubst : Substitution -> PosEqConj .
+    -------------------------------------------
     eq #conjSubst(none)       = tt .
     eq #conjSubst(X <- T ; S) = X ?= T /\ #conjSubst(S) .
 

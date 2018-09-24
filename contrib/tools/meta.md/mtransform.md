@@ -27,18 +27,18 @@ fmod SUBTHEORY-ABSTRACTION is
    protecting MODULE-TEMPLATE .
    protecting PURIFICATION .
 
-    var IS : ImportDeclSet . var SDS : SubsortDeclSet . vars SSDS : SubsortDeclSet .
-    var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet . var RLS : RuleSet .
-    vars NeMDS NeMDS' : NeModuleDeclSet . var MDS : ModuleDeclSet . vars M M' : Module .
-    vars L L' R R' : Term . vars CL' CR' : EqConj . var C : Condition . var EqC : EqCondition . var AS : AttrSet .
+    var MD : ModuleDecl . var NeMDS : NeModuleDeclSet . vars M M' : Module .
+    vars L L' R R' : Term . var C : Condition . var EqC : EqCondition . var AS : AttrSet .
+    vars CL' CR' : Form .
 
     op unif : EqConj -> EqCondition .
     ---------------------------------
 
     op subtheoryAbstract : ModuleDeclSet Module Module -> [ModuleDeclSet] .
     -----------------------------------------------------------------------
-    eq subtheoryAbstract(IS SDS SSDS OPDS MAS EQS, M, M') = IS SDS SSDS OPDS MAS EQS .
-    eq subtheoryAbstract(NeMDS NeMDS',             M, M') = subtheoryAbstract(NeMDS, M, M') subtheoryAbstract(NeMDS', M, M') .
+    eq subtheoryAbstract(none,     M, M') = none .
+   ceq subtheoryAbstract(MD,       M, M') = MD if not (MD :: Rule) .
+    eq subtheoryAbstract(MD NeMDS, M, M') = subtheoryAbstract(MD, M, M') subtheoryAbstract(NeMDS, M, M') .
 
    ceq subtheoryAbstract(( rl L => R [AS] . ), M, M') = ( crl L' => R' if unif(CL' /\ CR') [AS] . )
     if L' st CL' := subtheoryPurify(asTemplate(M), M', L)

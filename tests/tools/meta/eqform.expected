@@ -1,10 +1,24 @@
 ==========================================
+reduce in EQFORM-TEST : ('_*_['Y:Nat,'X:Nat] ?= '_+_['1.Nat,'X:Nat] /\
+    'true.Bool != '_<_['Y:Nat,'Z:Nat]) << (
+  'Y:Nat <- '3.Nat) == ('_*_['3.Nat,'X:Nat] ?= '_+_['1.Nat,'X:Nat] /\
+    'true.Bool != '_<_['3.Nat,'Z:Nat]) .
+rewrites: 33
+result Bool: true
+==========================================
+reduce in EQFORM-TEST : ('true.Bool != '_<_['Y:Nat,'Z:Nat] \/ '_*_['Y:Nat,
+    'X:Nat] != '_+_['1.Nat,'X:Nat]) << (
+  'X:Nat <- '7.Nat) == ('true.Bool != '_<_['Y:Nat,'Z:Nat] \/ '_*_['Y:Nat,
+    '7.Nat] != '_+_['1.Nat,'7.Nat]) .
+rewrites: 36
+result Bool: true
+==========================================
 reduce in EQFORM-TEST : f1 :: Form .
-rewrites: 6
+rewrites: 7
 result Bool: true
 ==========================================
 reduce in EQFORM-TEST : f2 :: Form .
-rewrites: 9
+rewrites: 11
 result Bool: true
 ==========================================
 reduce in EQFORM-TEST : ff .
@@ -24,57 +38,45 @@ rewrites: 0
 result Form: F:Form
 ==========================================
 reduce in EQFORM-TEST : nnf(f1) .
-rewrites: 157
-result NoFalseForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop
-    /\ 'H:Baz != 'I:Wop) \/ t1 != t2 /\ tt \/ 'F:Foo != 'G:Bar
+rewrites: 111
+result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
+    'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : nnf(f2) .
-rewrites: 200
-result NoFalseForm: 'U:Stu != 'W:Roc /\ (tt \/ 'H:Baz != 'I:Wop) /\ 'F:Foo ?=
-    'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop) \/ t1
-    != t2 /\ tt \/ 'F:Foo != 'G:Bar
+rewrites: 132
+result EqForm: 'U:Stu != 'W:Roc /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1
+    != t2 \/ 'H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : nef(f1) .
-rewrites: 159
-result NoFalseForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop
-    /\ 'H:Baz != 'I:Wop) \/ t1 != t2 /\ tt \/ 'F:Foo != 'G:Bar
+rewrites: 113
+result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
+    'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : nef(f2) .
-rewrites: 202
-result NoFalseForm: 'U:Stu != 'W:Roc /\ (tt \/ 'H:Baz != 'I:Wop) /\ 'F:Foo ?=
-    'G:Bar \/ 'F:Foo != 'G:Bar \/ ('H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop) \/ t1
-    != t2 /\ tt \/ 'F:Foo != 'G:Bar
+rewrites: 134
+result EqForm: 'U:Stu != 'W:Roc /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1
+    != t2 \/ 'H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : cnf(f1) .
-rewrites: 1556
-result NoFalseForm: (tt \/ 'F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/ 'F:Foo !=
-    'G:Bar \/ 'F:Foo != 'G:Bar) /\ (tt \/ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar
-    \/ 'F:Foo != 'G:Bar \/ 'H:Baz != 'I:Wop) /\ ('F:Foo ?= 'G:Bar \/ 'H:Baz ?=
-    'I:Wop \/ 'F:Foo != 'G:Bar \/ t1 != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo !=
-    'G:Bar \/ 'H:Baz != 'I:Wop \/ t1 != t2
+rewrites: 628
+result EqForm: ('F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/ 'F:Foo != 'G:Bar \/ t1
+    != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ 'H:Baz != 'I:Wop \/ t1 !=
+    t2
 ==========================================
 reduce in EQFORM-TEST : cnf(f2) .
-rewrites: 1979
-result NoFalseForm: 'U:Stu != 'W:Roc /\ (tt \/ 'H:Baz != 'I:Wop) /\ (tt \/
-    'F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/ 'F:Foo != 'G:Bar \/ 'F:Foo !=
-    'G:Bar) /\ (tt \/ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ 'F:Foo != 'G:Bar
-    \/ 'H:Baz != 'I:Wop) /\ ('F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/ 'F:Foo !=
-    'G:Bar \/ t1 != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ 'H:Baz !=
-    'I:Wop \/ t1 != t2
+rewrites: 695
+result EqForm: 'U:Stu != 'W:Roc /\ ('F:Foo ?= 'G:Bar \/ 'H:Baz ?= 'I:Wop \/
+    'F:Foo != 'G:Bar \/ t1 != t2) /\ 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/
+    'H:Baz != 'I:Wop \/ t1 != t2
 ==========================================
 reduce in EQFORM-TEST : dnf(f1) .
-rewrites: 574
-result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ ('H:Baz ?=
-    'I:Wop /\ 'H:Baz != 'I:Wop) \/ 'F:Foo != 'G:Bar /\ t1 != t2
+rewrites: 238
+result EqForm: 'F:Foo ?= 'G:Bar \/ 'F:Foo != 'G:Bar \/ t1 != t2 \/ 'H:Baz ?=
+    'I:Wop /\ 'H:Baz != 'I:Wop
 ==========================================
 reduce in EQFORM-TEST : dnf(f2) .
-rewrites: 7795
+rewrites: 543
 result EqForm: ('F:Foo ?= 'G:Bar /\ 'U:Stu != 'W:Roc) \/ ('F:Foo != 'G:Bar /\
-    'U:Stu != 'W:Roc) \/ ('U:Stu != 'W:Roc /\ t1 != t2) \/ ('F:Foo ?= 'G:Bar /\
-    'H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc) \/ ('H:Baz ?= 'I:Wop /\ 'H:Baz !=
-    'I:Wop /\ 'U:Stu != 'W:Roc) \/ ('H:Baz ?= 'I:Wop /\ 'H:Baz != 'I:Wop /\
-    'H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc) \/ ('F:Foo != 'G:Bar /\ 'H:Baz !=
-    'I:Wop /\ 'U:Stu != 'W:Roc) \/ ('F:Foo != 'G:Bar /\ 'U:Stu != 'W:Roc /\ t1
-    != t2) \/ ('H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc /\ t1 != t2) \/ 'F:Foo !=
-    'G:Bar /\ 'H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc /\ t1 != t2
+    'U:Stu != 'W:Roc) \/ ('U:Stu != 'W:Roc /\ t1 != t2) \/ 'H:Baz ?= 'I:Wop /\
+    'H:Baz != 'I:Wop /\ 'U:Stu != 'W:Roc
 Bye.
