@@ -10,76 +10,21 @@
 ---       This constructor variant functionality is then
 ---       lifted to compute constructor unifiers through
 ---       an easy signature transformation.
----
----       The main modules are:
----
----       [1] MGCI - computes most general constructor instances
----       [2] CTOR-VARIANT - uses [1] to compute constructor variants
----       [3] CTOR-UNIFIER - uses [2] to compute constructor unifiers
 
-load var-unif.maude
-load ctor-refine.maude
+--- This module computes most general constructor variants/unifiers;
+--- Since this module relies on ctor-refine, the target module should
+--- not rely on kinds anywhere in its defintion
 
---- this module computes most general constructor instances;
---- since this module relies on ctor-refine, the module to be
---- analyzed should make any use of kinds!
-fmod MGCI is
-  pr META-LEVEL .
-  pr SUBSTITUTION-SET .
-  pr CTOR-REFINE .
-  pr CTOR-LIFT .
-  pr QID-JOIN .
+load var-unif.maude       --- computing variants/unifiers
+load mgci.maude           --- most general constructor instance operation
 
-  var M CM : Module .
-  var I J N : Nat .
-  var S S' : Substitution .
-  var SS : SubstitutionSet .
-  var T : Term .
-  var UP : UnificationProblem .
-
-  op mgci       : Module Term -> SubstitutionSet .
-  op mgci       : Module Term Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat UnificationTriple SubstitutionSet -> SubstitutionSet .
-  op ctor-term? : Module Term -> Bool .
-  op ctrm       : Module Term Nat -> SubstitutionSet .
-
-  eq mgci(M,T)                     = mgci(M,T,0) .
-  eq mgci(M,T,I)                   = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
-  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),.SubstitutionSet) .
-  eq $mgci(M,CM,UP,N,noUnifier,SS) = lift-sub(M,SS) .
-  eq $mgci(M,CM,UP,N,{S,S',I},SS)  = $mgci(M,CM,UP,s(N),metaDisjointUnify(CM,UP,s(I),s(N)),SS | S) .
-
-  eq ctrm(M,T,N) = metaMatch(ctor-refine(M),join('X ': ctor-sort(M,leastSort(M,T))),ctor-term(M,T),nil,N) .
-  eq ctor-term?(M,T) = ctrm(M,T,0) :: Substitution .
-endfm
-
-fmod CTOR-FORM? is
-  pr FOFORM .
-  pr MGCI .
-  op ctor-form? : Module FOForm -> Bool .
-  var F1 F2 : FOForm . var T T' : Term . var QS : QidSet . var M : Module .
-  eq ctor-form?(M,F1 \/ F2) = ctor-form?(M,F1) and-then ctor-form?(M,F2) .
-  eq ctor-form?(M,F1 /\ F2) = ctor-form?(M,F1) and-then ctor-form?(M,F2) .
-  eq ctor-form?(M,A[QS] F1) = ctor-form?(M,F1) .
-  eq ctor-form?(M,E[QS] F1) = ctor-form?(M,F1) .
-  eq ctor-form?(M,~ F1)     = ctor-form?(M,F1) .
-  eq ctor-form?(M,T ?= T')  = ctor-term?(M,T)  and-then ctor-term?(M,T') .
-  eq ctor-form?(M,T != T')  = ctor-term?(M,T)  and-then ctor-term?(M,T') .
-  eq ctor-form?(M,tt)       = true .
-  eq ctor-form?(M,ff)       = true .
-endfm
-
---- this module computes most general constructor variants/unifiers;
---- since this module relies on ctor-refine, the module to be
---- analyzed should make any use of kinds!
 fmod CTOR-VARIANT is
   pr META-LEVEL .
   pr MGCI .
-  pr TERM-SET .
-  pr APPLY-SUBS .
+  pr TERMSET-FM .
   pr EQ-VARIANT .
-  pr KIND-LIST-EXT .
+  pr UNIFICATION-PROBLEM-AUX . --- UnifProbLHSToTL
+  pr HETEROGENEOUS-LIST-FUNCTOR . --- toHL, hl-func
 
   op  ctor-variants : Module Term -> VariantTripleSet .
   op $ctor-variants : Module VariantTripleSet VariantTripleSet -> VariantTripleSet .
@@ -87,28 +32,30 @@ fmod CTOR-VARIANT is
   op $ctor-unifiers : Module Term SubstSetNatPair ~> SubstitutionSet .
 
   var M : Module .
-  var T T' : Term .
-  var I J : Nat .
+  var T : Term .
+  var I : Nat .
   var S S' : Substitution .
   var SS : SubstitutionSet .
-  var TS : TermSet .
   var VS VS' : VariantTripleSet .
-  var V : Variant .
   var P : Parent .
   var B : Bool .
   var UP : UnificationProblem .
 
+  --- OUT: a set of constructor variants computed by computing all regular variants
+  ---      and then copmuting their most general constructor instances of those terms
   eq ctor-variants(M,T) = $ctor-variants(M,variants(M,T),empty) .
   eq $ctor-variants(M,{T,S,I,P,B} | VS,VS') = $ctor-variants(M,VS,VS' | applySubs({T,S,I,P,B},mgci(M,T,s(I)))) .
   eq $ctor-variants(M,empty,VS') = VS' .
 
-  --- get the refined, extended signature plus the variant unifiers
-  eq ctor-unifiers(M,UP) = $ctor-unifiers(kl-ext(M),toKL(M,UP),#var-unifiers(M,UP)) .
+  --- OUT: a set of constructor variant unifiers computed by first computing all of the regular
+  ---      variant unifiers and then:
+  ---      [1] lifting the LHS of each unificand in the problem to a heterogeneous list in HL[M] module
+  ---      [2] applying the regular unifiers to the lifted list
+  ---      [3] computing the most general substitutions mapping the lifted list into constructors
+  ---      [4] composing the constructor substitutions with their original unifiers
+  eq ctor-unifiers(M,UP) = $ctor-unifiers(hl-func(M),toHL(M,UnifProbLHSToTL(UP)),#var-unifiers(M,UP)) .
 
-  --- compute each constructor unifier by get the substitutions from the variants
-  --- NOTE: S is a variant unifier
-  ---       metaReduce() obtains the variant term which was computed by var-unifiers
-  ---       mgci() is set of subs which gives the most general ctor instances of the variant
+  --- Apply steps [2-4] above where the SubstSetNatPair is all the standard variant unifiers
   eq $ctor-unifiers(M,T,ssnp(S | SS,I)) =
     (S << mgci(M,getTerm(metaReduce(M,T << S)),I)) |
     $ctor-unifiers(M,T,ssnp(SS,I)) .

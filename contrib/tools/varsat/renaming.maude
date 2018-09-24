@@ -1,0 +1,2 @@
+load prelude-aux.maude
+load ../meta/variables.maude

@@ -47,3 +47,4 @@ lib*.a
 /contrib/tools/fvp/*
 /contrib/tools/lmc/*
 /contrib/tools/meta/*
+/contrib/tools/base/prelude-aux.maude

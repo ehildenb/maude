@@ -1,6 +1,9 @@
 # Settings
 # --------
 
+base_md:=tools/base.md/prelude-aux.md
+base_maude:=$(patsubst tools/base.md/%.md, tools/base/%.maude, $(base_md))
+
 meta_md:=$(wildcard tools/meta.md/*.md)
 meta_maude:=$(patsubst tools/meta.md/%.md, tools/meta/%.maude, $(meta_md))
 
@@ -28,7 +31,7 @@ all: \
 	systems
 
 clean:
-	rm -rf $(meta_maude) $(lmc_maude) $(fvp_maude) $(systems_maude)
+	rm -rf $(base_maude) $(meta_maude) $(lmc_maude) $(fvp_maude) $(systems_maude)
 
 # Tangler
 # -------
@@ -39,7 +42,12 @@ $(tangler):
 # Tangled Files
 # -------------
 
-tools: $(meta_maude) $(lmc_maude) $(fvp_maude)
+tools: $(base_maude) $(meta_maude) $(lmc_maude) $(fvp_maude)
+
+tools/base/%.maude: tools/base.md/%.md $(tangler)
+	mkdir -p $(dir $@)
+	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
+
 tools/meta/%.maude: tools/meta.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@

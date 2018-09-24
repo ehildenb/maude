@@ -1,5 +1,5 @@
 load ../full-maude/full-maude-alpha115.maude
-load prelude-aux.maude
+load ../meta/meta-aux.maude
 
 fmod MOD-EXTRA is
   pr UNIT .

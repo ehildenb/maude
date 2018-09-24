@@ -1,0 +1,10 @@
+--- name: empty-fin-sorts.maude
+--- reqs: prelude, prelude-aux, meta-aux
+--- desc: This module implements a few empty and finite sort
+---       constructions; in particular, in contains functionality to:
+---       [1] Compute which sorts are empty (and empty modulo B)
+---       [2] Compute which sorts are finite (but not empty modulo B)
+---       [3] If a sort is finite modulo B, generate all of the terms in it
+
+load meta-aux.maude
+load ../meta/sort-ops.maude

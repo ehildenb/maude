@@ -6,6 +6,7 @@ TESTS = \
 	terms.maude \
 	foform.maude \
 	eqform.maude \
+	meta-aux.maude \
 	mtemplate.maude \
 	mtransform.maude \
 	mconstruction.maude \
@@ -21,6 +22,7 @@ RESULT_FILES = \
 	terms.expected \
 	foform.expected \
 	eqform.expected \
+	meta-aux.expected \
 	mtemplate.expected \
 	mtransform.expected \
 	mconstruction.expected \
