@@ -72,7 +72,7 @@ build_maude() {
     automake --add-missing
     automake
 
-    ./configure CXXFLAGS="-I$include_dir -L$lib_dir" "$@"
+    ./configure CXXFLAGS="-std=c++11 -I$include_dir -L$lib_dir" "$@"
     make -s -j4 \
         || ( git checkout -- src/Mixfix/surface.cc
              make -s -j4
