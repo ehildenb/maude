@@ -12,6 +12,8 @@ include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 contrib_dir="contrib"
 
+cvc4_dir="ext/cvc4"
+yices2_dir="ext/yices2"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
 
 export PATH="/usr/lib/ccache/bin:$PATH"
@@ -36,27 +38,27 @@ build_clean() {
 
 build_deps() {
     progress "Updating submodules"
-    git submodule update --init
+    git submodule update --init -- "$cvc4_dir" "$yices2_dir" "$pandoc_tangle_dir"
 }
 
 build_cvc4() {
     progress "Building CVC4"
     mkdir -p $build_dir
-    (  cd ext/cvc4/
-       ./autogen.sh
-       ./contrib/get-antlr-3.4
-       ./configure --prefix="$build_dir" \
-                   --with-antlr-dir=./antlr-3.4 \
-                   ANTLR=./antlr-3.4/bin/antlr3
-       make -s -j4
-       make -s install
+    (   cd "$cvc4_dir"
+        ./autogen.sh
+        ./contrib/get-antlr-3.4
+        ./configure --prefix="$build_dir" \
+                    --with-antlr-dir=./antlr-3.4 \
+                    ANTLR=./antlr-3.4/bin/antlr3
+        make -s -j4
+        make -s install
     )
 }
 
 build_yices2() {
     progress "Building Yices2"
     mkdir -p $build_dir
-    (   cd ext/yices2/
+    (   cd "$yices2_dir"
         autoconf
         ./configure --prefix="$build_dir"
         make -s -j4
