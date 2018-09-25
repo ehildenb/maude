@@ -29,8 +29,8 @@ build_clean() {
     rm -rf "$build_dir"
     make -s clean || true
     git clean -dfx
-    [[ ! -f "ext/cvc4/Makefile" ]]   || ( cd "ext/cvc4"   ; make -s distclean )
-    [[ ! -f "ext/yices2/Makefile" ]] || ( cd "ext/yices2" ; make -s clean     )
+    rm -rf "$cvc4_dir" "$yices2_dir"
+    git submodule update --init "$cvc4_dir" "$yices2_dir"
     (   cd "$contrib_dir"
         make clean
     )
