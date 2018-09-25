@@ -17,10 +17,13 @@ pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
 export PATH="/usr/lib/ccache/bin:$PATH"
 export PATH="/usr/lib/ccache:$PATH"
 
+progress() { echo "===== " $@ ; }
+
 # Functionality
 # -------------
 
 build_clean() {
+    progress "Cleaning"
     rm -rf "$build_dir"
     make -s clean || true
     git clean -dfx
@@ -32,10 +35,12 @@ build_clean() {
 }
 
 build_deps() {
+    progress "Updating submodules"
     git submodule update --init
 }
 
 build_cvc4() {
+    progress "Building CVC4"
     mkdir -p $build_dir
     (  cd ext/cvc4/
        ./autogen.sh
@@ -49,6 +54,7 @@ build_cvc4() {
 }
 
 build_yices2() {
+    progress "Building Yices2"
     mkdir -p $build_dir
     (   cd ext/yices2/
         autoconf
@@ -59,6 +65,7 @@ build_yices2() {
 }
 
 build_maude() {
+    progress "Building Maude $@"
     aclocal
     autoconf
     autoheader
@@ -83,6 +90,7 @@ build_maude_yices2() {
 }
 
 build_tangle() {
+    progress "Tangling"
     (   cd "$contrib_dir"
         make all
     )
