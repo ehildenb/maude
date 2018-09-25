@@ -11,6 +11,10 @@ TESTS = \
 	mtransform.maude \
 	mconstruction.maude \
 	nelson-oppen-combination.maude \
+	nelson-oppen/hereditarily-finite-set.maude \
+	nelson-oppen/integer-list.maude \
+	nelson-oppen/lexical-trichotomy-law.maude \
+	nelson-oppen/matrix.maude \
 	sort-ops.maude \
 	unification.maude \
 	variables.maude \
@@ -28,6 +32,10 @@ RESULT_FILES = \
 	mtransform.expected \
 	mconstruction.expected \
 	nelson-oppen-combination.expected \
+	nelson-oppen/hereditarily-finite-set.expected \
+	nelson-oppen/integer-list.expected \
+	nelson-oppen/lexical-trichotomy-law.expected \
+	nelson-oppen/matrix.expected \
 	sort-ops.expected \
 	unification.expected \
 	variables.expected \
