@@ -113,17 +113,21 @@ build_test() {
     }
 }
 
+build_test_smt() {
+    build_maude_cvc4
+    build_test tests/Misc/smtTest
+    build_maude_yices2
+    build_test tests/Misc/smtTest
+}
+
 build_test_all() {
     build_clean
     build_deps
     build_maude
     build_tangle
     make -s check "$@"
+    build_test_smt
     git checkout -- src/Mixfix/tokenizer.cc
-    build_maude_cvc4
-    build_test tests/Misc/smtTest
-    build_maude_yices2
-    build_test tests/Misc/smtTest
 }
 
 # Main
@@ -138,6 +142,7 @@ case "$build_command" in
     maude-yices2)   build_maude_yices2  "$@" ;;
     tangle)         build_tangle        "$@" ;;
     test)           build_test          "$@" ;;
+    test-smt)       build_test_smt      "$@" ;;
     test-all)       build_test_all      "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
@@ -155,6 +160,7 @@ case "$build_command" in
                 $0 test-all
 
     $0 test <test-path>: run test at <test-path> (eg. tests/tools/fvp/numbers).
+    $0 test-smt:         run tests that are conditional on an SMT engine being compiled.
     $0 test-all:         Clean build and test for CI servers.
 " ;;
 esac
