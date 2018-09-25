@@ -107,12 +107,12 @@ build_test() {
 
     build_tangle
 
-    {   cd "$test_dir"
+    (   cd "$test_dir"
         if ! make -s check TESTS=$test_name ; then
             git --no-pager diff --no-index $test_name.{expected,out}
             return 1
         fi
-    }
+    )
 }
 
 build_test_smt() {
