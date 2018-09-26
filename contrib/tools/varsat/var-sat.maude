@@ -19,7 +19,7 @@ load foform.maude         --- formula data structure
 fmod FORMS-TERMS-AUX is
   pr FOFORM .
 
-  var EL : EqAtom . var ED : EqDisj . var EC : EqConj .
+  var EL : EqLit . var ED : EqDisj . var EC : EqConj .
   var T T' : Term . var NTL : NeTermList .
 
   --- Map conjunction or disjunction into list of terms
