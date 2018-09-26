@@ -1,55 +1,62 @@
+set include BOOL off .
+set include NAT  off .
+set include INT  off .
+
+load ../../../contrib/tools/fvp/numbers.maude
 load ../../../contrib/tools/meta/nelson-oppen-combination.maude
-load ../../../contrib/tools/varsat/numbers.maude
 
---- We need purification to put `0` and `s` into the `Nat*` theory,
---- while at the same time have enough constructors to convince
---- `var-sat` that the `Nat*` sort is infinite
+--- Here we test the Nelson-Oppen algorithm, using variant-satisfiablity for
+--- both subtheories. 
 
-fmod MYLISTNAT* is
-  protecting BOOL* .
-  sort Nat* .
+fmod LIST-NAT is
+  subsort Nat < NeListNat < ListNat .
+  op _ ; _ : NeListNat NeListNat -> NeListNat [ctor assoc] .
+  op nil : -> ListNat [ctor] .
 
-  op fake-zero : -> Nat*      [ctor] .
-  op fake-succ : Nat* -> Nat* [ctor] .
+  op head : NeListNat -> Nat .
+  var N : Nat . var L : NeListNat .
+  eq head(N)     = N [variant] .
+  eq head(N ; L) = N [variant] .
 
-  sort NeNatList* NatList* .
-  subsort Nat* < NeNatList* < NatList* .
-  op __  : NeNatList* NeNatList* -> NeNatList* [ctor assoc] .
-  op nil : -> NatList* [ctor] .
+--- For var-sat to work, in needs to be able to compute whether the sorts it
+--- works over a finite or not. A the same time, we cannot include the usual 
+--- `0`, `1` and `_+_` constructors, since purification will then lump the
+--- entire formula into `LIST-NAT` instead of separating the `List` parts from
+--- the `Nat` parts. So, instead, we add two contructors that will convince var-sat
+--- that the sort is infinite, that will never be used in the formulae, and so not
+--- intefere with purification.
 
-  op head : NeNatList* -> Nat* .
-  var N : Nat* . var L : NeNatList* .
-  eq head(N)   = N [variant] .
-  eq head(N L) = N [variant] .
+  op fake-zero :     -> Nat [ctor] .
+  op fake-succ : Nat -> Nat [ctor] .
 endfm
 
 fmod TEST-NO-NAT-LIST is
-    protecting NAT* .
-    protecting MYLISTNAT* .
     protecting NELSON-OPPEN-COMBINATION .
-    protecting META-LEVEL .
-
-    op natMod     : -> Module   . eq natMod       = upModule('NAT*, true) .
-    op natListMod : -> Module   . eq natListMod   = upModule('MYLISTNAT*, true) .
+    op natMod     : -> TaggedFormulaSet . eq natMod     = tagged(tt, (('mod > 'FVP-NAT-PRED); 'check-sat > 'var-sat)) .
+    op natListMod : -> TaggedFormulaSet . eq natListMod = tagged(tt, (('mod > 'LIST-NAT    ); 'check-sat > 'var-sat)) .
 endfm
 
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*); 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'NAT*      ); 'check-sat > 'var-sat))),
-       ('tt.Bool* ?= ('_<Nat_ [ '_:+_['head['L':NeNatList*] , 'head['L':NeNatList*]]
-                              , '_:+_['head[ 'L:NeNatList*] , 'head['L:NeNatList* ]]
-                              ]))
-        => (  'L:NeNatList* != 'L':NeNatList*
-           /\ 'tt.Bool*     ?= '_<Nat_ ['head['L':NeNatList*] , 'head['L:NeNatList*]]
+--- TODO Move to var-sat tests:
+reduce var-sat(upModule('FVP-NAT-PRED, true), 'true.Bool != '_<_['_+_['N:Nat, 'N:Nat],'_+_[ 'M:Nat, 'M:Nat]]) .
+eof .
+
+reduce nelson-oppen-sat((natListMod, natMod), ff) == false .
+
+set print attribute on .
+reduce nelson-oppen-sat((natListMod, natMod),
+       ('true.Bool ?= ('_<_ [ '_+_['head['L':NeListNat] , 'head['L':NeListNat]]
+                              , '_+_['head['L:NeListNat] , 'head['L:NeListNat ]]
+                            ]))
+        => (  'L:NeListNat != 'L':NeListNat
+           /\ 'true.Bool ?= '_<_ ['head['L':NeListNat] , 'head['L:NeListNat]]
            )
        )
-    == true
     .
+eof .
 
-reduce nelson-oppen-sat(( tagged(tt, (('mod > 'MYLISTNAT*); 'check-sat > 'var-sat))
-                        , tagged(tt, (('mod > 'NAT*      ); 'check-sat > 'var-sat))),
-       (  'L:NeNatList* ?= 'L':NeNatList*
-       /\ 'tt.Bool*     ?= '_<Nat_ ['head['L':NeNatList*] , 'head['L:NeNatList*]]
+reduce nelson-oppen-sat((natListMod, natMod),
+       (  'L:NeListNat ?= 'L':NeListNat
+       /\ 'true.Bool     ?= '_<_ ['head['L':NeListNat] , 'head['L:NeListNat]]
        ))
     == false
     .
-

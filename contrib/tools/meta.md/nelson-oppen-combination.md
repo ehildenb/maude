@@ -13,18 +13,19 @@ the sort `TaggedFormula` we use the variables `TF1` and `TF2`, while for
 `TaggedFormulaSet` we use `TFS`.
 
 ```maude
-load foform.maude
-load cterms.maude
+load eqform.maude
+load purification.maude
+load meta-aux.maude --- VariableSet
 load ../varsat/var-sat.maude
 load smt.maude
 
-fmod TAGGED-FOFORM is
-    protecting FOFORM .
+fmod TAGGED-EQFORM is
+    protecting EQFORM .
     sort TaggedFormula TaggedFormulaSet Tags Tag .
     subsorts Tag < Tags .
     subsorts TaggedFormula < TaggedFormulaSet .
 
-    op tagged : FOForm? Tags -> TaggedFormula .
+    op tagged : Form Tags -> TaggedFormula .
     op empty : -> Tags [ctor] .
     op _ ; _ : Tags Tags     -> Tags [ctor assoc comm id: empty] .
     op _ > _ : Qid  Qid      -> Tag . --- TODO Genneralize to QidSet?
@@ -35,69 +36,41 @@ endfm
 ```
 
 ```maude
-fmod FOFORM-VARIABLES is
-    protecting FOFORM .
-    protecting VARIABLESET .
-
-    vars PHI PHI' : FOForm .
-    vars T1 T2 : Term .
-    vars TL : TermList .
-    vars X : Variable .
-
-    op vars : FOForm   -> VariableSet .
-    op vars : Term     -> VariableSet .
-    op vars : TermList -> VariableSet .
-    ----------------------------------
-    eq vars(mtForm) = none .
-    eq vars(tt)     = none .
-    eq vars(ff)     = none .
-    eq vars(PHI /\ PHI') = vars(PHI) ; vars(PHI') .
-    eq vars(PHI \/ PHI') = vars(PHI) ; vars(PHI') .
-    eq vars(T1 ?= T2) = vars(T1) ; vars(T2) .
-    eq vars(T1 != T2) = vars(T1) ; vars(T2) .
-    eq vars((T1, NETL:NeTermList)) = vars(T1) ; vars(NETL:NeTermList) .
-    eq vars(Q:Qid[TL]) = vars(TL) .
-    eq vars(X) = X .
-    eq vars(T1) = none [owise] . --- TODO: Doable without owise?
-endfm
-```
-
-```maude
-fmod FOFORM-TO-SMT is
+fmod EQFORM-TO-SMT is
     protecting META-TERM .
-    protecting FOFORM .
+    protecting EQFORM .
 
-    vars FO1 FO2 : FOForm .
-    vars T1  T2  : Term   .
+    vars F1 F2 : Form .
+    vars T1 T2 : Term   .
 
-    op foform-to-smt : FOForm -> Term .
-    op foform-to-smt : Term   -> Term .
+    op eqform-to-smt : Form -> Term .
+    op eqform-to-smt : Term   -> Term .
     ---------------------------------------------------------------------------------
-    eq foform-to-smt(tt)         = 'true.Boolean .
-    eq foform-to-smt(FO1 /\ FO2) = '_and_  [foform-to-smt(FO1), foform-to-smt(FO2)] .
-    eq foform-to-smt(FO1 \/ FO2) = '_or_   [foform-to-smt(FO1), foform-to-smt(FO2)] .
-    eq foform-to-smt(T1  ?=  T2) = '_===_  [foform-to-smt(T1),  foform-to-smt(T2)]  .
-    eq foform-to-smt(T1  !=  T2) = '_=/==_ [foform-to-smt(T1),  foform-to-smt(T2)]  .
-    eq foform-to-smt(T1)         = T1          [owise] .
+    eq eqform-to-smt(tt)         = 'true.Boolean .
+   ceq eqform-to-smt(F1 /\ F2)   = '_and_  [eqform-to-smt(F1), eqform-to-smt(F2)] if F1 =/= tt /\ F2 =/= tt .
+   ceq eqform-to-smt(F1 \/ F2)   = '_or_   [eqform-to-smt(F1), eqform-to-smt(F2)] if F1 =/= ff /\ F2 =/= ff .
+    eq eqform-to-smt(T1  ?=  T2) = '_===_  [eqform-to-smt(T1), eqform-to-smt(T2)]  .
+    eq eqform-to-smt(T1  !=  T2) = '_=/==_ [eqform-to-smt(T1), eqform-to-smt(T2)]  .
+    eq eqform-to-smt(T1)         = T1          [owise] .
 endfm
 ```
 
 ```maude
 fmod NO-CHECK-HELPER is
-    protecting FOFORM .
-    protecting TAGGED-FOFORM .
-    protecting FOFORM-TO-SMT .
-    protecting FOFORMSIMPLIFY .
+    protecting EQFORM .
+    protecting TAGGED-EQFORM .
+    protecting EQFORM-TO-SMT .
+    protecting META-LEVEL .
 
     protecting VAR-SAT .
 
     op check-valid           : TaggedFormula -> Bool .
     op check-sat             : TaggedFormula -> Bool .
     op $check-sat.dnf        : TaggedFormula -> Bool .
-    op $check-sat.print      : ModuleExpression FOForm Bool -> Bool .
+    op $check-sat.print      : ModuleExpression Form Bool -> Bool .
 
     var ME   : ModuleExpression .
-    var PHI  : FOForm           .
+    var F  : Form             .
     var SAT? : Bool             .
     vars TS  : Tags             .
 
@@ -110,29 +83,28 @@ fmod NO-CHECK-HELPER is
     eq strictNot(false)  = true  .
     eq strictNot(B:Bool) = $strictNot.error(B:Bool) [owise print "----- what is? " B:Bool]  .
 
-    op smt-sat : ModuleExpression FOForm -> Bool .
-    eq smt-sat(ME, PHI)
-     = metaCheck([ME], foform-to-smt(PHI))
+    op smt-sat : ModuleExpression Form -> Bool .
+    eq smt-sat(ME, F)
+     = metaCheck([ME], eqform-to-smt(F))
      .
 
-    eq check-valid(tagged(PHI, TS)) = strictNot(check-sat(tagged(~ PHI, TS))) .
-    eq check-sat  (tagged(PHI, TS)) = $check-sat.dnf       (tagged(simplify(PHI), TS))
-    .
+    eq check-valid(tagged(F, TS)) = strictNot(check-sat(tagged(~ F, TS))) .
+    eq check-sat(tagged(F, TS)) = $check-sat.dnf(tagged(F, TS)) .
 
-    eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'var-sat); TS))
-     = $check-sat.print(ME, PHI, var-sat(upModule(ME, true), PHI))
----       [print "check-sat? " PHI]
+    eq $check-sat.dnf       (tagged(F, ('mod > ME); ('check-sat > 'var-sat); TS))
+     = $check-sat.print(ME, F, var-sat(upModule(ME, true), F))
+       [print "check-sat? " F]
      .
 
-    eq $check-sat.dnf       (tagged(PHI, ('mod > ME); ('check-sat > 'smt-sat); TS))
-     = $check-sat.print(ME, PHI, smt-sat(ME, PHI))
+    eq $check-sat.dnf       (tagged(F, ('mod > ME); ('check-sat > 'smt-sat); TS))
+     = $check-sat.print(ME, F, smt-sat(ME, F))
      .
 
-    eq $check-sat.print(ME, PHI, SAT?) = SAT?
----    [print "check-sat: " ME ": " PHI " is " SAT? ]
+    eq $check-sat.print(ME, F, SAT?) = SAT?
+---    [print "check-sat: " ME ": " F " is " SAT? ]
      .
 
-    eq smt-sat(ME, PHI) = metaCheck([ME], foform-to-smt(PHI))
+    eq smt-sat(ME, F) = metaCheck([ME], eqform-to-smt(F))
      .
 endfm
 ```
@@ -140,18 +112,16 @@ endfm
 ```maude
 fmod NELSON-OPPEN-COMBINATION is
     protecting NO-CHECK-HELPER .
-    protecting FOFORM-DEFINEDOPS .
-    protecting FOFORMSET .
-    protecting FOFORMSIMPLIFY . protecting DNF . protecting NNF .
+    protecting QIDSET-REFINEMENT .
+    protecting EQFORM-DNF .
     protecting PURIFICATION .
-    protecting TAGGED-FOFORM .
-    protecting FOFORM-VARIABLES .
-    protecting FOFORM-SUBSTITUTION .
+    protecting TAGGED-EQFORM .
+    protecting EQFORM-OPERATIONS .
 
-    vars MCONJ1 MCONJ2 : Conj? .
+    vars MCONJ2 : Conj .
     vars CONJ PHI1 PHI2 : Conj .
-    vars PHI : QFForm .
-    vars CANDEQ DISJ?1 DISJ?2 : Disj? .
+    vars F F1 F2 : Form  .
+    vars CANDEQ DISJ?1 DISJ?2 : Disj .
     vars M1 M2 : Module .
     vars ME1 ME2 : Qid . --- TODO: Wierd, Qids are a subsort of ModuleExpr s not the other way around
     vars TFS : TaggedFormulaSet .
@@ -165,22 +135,21 @@ fmod NELSON-OPPEN-COMBINATION is
 --- intersection of multiple theories are copied into each tag.
 --- TODO: Ill formed formulae are silently ignored.
 
-    op tagWellFormed           : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
-    op tagWellFormed.hasConvex : TaggedFormulaSet EqConj? -> TaggedFormulaSet .
-    op $tagWellFormed.filter   : ModuleExpression EqConj? -> EqConj? .
+    op tagWellFormed           : TaggedFormulaSet EqConj -> TaggedFormulaSet .
+    op tagWellFormed.hasConvex : TaggedFormulaSet EqConj -> TaggedFormulaSet .
+    op $tagWellFormed.filter   : ModuleExpression EqConj -> EqConj .
     -----------------------------------------------------------------------------
     eq tagWellFormed(TFS, CONJ) = tagWellFormed.hasConvex(addConvexTag(TFS), CONJ) .
     eq tagWellFormed.hasConvex(empty, CONJ) = empty .
     eq tagWellFormed.hasConvex((tagged(PHI1, ('mod > ME1); TS1 ), TFS), CONJ)
      = ( tagged(PHI1 /\ $tagWellFormed.filter(ME1, CONJ), ('mod > ME1) ; TS1)
        , tagWellFormed(TFS, CONJ)) .
-    eq $tagWellFormed.filter(ME1, A:EqAtom /\ MCONJ2)
-     = if A:EqAtom in upModule(ME1, true) then A:EqAtom /\ $tagWellFormed.filter(ME1, MCONJ2)
-                                    else             $tagWellFormed.filter(ME1, MCONJ2)
-                                    fi
+    eq $tagWellFormed.filter(ME1, A:EqLit /\ MCONJ2)
+     = if A:EqLit in upModule(ME1, true) then A:EqLit /\ $tagWellFormed.filter(ME1, MCONJ2)
+                                         else            $tagWellFormed.filter(ME1, MCONJ2)
+                                         fi
      .
-    eq $tagWellFormed.filter(ME1, TA:TruthAtom) = TA:TruthAtom .
-    eq $tagWellFormed.filter(ME1, mtForm) = mtForm .
+    eq $tagWellFormed.filter(ME1, TA:TruthLit) = TA:TruthLit .
 
     op addConvexTag : TaggedFormulaSet -> TaggedFormulaSet .
     --------------------------------------------------------
@@ -203,21 +172,21 @@ fmod NELSON-OPPEN-COMBINATION is
 ```
 
 ```{.maude .njr-thesis}
-    op nelson-oppen-sat    : TaggedFormulaSet QFForm                 -> Bool .
+    op nelson-oppen-sat    : TaggedFormulaSet Form -> Bool .
 ```
 
 The `nelson-oppen-valid` function converts a validity check into a satisfiability check:
 
 ```{.maude .njr-thesis}
-    op nelson-oppen-valid  : TaggedFormulaSet QFForm -> Bool .
+    op nelson-oppen-valid  : TaggedFormulaSet Form -> Bool .
     ----------------------------------------------------------
-    eq nelson-oppen-valid(TFS, PHI) = strictNot(nelson-oppen-sat(TFS, ~ PHI)) .
+    eq nelson-oppen-valid(TFS, F) = strictNot(nelson-oppen-sat(TFS, ~ F)) .
 ```
 
 
 
 ```maude
-    op $nosat.dnf          : TaggedFormulaSet QFForm                 -> Bool .
+    op $nosat.dnf          : TaggedFormulaSet Form                   -> Bool .
     op $nosat.purified     : TaggedFormulaSet EqConj                 -> Bool .
     op $nosat.tagged       : TaggedFormulaSet                        -> Bool .
     op $nosat.basicSat     : TaggedFormulaSet                        -> Bool .
@@ -227,21 +196,22 @@ The `nelson-oppen-valid` function converts a validity check into a satisfiabilit
     --------------------------------------------------------------------------
 ```
 
-Given a quantifier free formula `PHI` in the set of theories `TFS` (each tagged with information
+Given a quantifier free formula `F` in the set of theories `TFS` (each tagged with information
 regarding covexitivity, and information about which procedure to use for checking sat), we first
 convert it to disjunctive normal form (DNF) and simplify it (e.g. $\bot \land \phi$ becomes
 $\bot$).
 
 ```{ .maude .njr-thesis }
-    eq nelson-oppen-sat(TFS, PHI)
-     = $nosat.dnf(TFS, simplify(toDNF(toNNF(simplify(PHI))))) .
+    eq nelson-oppen-sat(TFS, F)
+     = $nosat.dnf(TFS, dnf(F)) .
 ```
 
 The algorithm then considers each disjunction separately.
 
 ```{ .maude .njr-thesis }
-    eq $nosat.dnf(TFS, CONJ \/ PHI)
-     =  $nosat.dnf(TFS, CONJ) or-else $nosat.dnf(TFS, PHI)
+   ceq $nosat.dnf(TFS, F1 \/ F2)
+     = $nosat.dnf(TFS, F1) or-else $nosat.dnf(TFS, F2)
+    if F1 =/= ff /\ F2 =/= ff
      .
 ```
 
@@ -307,10 +277,10 @@ the formula has the advantage of reducing the number of candidate equalities we 
 ```{ .maude .njr-thesis }
    ceq $nosat.ep(( tagged(PHI1, ('mod > ME1); TS1)
                  , tagged(PHI2, ('mod > ME2); TS2)), X1 ?= X2 \/ CANDEQ)
-     =          check-sat(tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
-       and-then $nosat.ep(( tagged(simplify(PHI1 << (X1 <- X2)), ('mod > ME1); TS1)
-                          , tagged(simplify(PHI2 << (X1 <- X2)), ('mod > ME2); TS2))
-                         , simplify(CANDEQ << (X1 <- X2)))
+     =          check-sat(tagged(PHI2 << (X1 <- X2), ('mod > ME2); TS2))
+       and-then $nosat.ep(( tagged(PHI1 << (X1 <- X2), ('mod > ME1); TS1)
+                          , tagged(PHI2 << (X1 <- X2), ('mod > ME2); TS2))
+                         , CANDEQ << (X1 <- X2))
     if check-valid(tagged(PHI1 => (X1 ?= X2), ('mod > ME1); TS1))
        [ print "EqualityProp: " ME1 ": => " X1 " ?= " X2 ] .
 ```
@@ -325,7 +295,7 @@ rule.
 If there are no variables left to identify, then the formula is satisfiable
 
 ```{ .maude .njr-thesis }
-    eq $nosat.split(TFS, mtForm) = true .
+---    eq $nosat.split(TFS, mtForm) = true .
 ```
 
 However, if some disjunction of identifications is implied and we are in a non-convex theory, we
@@ -367,11 +337,11 @@ We use `$nosat.split.genEqs` to generate this disequality of sat problems.
         [print "Split: "  ME1 " : " X1 " ?= " X2 ]
      .
 
-    eq $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
-                           , tagged(PHI2, ('mod > ME2); TS2))
-                       , mtForm, DISJ?2)
-     = false
-     .
+----    eq $nosat.split.genEqs(( tagged(PHI1, ('mod > ME1); TS1)
+----                           , tagged(PHI2, ('mod > ME2); TS2))
+----                       , mtForm, DISJ?2)
+----     = false
+----     .
 ```
 
 ``` {.maude}

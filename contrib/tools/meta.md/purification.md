@@ -124,7 +124,7 @@ fmod BREAK-EQATOMS is
     if not (T :: Variable or T' :: Variable)
     /\ NV  := joint-variable(MOD, MOD', T)
     /\ NV' := joint-variable(MOD', MOD, T')
-                                            .
+       .
 --- XXX: Everett please review this rule. Have I put all the primes in?
    ceq break-eqatoms(MOD, MOD', T != T') =    T  ?= NV
                                            /\ NV != NV'
@@ -132,6 +132,7 @@ fmod BREAK-EQATOMS is
     if not (T :: Variable or T' :: Variable)
     /\ NV  := joint-variable(MOD, MOD', T)  /\ sortLeq(MOD,  leastSort(MOD , T ), leastSort(MOD , NV ))
     /\ NV' := joint-variable(MOD', MOD, T') /\ sortLeq(MOD', leastSort(MOD', T'), leastSort(MOD', NV'))
+       .
 endfm
 ```
 
