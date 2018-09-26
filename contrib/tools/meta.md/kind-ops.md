@@ -9,6 +9,7 @@ If true, it will check that all terms appearing in the program have a least type
 
 ```maude
 load foform.maude
+load ../base/full-maude.maude
 
 fmod KIND-CHECK is
   pr META-LEVEL .
