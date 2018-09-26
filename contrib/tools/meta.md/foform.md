@@ -8,20 +8,20 @@ in separate modules from FOFORM and are called through META-LEVEL reflection.
 This isolates the modules from one another and simplifies the algorithm design.
 
 ```maude
-load variables.maude
-load ../base/full-maude.maude
-
-fmod BOOL-ERR is
-   protecting MAYBE-BOOL * ( sort MaybeBool to Bool? ) .
-endfm
+load meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
+load variables.maude      --- next-gen renaming library
 
 fmod REFLECT is
   pr META-LEVEL .
+  pr UNIT-FM .
+  op modReduce   : Module Term   -> [Term] .
   op redReflect  : Qid Term      -> [Term] .
   op sortReflect : Qid Term Type -> [Bool] .
+  var Mod : Module .
   var M : Qid .
   var T : Term .
   var TY : Type .
+  eq modReduce(Mod,T)    = if Mod =/= noModule then getTerm(metaReduce(Mod,T)) else T fi .
   eq redReflect(M,T)     = getTerm(metaReduce(upModule(M,false),T)) .
   eq sortReflect(M,T,TY) = sortLeq(upModule(M,false),leastSort(upModule(M,false),T),TY) .
 endfm
@@ -345,18 +345,63 @@ fmod FOFORMSET is
   op _|_ : FOForm?Set           FOForm?Set          -> FOForm?Set          [ctor ditto] .
 endfm
 
+fmod FOFORMBASICLIST is
+  pr FOFORM .
+  sort FormEmptyList .
+  sort QFForm?List FOForm?List .
+  subsort FormEmptyList QFForm? < QFForm?List .
+  subsort FormEmptyList FOForm? < FOForm?List .
+  subsort QFForm?List < FOForm?List .
+  op nilFormList :                     -> FormEmptyList [ctor] .
+  op _;_ : FormEmptyList FormEmptyList -> FormEmptyList [ctor assoc id: nilFormList] .
+  op _;_ : FOForm?List   FOForm?List   -> FOForm?List   [ctor ditto] .
+  op _;_ : QFForm?List   QFForm?List   -> QFForm?List   [ctor ditto] .
+endfm
+
+fmod FOFORM-CONVERSION is
+  pr FOFORMSET .
+  pr FOFORMBASICLIST .
+  op set2list : FOForm?Set  -> FOForm?List .
+  op list2set : FOForm?List -> FOForm?Set  .
+  var F : FOForm? . var FS : FOForm?Set . var FL : FOForm?List .
+  eq set2list(F | FS)       = F ; set2list(FS) .
+  eq set2list(mtFormSet)    = nilFormList .
+  eq list2set(F ; FL)       = F | list2set(FL) .
+  eq list2set(nilFormList)  = mtFormSet .
+endfm
+
 fmod FOFORM-DEFINEDOPS is
   pr FOFORM .
-  op _=>_  : FOForm FOForm -> FOForm .
-  op _<=>_ : FOForm FOForm -> FOForm .
+  op _=>_  : FOForm FOForm -> FOForm [ctor] .
+  op _<=>_ : FOForm FOForm -> FOForm [ctor] .
   var F1 F2 : FOForm .
   eq F1  => F2 = (~ F1) \/ F2 .
   eq F1 <=> F2 = (F1 => F2) /\ (F2 => F1) .
 endfm
 
+fmod FOFORMSIMPLIFY-IMP-IMPL is
+  pr FOFORM .
+  var F G H K : FOForm . var K? : FOForm? .
+  var C : Conj . var D : Disj . var T T' : Term .
+
+  --- Repeated Subformula
+  eq F /\ F = F .
+  eq F \/ F = F .
+
+  --- Implication
+  eq (~ (F /\ G)) \/  F               = tt .
+  eq (~  F      ) \/ ((F \/ K?) /\ H) = (~ F) \/ H .
+  eq (~ (F /\ G)) \/ ((F \/ K?) /\ H) = (~ G) \/ H .
+
+  --- Break up implication into clauses
+  eq (~ (F /\ (G \/ H)) ) \/ K = ((~ (F /\ G)) \/ K) /\ ((~ (F /\ H)) \/ K) .
+endfm
+
 fmod FOFORMSIMPLIFY-IMPL is
   pr FOFORM .
-  var C : Conj . var D : Disj . vars F F' : FOForm . vars T T' : Term .
+  var F G H K : FOForm . var K? : FOForm? .
+  var C : Conj . var D : Disj . var T T' : Term .
+
   --- Repeated subformula in Conj/Disj
   eq F /\ F = F .
   eq F \/ F = F .
@@ -371,12 +416,12 @@ fmod FOFORMSIMPLIFY-IMPL is
   --- Negated Formula
   eq F  \/ ~ F = tt .
   eq F  /\ ~ F = ff .
-  --- De Morgan's Laws
-  eq ~(F /\ F') = ~ F \/ ~ F' .
-  eq ~(F \/ F') = ~ F /\ ~ F' .
-  --- Negated Equality/Disequality
-  eq ~(T ?= T') = T != T' .
-  eq ~(T != T') = T ?= T' .
+
+  --- eq T ?= T' /\ T != T' /\ C = ff .
+  --- eq T ?= T' \/ T != T' \/ D = tt .
+  eq (T ?= T' /\ T != T') = ff .
+  eq (T ?= T' \/ T != T') = tt .
+
   --- Trivial Equality/Disequality
   eq T ?= T = tt .
   eq T != T = ff .
@@ -391,35 +436,53 @@ fmod FOFORMSIMPLIFY is
 endfm
 
 fmod FOFORMREDUCE-IMPL is
-  pr FOFORM .
-  pr UNIT .
-  op reduce  : Module FOForm? -> FOForm? .
-  op reduce  : Module FOForm  -> FOForm  .
-  op reduceL : Module EqAtom  ~> EqAtom  .
-  op reduceL : Bool Term Term ~> EqAtom  .
-  var F : FOForm . var F? : FOForm?  . var E : EqAtom . var T T' : Term . var M : Module .
-  var L : Atom   . var Q  : NeQidSet . var B : Bool . var TK TK' : [Term] .
-  eq reduce(M,E /\ F?)   = reduceL(M,E) /\ reduce(M,F?) .
-  eq reduce(M,E \/ F?)   = reduceL(M,E) \/ reduce(M,F?) .
-  eq reduce(M,L /\ F?)   = L /\ reduce(M,F?) [owise] .
-  eq reduce(M,L \/ F?)   = L \/ reduce(M,F?) [owise] .
-  eq reduce(M,mtForm)    = mtForm .
-  eq reduce(M,A[Q] F)    = A[Q] reduce(M,F) .
-  eq reduce(M,E[Q] F)    = E[Q] reduce(M,F) .
-  eq reduce(M,~ F)       = ~ reduce(M,F) .
-  eq reduceL(M,T ?= T')  = reduceL(true, getTerm(metaReduce(M,T)),getTerm(metaReduce(M,T'))) .
-  eq reduceL(M,T != T')  = reduceL(false,getTerm(metaReduce(M,T)),getTerm(metaReduce(M,T'))) .
-  eq reduceL(true,T,T')  = T ?= T' .
-  eq reduceL(false,T,T') = T != T' .
+  pr FOFORM .   ---
+  pr TERM-EXTRA . --- vars() function
+  op red  : Module Bool FOForm? ~> FOForm? .
+  op red  : Module Bool FOForm  ~> FOForm  .
+  op red  : Module Bool EqAtom  ~> Atom  .
+  op redL : Module Atom Atom Term Term ~> Atom .
+  op noteq   : Module Term Term -> Bool  .
+  var F F' : FOForm . var T T' : Term . var M : Module . var E : EqAtom .
+  var Q  : NeQidSet . var AT AF : TruthAtom . var B : Bool .
+  eq red(M,B,F /\ F')   = red(M,B,F) /\ red(M,B,F') .
+  eq red(M,B,F \/ F')   = red(M,B,F) \/ red(M,B,F') .
+  eq red(M,B,mtForm)    = mtForm .
+  eq red(M,B,A[Q] F)    = A[Q] red(M,B,F) .
+  eq red(M,B,E[Q] F)    = E[Q] red(M,B,F) .
+  eq red(M,B,~ F)       = ~ red(M,B,F) .
+  eq red(M,B,AT)        = AT .
+  eq red(M,B,T ?= T')   = if B
+                             then redL(M,tt,ff,getTerm(metaReduce(M,T)),getTerm(metaReduce(M,T')))
+                             else getTerm(metaReduce(M,T)) ?= getTerm(metaReduce(M,T'))
+			  fi .
+  eq red(M,B,T != T')   = if B
+                             then redL(M,ff,tt,getTerm(metaReduce(M,T)),getTerm(metaReduce(M,T')))
+			     else getTerm(metaReduce(M,T)) != getTerm(metaReduce(M,T'))
+			  fi .
+  --- if both sides are ground, check equality
+ ceq redL(M,AT,AF,T,T') = if T == T' then AT else AF fi if vars('a[T,T']) == none .
+  --- if one side is ground, check disequality via least sorts (if possible)
+ ceq redL(M,AT,AF,T,T') = AF if noteq(M,T,T') or-else noteq(M,T',T) .
+  --- otherwise, return simplified atom
+  eq redL(M,AT,AF,T,T') = if AT == tt then T ?= T' else T != T' fi [owise] .
+  --- INP: Module Term1 Term2
+  --- PRE: Term1 and Term2 are well-defined in Module
+  --- OUT: true iff Term1 is ground and its least sort is greater than Term2;
+  ---      this implies Term1 is NOT equal to Term2
+  eq noteq(M,T,T') = (vars(T) == none and-then
+    sortLeq(M,leastSort(M,T'),leastSort(M,T)) and-then leastSort(M,T) =/= leastSort(M,T')) == true .
 endfm
 
 fmod FOFORMREDUCE is
   pr FOFORM .
   pr REFLECT .
-  op  reduce : Module FOForm -> FOForm .
+  op  reduce : Module FOForm ~> FOForm .
+  op  reduce : Module Bool FOForm ~> FOForm .
   op $reduce : [FOForm] -> FOForm .
-  var M : Module . var F : FOForm . var S : String . var G : [FOForm] .
-  eq  reduce(M,F)      = downTerm(redReflect('FOFORMREDUCE-IMPL,'reduce[upTerm(M),upTerm(F)]),error("FOForm Reduce Failed")) .
+  var M : Module . var F : FOForm . var S : String . var G : [FOForm] . var B : Bool .
+  eq  reduce(M,F)      = reduce(M,true,F) .
+  eq  reduce(M,B,F)    = downTerm(redReflect('FOFORMREDUCE-IMPL,'red[upTerm(M),upTerm(B),upTerm(F)]),error("FOForm Reduce Failed")) .
   eq $reduce(F)        = F .
   eq $reduce(error(S)) = error(S) .
   eq $reduce(G)        = error("Formula IllFormed") [owise] .
@@ -427,12 +490,12 @@ endfm
 
 fmod FOFORM-OPERATIONS is
   pr FOFORM .
-  pr EXT-TERM .      --- defines vars() : Term -> QidSet
+  pr TERM-EXTRA . --- defines vars() : Term -> QidSet
   op  size       : FOForm? -> Nat .
   op  depth      : FOForm? -> Nat .
-  op  falseLit?  : Conj -> Bool .
   op  wellFormed : Module FOForm? -> Bool .
   op $wellFormed : Module FOForm? -> Bool .
+  op  normalize  : Module FOForm? -> FOForm? .
   op  toUnifProb : PosConj -> UnificationProblem .
   op $toUnifProb : PosConj -> UnificationProblem .
   op  trueId     : FOForm? -> FOForm  .
@@ -468,12 +531,23 @@ fmod FOFORM-OPERATIONS is
   eq $wellFormed(M,A[QS] F1) = $wellFormed(M,F1) .
   eq $wellFormed(M,E[QS] F1) = $wellFormed(M,F1) .
   --- eq lit
-  eq $wellFormed(M,T ?= T')  = wellFormed(M,T) and-then wellFormed(M,T') .
-  eq $wellFormed(M,T != T')  = wellFormed(M,T) and-then wellFormed(M,T') .
+  eq $wellFormed(M,T ?= T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+  eq $wellFormed(M,T != T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
   --- true/false lit or mtForm
   eq $wellFormed(M,TA)       = true .
   eq $wellFormed(M,mtForm)   = true .
+  --- PRE: FOForm is well-formed in Module
+  --- OUT: A metanormalized formula
   --- INP: FOForm?
+  eq normalize(M,F1 /\ F2) = normalize(M,F1) /\ normalize(M,F2) .
+  eq normalize(M,F1 \/ F2) = normalize(M,F1) \/ normalize(M,F2) .
+  eq normalize(M,~ F1)     = ~ normalize(M,F1) .
+  eq normalize(M,A[QS] F1) = A[QS] normalize(M,F1) .
+  eq normalize(M,E[QS] F1) = E[QS] normalize(M,F1) .
+  eq normalize(M,T ?= T')  = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
+  eq normalize(M,T != T')  = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
+  eq normalize(M,TA)       = TA .
+  eq normalize(M,mtForm)   = mtForm .
   --- PRE: N/A
   --- OUT: QidSet of all MetaVariables in the FOForm?
   eq vars(F1 /\ F2) = vars(F1) ; vars(F2) .
@@ -489,14 +563,10 @@ fmod FOFORM-OPERATIONS is
   --- PRE: N/A
   --- OUT: UnificationProblem if PosConj has no ff literals;
   ---      Otherwise, fail to reduce
- ceq  toUnifProb(PC)              = $toUnifProb(PC) if not falseLit?(PC) .
+ ceq  toUnifProb(PC)              = $toUnifProb(PC) if not PC :: ConstConj .
+  eq $toUnifProb(TA /\ PC)        = $toUnifProb(PC) .
   eq $toUnifProb((T ?= T') /\ PC) = T =? T' /\ $toUnifProb(PC) .
   eq $toUnifProb(T ?= T')         = T =? T' .
-  --- INP: Conj
-  --- PRE: N/A
-  --- OUT: true iff Conj contains a false literal
-  eq  falseLit?(ff /\ C) = true .
-  eq  falseLit?(C)       = false [owise] .
   --- INP: FOForm?
   --- PRE: N/A
   --- OUT: obvious from definition
@@ -553,16 +623,26 @@ endfm
 
 fmod FOFORM-TUPLES is
   pr FOFORM .
-  sort FOFormNatPair FOFormPair .
-  op ((_,_)) : FOForm? Nat     -> FOFormNatPair [ctor] .
-  op ((_,_)) : FOForm? FOForm? -> FOFormPair    [ctor] .
+  pr MODULE-LIST .
+  sort FOFormNatPair FOFormPair ModFOFormPair NeModListFOFormPair .
+  subsort ModFOFormPair < NeModListFOFormPair .
+  op ((_,_)) : NeModuleList FOForm? -> NeModListFOFormPair [ctor] .
+  op ((_,_)) : Module FOForm?       -> ModFOFormPair [ctor] .
+  op ((_,_)) : FOForm? Nat          -> FOFormNatPair [ctor] .
+  op ((_,_)) : FOForm? FOForm?      -> FOFormPair    [ctor] .
+
+  var ML : NeModuleList . var F : FOForm? .
+
+  op getForm : NeModListFOFormPair ~> FOForm? .
+  eq getForm((ML,F)) = F .
 endfm
 
 fmod FOFORM-SUBSTITUTION is
   pr META-LEVEL .
   pr SUBSTITUTION-HANDLING . --- from full-maude
   pr FOFORM .
-  op _<<_ : FOForm? Substitution -> FOForm? .
+  op _<<_    : FOForm? Substitution -> FOForm? .
+  op toConj? : Substitution -> Conj? .
   ---
   var U V : Term   . var X Y  : Variable . var S : Substitution .
   var F G : FOForm . var Q Q' : QidSet   . var I : Qid . var N : Nat .
@@ -582,19 +662,20 @@ fmod FOFORM-SUBSTITUTION is
   eq  tt      << S =  tt                  .
   eq  ff      << S =  ff                  .
   eq  mtForm  << S =  mtForm              .
+
+  --- INP: Substitution
+  --- PRE: None
+  --- OUT: Conj?
+  eq toConj?(X <- U ; S) = X ?= U /\ toConj?(S) .
+  eq toConj?(none)       = mtForm .
 endfm
 
-fmod FOFORM-VARS-TO-CONSTS is
+fmod FOFORM-CONSTS-TO-VARS is
   pr VARIABLES-TO-CONSTANTS .
   pr FOFORM .
   pr FOFORM-SUBSTITUTION .
-  op varsToConsts  : Substitution QFForm? -> QFForm? .
   op constsToVars  : Substitution QFForm? -> QFForm? .
-
   var S : Substitution . var F1 F2 : QFForm . var T T' : Term .
-
-  eq varsToConsts(S,F1)       = F1 << S .
-  ---
   eq constsToVars(S,mtForm)   = mtForm .
   eq constsToVars(S,F1 /\ F2) = constsToVars(S,F1) /\ constsToVars(S,F2) .
   eq constsToVars(S,F1 \/ F2) = constsToVars(S,F1) \/ constsToVars(S,F2) .
@@ -603,10 +684,42 @@ fmod FOFORM-VARS-TO-CONSTS is
   eq constsToVars(S,T != T')  = constsToVars(S,T) != constsToVars(S,T') .
 endfm
 
+fmod FOFORMSET-CONSTS-TO-VARS is
+  pr FOFORM-CONSTS-TO-VARS .
+  pr FOFORMSET .
+  op constsToVars : Substitution QFForm?Set -> QFForm?Set .
+  var S : Substitution . var F F' : QFForm? . var FS : QFForm?Set .
+  eq constsToVars(S,F | F' | FS) = constsToVars(S,F) | constsToVars(S,F' | FS) .
+  eq constsToVars(S,mtFormSet)   = mtFormSet .
+endfm
+
 fmod FOFORMSUBSTITUTION-PAIR is
-  pr FOFORM-SUBSTITUTION .
+  pr FOFORM-SUBSTITUTION . --- substitution application
+  pr SUBSTITUTION-AUX    . --- id
+  pr FOFORM-OPERATIONS   . --- vars
   sort FOFormSubstPair .
-  op ((_,_)) : FOForm? Substitution -> FOFormSubstPair [ctor] .
+  op ((_,_))  : FOForm? Substitution -> FOFormSubstPair   [ctor] .
+  op errFOFormSubstPair : QidList    -> [FOFormSubstPair] [ctor] .
+  op errFOFormSubstPairMsg : [FOFormSubstPair] -> QidList [ctor] .
+  op idpair   : FOForm? -> FOFormSubstPair .
+  op getForm  : FOFormSubstPair -> FOForm? .
+  op getSub   : FOFormSubstPair -> Substitution .
+  op _Pair<<_ : FOForm? Substitution -> FOFormSubstPair .
+  op _<<_     : FOFormSubstPair Substitution -> FOFormSubstPair .
+  ---
+  var F : FOForm? . var S S' : Substitution .
+  var QL : QidList . var FK : [FOFormSubstPair] .
+
+  eq errFOFormSubstPairMsg(errFOFormSubstPair(QL)) = QL .
+  eq errFOFormSubstPairMsg(FK) = nil [owise] .
+
+  eq idpair(F) = (F,idsub(vars(F))) .
+  ---
+  eq getForm((F,S)) = F .
+  eq getSub ((F,S)) = S .
+  ---
+  eq F Pair<< S     = (F << S,S) .
+  eq (F,S) << S'    = (F << S,S << S') .
 endfm
 
 fmod FOFORM-SUBSTITUTIONSET is
@@ -614,7 +727,7 @@ fmod FOFORM-SUBSTITUTIONSET is
   pr SUBSTITUTIONSET . --- from full-maude
   pr FOFORMSET .
   pr FOFORM-SUBSTITUTION .
-  op _<<_ : FOForm? SubstitutionSet -> FOForm?Set .
+  op _<<_  : FOForm? SubstitutionSet -> FOForm?Set .
   ---
   var S S' : Substitution . var SS : SubstitutionSet . var F : FOForm? .
   --- base case
@@ -629,23 +742,102 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   subsort FOFormSubstPair < FOFormSubstPairSet .
   op _|_       : FOFormSubstPairSet FOFormSubstPairSet -> FOFormSubstPairSet [ctor assoc comm id: mtFSPS] .
   op mtFSPS    : -> FOFormSubstPairSet [ctor] .
-  op toSet     : FOFormSubstPairSet -> FOFormSet .
-  op build     : FOForm? SubstitutionSet -> FOFormSubstPairSet .
-  op build-app : FOForm? SubstitutionSet -> FOFormSubstPairSet .
   ---
-  var F : FOForm? . var S : Substitution . var FPS : FOFormSubstPairSet . var SS : SubstitutionSet .
-  eq toSet((F,S) | FPS)            = F | toSet(FPS) .
-  eq toSet(mtFSPS)                 = mtFormSet .
-  eq build(F,S | SS)               = (F,S) | build(F,SS) .
-  eq build(F,.SubstitutionSet)     = mtFSPS .
-  eq build-app(F,S | SS)           = (F << S,S) | build-app(F,SS) .
-  eq build-app(F,.SubstitutionSet) = mtFSPS .
+  op idpair    : FOForm?Set -> FOFormSubstPairSet .
+  op build     : FOForm? SubstitutionSet -> FOFormSubstPairSet .
+  ---
+  op getForm   : FOFormSubstPairSet -> FOForm?Set .
+  op getSub    : FOFormSubstPairSet -> SubstitutionSet .
+  ---
+  op dnf-join  : FOFormSubstPairSet -> QFForm? .
+  op _Pair<<_  : FOForm? SubstitutionSet -> FOFormSubstPairSet .
+  op _<<_      : FOFormSubstPairSet SubstitutionSet -> FOFormSubstPairSet .
+  op idem      : FOFormSubstPairSet -> FOFormSubstPairSet .
+  ---
+  var F F' : FOForm? . var FS : FOForm?Set . var C? : Conj? . var S S' : Substitution . var SS : SubstitutionSet .
+  var FP FP' : FOFormSubstPair . var FPS : FOFormSubstPairSet .
+  var QL : QidList . var FK : [FOFormSubstPair] . var SK : [Substitution] .
+
+  eq errFOFormSubstPairMsg(errFOFormSubstPair(QL) | FK) = QL .
+
+  eq idpair(F | F' | FS) = idpair(F) | idpair(F' | FS) .
+  eq idpair(mtFormSet)   = mtFSPS .
+
+  --- INP: FOForm? SubstitutionSet
+  --- PRE: None
+  --- OUT: An FOFormSubstPairSet built by pairing FOForm? with each Substitution
+  eq build(F,S | SS)           = (F,S) | build(F,SS) .
+  eq build(F,.SubstitutionSet) = mtFSPS .
+
+  --- projections
+  eq getForm((F,S) | FPS) = F | getForm(FPS) .
+  eq getForm(mtFSPS)      = mtFormSet .
+  eq getSub((F,S) | FPS)  = S | getSub(FPS) .
+  eq getSub(mtFSPS)       = .SubstitutionSet .
+
+  --- INP: FOFormSubstPairSet
+  --- PRE: Each FOForm in the argument is also a Conj?
+  --- OUT: A DNF?
+  eq dnf-join((C?,S) | FPS) = (C? /\ toConj?(S)) \/ dnf-join(FPS) .
+  eq dnf-join(mtFSPS)       = mtForm .
+
+  --- Substitution Functions
+  eq (FP | FP' | FPS) << SS               = (FP << SS) | ((FP' | FPS) << SS) .
+  eq mtFSPS           << SS               = mtFSPS .
+  eq FPS              << .SubstitutionSet = mtFSPS .
+  eq FP               << (S | S' | SS)    = (FP << S) | (FP << (S' | SS)) .
+
+  --- Construct pairs from one side
+  eq F Pair<< (S | S' | SS)    = (F Pair<< S) | (F Pair<< (S' | SS)) .
+  eq F Pair<< .SubstitutionSet = mtFSPS .
+  eq F Pair<< errsub(QL) | SK  = errFOFormSubstPair(QL) [owise] .
+
+  --- Apply the idempotency equation
+  eq idem(FP | FP | FPS) = idem(FP | FPS) .
+  eq idem(FPS)           = FPS [owise] .
+  eq idem(errFOFormSubstPair(QL) | FK) = errFOFormSubstPair(QL) .
+endfm
+
+fmod FOFORM-RENAME is
+  pr FOFORM .
+  pr RENAME-METAVARS .
+  op renameAllVar : Module FindResult FOForm? -> FOForm? .
+  op renameTmpVar : Module FindResult FOForm? -> FOForm? .
+  op unwrapFOForm : TermData                  -> FOForm? .
+  var U : Module . var F : FOForm? . var N : FindResult . var T : Term .
+  eq renameAllVar(U,N,F) = unwrapFOForm(#renameAllVar(U,N,upTerm(F))) .
+  eq renameTmpVar(U,N,F) = unwrapFOForm(#renameTmpVar(U,N,upTerm(F))) .
+  eq unwrapFOForm(termdata(T,N)) = downTerm(T,error("Rename failed")) .
+endfm
+
+fmod FOFORMSET-RENAME is
+  pr FOFORMSET .
+  pr FOFORM-RENAME .
+  op renameAllVar    : Module FindResult FOForm?Set -> FOForm?Set .
+  op renameTmpVar    : Module FindResult FOForm?Set -> FOForm?Set .
+  op unwrapFOFormSet : TermData                     -> FOForm?Set .
+  var U : Module . var F : FOForm?Set . var N : FindResult . var T : Term .
+  eq renameAllVar(U,N,F) = unwrapFOFormSet(#renameAllVar(U,N,upTerm(F))) .
+  eq renameTmpVar(U,N,F) = unwrapFOFormSet(#renameTmpVar(U,N,upTerm(F))) .
+  eq unwrapFOFormSet(termdata(T,N)) = downTerm(T,error("Rename failed")) .
+endfm
+
+fmod FOFORMBASICLIST-RENAME is
+  pr FOFORMBASICLIST .
+  pr FOFORM-RENAME .
+  op renameAllVar     : Module FindResult FOForm?List -> FOForm?List .
+  op renameTmpVar     : Module FindResult FOForm?List -> FOForm?List .
+  op unwrapFOFormList : TermData                      -> FOForm?List .
+  var U : Module . var F : FOForm?List . var N : FindResult . var T : Term .
+  eq renameAllVar(U,N,F) = unwrapFOFormList(#renameAllVar(U,N,upTerm(F))) .
+  eq renameTmpVar(U,N,F) = unwrapFOFormList(#renameTmpVar(U,N,upTerm(F))) .
+  eq unwrapFOFormList(termdata(T,N)) = downTerm(T,error("Rename failed")) .
 endfm
 
 fmod FQF-IMPL is
   pr FOFORM-SUBSTITUTION .
   pr FOFORM-TUPLES .
-  pr RENAME-METAVARS .
+  pr FOFORM-RENAME .
   op renameQuantifiers : Module FOForm?   -> FOForm? .
   op $rq  : FOFormNatPair                 -> FOForm? .
   op $rq  : Nat FOForm?                   -> FOFormNatPair .
@@ -659,11 +851,10 @@ fmod FQF-IMPL is
   var N : Nat . var S S' : QidSet . var P : QFForm?  . var M : Module .
   --- entry point
   eq renameQuantifiers(M,P)  = P .
-  eq renameQuantifiers(M,F)  =
-       $rq($rq(0,downTerm(renameAllVar(M,upTerm(F)),error("Rename failed")))) [owise] .
+  eq renameQuantifiers(M,F)  = $rq($rq(0,renameAllVar(M,notFound,F))) [owise] .
   --- dispatch handlers for different cases
   eq $rq((F,N))            = F .
-  eq $rq(N,P:QFForm?)       = (P:QFForm?,N) .
+  eq $rq(N,P:QFForm?)      = (P:QFForm?,N) .
   eq $rq(N,F /\ G)         = $rq2('/\,$rq(N,F),G) [owise] .
   eq $rq(N,F \/ G)         = $rq2('\/,$rq(N,F),G) [owise] .
   eq $rq(N,~ F)            = $rq1('~ ,$rq(N,F))   [owise] .
@@ -869,17 +1060,27 @@ fmod CNF is
 endfm
 
 fmod FOFORMSET-OPERATIONS is
+  pr FOFORM-OPERATIONS .
   pr FOFORMSET .
   pr CNF .
   pr DNF .
-  op disj-join  : FOForm?Set -> FOForm? .
-  op conj-join  : FOForm?Set -> FOForm? .
+  op disj-join    : FOForm?Set -> FOForm? .
+  op disj-join    : QFForm?Set -> QFForm? .
+  op conj-join    : FOForm?Set -> FOForm? .
+  op conj-join    : QFForm?Set -> QFForm? .
+  op toPosEqAtoms : PosEqQFForm -> PosEqAtomSet .
+  op toPosEqAtoms : UnificationProblem -> PosEqAtomSet .
+  op toEqSet      : PosEqAtomSet -> EquationSet .
+  op wellFormed   : Module FOForm?Set -> Bool .
   ---
   op toDisjSet  : QFForm? ~> DisjSet .
   op toDisjSet' : QFForm? ~> DisjSet .
   op toConjSet  : QFForm? ~> ConjSet .
   op toConjSet' : QFForm? ~> ConjSet .
-  var FS : FOForm?Set . var FF : FOForm? . var F : QFForm? . var D : Disj . var C : Conj .
+  ---
+  var FS : FOForm?Set . var FF FF' : FOForm? . var F : QFForm? . var D : Disj . var UP : UnificationProblem .
+  var C : Conj . var PEA : PosEqAtom . var PEAS : PosEqAtomSet . var T T' : Term . var M : Module .
+  ---
   eq toDisjSet (F)      = toDisjSet'(toCNF(F)) .
   eq toDisjSet'(D /\ F) = D | toDisjSet'(F) .
   eq toDisjSet'(mtForm) = mtFormSet .
@@ -892,25 +1093,334 @@ fmod FOFORMSET-OPERATIONS is
   eq disj-join(mtFormSet) = ff .
   eq conj-join(FF | FS)   = FF /\ conj-join(FS) .
   eq conj-join(mtFormSet) = tt .
+  ---
+  eq toPosEqAtoms(PEA /\ F) = PEA | toPosEqAtoms(F) .
+  eq toPosEqAtoms(PEA \/ F) = PEA | toPosEqAtoms(F) .
+  eq toPosEqAtoms(mtForm)   = mtFormSet .
+  ---
+  eq toPosEqAtoms(T =? T' /\ UP) = T ?= T' | toPosEqAtoms(UP) .
+  eq toPosEqAtoms(T =? T')       = T ?= T' .
+  ---
+  eq toEqSet(T ?= T' | PEAS) = (eq T = T' [none] .) toEqSet(PEAS) .
+  eq toEqSet(mtFormSet)      = none .
+  ---
+  eq wellFormed(M,FF | FF' | FS) = wellFormed(M,FF) and-then wellFormed(M,FF' | FS) .
+  eq wellFormed(M,mtFormSet)     = true .
+endfm
+
+fmod FOFORM-DESCENT-MAP is
+  pr FOFORM .
+  pr UNIT-FM .
+  op descent-map : Module Module QFForm? -> QFForm? .
+  op check-map?  : QFForm? ~> QFForm? .
+  ---
+  var DM RM : Module . var F : FOForm? .
+  --- INP: Module:DM Module:RM QFForm?
+  --- PRE: DM should have a function reduce : Form -> Form which returns ff in case of any error
+  ---      Form is wellFormed w.r.t to RM
+  --- OUT: Use DM to descent-map Form
+  eq descent-map(noModule,RM,F) = F  .
+  eq descent-map(DM,RM,F)       = if F == ff then ff else
+    check-map?(downTerm(getTerm(metaReduce(DM,'reduce[upTerm(RM),upTerm(F)])),ff)) fi [owise] .
+ ceq check-map?(F)              = F if F =/= ff .
+endfm
+
+fmod FOFORM-EASY-SIMPLIFY is
+  pr FOFORMSIMPLIFY     .
+  pr FOFORMREDUCE       .
+  pr FOFORM-DESCENT-MAP .
+  pr NNF                .
+  op srs  : Module FOForm?        -> FOForm? .
+  op srsd : Module Module FOForm? -> FOForm? .
+  var DM RM : Module . var F : FOForm? .
+  eq srs (RM,F)    = simplify(toNNF(reduce(RM,simplify(F)))) .
+  eq srsd(DM,RM,F) = descent-map(DM,RM,srs(RM,F)) .
+endfm
+
+--- NOTE: this simplification of extracting a substitution and applying it is NOT deterministic...
+--- this module extracts fragments out of QFForms that look like substitutions and applies them
+fmod FOFORM-EXTRACT-SUBSTITUTION is
+  pr FOFORMSUBSTITUTION-PAIRSET .
+  pr DNF .
+  pr SUBSTITUTION-HANDLING .
+  pr FOFORM-OPERATIONS .
+  pr FOFORMSET-OPERATIONS .
+
+  op is-sub?         : Module QFForm? -> Bool .
+  op #extract-subs   : Module QFForm? -> FOFormSubstPairSet .
+  op #extract-subs   : Module QFForm? FOFormSubstPairSet -> FOFormSubstPairSet .
+  op #extract-sub    : Module Conj? -> FOFormSubstPair .
+  op #extract-sub    : Module Conj? Conj? Substitution -> FOFormSubstPair .
+  op extract-sub     : Module Conj? -> Conj? .
+  op extract-imp-sub : Module QFForm ~> QFForm .
+
+  var Q1? Q2? : QFForm? . var Q Q' : QFForm . var C : Conj . var C1? C2? C3? : Conj? . var FS : FOFormSubstPairSet .
+  var V : Variable . var T : Term . var S : Substitution . var A : Atom . var U : Module .
+
+  --- INP: QFForm?
+  --- PRE:
+  --- OUT: Check if the QFForm? is equivalent to a disjunction of substitutions (which is always satisfiable)
+  eq is-sub?(U,Q1?) = getForm(#extract-subs(U,Q1?)) == mtForm .
+
+  --- INP: QFForm?
+  --- PRE:
+  --- OUT: [1] QFForm? is first converted into a DNF
+  ---      [2] In each conjunct, substitution-like fragments are #extracted (but not applied) into a FOFormSubstPair
+  ---      [3] We return a set of all such pairs (one for each conjunct)
+  eq #extract-subs (U,Q1?)               = #extract-subs(U,toDNF(Q1?),mtFSPS) .
+  eq #extract-subs (U,mtForm,FS)         = FS .
+  eq #extract-subs (U,C \/ Q1?,FS)       = #extract-subs(U,Q1?,FS | #extract-sub(U,C)) .
+
+  --- INP: Conj?
+  --- PRE:
+  --- OUT: An FOFormSubstPair (C'?,S?) such that C? = C'? /\ S?  and S? is the substitution-like fragment (may be empty)
+  eq #extract-sub(U,C1?)                 = #extract-sub(U,C1?,mtForm,none) .
+ ceq #extract-sub(U,V ?= T /\ C1?,C2?,S) = #extract-sub(U,(C1? /\ C2?) << (V <- T),mtForm,S .. (V <- T))
+  if sortLeq(U,leastSort(U,T),getType(V)) /\ not V in vars(T) .
+  eq #extract-sub(U,A /\ C1?,C2?,S)      = #extract-sub(U,C1?,C2? /\ A,S) [owise] .
+  eq #extract-sub(U,mtForm,C2?,S)        = (C2?,S) .
+
+
+  eq extract-sub(U,C1?) = getForm(#extract-sub(U,C1?)) .
+
+  eq extract-imp-sub(U, Q \/ ~ C) = Q << getSub(#extract-sub(U,C)) \/ ~ trueId(getForm(#extract-sub(U,C))) .
+  eq extract-imp-sub(U,(Q \/ ~ C) /\ Q') = extract-imp-sub(U,Q \/ ~ C) /\ extract-imp-sub(U,Q') .
+  eq extract-imp-sub(U,Q) = Q [owise] .
+endfm
+
+---(
+fmod FOFORM-AUX is
+  pr MGCI . --- for ctor-term
+  pr SUBSTITUTIONPAIRSET .
+  pr FOFORMSUBSTITUTION-PAIR .
+  pr STREAM{FOFormSubstPair} .
+
+  --- Simplify constraints by apply substitutions whenever possible
+  op litToNonRecBinding   : Module Atom -> Substitution .
+  op bindingsToConj       : Substitution -> PosEqConj .
+  op findBinding          : Module QFForm -> FOFormSubstPair .
+  op findBindings         : Module QFForm -> FOFormSubstPair .
+  op $findBindings        : Module QFForm QFForm Substitution -> Stream{FOFormSubstPair} .
+  op $findBindings        : Module QFForm QFForm Substitution Atom Substitution -> Stream{FOFormSubstPair} .
+  op recSimplifyForm      : Module QFForm Substitution -> FOFormSubstPair .
+  op $recSimplifyForm     : Module FOFormSubstPair Substitution -> FOFormSubstPair .
+  op simplifyForm         : Module QFForm -> QFForm .
+  op simplifyBindings     : Module Substitution -> Substitution .
+  op removeGround         : QFForm -> QFForm .
+  op filterBindingsByCtor : Module Substitution -> SubstitutionPair .
+  op removeRedundantLits  : QFForm -> QFForm .
+
+  var F F' : QFForm . var V : Variable    .
+  var T T' : Term . var VS  : VariableSet . var M : Module . var L : Atom .
+  var S S' S1 S2 : Substitution . var B1 B2 : Bool . var F? F'? : QFForm? .
+
+  --- INP: Substitution
+  --- PRE: None
+  --- OUT: A PosEqConj where each V <- T becomes V ?= T
+  eq bindingsToConj(V <- T ; S) = V ?= T /\ bindingsToConj(S) .
+  eq bindingsToConj(none)       = tt .
+
+  --- INP: Module Atom
+  --- PRE: Atom is well-formed
+  --- OUT: If Atom is of the form V ?= T or T ?= V then
+  ---      returns a substitution V <- T if leastSort(T) < leastSort(V) and not V in vars(T)
+  ---      otherwise returns none
+  eq litToNonRecBinding(M,V ?= T) =
+    if sortLeq(M,leastSort(M,T),leastSort(M,V)) and not V in vars(T) then V <- T else none fi .
+  eq litToNonRecBinding(M,L)      = none [owise] .
+
+  --- INP: Module FOForm1
+  --- PRE: FOForm1 is well-formed
+  --- OUT: Given Form1 = F /\ B with B a substitution, returns (F,B),
+  ---      otherwise returns (Form1,none)
+  eq findBinding(M,F)                   = pick!(0,$findBindings(M,F,mtForm,none)) .
+  eq findBindings(M,F)                  = last!($findBindings(M,F,mtForm,none))   .
+  eq $findBindings(M,mtForm,F',S)       = (F',S) & end .
+  eq $findBindings(M,L /\ F?,F'?,S)     = $findBindings(M,F?,F'?,S,L,litToNonRecBinding(M,L)) .
+  eq $findBindings(M,F?,F'?,S,L,V <- T) = (F? /\ F'?,S ; V <- T) & $findBindings(M,F?,F'?,S ; V <- T) .
+  eq $findBindings(M,F?,F'?,S,L,none)   = $findBindings(M,F?,F'? /\ L,S) .
+
+  --- INP: Module FOForm Substitution
+  --- PRE: None
+  --- OUT: If FOForm = F /\ B with B a non-circular binding, then performs
+  ---      such substitutions followed by a simplification until a fixpoint
+  ---      is reached; returns the substituted formula plus the set of bindings
+  ---      that were generated
+  eq recSimplifyForm(M,F,S)           = $recSimplifyForm(M,findBinding(M,F),S) .
+  eq $recSimplifyForm(M,(F,V <- T),S) =
+    if S == none then
+      recSimplifyForm(M,F << (V <- T),V <- T)
+    else
+      recSimplifyForm(M,F << (V <- T),(S << (V <- T)) ; V <- T)
+    fi .
+ ceq $recSimplifyForm(M,(F,none),S)   =
+    if F == F' then (F,S') else recSimplifyForm(M,F',S') fi
+  if F' := removeRedundantLits(simplifyForm(M,F))
+  /\ S' := simplifyBindings(M,S) .
+
+  --- INP: Module Substitution (SubstitutionPair)
+  --- PRE: Substitution is well-formed with respect to module
+  --- OUT: Split substitution S into pair (S1,S2) where S = S1 ; S2
+  ---      and each V <- T in S1 has ctor-term?(M,T) holds
+  op $filterBindingsByCtor : Module Substitution SubstitutionPair -> SubstitutionPair .
+  eq filterBindingsByCtor(M,S)                   = $filterBindingsByCtor(M,S,(none,none)) .
+  eq $filterBindingsByCtor(M,V <- T ; S,(S1,S2)) =
+    if ctor-term?(M,T) then $filterBindingsByCtor(M,S,(S1 ; V <- T,S2))
+      else $filterBindingsByCtor(M,S,(S1,S2 ; V <- T)) fi .
+  eq $filterBindingsByCtor(M,none,(S1,S2)) = (S1,S2) .
+
+  --- INP: Bool VariableSet Substitution
+  --- PRE: None
+  --- OUT: Split substitution S into pair (S1,S2) where S = S1 ; S2
+  ---      and each V <- T in S1 has V in VariableSet holds
+  op filterBindingsByVars : VariableSet Substitution -> SubstitutionPair .
+  op $filterBindingsByVars : VariableSet Substitution SubstitutionPair -> SubstitutionPair .
+  eq filterBindingsByVars(VS,S) = $filterBindingsByVars(VS,S,(none,none)) .
+  eq $filterBindingsByVars(VS,V <- T ; S,(S1,S2)) =
+    if V in VS then $filterBindingsByVars(VS,S,(S1 ; V <- T,S2))
+      else $filterBindingsByVars(VS,S,(S1,S2 ; V <- T)) fi .
+  eq $filterBindingsByVars(VS,none,(S1,S2)) = (S1,S2) .
+
+  --- INP: Module Form
+  --- PRE: FOForm should be well-formed, Module should satisfy executability requirments
+  --- OUT: A form where all terms have been meta-reduced
+  eq simplifyForm(M,F /\ F') = simplifyForm(M,F) /\ simplifyForm(M,F') .
+  eq simplifyForm(M,T ?= T') = getTerm(metaReduce(M,T)) ?= getTerm(metaReduce(M,T')) .
+  eq simplifyForm(M,T != T') = getTerm(metaReduce(M,T)) != getTerm(metaReduce(M,T')) .
+  eq simplifyForm(M,L)       = L [owise] .
+
+  --- INP: Module Substitution
+  --- PRE: Substitution should be well-formed, Module should satisfy executability requirments
+  --- OUT: A substitution where all terms have been meta-reduced
+  eq simplifyBindings(M,V <- T ; S) = V <- getTerm(metaReduce(M,T)) ; simplifyBindings(M,S) .
+  eq simplifyBindings(M,none)       = none .
+
+  --- INP: FOForm
+  --- PRE: None
+  --- OUT: A form where redundant elements are deleted (by assoc-comm)
+  eq removeRedundantLits(L /\ L /\ F?) = L /\ F?   .
+  eq removeRedundantLits(L \/ L \/ F?) = L /\ F?   .
+  eq removeRedundantLits(F)            = F [owise] .
+
+  --- INP: FOForm
+  --- PRE: None
+  --- OUT: All literals L in FOForm that are ground are removed
+  eq removeGround(F /\ F')  = removeGround(F) /\ removeGround(F') .
+  eq removeGround(F \/ F')  = removeGround(F) \/ removeGround(F') .
+  eq removeGround(L:Atom)   = if vars(L:Atom) =/= none then L:Atom else tt fi .
+endfm
+---)
+
+fmod FOFORM-PRINTER is pr FOFORM . pr GENERIC-PRINTER .
+  op  print    : Module QFForm? -> QidList .
+  op  printImp : Module QFForm? -> QidList .
+  var M : Module . var F F' : QFForm . var T T' : Term .
+  --- print formulas
+  eq print(M,F /\ F')          = '`( print(M,F) '/\ print(M,F') '`) .
+  eq print(M,F \/ F')          = '`( print(M,F) '\/ print(M,F') '`) .
+  eq print(M,T ?= T')          = print(M,T) '=   print(M,T') .
+  eq print(M,T != T')          = print(M,T) '=/= print(M,T') .
+  eq print(M,~ F)              = '~ print(M,F) .
+  eq print(M,mtForm)           = 'true .
+  eq print(M,tt)               = 'true .
+  eq print(M,ff)               = 'false .
+  eq print(M,F:[QFForm?])      = 'Error: 'Cannot 'Print 'Ill-formed 'Formula [owise] .
+  --- print formulas as implication
+  eq printImp(M,(~ F) \/ F')   = print(M,F) &sp '=> &sp print(M,F') .
+endfm
+
+fmod FOFORMSET-PRINTER is pr FOFORMSET . pr FOFORM-PRINTER .
+  op  print : Module Qid QFForm?Set -> QidList .
+  var M : Module . var F F' : QFForm? . var FS : QFForm?Set . var Q : Qid .
+  --- print formula sets
+  eq print(M,Q,F | F | FS) = print(M,F) Q print(M,F | FS) .
+  eq print(M,Q,F)          = print(M,F) .
+  eq print(M,Q,mtFormSet)  = 'None .
 endfm
 
 --- this module defines a generic structure to represent the success/failure
 --- of a formula reduction --- which also includes an optional status code:
 --- true/false/unknown/errb --- to represent the result of the reduction
 fmod GENERIC-FORMULA-REDUCTION is
-  pr BOOL-ERR .
+  pr MAYBE-BOOL .
   pr FOFORMSET .
   sort QFFormSetBoolPair .
-  op ((_,_)) : QFForm?Set Bool? -> QFFormSetBoolPair [ctor] .
+  op ((_,_)) : QFForm?Set MaybeBool -> QFFormSetBoolPair [ctor] .
   ---
   op true? : QFFormSetBoolPair -> Bool  .
-  op bool  : QFFormSetBoolPair -> Bool? .
+  op bool  : QFFormSetBoolPair -> MaybeBool .
   op form  : QFFormSetBoolPair -> QFForm?Set .
   --- projections
-  var B : Bool? . var F : QFForm?Set .
+  var B : MaybeBool . var F : QFForm?Set .
   eq true?((F,B)) = B == true .
   eq form ((F,B)) = F .
   eq bool ((F,B)) = B .
+endfm
+
+--- NOTE: implementing this kind of module REALLY should be the first
+---       step in building a theorem prover, i.e. the ideal theorem
+---       prover should produce a proof witness as its result that can
+---       be inspected and validated
+--- NOTE: implementing this here makes NO sense because this file is
+---       NOT a theorem prover---we keep this only as a reference
+fmod PROOF-WITNESS is
+  pr FOFORM .
+  --- Kinds of Proofs
+  sort SatWitness ValWitness Witness .
+  subsort SatWitness ValWitness < Witness .
+  subsort ValWitness < SatWitness .
+  --- Proof witnesses have projections
+  op pi       : Witness    -> FOForm . --- the formula proved
+  op algebra  : Witness    -> Module . --- Maude module which corresponds to algebra class
+  op verify   : Witness    -> Bool   . --- verify if the proof object is correct for algebra/formula
+  op complete : Witness    -> Bool   . --- if this witness was generated by a complete method
+  op ctor     : Witness    -> Bool   . --- if this witness was generated by a constructive proof method
+  --- Default non-constructive proofs
+  op sat2val  : SatWitness -> ValWitness [ctor] .
+  op val2sat  : ValWitness -> SatWitness [ctor] .
+  --- Default non-construcitive proof verifier
+  var SW : SatWitness . var VW : ValWitness .
+  eq verify(sat2val(SW))   = complete(SW) and-then verify(SW) .
+  eq verify(val2sat(VW))   = complete(VW) and-then verify(VW) .
+  eq pi(sat2val(SW))       = ~ pi(SW)     .
+  eq pi(val2sat(VW))       = ~ pi(VW)     .
+  eq algebra(sat2val(SW))  = algebra(SW)  .
+  eq algebra(val2sat(VW))  = algebra(VW)  .
+  eq complete(sat2val(SW)) = complete(SW) .
+  eq complete(val2sat(VW)) = complete(VW) .
+  eq ctor(sat2val(SW))     = false        .
+  eq ctor(val2sat(VW))     = false        .
+endfm
+
+--- this module defines a "pretty" printer for core Maude, i.e.
+--- defines new syntax that stands out better than the old syntax
+--- NB: such pretty printing should always occur before display to
+---     the user and not earlier because otherwise the user will
+---     have to extend their functions to deal with the new
+---     constructors that we invent here.
+fmod FOFORM-CORE-PRETTYPRINT is
+  pr FOFORM .
+
+  --- syntax for (respectively):
+  ---  positive predicates
+  ---  negative predicates
+  ---  implications
+  op ##_   : Term          -> QFForm [ctor format(g o o)] .
+  op !!_   : Term          -> QFForm [ctor format(g o o)] .
+  op _=>_ : QFForm QFForm -> QFForm [ctor format(o rn on d)] .
+
+  var F F' : QFForm . var Q : Qid . var T : Term .
+  var TA : TruthAtom . var E : EqAtom .
+
+  op prettyPrint : Qid QFForm -> QFForm .
+  eq prettyPrint(Q,F /\ F')     = prettyPrint(Q,F) /\ prettyPrint(Q,F') .
+  eq prettyPrint(Q,(~ F) \/ F') = prettyPrint(Q,F) => prettyPrint(Q,F') .
+  eq prettyPrint(Q,F \/ F')     = prettyPrint(Q,F) \/ prettyPrint(Q,F') [owise] .
+  eq prettyPrint(Q,~ F)         = ~ prettyPrint(Q,F) .
+  eq prettyPrint(Q,TA)          = TA .
+  eq prettyPrint(Q,Q != T)      = !! T .
+  eq prettyPrint(Q,Q ?= T)      = ## T .
+  eq prettyPrint(Q,E)           = E [owise] .
 endfm
 
 --- Views for some of our formula datatypes
