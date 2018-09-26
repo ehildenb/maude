@@ -31,42 +31,42 @@ fmod FOFORM is
   --- NOTE: This sort structure is complicated. Edit at your own risk (unless you want to simplify it).
   --- Sort Declarations
   --- Non-Empty/Possibly Empty Forms
-  sort TrueAtom FalseAtom TruthAtom PosEqAtom NegEqAtom Truth+PosEqAtom Truth+NegEqAtom EqAtom Atom .
+  sort TrueLit FalseLit TruthLit PosEqLit NegEqLit Truth+PosEqLit Truth+NegEqLit EqLit Lit .
   sort ConstConj PosEqConj NegEqConj EqConj PosConj NegConj Conj .
   sort ConstDisj PosEqDisj NegEqDisj EqDisj PosDisj NegDisj Disj .
   sort PosEqQFForm NegEqQFForm EqQFForm QFForm AEQForm FOForm .
-  sort EmptyForm TruthAtom? PosEqAtom? NegEqAtom? Truth+NegEqAtom? Truth+PosEqAtom? EqAtom? Atom? .
+  sort EmptyForm TruthLit? PosEqLit? NegEqLit? Truth+NegEqLit? Truth+PosEqLit? EqLit? Lit? .
   sort ConstConj? PosEqConj? NegEqConj? EqConj? PosConj? NegConj? Conj? .
   sort ConstDisj? PosEqDisj? NegEqDisj? EqDisj? PosDisj? NegDisj? Disj? .
   sort PosEqQFForm? NegEqQFForm? EqQFForm? QFForm? AEQForm? FOForm? .
   --- Subsorting
-  --- Atoms
-  subsort TrueAtom  FalseAtom < TruthAtom .
-  subsort PosEqAtom NegEqAtom < EqAtom          < Atom .
-  subsort TruthAtom PosEqAtom < Truth+PosEqAtom < Atom .
-  subsort TruthAtom NegEqAtom < Truth+NegEqAtom < Atom .
-  --- Non-Atoms
+  --- Lits
+  subsort TrueLit   FalseLit  < TruthLit .
+  subsort PosEqLit NegEqLit < EqLit          < Lit .
+  subsort TruthLit PosEqLit < Truth+PosEqLit < Lit .
+  subsort TruthLit NegEqLit < Truth+NegEqLit < Lit .
+  --- Non-Lits
   subsort PosEqConj PosEqDisj  < PosEqQFForm < EqQFForm .
   subsort NegEqConj NegEqDisj  < NegEqQFForm < EqQFForm .
-  subsort EqConj EqDisj EqAtom < EqQFForm    < QFForm .
-  subsort Atom                 < Conj Disj   < QFForm < FOForm .
+  subsort EqConj EqDisj EqLit < EqQFForm    < QFForm .
+  subsort Lit                 < Conj Disj   < QFForm < FOForm .
   subsort AEQForm              < FOForm .
   --- Conjunctions/Disjunctions
-  subsort PosEqAtom                  < PosEqConj       < PosConj .
-  subsort NegEqAtom                  < NegEqConj       < NegConj .
-  subsort PosEqAtom                  < PosEqDisj       < PosDisj .
-  subsort NegEqAtom                  < NegEqDisj       < NegDisj .
-  subsort PosEqConj NegEqConj EqAtom < EqConj          < Conj .
-  subsort PosEqDisj NegEqDisj EqAtom < EqDisj          < Disj .
-  subsort TruthAtom                  < ConstConj       < PosConj NegConj < Conj .
-  subsort TruthAtom                  < ConstDisj       < PosDisj NegDisj < Disj .
-  subsort Truth+PosEqAtom            < PosConj PosDisj .
-  subsort Truth+NegEqAtom            < NegConj NegDisj .
+  subsort PosEqLit                  < PosEqConj       < PosConj .
+  subsort NegEqLit                  < NegEqConj       < NegConj .
+  subsort PosEqLit                  < PosEqDisj       < PosDisj .
+  subsort NegEqLit                  < NegEqDisj       < NegDisj .
+  subsort PosEqConj NegEqConj EqLit < EqConj          < Conj .
+  subsort PosEqDisj NegEqDisj EqLit < EqDisj          < Disj .
+  subsort TruthLit                  < ConstConj       < PosConj NegConj < Conj .
+  subsort TruthLit                  < ConstDisj       < PosDisj NegDisj < Disj .
+  subsort Truth+PosEqLit            < PosConj PosDisj .
+  subsort Truth+NegEqLit            < NegConj NegDisj .
   --- Link Non-Empty/Possibly Empty Forms
-  subsort TruthAtom       < TruthAtom?       . subsort PosEqAtom   < PosEqAtom?   .
-  subsort Truth+PosEqAtom < Truth+PosEqAtom? . subsort NegEqAtom   < NegEqAtom?   .
-  subsort EqAtom          < EqAtom?          . subsort Atom        < Atom?        .
-  subsort Truth+NegEqAtom < Truth+NegEqAtom? . subsort PosEqConj   < PosEqConj?   .
+  subsort TruthLit       < TruthLit?       . subsort PosEqLit   < PosEqLit?   .
+  subsort Truth+PosEqLit < Truth+PosEqLit? . subsort NegEqLit   < NegEqLit?   .
+  subsort EqLit          < EqLit?          . subsort Lit        < Lit?        .
+  subsort Truth+NegEqLit < Truth+NegEqLit? . subsort PosEqConj   < PosEqConj?   .
   subsort ConstConj       < ConstConj?       . subsort NegEqConj   < NegEqConj?   .
   subsort EqConj          < EqConj?          . subsort Conj        < Conj?        .
   subsort PosConj         < PosConj?         . subsort PosEqDisj   < PosEqDisj?   .
@@ -77,35 +77,35 @@ fmod FOFORM is
   subsort FOForm          < FOForm?          . subsort AEQForm     < AEQForm?     .
   subsort EqQFForm        < EqQFForm?        . subsort PosEqQFForm < PosEqQFForm? .
   subsort NegEqQFForm     < NegEqQFForm?     .
-  --- Possibly Empty Atoms
-  subsort EmptyForm < TruthAtom?            < Truth+PosEqAtom? Truth+NegEqAtom? < Atom? .
-  subsort EmptyForm < PosEqAtom? NegEqAtom? < EqAtom?                           < Atom? .
-  subsort EmptyForm < TruthAtom? PosEqAtom? < Truth+PosEqAtom? .
-  subsort EmptyForm < TruthAtom? NegEqAtom? < Truth+NegEqAtom? .
-  --- Possibly Empty Non-Atoms
+  --- Possibly Empty Lits
+  subsort EmptyForm < TruthLit?            < Truth+PosEqLit? Truth+NegEqLit? < Lit? .
+  subsort EmptyForm < PosEqLit? NegEqLit? < EqLit?                           < Lit? .
+  subsort EmptyForm < TruthLit? PosEqLit? < Truth+PosEqLit? .
+  subsort EmptyForm < TruthLit? NegEqLit? < Truth+NegEqLit? .
+  --- Possibly Empty Non-Lits
   subsort EmptyForm < PosEqConj? PosEqDisj?   < PosEqQFForm? < EqQFForm? .
   subsort EmptyForm < NegEqConj? NegEqDisj?   < NegEqQFForm? < EqQFForm? .
-  subsort EmptyForm < EqConj? EqDisj? EqAtom? < EqQFForm?    < QFForm?   .
-  subsort EmptyForm < Atom?                   < Conj? Disj?  < QFForm?   < FOForm? .
+  subsort EmptyForm < EqConj? EqDisj? EqLit? < EqQFForm?    < QFForm?   .
+  subsort EmptyForm < Lit?                   < Conj? Disj?  < QFForm?   < FOForm? .
   subsort EmptyForm < AEQForm?                < FOForm? .
   --- Possibly Empty Conjunctions/Disjunctions
-  subsort EmptyForm < PosEqAtom?                    < PosEqConj?        < PosConj? .
-  subsort EmptyForm < NegEqAtom?                    < NegEqConj?        < NegConj? .
-  subsort EmptyForm < PosEqAtom?                    < PosEqDisj?        < PosDisj? .
-  subsort EmptyForm < NegEqAtom?                    < NegEqDisj?        < NegDisj? .
-  subsort EmptyForm < PosEqConj? NegEqConj? EqAtom? < EqConj?           < Conj? .
-  subsort EmptyForm < PosEqDisj? NegEqDisj? EqAtom? < EqDisj?           < Disj? .
-  subsort EmptyForm < TruthAtom?                    < ConstConj?        < PosConj? NegConj? < Conj? .
-  subsort EmptyForm < TruthAtom?                    < ConstDisj?        < PosDisj? NegDisj? < Disj? .
-  subsort EmptyForm < Truth+PosEqAtom?              < PosConj? PosDisj? .
-  subsort EmptyForm < Truth+NegEqAtom?              < NegConj? NegDisj? .
+  subsort EmptyForm < PosEqLit?                    < PosEqConj?        < PosConj? .
+  subsort EmptyForm < NegEqLit?                    < NegEqConj?        < NegConj? .
+  subsort EmptyForm < PosEqLit?                    < PosEqDisj?        < PosDisj? .
+  subsort EmptyForm < NegEqLit?                    < NegEqDisj?        < NegDisj? .
+  subsort EmptyForm < PosEqConj? NegEqConj? EqLit? < EqConj?           < Conj? .
+  subsort EmptyForm < PosEqDisj? NegEqDisj? EqLit? < EqDisj?           < Disj? .
+  subsort EmptyForm < TruthLit?                    < ConstConj?        < PosConj? NegConj? < Conj? .
+  subsort EmptyForm < TruthLit?                    < ConstDisj?        < PosDisj? NegDisj? < Disj? .
+  subsort EmptyForm < Truth+PosEqLit?              < PosConj? PosDisj? .
+  subsort EmptyForm < Truth+NegEqLit?              < NegConj? NegDisj? .
 
-  --- Atomic Formulas
+  --- Litic Formulas
   op  mtForm :           -> EmptyForm [ctor] .
-  op  tt     :           -> TrueAtom  [ctor] .
-  op  ff     :           -> FalseAtom [ctor] .
-  op  _?=_   : Term Term -> PosEqAtom [ctor comm prec 50] .
-  op  _!=_   : Term Term -> NegEqAtom [ctor comm prec 50] .
+  op  tt     :           -> TrueLit   [ctor] .
+  op  ff     :           -> FalseLit  [ctor] .
+  op  _?=_   : Term Term -> PosEqLit [ctor comm prec 50] .
+  op  _!=_   : Term Term -> NegEqLit [ctor comm prec 50] .
   --- Non-empty Conjunctions/Disjunctions (NeSets)
   op  _/\_   : ConstConj? ConstConj     -> ConstConj   [ctor assoc comm id: mtForm prec 51] .
   op  _/\_   : PosEqConj? PosEqConj     -> PosEqConj   [ctor ditto] .
@@ -188,23 +188,23 @@ endfm
 fmod FOFORMSET is
   pr FOFORM .
   sort FormEmptySet .
-  sort TruthAtomSet PosEqAtomSet NegEqAtomSet Truth+PosEqAtomSet Truth+NegEqAtomSet EqAtomSet AtomSet .
+  sort TruthLitSet PosEqLitSet NegEqLitSet Truth+PosEqLitSet Truth+NegEqLitSet EqLitSet LitSet .
   sort ConstConjSet PosEqConjSet NegEqConjSet EqConjSet PosConjSet NegConjSet ConjSet .
   sort ConstDisjSet PosEqDisjSet NegEqDisjSet EqDisjSet PosDisjSet NegDisjSet DisjSet .
   sort PosEqQFFormSet NegEqQFFormSet EqQFFormSet QFFormSet AEQFormSet FOFormSet .
-  sort EmptyFormSet PosEqAtom?Set NegEqAtom?Set TruthAtom?Set Truth+NegEqAtom?Set Truth+PosEqAtom?Set EqAtom?Set Atom?Set .
+  sort EmptyFormSet PosEqLit?Set NegEqLit?Set TruthLit?Set Truth+NegEqLit?Set Truth+PosEqLit?Set EqLit?Set Lit?Set .
   sort ConstConj?Set PosEqConj?Set NegEqConj?Set EqConj?Set PosConj?Set NegConj?Set Conj?Set .
   sort ConstDisj?Set PosEqDisj?Set NegEqDisj?Set EqDisj?Set PosDisj?Set NegDisj?Set Disj?Set .
   sort PosEqQFForm?Set NegEqQFForm?Set EqQFForm?Set QFForm?Set AEQForm?Set FOForm?Set .
   --- Subsorting
   subsort EmptyForm       < EmptyFormSet       .
-  subsort TruthAtom       < TruthAtomSet       . subsort TruthAtom?       < TruthAtom?Set       .
-  subsort PosEqAtom       < PosEqAtomSet       . subsort PosEqAtom?       < PosEqAtom?Set       .
-  subsort NegEqAtom       < NegEqAtomSet       . subsort NegEqAtom?       < NegEqAtom?Set       .
-  subsort Truth+PosEqAtom < Truth+PosEqAtomSet . subsort Truth+PosEqAtom? < Truth+PosEqAtom?Set .
-  subsort Truth+NegEqAtom < Truth+NegEqAtomSet . subsort Truth+NegEqAtom? < Truth+NegEqAtom?Set .
-  subsort EqAtom          < EqAtomSet          . subsort EqAtom?          < EqAtom?Set          .
-  subsort Atom            < AtomSet            . subsort Atom?            < Atom?Set            .
+  subsort TruthLit       < TruthLitSet       . subsort TruthLit?       < TruthLit?Set       .
+  subsort PosEqLit       < PosEqLitSet       . subsort PosEqLit?       < PosEqLit?Set       .
+  subsort NegEqLit       < NegEqLitSet       . subsort NegEqLit?       < NegEqLit?Set       .
+  subsort Truth+PosEqLit < Truth+PosEqLitSet . subsort Truth+PosEqLit? < Truth+PosEqLit?Set .
+  subsort Truth+NegEqLit < Truth+NegEqLitSet . subsort Truth+NegEqLit? < Truth+NegEqLit?Set .
+  subsort EqLit          < EqLitSet          . subsort EqLit?          < EqLit?Set          .
+  subsort Lit            < LitSet            . subsort Lit?            < Lit?Set            .
   subsort ConstConj       < ConstConjSet       . subsort ConstConj?       < ConstConj?Set       .
   subsort PosEqConj       < PosEqConjSet       . subsort PosEqConj?       < PosEqConj?Set       .
   subsort NegEqConj       < NegEqConjSet       . subsort NegEqConj?       < NegEqConj?Set       .
@@ -225,32 +225,32 @@ fmod FOFORMSET is
   subsort QFForm          < QFFormSet          . subsort QFForm?          < QFForm?Set          .
   subsort AEQForm         < AEQFormSet         . subsort AEQForm?         < AEQForm?Set         .
   subsort FOForm          < FOFormSet          . subsort FOForm?          < FOForm?Set          .
-  --- Atoms Sets
-  subsort FormEmptySet < PosEqAtomSet NegEqAtomSet < EqAtomSet          < AtomSet .
-  subsort FormEmptySet < TruthAtomSet PosEqAtomSet < Truth+PosEqAtomSet < AtomSet .
-  subsort FormEmptySet < TruthAtomSet NegEqAtomSet < Truth+NegEqAtomSet < AtomSet .
-  --- Non-Atom Sets
-  subsort PosEqConjSet PosEqDisjSet     < PosEqQFFormSet     < EqQFFormSet .
-  subsort NegEqConjSet NegEqDisjSet     < NegEqQFFormSet     < EqQFFormSet .
-  subsort EqConjSet EqDisjSet EqAtomSet < EqQFFormSet        < QFFormSet .
-  subsort AtomSet                       < ConjSet DisjSet    < QFFormSet   < FOFormSet .
-  subsort FormEmptySet                  < AEQFormSet         < FOFormSet .
+  --- Lits Sets
+  subsort FormEmptySet < PosEqLitSet NegEqLitSet < EqLitSet          < LitSet .
+  subsort FormEmptySet < TruthLitSet PosEqLitSet < Truth+PosEqLitSet < LitSet .
+  subsort FormEmptySet < TruthLitSet NegEqLitSet < Truth+NegEqLitSet < LitSet .
+  --- Non-Lit Sets
+  subsort PosEqConjSet PosEqDisjSet    < PosEqQFFormSet     < EqQFFormSet .
+  subsort NegEqConjSet NegEqDisjSet    < NegEqQFFormSet     < EqQFFormSet .
+  subsort EqConjSet EqDisjSet EqLitSet < EqQFFormSet        < QFFormSet .
+  subsort LitSet                       < ConjSet DisjSet    < QFFormSet   < FOFormSet .
+  subsort FormEmptySet                 < AEQFormSet         < FOFormSet .
   --- Conjunctions/Disjunctions Sets
-  subsort PosEqAtomSet                        < PosEqConjSet          < PosConjSet .
-  subsort NegEqAtomSet                        < NegEqConjSet          < NegConjSet .
-  subsort PosEqAtomSet                        < PosEqDisjSet          < PosDisjSet .
-  subsort NegEqAtomSet                        < NegEqDisjSet          < NegDisjSet .
-  subsort PosEqConjSet NegEqConjSet EqAtomSet < EqConjSet             < ConjSet .
-  subsort PosEqDisjSet NegEqDisjSet EqAtomSet < EqDisjSet             < DisjSet .
-  subsort TruthAtomSet                        < ConstConjSet          < PosConjSet NegConjSet < ConjSet .
-  subsort TruthAtomSet                        < ConstDisjSet          < PosDisjSet NegDisjSet < DisjSet .
-  subsort Truth+PosEqAtomSet                  < PosConjSet PosDisjSet .
-  subsort Truth+NegEqAtomSet                  < NegConjSet NegDisjSet .
+  subsort PosEqLitSet                        < PosEqConjSet          < PosConjSet .
+  subsort NegEqLitSet                        < NegEqConjSet          < NegConjSet .
+  subsort PosEqLitSet                        < PosEqDisjSet          < PosDisjSet .
+  subsort NegEqLitSet                        < NegEqDisjSet          < NegDisjSet .
+  subsort PosEqConjSet NegEqConjSet EqLitSet < EqConjSet             < ConjSet .
+  subsort PosEqDisjSet NegEqDisjSet EqLitSet < EqDisjSet             < DisjSet .
+  subsort TruthLitSet                        < ConstConjSet          < PosConjSet NegConjSet < ConjSet .
+  subsort TruthLitSet                        < ConstDisjSet          < PosDisjSet NegDisjSet < DisjSet .
+  subsort Truth+PosEqLitSet                  < PosConjSet PosDisjSet .
+  subsort Truth+NegEqLitSet                  < NegConjSet NegDisjSet .
   --- Link Non-Empty/Possibly Empty Forms
-  subsort TruthAtomSet       < TruthAtom?Set       . subsort PosEqAtomSet       < PosEqAtom?Set       .
-  subsort NegEqAtomSet       < NegEqAtom?Set       . subsort EqAtomSet          < EqAtom?Set          .
-  subsort Truth+PosEqAtomSet < Truth+PosEqAtom?Set . subsort Truth+NegEqAtomSet < Truth+NegEqAtom?Set .
-  subsort AtomSet            < Atom?Set            . subsort NegEqConjSet       < NegEqConj?Set       .
+  subsort TruthLitSet       < TruthLit?Set       . subsort PosEqLitSet       < PosEqLit?Set       .
+  subsort NegEqLitSet       < NegEqLit?Set       . subsort EqLitSet          < EqLit?Set          .
+  subsort Truth+PosEqLitSet < Truth+PosEqLit?Set . subsort Truth+NegEqLitSet < Truth+NegEqLit?Set .
+  subsort LitSet            < Lit?Set            . subsort NegEqConjSet       < NegEqConj?Set       .
   subsort PosEqConjSet       < PosEqConj?Set       . subsort EqConjSet          < EqConj?Set          .
   subsort ConstConjSet       < ConstConj?Set       . subsort ConjSet            < Conj?Set            .
   subsort PosConjSet         < PosConj?Set         . subsort PosEqDisjSet       < PosEqDisj?Set       .
@@ -261,39 +261,39 @@ fmod FOFORMSET is
   subsort PosEqQFFormSet     < PosEqQFForm?Set     . subsort NegEqQFFormSet     < NegEqQFForm?Set     .
   subsort EqQFFormSet        < EqQFForm?Set        . subsort QFFormSet          < QFForm?Set          .
   subsort FOFormSet          < FOForm?Set          .
-  --- Possibly Empty Atoms Sets
+  --- Possibly Empty Lits Sets
   subsort FormEmptySet < EmptyFormSet .
-  subsort EmptyFormSet < PosEqAtom?Set NegEqAtom?Set < EqAtom?Set          < Atom?Set .
-  subsort EmptyFormSet < TruthAtom?Set PosEqAtom?Set < Truth+PosEqAtom?Set < Atom?Set .
-  subsort EmptyFormSet < TruthAtom?Set NegEqAtom?Set < Truth+NegEqAtom?Set < Atom?Set .
-  --- Possibly Empty Non-Atom Sets
-  subsort PosEqConj?Set PosEqDisj?Set      < PosEqQFForm?Set   < EqQFForm?Set .
-  subsort NegEqConj?Set NegEqDisj?Set      < NegEqQFForm?Set   < EqQFForm?Set .
-  subsort EqConj?Set EqDisj?Set EqAtom?Set < EqQFForm?Set      < QFForm?Set .
-  subsort Atom?Set                         < Conj?Set Disj?Set < QFForm?Set < FOForm?Set .
-  subsort EmptyFormSet                     < AEQForm?Set       < FOForm?Set .
+  subsort EmptyFormSet < PosEqLit?Set NegEqLit?Set < EqLit?Set          < Lit?Set .
+  subsort EmptyFormSet < TruthLit?Set PosEqLit?Set < Truth+PosEqLit?Set < Lit?Set .
+  subsort EmptyFormSet < TruthLit?Set NegEqLit?Set < Truth+NegEqLit?Set < Lit?Set .
+  --- Possibly Empty Non-Lit Sets
+  subsort PosEqConj?Set PosEqDisj?Set     < PosEqQFForm?Set   < EqQFForm?Set .
+  subsort NegEqConj?Set NegEqDisj?Set     < NegEqQFForm?Set   < EqQFForm?Set .
+  subsort EqConj?Set EqDisj?Set EqLit?Set < EqQFForm?Set      < QFForm?Set .
+  subsort Lit?Set                         < Conj?Set Disj?Set < QFForm?Set < FOForm?Set .
+  subsort EmptyFormSet                    < AEQForm?Set       < FOForm?Set .
   --- Possibly Empty Conjunctions/Disjunctions
-  subsort EmptyFormSet < PosEqAtom?Set                          < PosEqConj?Set           < PosConj?Set .
-  subsort EmptyFormSet < NegEqAtom?Set                          < NegEqConj?Set           < NegConj?Set .
-  subsort EmptyFormSet < PosEqAtom?Set                          < PosEqDisj?Set           < PosDisj?Set .
-  subsort EmptyFormSet < NegEqAtom?Set                          < NegEqDisj?Set           < NegDisj?Set .
-  subsort EmptyFormSet < PosEqConj?Set NegEqConj?Set EqAtom?Set < EqConj?Set              < Conj?Set .
-  subsort EmptyFormSet < PosEqDisj?Set NegEqDisj?Set EqAtom?Set < EqDisj?Set              < Disj?Set .
-  subsort EmptyFormSet < TruthAtom?Set                          < ConstConj?Set           < PosConj?Set NegConj?Set < Conj?Set .
-  subsort EmptyFormSet < TruthAtom?Set                          < ConstDisj?Set           < PosDisj?Set NegDisj?Set < Disj?Set .
-  subsort EmptyFormSet < Truth+PosEqAtom?Set                    < PosConj?Set PosDisj?Set .
-  subsort EmptyFormSet < Truth+NegEqAtom?Set                    < NegConj?Set NegDisj?Set .
+  subsort EmptyFormSet < PosEqLit?Set                          < PosEqConj?Set           < PosConj?Set .
+  subsort EmptyFormSet < NegEqLit?Set                          < NegEqConj?Set           < NegConj?Set .
+  subsort EmptyFormSet < PosEqLit?Set                          < PosEqDisj?Set           < PosDisj?Set .
+  subsort EmptyFormSet < NegEqLit?Set                          < NegEqDisj?Set           < NegDisj?Set .
+  subsort EmptyFormSet < PosEqConj?Set NegEqConj?Set EqLit?Set < EqConj?Set              < Conj?Set .
+  subsort EmptyFormSet < PosEqDisj?Set NegEqDisj?Set EqLit?Set < EqDisj?Set              < Disj?Set .
+  subsort EmptyFormSet < TruthLit?Set                          < ConstConj?Set           < PosConj?Set NegConj?Set < Conj?Set .
+  subsort EmptyFormSet < TruthLit?Set                          < ConstDisj?Set           < PosDisj?Set NegDisj?Set < Disj?Set .
+  subsort EmptyFormSet < Truth+PosEqLit?Set                    < PosConj?Set PosDisj?Set .
+  subsort EmptyFormSet < Truth+NegEqLit?Set                    < NegConj?Set NegDisj?Set .
   --- Empty [Formula Sets]
   op mtFormSet :                                    -> FormEmptySet        [ctor] .
   op _|_ : FormEmptySet        FormEmptySet         -> FormEmptySet        [ctor assoc comm id: mtFormSet prec 53] .
   --- [Non-Empty Formula] Sets
-  op _|_ : PosEqAtomSet        PosEqAtomSet         -> PosEqAtomSet        [ctor ditto] .
-  op _|_ : NegEqAtomSet        NegEqAtomSet         -> NegEqAtomSet        [ctor ditto] .
-  op _|_ : TruthAtomSet        TruthAtomSet         -> TruthAtomSet        [ctor ditto] .
-  op _|_ : Truth+PosEqAtomSet  Truth+PosEqAtomSet   -> Truth+PosEqAtomSet  [ctor ditto] .
-  op _|_ : Truth+NegEqAtomSet  Truth+NegEqAtomSet   -> Truth+NegEqAtomSet  [ctor ditto] .
-  op _|_ : EqAtomSet           EqAtomSet            -> EqAtomSet           [ctor ditto] .
-  op _|_ : AtomSet             AtomSet              -> AtomSet             [ctor ditto] .
+  op _|_ : PosEqLitSet         PosEqLitSet          -> PosEqLitSet         [ctor ditto] .
+  op _|_ : NegEqLitSet         NegEqLitSet          -> NegEqLitSet         [ctor ditto] .
+  op _|_ : TruthLitSet         TruthLitSet          -> TruthLitSet         [ctor ditto] .
+  op _|_ : Truth+PosEqLitSet   Truth+PosEqLitSet    -> Truth+PosEqLitSet   [ctor ditto] .
+  op _|_ : Truth+NegEqLitSet   Truth+NegEqLitSet    -> Truth+NegEqLitSet   [ctor ditto] .
+  op _|_ : EqLitSet            EqLitSet             -> EqLitSet            [ctor ditto] .
+  op _|_ : LitSet              LitSet               -> LitSet              [ctor ditto] .
   op _|_ : ConstConjSet        ConstConjSet         -> ConstConjSet        [ctor ditto] .
   op _|_ : PosEqConjSet        PosEqConjSet         -> PosEqConjSet        [ctor ditto] .
   op _|_ : NegEqConjSet        NegEqConjSet         -> NegEqConjSet        [ctor ditto] .
@@ -316,13 +316,13 @@ fmod FOFORMSET is
   op _|_ : FOFormSet           FOFormSet            -> FOFormSet           [ctor ditto] .
   --- [Possibly Empty Formula] Sets
   op _|_ : EmptyFormSet         EmptyFormSet        -> EmptyFormSet        [ctor ditto] .
-  op _|_ : PosEqAtom?Set        PosEqAtom?Set       -> PosEqAtom?Set       [ctor ditto] .
-  op _|_ : NegEqAtom?Set        NegEqAtom?Set       -> NegEqAtom?Set       [ctor ditto] .
-  op _|_ : TruthAtom?Set        TruthAtom?Set       -> TruthAtom?Set       [ctor ditto] .
-  op _|_ : Truth+PosEqAtom?Set  Truth+PosEqAtom?Set -> Truth+PosEqAtom?Set [ctor ditto] .
-  op _|_ : Truth+NegEqAtom?Set  Truth+NegEqAtom?Set -> Truth+NegEqAtom?Set [ctor ditto] .
-  op _|_ : EqAtom?Set           EqAtom?Set          -> EqAtom?Set          [ctor ditto] .
-  op _|_ : Atom?Set             Atom?Set            -> Atom?Set            [ctor ditto] .
+  op _|_ : PosEqLit?Set         PosEqLit?Set        -> PosEqLit?Set        [ctor ditto] .
+  op _|_ : NegEqLit?Set         NegEqLit?Set        -> NegEqLit?Set        [ctor ditto] .
+  op _|_ : TruthLit?Set         TruthLit?Set        -> TruthLit?Set        [ctor ditto] .
+  op _|_ : Truth+PosEqLit?Set   Truth+PosEqLit?Set  -> Truth+PosEqLit?Set  [ctor ditto] .
+  op _|_ : Truth+NegEqLit?Set   Truth+NegEqLit?Set  -> Truth+NegEqLit?Set  [ctor ditto] .
+  op _|_ : EqLit?Set            EqLit?Set           -> EqLit?Set           [ctor ditto] .
+  op _|_ : Lit?Set              Lit?Set             -> Lit?Set             [ctor ditto] .
   op _|_ : ConstConj?Set        ConstConj?Set       -> ConstConj?Set       [ctor ditto] .
   op _|_ : PosEqConj?Set        PosEqConj?Set       -> PosEqConj?Set       [ctor ditto] .
   op _|_ : NegEqConj?Set        NegEqConj?Set       -> NegEqConj?Set       [ctor ditto] .
@@ -405,10 +405,10 @@ fmod FOFORMSIMPLIFY-IMPL is
   --- Repeated subformula in Conj/Disj
   eq F /\ F = F .
   eq F \/ F = F .
-  --- Negated TruthAtom
+  --- Negated TruthLit
   eq ~ tt = ff .
   eq ~ ff = tt .
-  --- TruthAtom in Conj/Disj
+  --- TruthLit in Conj/Disj
   eq ff /\ C = ff .
   eq tt /\ C = C  .
   eq tt \/ D = tt .
@@ -440,11 +440,11 @@ fmod FOFORMREDUCE-IMPL is
   pr TERM-EXTRA . --- vars() function
   op red  : Module Bool FOForm? ~> FOForm? .
   op red  : Module Bool FOForm  ~> FOForm  .
-  op red  : Module Bool EqAtom  ~> Atom  .
-  op redL : Module Atom Atom Term Term ~> Atom .
+  op red  : Module Bool EqLit  ~> Lit  .
+  op redL : Module Lit Lit Term Term ~> Lit .
   op noteq   : Module Term Term -> Bool  .
-  var F F' : FOForm . var T T' : Term . var M : Module . var E : EqAtom .
-  var Q  : NeQidSet . var AT AF : TruthAtom . var B : Bool .
+  var F F' : FOForm . var T T' : Term . var M : Module . var E : EqLit .
+  var Q  : NeQidSet . var AT AF : TruthLit . var B : Bool .
   eq red(M,B,F /\ F')   = red(M,B,F) /\ red(M,B,F') .
   eq red(M,B,F \/ F')   = red(M,B,F) \/ red(M,B,F') .
   eq red(M,B,mtForm)    = mtForm .
@@ -504,21 +504,21 @@ fmod FOFORM-OPERATIONS is
   op  false2mt   : FOForm? -> FOForm? .
   op  vars       : FOForm? -> QidSet  .
   var M : Module . var F? : FOForm? . var F1 F2 : FOForm . var QS : NeQidSet .
-  var TA : TruthAtom . var T T' : Term . var PC : PosConj . var C : Conj .
+  var TA : TruthLit . var T T' : Term . var PC : PosConj . var C : Conj .
   --- get the size/depth of a formula
   eq size(A[QS] F1)  = s(size(F1)) .
   eq size(E[QS] F1)  = s(size(F1)) .
   eq size(F1 /\ F2)  = s(size(F1) + size(F2)) .
   eq size(F1 \/ F2)  = s(size(F1) + size(F2)) .
   eq size(~ F1)      = s(size(F1)) .
-  eq size(A:Atom)    = 1 .
+  eq size(A:Lit)    = 1 .
   eq size(mtForm)    = 0 .
   eq depth(A[QS] F1) = s(depth(F1)) .
   eq depth(E[QS] F1) = s(depth(F1)) .
   eq depth(F1 /\ F2) = s(max(depth(F1),depth(F2))) .
   eq depth(F1 \/ F2) = s(max(depth(F1),depth(F2))) .
   eq depth(~ F1)     = s(depth(F1)) .
-  eq depth(A:Atom)   = 1 .
+  eq depth(A:Lit)   = 1 .
   eq depth(mtForm)   = 0 .
   --- INP: Module FOForm?
   --- PRE: N/A
@@ -887,12 +887,12 @@ endfm
 
 fmod NNF-IMPL is
   pr META-LEVEL .
-  sort EmptyForm TrueAtom FalseAtom NNF Form .
-  subsort EmptyForm TrueAtom FalseAtom < NNF < Form .
+  sort EmptyForm TrueLit FalseLit NNF Form .
+  subsort EmptyForm TrueLit FalseLit < NNF < Form .
   --- Negation Normal Forms
   op  mtForm :             -> EmptyForm [ctor] .
-  op  tt     :             -> TrueAtom  [ctor] .
-  op  ff     :             -> FalseAtom [ctor] .
+  op  tt     :             -> TrueLit   [ctor] .
+  op  ff     :             -> FalseLit  [ctor] .
   op  _?=_   : Term Term   -> NNF  [ctor comm] .
   op  _!=_   : Term Term   -> NNF  [ctor comm] .
   op  _/\_   : NNF NNF     -> NNF  [ctor assoc comm prec 51] .
@@ -930,12 +930,12 @@ endfm
 
 fmod PNF-IMPL is
   pr META-LEVEL .
-  sort EmptyForm TrueAtom FalseAtom QFF EPNF APNF PNF Form .
-  subsort EmptyForm TrueAtom FalseAtom < QFF < PNF < Form .
+  sort EmptyForm TrueLit FalseLit QFF EPNF APNF PNF Form .
+  subsort EmptyForm TrueLit FalseLit < QFF < PNF < Form .
   --- Quantifier Free Formulas
   op  mtForm :              -> EmptyForm [ctor] .
-  op  tt     :              -> TrueAtom  [ctor] .
-  op  ff     :              -> FalseAtom [ctor] .
+  op  tt     :              -> TrueLit   [ctor] .
+  op  ff     :              -> FalseLit  [ctor] .
   op  _?=_   : Term Term    -> QFF  [ctor comm] .
   op  _!=_   : Term Term    -> QFF  [ctor comm] .
   op  _/\_   : QFF QFF      -> QFF  [ctor assoc comm prec 50] .
@@ -975,12 +975,12 @@ endfm
 
 fmod DNF-IMPL is
   pr META-LEVEL .
-  sort EmptyForm TrueAtom FalseAtom Conj DNF QDNF Form .
-  subsort EmptyForm TrueAtom FalseAtom < Conj < DNF < QDNF < Form .
+  sort EmptyForm TrueLit FalseLit Conj DNF QDNF Form .
+  subsort EmptyForm TrueLit FalseLit < Conj < DNF < QDNF < Form .
   --- Disjunctive Normal Forms
   op  mtForm :             -> EmptyForm [ctor] .
-  op  tt     :             -> TrueAtom  [ctor] .
-  op  ff     :             -> FalseAtom [ctor] .
+  op  tt     :             -> TrueLit   [ctor] .
+  op  ff     :             -> FalseLit  [ctor] .
   op  _?=_   : Term Term   -> Conj [ctor comm] .
   op  _!=_   : Term Term   -> Conj [ctor comm] .
   op  _/\_   : Conj Conj   -> Conj [ctor assoc comm] .
@@ -1018,12 +1018,12 @@ endfm
 
 fmod CNF-IMPL is
   pr META-LEVEL .
-  sort EmptyForm TrueAtom FalseAtom Disj CNF QCNF Form .
-  subsort EmptyForm TrueAtom FalseAtom < Disj < CNF < QCNF < Form .
+  sort EmptyForm TrueLit FalseLit Disj CNF QCNF Form .
+  subsort EmptyForm TrueLit FalseLit < Disj < CNF < QCNF < Form .
   --- Disjunctive Normal Forms
   op  mtForm :             -> EmptyForm [ctor] .
-  op  tt     :             -> TrueAtom  [ctor] .
-  op  ff     :             -> FalseAtom [ctor] .
+  op  tt     :             -> TrueLit   [ctor] .
+  op  ff     :             -> FalseLit  [ctor] .
   op  _?=_   : Term Term   -> Disj [ctor comm] .
   op  _!=_   : Term Term   -> Disj [ctor comm] .
   op  _\/_   : Disj Disj   -> Disj [ctor assoc comm] .
@@ -1068,9 +1068,9 @@ fmod FOFORMSET-OPERATIONS is
   op disj-join    : QFForm?Set -> QFForm? .
   op conj-join    : FOForm?Set -> FOForm? .
   op conj-join    : QFForm?Set -> QFForm? .
-  op toPosEqAtoms : PosEqQFForm -> PosEqAtomSet .
-  op toPosEqAtoms : UnificationProblem -> PosEqAtomSet .
-  op toEqSet      : PosEqAtomSet -> EquationSet .
+  op toPosEqLits : PosEqQFForm -> PosEqLitSet .
+  op toPosEqLits : UnificationProblem -> PosEqLitSet .
+  op toEqSet      : PosEqLitSet -> EquationSet .
   op wellFormed   : Module FOForm?Set -> Bool .
   ---
   op toDisjSet  : QFForm? ~> DisjSet .
@@ -1079,7 +1079,7 @@ fmod FOFORMSET-OPERATIONS is
   op toConjSet' : QFForm? ~> ConjSet .
   ---
   var FS : FOForm?Set . var FF FF' : FOForm? . var F : QFForm? . var D : Disj . var UP : UnificationProblem .
-  var C : Conj . var PEA : PosEqAtom . var PEAS : PosEqAtomSet . var T T' : Term . var M : Module .
+  var C : Conj . var PEA : PosEqLit . var PEAS : PosEqLitSet . var T T' : Term . var M : Module .
   ---
   eq toDisjSet (F)      = toDisjSet'(toCNF(F)) .
   eq toDisjSet'(D /\ F) = D | toDisjSet'(F) .
@@ -1094,12 +1094,12 @@ fmod FOFORMSET-OPERATIONS is
   eq conj-join(FF | FS)   = FF /\ conj-join(FS) .
   eq conj-join(mtFormSet) = tt .
   ---
-  eq toPosEqAtoms(PEA /\ F) = PEA | toPosEqAtoms(F) .
-  eq toPosEqAtoms(PEA \/ F) = PEA | toPosEqAtoms(F) .
-  eq toPosEqAtoms(mtForm)   = mtFormSet .
+  eq toPosEqLits(PEA /\ F) = PEA | toPosEqLits(F) .
+  eq toPosEqLits(PEA \/ F) = PEA | toPosEqLits(F) .
+  eq toPosEqLits(mtForm)   = mtFormSet .
   ---
-  eq toPosEqAtoms(T =? T' /\ UP) = T ?= T' | toPosEqAtoms(UP) .
-  eq toPosEqAtoms(T =? T')       = T ?= T' .
+  eq toPosEqLits(T =? T' /\ UP) = T ?= T' | toPosEqLits(UP) .
+  eq toPosEqLits(T =? T')       = T ?= T' .
   ---
   eq toEqSet(T ?= T' | PEAS) = (eq T = T' [none] .) toEqSet(PEAS) .
   eq toEqSet(mtFormSet)      = none .
@@ -1155,7 +1155,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   op extract-imp-sub : Module QFForm ~> QFForm .
 
   var Q1? Q2? : QFForm? . var Q Q' : QFForm . var C : Conj . var C1? C2? C3? : Conj? . var FS : FOFormSubstPairSet .
-  var V : Variable . var T : Term . var S : Substitution . var A : Atom . var U : Module .
+  var V : Variable . var T : Term . var S : Substitution . var A : Lit . var U : Module .
 
   --- INP: QFForm?
   --- PRE:
@@ -1196,12 +1196,12 @@ fmod FOFORM-AUX is
   pr STREAM{FOFormSubstPair} .
 
   --- Simplify constraints by apply substitutions whenever possible
-  op litToNonRecBinding   : Module Atom -> Substitution .
+  op litToNonRecBinding   : Module Lit -> Substitution .
   op bindingsToConj       : Substitution -> PosEqConj .
   op findBinding          : Module QFForm -> FOFormSubstPair .
   op findBindings         : Module QFForm -> FOFormSubstPair .
   op $findBindings        : Module QFForm QFForm Substitution -> Stream{FOFormSubstPair} .
-  op $findBindings        : Module QFForm QFForm Substitution Atom Substitution -> Stream{FOFormSubstPair} .
+  op $findBindings        : Module QFForm QFForm Substitution Lit Substitution -> Stream{FOFormSubstPair} .
   op recSimplifyForm      : Module QFForm Substitution -> FOFormSubstPair .
   op $recSimplifyForm     : Module FOFormSubstPair Substitution -> FOFormSubstPair .
   op simplifyForm         : Module QFForm -> QFForm .
@@ -1211,7 +1211,7 @@ fmod FOFORM-AUX is
   op removeRedundantLits  : QFForm -> QFForm .
 
   var F F' : QFForm . var V : Variable    .
-  var T T' : Term . var VS  : VariableSet . var M : Module . var L : Atom .
+  var T T' : Term . var VS  : VariableSet . var M : Module . var L : Lit .
   var S S' S1 S2 : Substitution . var B1 B2 : Bool . var F? F'? : QFForm? .
 
   --- INP: Substitution
@@ -1220,9 +1220,9 @@ fmod FOFORM-AUX is
   eq bindingsToConj(V <- T ; S) = V ?= T /\ bindingsToConj(S) .
   eq bindingsToConj(none)       = tt .
 
-  --- INP: Module Atom
-  --- PRE: Atom is well-formed
-  --- OUT: If Atom is of the form V ?= T or T ?= V then
+  --- INP: Module Lit
+  --- PRE: Lit is well-formed
+  --- OUT: If Lit is of the form V ?= T or T ?= V then
   ---      returns a substitution V <- T if leastSort(T) < leastSort(V) and not V in vars(T)
   ---      otherwise returns none
   eq litToNonRecBinding(M,V ?= T) =
@@ -1307,7 +1307,7 @@ fmod FOFORM-AUX is
   --- OUT: All literals L in FOForm that are ground are removed
   eq removeGround(F /\ F')  = removeGround(F) /\ removeGround(F') .
   eq removeGround(F \/ F')  = removeGround(F) \/ removeGround(F') .
-  eq removeGround(L:Atom)   = if vars(L:Atom) =/= none then L:Atom else tt fi .
+  eq removeGround(L:Lit)   = if vars(L:Lit) =/= none then L:Lit else tt fi .
 endfm
 ---)
 
@@ -1410,7 +1410,7 @@ fmod FOFORM-CORE-PRETTYPRINT is
   op _=>_ : QFForm QFForm -> QFForm [ctor format(o rn on d)] .
 
   var F F' : QFForm . var Q : Qid . var T : Term .
-  var TA : TruthAtom . var E : EqAtom .
+  var TA : TruthLit . var E : EqLit .
 
   op prettyPrint : Qid QFForm -> QFForm .
   eq prettyPrint(Q,F /\ F')     = prettyPrint(Q,F) /\ prettyPrint(Q,F') .

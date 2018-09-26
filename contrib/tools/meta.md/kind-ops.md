@@ -166,7 +166,7 @@ fmod KIND-LIST-EXT is
   var T T' : Term .
   var TS : TermSet .
   var TL : NeTermList .
-  var NL : NegEqAtom .
+  var NL : NegEqLit .
   var NF : NegEqConj .
   var Q : Qid .
 
