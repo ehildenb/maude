@@ -7,16 +7,50 @@ Copyright 1997-2014 SRI International, Menlo Park, CA 94025, USA.
 The Maude 2 interpreter is free software.
 See the file COPYING for copying permission.
 
-For documentation and examples, see the Maude website: <http://maude.cs.uiuc.edu/>
-
-For help using Maude 2:	<maude-help@maude.cs.uiuc.edu>
-Report bugs to:	<maude-bugs@maude.cs.uiuc.edu>
+For more documentation and examples, see the Maude website: <http://maude.cs.uiuc.edu/>
 
 Installing
 ==========
 
 The script `./build` will help with building and installing Maude.
 Run `./build help` for instructions on how to use.
+
+### Dependencies
+
+-   [GNU gcc](http://gcc.gnu.org/)
+-   [GNU bison](http://www.gnu.org/software/bison/)
+-   [GNU flex](http://www.gnu.org/software/flex/)
+
+It is recommended that you use the latest versions of bison and flex since Maude is known to tickle bugs in certain older versions.
+You should use gcc 3.1 or later as there are code generation issues with the 3.0.* series.
+Maude requires the following packages:
+
+-   [GNU gmp](http://www.swox.com/gmp/)
+-   [GNU libsigsegv](http://libsigsegv.sourceforge.net/)
+-   [Tecla](http://www.astro.caltech.edu/~mcs/tecla/)
+-   [BuDDY](http://sourceforge.net/projects/buddy)
+
+### Optional Dependencies
+
+-   [CVC4](http://cvc4.cs.nyu.edu/web/)
+-   [Yices2](https://github.com/SRI-CSL/yices2.git)
+-   [GNU gperf (for Yices2)](https://www.gnu.org/software/gperf/)
+
+### Building
+
+First build the dependencies:
+
+```sh
+./build deps
+```
+
+Then build Maude (with or without an SMT solver):
+
+```sh
+./build maude           # No SMT Solver
+./build maude-cvc4      # CVC4 SMT Solver
+./build maude-yices2    # Yices2 SMT Solver
+```
 
 Contributing
 ============

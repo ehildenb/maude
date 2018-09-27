@@ -12,69 +12,123 @@ include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 contrib_dir="contrib"
 
-cvc4_dir="src/SMT/cvc4"
+cvc4_dir="ext/cvc4"
+yices2_dir="ext/yices2"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
 
 export PATH="/usr/lib/ccache/bin:$PATH"
 export PATH="/usr/lib/ccache:$PATH"
 
+progress() { echo "===== " $@ ; }
+
 # Functionality
 # -------------
 
 build_clean() {
+    progress "Cleaning"
     rm -rf "$build_dir"
-    make clean || true
+    make -s clean || true
     git clean -dfx
-    [[ ! -f "$cvc4_dir/Makefile" ]] \
-        || ( cd "$cvc4_dir"
-             make distclean
-           )
-    ( cd "$contrib_dir"
-      make clean
+    rm -rf "$cvc4_dir" "$yices2_dir"
+    git submodule update --init "$cvc4_dir" "$yices2_dir"
+    (   cd "$contrib_dir"
+        make clean
     )
 }
 
 build_deps() {
-    git submodule update --init -- "$cvc4_dir" "$pandoc_tangle_dir"
+    progress "Updating submodules"
+    git submodule update --init -- "$cvc4_dir" "$yices2_dir" "$pandoc_tangle_dir"
+}
+
+build_cvc4() {
+    progress "Building CVC4"
+    mkdir -p $build_dir
+    (   cd "$cvc4_dir"
+        ./autogen.sh
+        ./contrib/get-antlr-3.4
+        ./configure --prefix="$build_dir" \
+                    --with-antlr-dir=./antlr-3.4 \
+                    ANTLR=./antlr-3.4/bin/antlr3
+        make -s -j4
+        make -s install
+    )
+}
+
+build_yices2() {
+    progress "Building Yices2"
+    mkdir -p $build_dir
+    (   cd "$yices2_dir"
+        autoconf
+        ./configure --prefix="$build_dir"
+        make -s -j4
+        make -s install
+    )
 }
 
 build_maude() {
+    progress "Building Maude $@"
     aclocal
     autoconf
     autoheader
     automake --add-missing
     automake
 
-    ./configure CXXFLAGS="-I$include_dir -L$lib_dir" "$@"
+    ./configure CXXFLAGS="-std=c++11 -I$include_dir -L$lib_dir" "$@"
     make -s -j4 \
         || ( git checkout -- src/Mixfix/surface.cc
              make -s -j4
            )
 }
 
+build_maude_cvc4() {
+    build_cvc4
+    build_maude --with-cvc4 CVC4_LIB="-L$lib_dir -Wl,-R$lib_dir -lcvc4"
+}
+
+build_maude_yices2() {
+    build_yices2
+    build_maude --with-yices2 YICES2_LIB="-L$lib_dir -Wl,-R$lib_dir -lyices"
+}
+
 build_tangle() {
+    progress "Tangling"
     (   cd "$contrib_dir"
         make all
     )
 }
 
 build_test() {
-    local test_file_name test_name test_dir exit_status
+    local test_file_name test_name test_dir
     test_file_name="$1" && shift
-    exit_status='0'
 
     test_name="$(basename "$test_file_name")"
     test_dir="$(dirname "$test_file_name")"
 
     build_tangle
 
-    {   cd "$test_dir"
-        if ! make check TESTS=$test_name ; then
+    (   cd "$test_dir"
+        if ! make -s check TESTS=$test_name ; then
             git --no-pager diff --no-index $test_name.{expected,out}
-            exit_status='1'
+            return 1
         fi
-    }
-    exit "$exit_status"
+    )
+}
+
+build_test_smt() {
+    build_clean
+    build_deps
+    build_maude_cvc4
+    build_tangle
+    build_test tests/Misc/smtTest
+
+    build_clean
+    build_deps
+    build_maude_yices2
+    build_tangle
+    build_test tests/Misc/smtTest
+
+    git checkout -- src/Mixfix/tokenizer.cc
 }
 
 build_test_all() {
@@ -82,7 +136,8 @@ build_test_all() {
     build_deps
     build_maude
     build_tangle
-    make check "$@"
+    make -s check "$@"
+    build_test_smt
     git checkout -- src/Mixfix/tokenizer.cc
 }
 
@@ -91,12 +146,15 @@ build_test_all() {
 
 build_command="$1" ; shift
 case "$build_command" in
-    clean)    build_clean    "$@" ;;
-    deps)     build_deps     "$@" ;;
-    maude)    build_maude    "$@" ;;
-    tangle)   build_tangle   "$@" ;;
-    test)     build_test     "$@" ;;
-    test-all) build_test_all "$@" ;;
+    clean)          build_clean         "$@" ;;
+    deps)           build_deps          "$@" ;;
+    maude)          build_maude         "$@" ;;
+    maude-cvc4)     build_maude_cvc4    "$@" ;;
+    maude-yices2)   build_maude_yices2  "$@" ;;
+    tangle)         build_tangle        "$@" ;;
+    test)           build_test          "$@" ;;
+    test-smt)       build_test_smt      "$@" ;;
+    test-all)       build_test_all      "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
            $0 maude <options>
@@ -105,12 +163,16 @@ case "$build_command" in
     $0 clean:            remove build directory '$build_dir', and call 'make clean'.
     $0 deps:             clone git submodules and build CVC4.
     $0 maude <options>:  build maude passing <options> to the ./configure step.
+    $0 maude-cvc4 ...:   build maude using the cvc4 git submodule
+    $0 maude-yices2 ...: build maude using the yices2 git submodule
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
 
     developers: $0 test <test-name>
                 $0 test-all
+                $0 test-smt
 
     $0 test <test-path>: run test at <test-path> (eg. tests/tools/fvp/numbers).
-    $0 test-all:         Clean build and test for CI servers.
+    $0 test-all:         Clean build and run non-smt tests.
+    $0 test-smt:         Run tests that are conditional on an SMT engine being compiled.
 " ;;
 esac
