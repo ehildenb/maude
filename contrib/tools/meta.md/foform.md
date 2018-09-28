@@ -680,22 +680,17 @@ fmod FOFORM-TUPLES is
   eq getForm((ML,F)) = F .
 endfm
 
-fmod FOFORM-SUBSTITUTION is
+fmod QFFOFORM-SUBSTITUTION is
   pr META-LEVEL .
-  pr SUBSTITUTION-HANDLING . --- from full-maude
-  pr FOFORM .
-  op _<<_    : FOForm? Substitution -> FOForm? .
+  pr SUBSTITUTION-HANDLING .
+  pr QFFOFORM .
+  op _<<_    : QFForm? Substitution -> QFForm? .
   op toConj? : Substitution -> Conj? .
   ---
   var U V : Term   . var X Y  : Variable . var S : Substitution .
-  var F G : FOForm . var Q Q' : QidSet   . var I : Qid . var N : Nat .
+  var F G : QFForm . var I : Qid . var N : Nat .
   --- base case
   eq  F << none = F .
-  --- quantifiers
-  eq (A[X ; Q] F) << (X <- Y ; S) = (A[X ; Q] F) << S .
-  eq (E[X ; Q] F) << (X <- Y ; S) = (E[X ; Q] F) << S .
-  eq (A[Q]     F) <<  S           = A[Q] (F << S) [owise] .
-  eq (E[Q]     F) <<  S           = E[Q] (F << S) [owise] .
   --- other symbols
   eq (F \/ G) << S = (F << S) \/ (G << S) .
   eq (F /\ G) << S = (F << S) /\ (G << S) .
@@ -711,6 +706,20 @@ fmod FOFORM-SUBSTITUTION is
   --- OUT: Conj?
   eq toConj?(X <- U ; S) = X ?= U /\ toConj?(S) .
   eq toConj?(none)       = mtForm .
+endfm
+
+fmod FOFORM-SUBSTITUTION is
+  pr QFFOFORM-SUBSTITUTION .
+  pr FOFORM .
+
+  var U V : Term . var X Y : Variable . var S : Substitution .
+  var F : QFForm . var QS : QidSet .
+
+  --- quantifiers
+  eq (A[X ; QS] F) << (X <- Y ; S) = (A[X ; QS] F) << S .
+  eq (E[X ; QS] F) << (X <- Y ; S) = (E[X ; QS] F) << S .
+  eq (A[QS]     F) <<  S           = A[QS] (F << S) [owise] .
+  eq (E[QS]     F) <<  S           = E[QS] (F << S) [owise] .
 endfm
 
 fmod FOFORM-CONSTS-TO-VARS is
