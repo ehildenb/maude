@@ -398,10 +398,20 @@ fmod FOFORM-CONVERSION is
   eq list2set(nilFormList)  = mtFormSet .
 endfm
 
+fmod QFFOFORM-DEFINEDOPS is
+  pr QFFOFORM .
+  op _=>_  : QFForm QFForm -> QFForm [ctor] .
+  op _<=>_ : QFForm QFForm -> QFForm [ctor] .
+  var F1 F2 : QFForm .
+  eq F1  => F2 = (~ F1) \/ F2 .
+  eq F1 <=> F2 = (F1 => F2) /\ (F2 => F1) .
+endfm
+
 fmod FOFORM-DEFINEDOPS is
+  pr QFFOFORM-DEFINEDOPS .
   pr FOFORM .
-  op _=>_  : FOForm FOForm -> FOForm [ctor] .
-  op _<=>_ : FOForm FOForm -> FOForm [ctor] .
+  op _=>_  : FOForm FOForm -> FOForm [ctor ditto] .
+  op _<=>_ : FOForm FOForm -> FOForm [ctor ditto] .
   var F1 F2 : FOForm .
   eq F1  => F2 = (~ F1) \/ F2 .
   eq F1 <=> F2 = (F1 => F2) /\ (F2 => F1) .
