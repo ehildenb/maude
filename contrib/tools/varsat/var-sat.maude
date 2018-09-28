@@ -17,7 +17,7 @@ load ctor-var-unif.maude  --- computing constructor variants and unifiers
 load foform.maude         --- formula data structure
 
 fmod FORMS-TERMS-AUX is
-  pr FOFORM .
+  pr QFFOFORM .
 
   var EL : EqLit . var ED : EqDisj . var EC : EqConj .
   var T T' : Term . var NTL : NeTermList .
@@ -112,7 +112,7 @@ endfm
 
 fmod EQUALITY-INJECTION is
   pr UNIT-FM .
-  pr FOFORM .
+  pr QFFOFORM .
   pr CTOR-SIG .
   op equalExt   : FModule -> FModule [memo] .
   op unequal    : FModule NegConj -> Bool .
@@ -164,7 +164,7 @@ fmod VAR-SAT is
   pr UNIT-FM .
   pr EQUALITY-INJECTION .
   --- formula handling
-  pr FOFORMSET .
+  pr QFFOFORMSET .
   pr FOFORM-OPERATIONS .
   pr FOFORMSET-OPERATIONS .
   pr FOFORMSUBSTITUTION-PAIRSET .
