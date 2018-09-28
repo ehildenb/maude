@@ -712,12 +712,12 @@ fmod FOFORM-SUBSTITUTION is
   pr QFFOFORM-SUBSTITUTION .
   pr FOFORM .
 
-  var U V : Term . var X Y : Variable . var S : Substitution .
+  var T : Term . var X Y : Variable . var S : Substitution .
   var F : QFForm . var QS : QidSet .
 
   --- quantifiers
-  eq (A[X ; QS] F) << (X <- Y ; S) = (A[X ; QS] F) << S .
-  eq (E[X ; QS] F) << (X <- Y ; S) = (E[X ; QS] F) << S .
+  eq (A[X ; QS] F) << (X <- T ; S) = (A[X ; QS] F) << S .
+  eq (E[X ; QS] F) << (X <- T ; S) = (E[X ; QS] F) << S .
   eq (A[QS]     F) <<  S           = A[QS] (F << S) [owise] .
   eq (E[QS]     F) <<  S           = E[QS] (F << S) [owise] .
 endfm
