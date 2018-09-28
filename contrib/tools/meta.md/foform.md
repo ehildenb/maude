@@ -1102,26 +1102,26 @@ fmod CNF is
   eq  cnf?(F)   = sortReflect('CNF-IMPL,upTerm(F),'CNF) .
 endfm
 
-fmod FOFORMSET-OPERATIONS is
-  pr FOFORM-OPERATIONS .
-  pr FOFORMSET .
+fmod QFFOFORMSET-OPERATIONS is
+  pr QFFOFORM-OPERATIONS .
+  pr QFFOFORMSET .
   pr CNF .
   pr DNF .
-  op disj-join    : FOForm?Set -> FOForm? .
   op disj-join    : QFForm?Set -> QFForm? .
-  op conj-join    : FOForm?Set -> FOForm? .
+  op disj-join    : QFForm?Set -> QFForm? .
+  op conj-join    : QFForm?Set -> QFForm? .
   op conj-join    : QFForm?Set -> QFForm? .
   op toPosEqLits : PosEqQFForm -> PosEqLitSet .
   op toPosEqLits : UnificationProblem -> PosEqLitSet .
   op toEqSet      : PosEqLitSet -> EquationSet .
-  op wellFormed   : Module FOForm?Set -> Bool .
+  op wellFormed   : Module QFForm?Set -> Bool .
   ---
   op toDisjSet  : QFForm? ~> DisjSet .
   op toDisjSet' : QFForm? ~> DisjSet .
   op toConjSet  : QFForm? ~> ConjSet .
   op toConjSet' : QFForm? ~> ConjSet .
   ---
-  var FS : FOForm?Set . var FF FF' : FOForm? . var F : QFForm? . var D : Disj . var UP : UnificationProblem .
+  var FS : QFForm?Set . var FF FF' : QFForm? . var F : QFForm? . var D : Disj . var UP : UnificationProblem .
   var C : Conj . var PEA : PosEqLit . var PEAS : PosEqLitSet . var T T' : Term . var M : Module .
   ---
   eq toDisjSet (F)      = toDisjSet'(toCNF(F)) .
@@ -1187,7 +1187,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   pr DNF .
   pr SUBSTITUTION-HANDLING .
   pr FOFORM-OPERATIONS .
-  pr FOFORMSET-OPERATIONS .
+  pr QFFOFORMSET-OPERATIONS .
 
   op is-sub?         : Module QFForm? -> Bool .
   op #extract-subs   : Module QFForm? -> FOFormSubstPairSet .
