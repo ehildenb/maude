@@ -26,7 +26,7 @@ fmod REFLECT is
   eq sortReflect(M,T,TY) = sortLeq(upModule(M,false),leastSort(upModule(M,false),T),TY) .
 endfm
 
-fmod FOFORM is
+fmod QFFOFORM is
   pr META-LEVEL .
   --- NOTE: This sort structure is complicated. Edit at your own risk (unless you want to simplify it).
   --- Sort Declarations
@@ -34,23 +34,22 @@ fmod FOFORM is
   sort TrueLit FalseLit TruthLit PosEqLit NegEqLit Truth+PosEqLit Truth+NegEqLit EqLit Lit .
   sort ConstConj PosEqConj NegEqConj EqConj PosConj NegConj Conj .
   sort ConstDisj PosEqDisj NegEqDisj EqDisj PosDisj NegDisj Disj .
-  sort PosEqQFForm NegEqQFForm EqQFForm QFForm AEQForm FOForm .
+  sort PosEqQFForm NegEqQFForm EqQFForm QFForm .
   sort EmptyForm TruthLit? PosEqLit? NegEqLit? Truth+NegEqLit? Truth+PosEqLit? EqLit? Lit? .
   sort ConstConj? PosEqConj? NegEqConj? EqConj? PosConj? NegConj? Conj? .
   sort ConstDisj? PosEqDisj? NegEqDisj? EqDisj? PosDisj? NegDisj? Disj? .
-  sort PosEqQFForm? NegEqQFForm? EqQFForm? QFForm? AEQForm? FOForm? .
+  sort PosEqQFForm? NegEqQFForm? EqQFForm? QFForm? .
   --- Subsorting
   --- Lits
-  subsort TrueLit   FalseLit  < TruthLit .
+  subsort  TrueLit FalseLit < TruthLit .
   subsort PosEqLit NegEqLit < EqLit          < Lit .
   subsort TruthLit PosEqLit < Truth+PosEqLit < Lit .
   subsort TruthLit NegEqLit < Truth+NegEqLit < Lit .
   --- Non-Lits
-  subsort PosEqConj PosEqDisj  < PosEqQFForm < EqQFForm .
-  subsort NegEqConj NegEqDisj  < NegEqQFForm < EqQFForm .
+  subsort PosEqConj PosEqDisj < PosEqQFForm < EqQFForm .
+  subsort NegEqConj NegEqDisj < NegEqQFForm < EqQFForm .
   subsort EqConj EqDisj EqLit < EqQFForm    < QFForm .
-  subsort Lit                 < Conj Disj   < QFForm < FOForm .
-  subsort AEQForm              < FOForm .
+  subsort Lit                 < Conj Disj   < QFForm .
   --- Conjunctions/Disjunctions
   subsort PosEqLit                  < PosEqConj       < PosConj .
   subsort NegEqLit                  < NegEqConj       < NegConj .
@@ -74,7 +73,6 @@ fmod FOFORM is
   subsort ConstDisj       < ConstDisj?       . subsort PosDisj     < PosDisj?     .
   subsort NegDisj         < NegDisj?         . subsort EqDisj      < EqDisj?      .
   subsort QFForm          < QFForm?          . subsort Disj        < Disj?        .
-  subsort FOForm          < FOForm?          . subsort AEQForm     < AEQForm?     .
   subsort EqQFForm        < EqQFForm?        . subsort PosEqQFForm < PosEqQFForm? .
   subsort NegEqQFForm     < NegEqQFForm?     .
   --- Possibly Empty Lits
@@ -85,9 +83,8 @@ fmod FOFORM is
   --- Possibly Empty Non-Lits
   subsort EmptyForm < PosEqConj? PosEqDisj?   < PosEqQFForm? < EqQFForm? .
   subsort EmptyForm < NegEqConj? NegEqDisj?   < NegEqQFForm? < EqQFForm? .
-  subsort EmptyForm < EqConj? EqDisj? EqLit? < EqQFForm?    < QFForm?   .
-  subsort EmptyForm < Lit?                   < Conj? Disj?  < QFForm?   < FOForm? .
-  subsort EmptyForm < AEQForm?                < FOForm? .
+  subsort EmptyForm < EqConj? EqDisj? EqLit? < EqQFForm?    < QFForm? .
+  subsort EmptyForm < Lit?                   < Conj? Disj?  < QFForm? .
   --- Possibly Empty Conjunctions/Disjunctions
   subsort EmptyForm < PosEqLit?                    < PosEqConj?        < PosConj? .
   subsort EmptyForm < NegEqLit?                    < NegEqConj?        < NegConj? .
@@ -118,8 +115,6 @@ fmod FOFORM is
   op  _/\_   : NegEqQFForm? NegEqQFForm -> NegEqQFForm [ctor ditto] .
   op  _/\_   : EqQFForm? EqQFForm       -> EqQFForm    [ctor ditto] .
   op  _/\_   : QFForm? QFForm           -> QFForm      [ctor ditto] .
-  op  _/\_   : AEQForm? AEQForm         -> AEQForm     [ctor ditto] .
-  op  _/\_   : FOForm? FOForm           -> FOForm      [ctor ditto] .
   op  _\/_   : ConstDisj? ConstDisj     -> ConstDisj   [ctor assoc comm id: mtForm prec 51] .
   op  _\/_   : PosEqDisj? PosEqDisj     -> PosEqDisj   [ctor ditto] .
   op  _\/_   : NegEqDisj? NegEqDisj     -> NegEqDisj   [ctor ditto] .
@@ -131,8 +126,6 @@ fmod FOFORM is
   op  _\/_   : NegEqQFForm? NegEqQFForm -> NegEqQFForm [ctor ditto] .
   op  _\/_   : EqQFForm? EqQFForm       -> EqQFForm    [ctor ditto] .
   op  _\/_   : QFForm? QFForm           -> QFForm      [ctor ditto] .
-  op  _\/_   : AEQForm? AEQForm         -> AEQForm     [ctor ditto] .
-  op  _\/_   : FOForm? FOForm           -> FOForm      [ctor ditto] .
   --- Possibly Empty Conjunctions/Disjunctions (Sets)
   op  _/\_   : PosEqConj? PosEqConj?     -> PosEqConj?   [ctor ditto] .
   op  _/\_   : NegEqConj? NegEqConj?     -> NegEqConj?   [ctor ditto] .
@@ -146,8 +139,6 @@ fmod FOFORM is
   op  _/\_   : NegEqQFForm? NegEqQFForm? -> NegEqQFForm? [ctor ditto] .
   op  _/\_   : EqQFForm? EqQFForm?       -> EqQFForm?    [ctor ditto] .
   op  _/\_   : QFForm? QFForm?           -> QFForm?      [ctor ditto] .
-  op  _/\_   : AEQForm? AEQForm?         -> AEQForm?     [ctor ditto] .
-  op  _/\_   : FOForm? FOForm?           -> FOForm?      [ctor ditto] .
   op  _\/_   : EmptyForm EmptyForm       -> EmptyForm    [ctor ditto] .
   op  _\/_   : ConstDisj? ConstDisj?     -> ConstDisj?   [ctor ditto] .
   op  _\/_   : PosEqDisj? PosEqDisj?     -> PosEqDisj?   [ctor ditto] .
@@ -160,29 +151,52 @@ fmod FOFORM is
   op  _\/_   : NegEqQFForm? NegEqQFForm? -> NegEqQFForm? [ctor ditto] .
   op  _\/_   : EqQFForm? EqQFForm?       -> EqQFForm?    [ctor ditto] .
   op  _\/_   : QFForm? QFForm?           -> QFForm?      [ctor ditto] .
-  op  _\/_   : AEQForm? AEQForm?         -> AEQForm?     [ctor ditto] .
-  op  _\/_   : FOForm? FOForm?           -> FOForm?      [ctor ditto] .
-  --- Negations and Quantifiers
-  op  ~_     : QFForm           -> QFForm  [ctor prec 49] .
-  op  ~_     : AEQForm          -> AEQForm [ctor ditto] .
-  op  ~_     : FOForm           -> FOForm  [ctor ditto] .
-  op  A[_]_  : NeQidSet QFForm  -> AEQForm [ctor prec 52] .
-  op  E[_]_  : NeQidSet QFForm  -> AEQForm [ctor prec 52] .
+  --- Negations
+  op  ~_ : QFForm -> QFForm [ctor prec 49] .
+endfm
+
+fmod FOFORM is
+  pr QFFOFORM .
+
+  sorts AEQForm FOForm AEQForm? FOForm? .
+  ---------------------------------------
+  subsort  FOForm <  FOForm? .
+  subsort AEQForm < AEQForm? .
+
+  subsorts             QFForm  AEQForm  < FOForm  .
+  subsorts EmptyForm < QFForm? AEQForm? < FOForm? .
+
+  op  A[_]_  : NeQidSet  QFForm -> AEQForm [ctor prec 52] .
+  op  E[_]_  : NeQidSet  QFForm -> AEQForm [ctor prec 52] .
   op  A[_]_  : NeQidSet AEQForm -> AEQForm [ctor ditto] .
   op  E[_]_  : NeQidSet AEQForm -> AEQForm [ctor ditto] .
-  op  A[_]_  : NeQidSet FOForm  -> FOForm  [ctor ditto] .
-  op  E[_]_  : NeQidSet FOForm  -> FOForm  [ctor ditto] .
-  op  A[_]_  : QidSet QFForm    -> AEQForm [ditto] .
-  op  E[_]_  : QidSet QFForm    -> AEQForm [ditto] .
-  op  A[_]_  : QidSet AEQForm   -> AEQForm [ditto] .
-  op  E[_]_  : QidSet AEQForm   -> AEQForm [ditto] .
-  op  A[_]_  : QidSet FOForm    -> FOForm  [ditto] .
-  op  E[_]_  : QidSet FOForm    -> FOForm  [ditto] .
-  --- Error Terms
-  op error   : String -> [FOForm] [ctor] .
-  --- Remove useless quantifiers
+  op  A[_]_  : NeQidSet  FOForm ->  FOForm [ctor ditto] .
+  op  E[_]_  : NeQidSet  FOForm ->  FOForm [ctor ditto] .
+  op  A[_]_  :   QidSet  QFForm -> AEQForm [ditto] .
+  op  E[_]_  :   QidSet  QFForm -> AEQForm [ditto] .
+  op  A[_]_  :   QidSet AEQForm -> AEQForm [ditto] .
+  op  E[_]_  :   QidSet AEQForm -> AEQForm [ditto] .
+  op  A[_]_  :   QidSet  FOForm ->  FOForm [ditto] .
+  op  E[_]_  :   QidSet  FOForm ->  FOForm [ditto] .
+  --------------------------------------------------
   eq  A[none] F:AEQForm = F:AEQForm .
   eq  E[none] F:AEQForm = F:AEQForm .
+
+  --- Negations and Quantifiers
+  op  ~_     : AEQForm          -> AEQForm [ctor ditto] .
+  op  ~_     : FOForm           -> FOForm  [ctor ditto] .
+  --- Non-empty Conjunctions/Disjunctions (NeSets)
+  op  _/\_ : AEQForm? AEQForm -> AEQForm [ctor ditto] .
+  op  _/\_ :  FOForm?  FOForm ->  FOForm [ctor ditto] .
+  op  _\/_ : AEQForm? AEQForm -> AEQForm [ctor ditto] .
+  op  _\/_ :  FOForm?  FOForm ->  FOForm [ctor ditto] .
+  --- Possibly Empty Conjunctions/Disjunctions (Sets)
+  op  _/\_ : AEQForm? AEQForm? -> AEQForm? [ctor ditto] .
+  op  _/\_ :  FOForm?  FOForm? ->  FOForm? [ctor ditto] .
+  op  _\/_ : AEQForm? AEQForm? -> AEQForm? [ctor ditto] .
+  op  _\/_ :  FOForm?  FOForm? ->  FOForm? [ctor ditto] .
+  --- Error Terms
+  op error : String -> [FOForm] [ctor] .
 endfm
 
 fmod FOFORMSET is
