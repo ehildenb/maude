@@ -19,7 +19,7 @@ rewrites: 26
 result Bool: (true).Bool
 ==========================================
 reduce in THERMOSTAT-INT-NARROWING-GRAPH : bfs(state(goodConf), 2) .
-rewrites: 32006
+rewrites: 31714
 result FoldedLabeledGraph?: (0 -[label('inmode-off, 
   'T:Int <- '%1:Int ; 
   'TMP:Int <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,

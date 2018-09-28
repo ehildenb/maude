@@ -368,9 +368,12 @@ fmod CONDITIONAL-NARROWING-GRAPH is
     including NARROWING-GRAPH-COMMON
             + META-CONDITIONAL-LMC-PARAMETERS .
 
-    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold .
+    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold . var L : Label .
     vars Q RL : Qid . var SUB : Substitution . var SUB? : Substitution? . var N : Nat .
     vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults .
+
+   ceq prune(< L , state(Q[T, C]) >) = .TransitionSet if Q = #cTerm /\ C = #cFalse .
+   ---------------------------------------------------------------------------------
 
    ceq fold(ND, ND') = F if F := foldAny(ND, ND', 0) .
    ---------------------------------------------------
