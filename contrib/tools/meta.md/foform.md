@@ -516,72 +516,62 @@ fmod FOFORMREDUCE is
   eq $reduce(G)        = error("Formula IllFormed") [owise] .
 endfm
 
-fmod FOFORM-OPERATIONS is
-  pr FOFORM .
+fmod QFFOFORM-OPERATIONS is
+  pr QFFOFORM .
   pr TERM-EXTRA . --- defines vars() : Term -> QidSet
-  op  size       : FOForm? -> Nat .
-  op  depth      : FOForm? -> Nat .
-  op  wellFormed : Module FOForm? -> Bool .
-  op $wellFormed : Module FOForm? -> Bool .
-  op  normalize  : Module FOForm? -> FOForm? .
+  op  size       : QFForm? -> Nat .
+  op  depth      : QFForm? -> Nat .
+  op  wellFormed : Module QFForm? -> Bool .
+  op $wellFormed : Module QFForm? -> Bool .
+  op  normalize  : Module QFForm? -> QFForm? .
   op  toUnifProb : PosConj -> UnificationProblem .
   op $toUnifProb : PosConj -> UnificationProblem .
-  op  trueId     : FOForm? -> FOForm  .
-  op  falseId    : FOForm? -> FOForm  .
-  op  true2mt    : FOForm? -> FOForm? .
-  op  false2mt   : FOForm? -> FOForm? .
-  op  vars       : FOForm? -> QidSet  .
-  var M : Module . var F? : FOForm? . var F1 F2 : FOForm . var QS : NeQidSet .
+  op  trueId     : QFForm? -> QFForm  .
+  op  falseId    : QFForm? -> QFForm  .
+  op  true2mt    : QFForm? -> QFForm? .
+  op  false2mt   : QFForm? -> QFForm? .
+  op  vars       : QFForm? -> QidSet  .
+  var M : Module . var F? : QFForm? . var F1 F2 : QFForm . var QS : NeQidSet .
   var TA : TruthLit . var T T' : Term . var PC : PosConj . var C : Conj .
   --- get the size/depth of a formula
-  eq size(A[QS] F1)  = s(size(F1)) .
-  eq size(E[QS] F1)  = s(size(F1)) .
   eq size(F1 /\ F2)  = s(size(F1) + size(F2)) .
   eq size(F1 \/ F2)  = s(size(F1) + size(F2)) .
   eq size(~ F1)      = s(size(F1)) .
   eq size(A:Lit)    = 1 .
   eq size(mtForm)    = 0 .
-  eq depth(A[QS] F1) = s(depth(F1)) .
-  eq depth(E[QS] F1) = s(depth(F1)) .
   eq depth(F1 /\ F2) = s(max(depth(F1),depth(F2))) .
   eq depth(F1 \/ F2) = s(max(depth(F1),depth(F2))) .
   eq depth(~ F1)     = s(depth(F1)) .
   eq depth(A:Lit)   = 1 .
   eq depth(mtForm)   = 0 .
-  --- INP: Module FOForm?
+  --- INP: Module QFForm?
   --- PRE: N/A
-  --- OUT: true iff FOForm? is a wellFormed formula over module M
+  --- OUT: true iff QFForm? is a wellFormed formula over module M
   --- non-lits
  ceq  wellFormed(M,F?)       = $wellFormed(M,F?) if wellFormed(M) .
   eq $wellFormed(M,F1 /\ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) .
   eq $wellFormed(M,F1 \/ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) .
   eq $wellFormed(M,~ F1)     = $wellFormed(M,F1) .
-  eq $wellFormed(M,A[QS] F1) = $wellFormed(M,F1) .
-  eq $wellFormed(M,E[QS] F1) = $wellFormed(M,F1) .
   --- eq lit
   eq $wellFormed(M,T ?= T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
   eq $wellFormed(M,T != T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
   --- true/false lit or mtForm
   eq $wellFormed(M,TA)       = true .
   eq $wellFormed(M,mtForm)   = true .
-  --- PRE: FOForm is well-formed in Module
+  --- PRE: QFForm is well-formed in Module
   --- OUT: A metanormalized formula
-  --- INP: FOForm?
+  --- INP: QFForm?
   eq normalize(M,F1 /\ F2) = normalize(M,F1) /\ normalize(M,F2) .
   eq normalize(M,F1 \/ F2) = normalize(M,F1) \/ normalize(M,F2) .
   eq normalize(M,~ F1)     = ~ normalize(M,F1) .
-  eq normalize(M,A[QS] F1) = A[QS] normalize(M,F1) .
-  eq normalize(M,E[QS] F1) = E[QS] normalize(M,F1) .
   eq normalize(M,T ?= T')  = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
   eq normalize(M,T != T')  = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
   eq normalize(M,TA)       = TA .
   eq normalize(M,mtForm)   = mtForm .
   --- PRE: N/A
-  --- OUT: QidSet of all MetaVariables in the FOForm?
+  --- OUT: QidSet of all MetaVariables in the QFForm?
   eq vars(F1 /\ F2) = vars(F1) ; vars(F2) .
   eq vars(F1 \/ F2) = vars(F1) ; vars(F2) .
-  eq vars(A[QS] F1) = vars(F1) .
-  eq vars(E[QS] F1) = vars(F1) .
   eq vars(~ F1)     = vars(F1) .
   eq vars(TA)       = none .
   eq vars(mtForm)   = none .
@@ -595,7 +585,7 @@ fmod FOFORM-OPERATIONS is
   eq $toUnifProb(TA /\ PC)        = $toUnifProb(PC) .
   eq $toUnifProb((T ?= T') /\ PC) = T =? T' /\ $toUnifProb(PC) .
   eq $toUnifProb(T ?= T')         = T =? T' .
-  --- INP: FOForm?
+  --- INP: QFForm?
   --- PRE: N/A
   --- OUT: obvious from definition
   eq  trueId  (mtForm) = tt .
@@ -606,6 +596,31 @@ fmod FOFORM-OPERATIONS is
   eq  true2mt (F1)     = F1 [owise] .
   eq  false2mt(ff)     = mtForm .
   eq  false2mt(F1)     = F1 [owise] .
+endfm
+
+fmod FOFORM-OPERATIONS is
+  pr QFFOFORM-OPERATIONS .
+  pr FOFORM .
+
+  var M : Module . var F1 F2 : FOForm . var QS : NeQidSet .
+
+  op  size       : FOForm? -> Nat [ditto] .
+  op  depth      : FOForm? -> Nat [ditto] .
+  op  wellFormed : Module FOForm? -> Bool [ditto] .
+  op $wellFormed : Module FOForm? -> Bool [ditto] .
+  op  normalize  : Module FOForm? -> FOForm? [ditto] .
+  op  vars       : FOForm? -> QidSet  [ditto] .
+  ---------------------------------------------
+  eq size(A[QS] F1)  = s(size(F1)) .
+  eq size(E[QS] F1)  = s(size(F1)) .
+  eq depth(A[QS] F1) = s(depth(F1)) .
+  eq depth(E[QS] F1) = s(depth(F1)) .
+  eq $wellFormed(M,A[QS] F1) = $wellFormed(M,F1) .
+  eq $wellFormed(M,E[QS] F1) = $wellFormed(M,F1) .
+  eq normalize(M,A[QS] F1) = A[QS] normalize(M,F1) .
+  eq normalize(M,E[QS] F1) = E[QS] normalize(M,F1) .
+  eq vars(A[QS] F1) = vars(F1) .
+  eq vars(E[QS] F1) = vars(F1) .
 endfm
 
 fmod FOFORM-QUANTIFIERS is
