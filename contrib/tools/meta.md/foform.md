@@ -745,25 +745,25 @@ fmod FOFORMSET-CONSTS-TO-VARS is
   eq constsToVars(S,mtFormSet)   = mtFormSet .
 endfm
 
-fmod FOFORMSUBSTITUTION-PAIR is
-  pr FOFORM-SUBSTITUTION . --- substitution application
-  pr SUBSTITUTION-AUX    . --- id
-  pr FOFORM-OPERATIONS   . --- vars
-  sort FOFormSubstPair .
-  op ((_,_))  : FOForm? Substitution -> FOFormSubstPair   [ctor] .
-  op errFOFormSubstPair : QidList    -> [FOFormSubstPair] [ctor] .
-  op errFOFormSubstPairMsg : [FOFormSubstPair] -> QidList [ctor] .
-  op idpair   : FOForm? -> FOFormSubstPair .
-  op getForm  : FOFormSubstPair -> FOForm? .
-  op getSub   : FOFormSubstPair -> Substitution .
-  op _Pair<<_ : FOForm? Substitution -> FOFormSubstPair .
-  op _<<_     : FOFormSubstPair Substitution -> FOFormSubstPair .
+fmod QFFOFORMSUBSTITUTION-PAIR is
+  pr QFFOFORM-SUBSTITUTION . --- substitution application
+  pr SUBSTITUTION-AUX      . --- id
+  pr QFFOFORM-OPERATIONS   . --- vars
+  sort QFFormSubstPair .
+  op ((_,_))  : QFForm? Substitution -> QFFormSubstPair   [ctor] .
+  op errQFFormSubstPair : QidList    -> [QFFormSubstPair] [ctor] .
+  op errQFFormSubstPairMsg : [QFFormSubstPair] -> QidList [ctor] .
+  op idpair   : QFForm? -> QFFormSubstPair .
+  op getForm  : QFFormSubstPair -> QFForm? .
+  op getSub   : QFFormSubstPair -> Substitution .
+  op _Pair<<_ : QFForm? Substitution -> QFFormSubstPair .
+  op _<<_     : QFFormSubstPair Substitution -> QFFormSubstPair .
   ---
-  var F : FOForm? . var S S' : Substitution .
-  var QL : QidList . var FK : [FOFormSubstPair] .
+  var F : QFForm? . var S S' : Substitution .
+  var QL : QidList . var FK : [QFFormSubstPair] .
 
-  eq errFOFormSubstPairMsg(errFOFormSubstPair(QL)) = QL .
-  eq errFOFormSubstPairMsg(FK) = nil [owise] .
+  eq errQFFormSubstPairMsg(errQFFormSubstPair(QL)) = QL .
+  eq errQFFormSubstPairMsg(FK) = nil [owise] .
 
   eq idpair(F) = (F,idsub(vars(F))) .
   ---
@@ -788,36 +788,36 @@ fmod FOFORM-SUBSTITUTIONSET is
 endfm
 
 fmod FOFORMSUBSTITUTION-PAIRSET is
-  pr FOFORMSUBSTITUTION-PAIR .
+  pr QFFOFORMSUBSTITUTION-PAIR .
   pr FOFORM-SUBSTITUTIONSET .
-  sort FOFormSubstPairSet .
-  subsort FOFormSubstPair < FOFormSubstPairSet .
-  op _|_       : FOFormSubstPairSet FOFormSubstPairSet -> FOFormSubstPairSet [ctor assoc comm id: mtFSPS] .
-  op mtFSPS    : -> FOFormSubstPairSet [ctor] .
+  sort QFFormSubstPairSet .
+  subsort QFFormSubstPair < QFFormSubstPairSet .
+  op _|_       : QFFormSubstPairSet QFFormSubstPairSet -> QFFormSubstPairSet [ctor assoc comm id: mtFSPS] .
+  op mtFSPS    : -> QFFormSubstPairSet [ctor] .
   ---
-  op idpair    : FOForm?Set -> FOFormSubstPairSet .
-  op build     : FOForm? SubstitutionSet -> FOFormSubstPairSet .
+  op idpair    : FOForm?Set -> QFFormSubstPairSet .
+  op build     : FOForm? SubstitutionSet -> QFFormSubstPairSet .
   ---
-  op getForm   : FOFormSubstPairSet -> FOForm?Set .
-  op getSub    : FOFormSubstPairSet -> SubstitutionSet .
+  op getForm   : QFFormSubstPairSet -> FOForm?Set .
+  op getSub    : QFFormSubstPairSet -> SubstitutionSet .
   ---
-  op dnf-join  : FOFormSubstPairSet -> QFForm? .
-  op _Pair<<_  : FOForm? SubstitutionSet -> FOFormSubstPairSet .
-  op _<<_      : FOFormSubstPairSet SubstitutionSet -> FOFormSubstPairSet .
-  op idem      : FOFormSubstPairSet -> FOFormSubstPairSet .
+  op dnf-join  : QFFormSubstPairSet -> QFForm? .
+  op _Pair<<_  : FOForm? SubstitutionSet -> QFFormSubstPairSet .
+  op _<<_      : QFFormSubstPairSet SubstitutionSet -> QFFormSubstPairSet .
+  op idem      : QFFormSubstPairSet -> QFFormSubstPairSet .
   ---
   var F F' : FOForm? . var FS : FOForm?Set . var C? : Conj? . var S S' : Substitution . var SS : SubstitutionSet .
-  var FP FP' : FOFormSubstPair . var FPS : FOFormSubstPairSet .
-  var QL : QidList . var FK : [FOFormSubstPair] . var SK : [Substitution] .
+  var FP FP' : QFFormSubstPair . var FPS : QFFormSubstPairSet .
+  var QL : QidList . var FK : [QFFormSubstPair] . var SK : [Substitution] .
 
-  eq errFOFormSubstPairMsg(errFOFormSubstPair(QL) | FK) = QL .
+  eq errQFFormSubstPairMsg(errQFFormSubstPair(QL) | FK) = QL .
 
   eq idpair(F | F' | FS) = idpair(F) | idpair(F' | FS) .
   eq idpair(mtFormSet)   = mtFSPS .
 
   --- INP: FOForm? SubstitutionSet
   --- PRE: None
-  --- OUT: An FOFormSubstPairSet built by pairing FOForm? with each Substitution
+  --- OUT: An QFFormSubstPairSet built by pairing FOForm? with each Substitution
   eq build(F,S | SS)           = (F,S) | build(F,SS) .
   eq build(F,.SubstitutionSet) = mtFSPS .
 
@@ -827,7 +827,7 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   eq getSub((F,S) | FPS)  = S | getSub(FPS) .
   eq getSub(mtFSPS)       = .SubstitutionSet .
 
-  --- INP: FOFormSubstPairSet
+  --- INP: QFFormSubstPairSet
   --- PRE: Each FOForm in the argument is also a Conj?
   --- OUT: A DNF?
   eq dnf-join((C?,S) | FPS) = (C? /\ toConj?(S)) \/ dnf-join(FPS) .
@@ -842,12 +842,12 @@ fmod FOFORMSUBSTITUTION-PAIRSET is
   --- Construct pairs from one side
   eq F Pair<< (S | S' | SS)    = (F Pair<< S) | (F Pair<< (S' | SS)) .
   eq F Pair<< .SubstitutionSet = mtFSPS .
-  eq F Pair<< errsub(QL) | SK  = errFOFormSubstPair(QL) [owise] .
+  eq F Pair<< errsub(QL) | SK  = errQFFormSubstPair(QL) [owise] .
 
   --- Apply the idempotency equation
   eq idem(FP | FP | FPS) = idem(FP | FPS) .
   eq idem(FPS)           = FPS [owise] .
-  eq idem(errFOFormSubstPair(QL) | FK) = errFOFormSubstPair(QL) .
+  eq idem(errQFFormSubstPair(QL) | FK) = errQFFormSubstPair(QL) .
 endfm
 
 fmod FOFORM-RENAME is
@@ -1199,14 +1199,14 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   pr QFFOFORMSET-OPERATIONS .
 
   op is-sub?         : Module QFForm? -> Bool .
-  op #extract-subs   : Module QFForm? -> FOFormSubstPairSet .
-  op #extract-subs   : Module QFForm? FOFormSubstPairSet -> FOFormSubstPairSet .
-  op #extract-sub    : Module Conj? -> FOFormSubstPair .
-  op #extract-sub    : Module Conj? Conj? Substitution -> FOFormSubstPair .
+  op #extract-subs   : Module QFForm? -> QFFormSubstPairSet .
+  op #extract-subs   : Module QFForm? QFFormSubstPairSet -> QFFormSubstPairSet .
+  op #extract-sub    : Module Conj? -> QFFormSubstPair .
+  op #extract-sub    : Module Conj? Conj? Substitution -> QFFormSubstPair .
   op extract-sub     : Module Conj? -> Conj? .
   op extract-imp-sub : Module QFForm ~> QFForm .
 
-  var Q1? Q2? : QFForm? . var Q Q' : QFForm . var C : Conj . var C1? C2? C3? : Conj? . var FS : FOFormSubstPairSet .
+  var Q1? Q2? : QFForm? . var Q Q' : QFForm . var C : Conj . var C1? C2? C3? : Conj? . var FS : QFFormSubstPairSet .
   var V : Variable . var T : Term . var S : Substitution . var A : Lit . var U : Module .
 
   --- INP: QFForm?
@@ -1217,7 +1217,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   --- INP: QFForm?
   --- PRE:
   --- OUT: [1] QFForm? is first converted into a DNF
-  ---      [2] In each conjunct, substitution-like fragments are #extracted (but not applied) into a FOFormSubstPair
+  ---      [2] In each conjunct, substitution-like fragments are #extracted (but not applied) into a QFFormSubstPair
   ---      [3] We return a set of all such pairs (one for each conjunct)
   eq #extract-subs (U,Q1?)               = #extract-subs(U,toDNF(Q1?),mtFSPS) .
   eq #extract-subs (U,mtForm,FS)         = FS .
@@ -1225,7 +1225,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
 
   --- INP: Conj?
   --- PRE:
-  --- OUT: An FOFormSubstPair (C'?,S?) such that C? = C'? /\ S?  and S? is the substitution-like fragment (may be empty)
+  --- OUT: An QFFormSubstPair (C'?,S?) such that C? = C'? /\ S?  and S? is the substitution-like fragment (may be empty)
   eq #extract-sub(U,C1?)                 = #extract-sub(U,C1?,mtForm,none) .
  ceq #extract-sub(U,V ?= T /\ C1?,C2?,S) = #extract-sub(U,(C1? /\ C2?) << (V <- T),mtForm,S .. (V <- T))
   if sortLeq(U,leastSort(U,T),getType(V)) /\ not V in vars(T) .
@@ -1244,18 +1244,18 @@ endfm
 fmod FOFORM-AUX is
   pr MGCI . --- for ctor-term
   pr SUBSTITUTIONPAIRSET .
-  pr FOFORMSUBSTITUTION-PAIR .
-  pr STREAM{FOFormSubstPair} .
+  pr QFFOFORMSUBSTITUTION-PAIR .
+  pr STREAM{QFFormSubstPair} .
 
   --- Simplify constraints by apply substitutions whenever possible
   op litToNonRecBinding   : Module Lit -> Substitution .
   op bindingsToConj       : Substitution -> PosEqConj .
-  op findBinding          : Module QFForm -> FOFormSubstPair .
-  op findBindings         : Module QFForm -> FOFormSubstPair .
-  op $findBindings        : Module QFForm QFForm Substitution -> Stream{FOFormSubstPair} .
-  op $findBindings        : Module QFForm QFForm Substitution Lit Substitution -> Stream{FOFormSubstPair} .
-  op recSimplifyForm      : Module QFForm Substitution -> FOFormSubstPair .
-  op $recSimplifyForm     : Module FOFormSubstPair Substitution -> FOFormSubstPair .
+  op findBinding          : Module QFForm -> QFFormSubstPair .
+  op findBindings         : Module QFForm -> QFFormSubstPair .
+  op $findBindings        : Module QFForm QFForm Substitution -> Stream{QFFormSubstPair} .
+  op $findBindings        : Module QFForm QFForm Substitution Lit Substitution -> Stream{QFFormSubstPair} .
+  op recSimplifyForm      : Module QFForm Substitution -> QFFormSubstPair .
+  op $recSimplifyForm     : Module QFFormSubstPair Substitution -> QFFormSubstPair .
   op simplifyForm         : Module QFForm -> QFForm .
   op simplifyBindings     : Module Substitution -> Substitution .
   op removeGround         : QFForm -> QFForm .
@@ -1496,6 +1496,6 @@ view PosConj?        from TRIV to FOFORM                  is sort Elt to PosConj
 view PosDisj?        from TRIV to FOFORM                  is sort Elt to PosDisj?        . endv
 view NegConj?        from TRIV to FOFORM                  is sort Elt to NegConj?        . endv
 view NegDisj?        from TRIV to FOFORM                  is sort Elt to NegDisj?        . endv
---- FOFormSubstPair
-view FOFormSubstPair from TRIV to FOFORMSUBSTITUTION-PAIR is sort Elt to FOFormSubstPair . endv
+--- QFFormSubstPair
+view QFFormSubstPair from TRIV to QFFOFORMSUBSTITUTION-PAIR is sort Elt to QFFormSubstPair . endv
 ```
