@@ -435,9 +435,9 @@ fmod FOFORMSIMPLIFY-IMP-IMPL is
   eq (~ (F /\ (G \/ H)) ) \/ K = ((~ (F /\ G)) \/ K) /\ ((~ (F /\ H)) \/ K) .
 endfm
 
-fmod FOFORMSIMPLIFY-IMPL is
-  pr FOFORM .
-  var F G H K : FOForm . var K? : FOForm? .
+fmod QFFOFORMSIMPLIFY-IMPL is
+  pr QFFOFORM .
+  var F G H K : QFForm . var K? : QFForm? .
   var C : Conj . var D : Disj . var T T' : Term .
 
   --- Repeated subformula in Conj/Disj
@@ -465,12 +465,25 @@ fmod FOFORMSIMPLIFY-IMPL is
   eq T != T = ff .
 endfm
 
+fmod FOFORMSIMPLIFY-IMPL is
+  pr QFFOFORMSIMPLIFY-IMPL .
+  pr FOFORM .
+endfm
+
+fmod QFFOFORMSIMPLIFY is
+  pr QFFOFORM .
+  pr REFLECT .
+  op simplify : QFForm -> QFForm .
+  var F : QFForm .
+  eq simplify(F) = downTerm(redReflect('QFFOFORMSIMPLIFY-IMPL,upTerm(F)),F) .
+endfm
+
 fmod FOFORMSIMPLIFY is
   pr FOFORM .
   pr REFLECT .
   op simplify : FOForm -> FOForm .
   var F : FOForm .
-  eq simplify(F) = downTerm(redReflect('FOFORMSIMPLIFY-IMPL,upTerm(F)),error("FOForm Simplify Failed")) .
+  eq simplify(F) = downTerm(redReflect('FOFORMSIMPLIFY-IMPL,upTerm(F)),F) .
 endfm
 
 fmod FOFORMREDUCE-IMPL is
