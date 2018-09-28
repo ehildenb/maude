@@ -199,8 +199,8 @@ fmod FOFORM is
   op error : String -> [FOForm] [ctor] .
 endfm
 
-fmod FOFORMSET is
-  pr FOFORM .
+fmod QFFOFORMSET is
+  pr QFFOFORM .
   sort FormEmptySet .
   sort TruthLitSet PosEqLitSet NegEqLitSet Truth+PosEqLitSet Truth+NegEqLitSet EqLitSet LitSet .
   sort ConstConjSet PosEqConjSet NegEqConjSet EqConjSet PosConjSet NegConjSet ConjSet .
@@ -209,7 +209,7 @@ fmod FOFORMSET is
   sort EmptyFormSet PosEqLit?Set NegEqLit?Set TruthLit?Set Truth+NegEqLit?Set Truth+PosEqLit?Set EqLit?Set Lit?Set .
   sort ConstConj?Set PosEqConj?Set NegEqConj?Set EqConj?Set PosConj?Set NegConj?Set Conj?Set .
   sort ConstDisj?Set PosEqDisj?Set NegEqDisj?Set EqDisj?Set PosDisj?Set NegDisj?Set Disj?Set .
-  sort PosEqQFForm?Set NegEqQFForm?Set EqQFForm?Set QFForm?Set AEQForm?Set FOForm?Set .
+  sort PosEqQFForm?Set NegEqQFForm?Set EqQFForm?Set QFForm?Set .
   --- Subsorting
   subsort EmptyForm       < EmptyFormSet       .
   subsort TruthLit       < TruthLitSet       . subsort TruthLit?       < TruthLit?Set       .
@@ -237,18 +237,15 @@ fmod FOFORMSET is
   subsort NegEqQFForm     < NegEqQFFormSet     . subsort NegEqQFForm?     < NegEqQFForm?Set     .
   subsort EqQFForm        < EqQFFormSet        . subsort EqQFForm?        < EqQFForm?Set        .
   subsort QFForm          < QFFormSet          . subsort QFForm?          < QFForm?Set          .
-  subsort AEQForm         < AEQFormSet         . subsort AEQForm?         < AEQForm?Set         .
-  subsort FOForm          < FOFormSet          . subsort FOForm?          < FOForm?Set          .
   --- Lits Sets
   subsort FormEmptySet < PosEqLitSet NegEqLitSet < EqLitSet          < LitSet .
   subsort FormEmptySet < TruthLitSet PosEqLitSet < Truth+PosEqLitSet < LitSet .
   subsort FormEmptySet < TruthLitSet NegEqLitSet < Truth+NegEqLitSet < LitSet .
   --- Non-Lit Sets
-  subsort PosEqConjSet PosEqDisjSet    < PosEqQFFormSet     < EqQFFormSet .
-  subsort NegEqConjSet NegEqDisjSet    < NegEqQFFormSet     < EqQFFormSet .
-  subsort EqConjSet EqDisjSet EqLitSet < EqQFFormSet        < QFFormSet .
-  subsort LitSet                       < ConjSet DisjSet    < QFFormSet   < FOFormSet .
-  subsort FormEmptySet                 < AEQFormSet         < FOFormSet .
+  subsort PosEqConjSet PosEqDisjSet    < PosEqQFFormSet  < EqQFFormSet .
+  subsort NegEqConjSet NegEqDisjSet    < NegEqQFFormSet  < EqQFFormSet .
+  subsort EqConjSet EqDisjSet EqLitSet < EqQFFormSet     < QFFormSet .
+  subsort LitSet                       < ConjSet DisjSet < QFFormSet .
   --- Conjunctions/Disjunctions Sets
   subsort PosEqLitSet                        < PosEqConjSet          < PosConjSet .
   subsort NegEqLitSet                        < NegEqConjSet          < NegConjSet .
@@ -271,10 +268,9 @@ fmod FOFORMSET is
   subsort NegConjSet         < NegConj?Set         . subsort NegEqDisjSet       < NegEqDisj?Set       .
   subsort ConstDisjSet       < ConstDisj?Set       . subsort EqDisjSet          < EqDisj?Set          .
   subsort PosDisjSet         < PosDisj?Set         . subsort DisjSet            < Disj?Set            .
-  subsort NegDisjSet         < NegDisj?Set         . subsort AEQFormSet         < AEQForm?Set         .
+  subsort NegDisjSet         < NegDisj?Set         .
   subsort PosEqQFFormSet     < PosEqQFForm?Set     . subsort NegEqQFFormSet     < NegEqQFForm?Set     .
   subsort EqQFFormSet        < EqQFForm?Set        . subsort QFFormSet          < QFForm?Set          .
-  subsort FOFormSet          < FOForm?Set          .
   --- Possibly Empty Lits Sets
   subsort FormEmptySet < EmptyFormSet .
   subsort EmptyFormSet < PosEqLit?Set NegEqLit?Set < EqLit?Set          < Lit?Set .
@@ -284,8 +280,7 @@ fmod FOFORMSET is
   subsort PosEqConj?Set PosEqDisj?Set     < PosEqQFForm?Set   < EqQFForm?Set .
   subsort NegEqConj?Set NegEqDisj?Set     < NegEqQFForm?Set   < EqQFForm?Set .
   subsort EqConj?Set EqDisj?Set EqLit?Set < EqQFForm?Set      < QFForm?Set .
-  subsort Lit?Set                         < Conj?Set Disj?Set < QFForm?Set < FOForm?Set .
-  subsort EmptyFormSet                    < AEQForm?Set       < FOForm?Set .
+  subsort Lit?Set                         < Conj?Set Disj?Set < QFForm?Set .
   --- Possibly Empty Conjunctions/Disjunctions
   subsort EmptyFormSet < PosEqLit?Set                          < PosEqConj?Set           < PosConj?Set .
   subsort EmptyFormSet < NegEqLit?Set                          < NegEqConj?Set           < NegConj?Set .
@@ -326,8 +321,6 @@ fmod FOFORMSET is
   op _|_ : PosEqQFFormSet      PosEqQFFormSet       -> PosEqQFFormSet      [ctor ditto] .
   op _|_ : EqQFFormSet         EqQFFormSet          -> EqQFFormSet         [ctor ditto] .
   op _|_ : QFFormSet           QFFormSet            -> QFFormSet           [ctor ditto] .
-  op _|_ : AEQFormSet          AEQFormSet           -> AEQFormSet          [ctor ditto] .
-  op _|_ : FOFormSet           FOFormSet            -> FOFormSet           [ctor ditto] .
   --- [Possibly Empty Formula] Sets
   op _|_ : EmptyFormSet         EmptyFormSet        -> EmptyFormSet        [ctor ditto] .
   op _|_ : PosEqLit?Set         PosEqLit?Set        -> PosEqLit?Set        [ctor ditto] .
@@ -355,8 +348,29 @@ fmod FOFORMSET is
   op _|_ : PosEqQFForm?Set      PosEqQFForm?Set     -> PosEqQFForm?Set     [ctor ditto] .
   op _|_ : EqQFForm?Set         EqQFForm?Set        -> EqQFForm?Set        [ctor ditto] .
   op _|_ : QFForm?Set           QFForm?Set          -> QFForm?Set          [ctor ditto] .
-  op _|_ : AEQForm?Set          AEQForm?Set         -> AEQForm?Set         [ctor ditto] .
-  op _|_ : FOForm?Set           FOForm?Set          -> FOForm?Set          [ctor ditto] .
+endfm
+
+fmod FOFORMSET is
+  pr FOFORM .
+  pr QFFOFORMSET .
+
+  sorts AEQForm?Set FOForm?Set .
+  ------------------------------
+  subsorts AEQForm < AEQFormSet . subsort AEQForm? < AEQForm?Set .
+  subsorts FOForm  < FOFormSet  . subsort FOForm?  < FOForm?Set  .
+
+  subsort  QFFormSet <  FOFormSet .
+  subsort QFForm?Set < FOForm?Set .
+
+  subsorts FormEmptySet < AEQFormSet  <  FOFormSet .
+  subsorts EmptyFormSet < AEQForm?Set < FOForm?Set .
+  subsort AEQFormSet < AEQForm?Set .
+  subsort  FOFormSet <  FOForm?Set .
+
+  op _|_ : AEQForm?Set AEQForm?Set -> AEQForm?Set [ctor ditto] .
+  op _|_ :  FOForm?Set  FOForm?Set ->  FOForm?Set [ctor ditto] .
+  op _|_ :  AEQFormSet  AEQFormSet ->  AEQFormSet [ctor ditto] .
+  op _|_ :   FOFormSet   FOFormSet ->   FOFormSet [ctor ditto] .
 endfm
 
 fmod FOFORMBASICLIST is
