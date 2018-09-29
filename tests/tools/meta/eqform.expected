@@ -164,4 +164,41 @@ reduce in EQFORM-TEST : toUnifProb(a /\ c /\ e) .
 rewrites: 7
 result UnificationProblem: 'B:Bar =? 'foo.Foo /\ 'H:Baz =? 'f['I:Wop] /\ 'U:Stu
     =? 'W:Roc
+==========================================
+reduce in EQFORM-TEST : toConjSet(t1 ?= t2) .
+rewrites: 20
+result PosEqLit: 'W:Wop ?= 'bar.Bar
+==========================================
+reduce in EQFORM-TEST : toDisjSet(t1 ?= t2) .
+rewrites: 20
+result PosEqLit: 'W:Wop ?= 'bar.Bar
+==========================================
+reduce in EQFORM-TEST : toConjSet(f1) .
+rewrites: 251
+result EqConjNeSet: ('F:Foo ?= 'f['bar.Bar]) | ('B:Bar != 'foo.Foo) | ('W:Wop
+    != 'bar.Bar) | ('f['H:Baz] ?= 'f['f['I:Wop]] /\ 'H:Baz != 'f['I:Wop])
+==========================================
+reduce in EQFORM-TEST : toDisjSet(f1) .
+rewrites: 639
+result EqDisjNeSet: ('F:Foo ?= 'f['bar.Bar] \/ 'f['H:Baz] ?= 'f['f['I:Wop]] \/
+    'B:Bar != 'foo.Foo \/ 'W:Wop != 'bar.Bar) | ('F:Foo ?= 'f['bar.Bar] \/
+    'B:Bar != 'foo.Foo \/ 'H:Baz != 'f['I:Wop] \/ 'W:Wop != 'bar.Bar)
+==========================================
+reduce in EQFORM-TEST : toConjSet(f2) .
+rewrites: 559
+result EqConjNeSet: ('F:Foo ?= 'f['bar.Bar] /\ 'U:Stu != 'W:Roc) | ('B:Bar !=
+    'foo.Foo /\ 'U:Stu != 'W:Roc) | ('U:Stu != 'W:Roc /\ 'W:Wop != 'bar.Bar) |
+    ('f['H:Baz] ?= 'f['f['I:Wop]] /\ 'H:Baz != 'f['I:Wop] /\ 'U:Stu != 'W:Roc)
+==========================================
+reduce in EQFORM-TEST : toDisjSet(f2) .
+rewrites: 710
+result EqDisjNeSet: ('U:Stu != 'W:Roc) | ('F:Foo ?= 'f['bar.Bar] \/ 'f['H:Baz]
+    ?= 'f['f['I:Wop]] \/ 'B:Bar != 'foo.Foo \/ 'W:Wop != 'bar.Bar) | ('F:Foo ?=
+    'f['bar.Bar] \/ 'B:Bar != 'foo.Foo \/ 'H:Baz != 'f['I:Wop] \/ 'W:Wop !=
+    'bar.Bar)
+==========================================
+reduce in EQFORM-TEST : toPosEqLits(f3) .
+rewrites: 19
+result PosEqLitNeSet: ('B:Bar ?= 'foo.Foo) | ('H:Baz ?= 'f['I:Wop]) | ('U:Stu
+    ?= 'W:Roc)
 Bye.
