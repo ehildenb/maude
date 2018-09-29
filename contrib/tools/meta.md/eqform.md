@@ -106,6 +106,7 @@ generated for both the list and set functor assuming the 14 above).
 
 ```maude
 load terms.maude
+load ../meta/meta-aux.maude
 
 set include BOOL off .
 
@@ -565,5 +566,71 @@ fmod EQFORM-SET is
   op (_|_) : EqFormNeSet     EqFormSet     -> EqFormNeSet    [ctor ditto] .
   op (_|_) : NormFormNeSet   NormFormSet   -> NormFormNeSet  [ctor ditto] .
   op (_|_) : FormNeSet       FormSet       -> FormNeSet      [ctor ditto] .
+endfm
+```
+
+```maude
+fmod EQFORM-OPERATIONS is
+  pr EQFORM .
+  pr TERM-EXTRA . --- defines vars() : Term -> QidSet
+
+  vars CF CG : NoTrueForm . vars DF DG : NoFalseForm .
+  vars F F1 F2 : Form . vars PEC1 : PosEqConj .
+  vars M : Module . vars T T' : Term .
+
+  op  wellFormed : Module Form -> [Bool] .
+  op $wellFormed : Module Form -> [Bool] .
+  ----------------------------------------
+ ceq  wellFormed(M,F) = $wellFormed(M,F) if wellFormed(M) .
+
+  eq $wellFormed(M,tt)       = true .
+  eq $wellFormed(M,ff)       = true .
+  eq $wellFormed(M,~ F)      = $wellFormed(M,F) .
+  eq $wellFormed(M,CF /\ CG) = $wellFormed(M,CF) and-then $wellFormed(M,CG) .
+  eq $wellFormed(M,DF \/ DG) = $wellFormed(M,DF) and-then $wellFormed(M,DG) .
+
+  eq $wellFormed(M,T ?= T') = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+  eq $wellFormed(M,T != T') = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+
+  op normalize : Module Form -> [Form] .
+  --------------------------------------
+  eq normalize(M,tt)       = tt .
+  eq normalize(M,ff)       = ff .
+  eq normalize(M,~ F)      = ~ normalize(M,F) .
+  eq normalize(M,CF /\ CG) = normalize(M,CF) /\ normalize(M,CG) .
+  eq normalize(M,DF \/ DG) = normalize(M,DF) \/ normalize(M,DG) .
+
+  eq normalize(M,T ?= T') = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
+  eq normalize(M,T != T') = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
+
+  op reduce : Module Form -> [Form] .
+  -----------------------------------
+  eq reduce(M,tt)       = tt .
+  eq reduce(M,ff)       = ff .
+  eq reduce(M,~ F)      = ~ reduce(M,F) .
+  eq reduce(M,CF /\ CG) = reduce(M,CF) /\ reduce(M,CG) .
+  eq reduce(M,DF \/ DG) = reduce(M,DF) \/ reduce(M,DG) .
+
+  eq reduce(M,T ?= T') = getTerm(metaReduce(M,T)) ?= getTerm(metaReduce(M,T')) .
+  eq reduce(M,T != T') = getTerm(metaReduce(M,T)) != getTerm(metaReduce(M,T')) .
+
+  op vars : Form -> QidSet .
+  --------------------------
+  eq vars(tt)       = none .
+  eq vars(ff)       = none .
+  eq vars(~ F)      = vars(F) .
+  eq vars(CF /\ CG) = vars(CF) ; vars(CG) .
+  eq vars(DF \/ DG) = vars(DF) ; vars(DG) .
+
+  eq vars(T ?= T') = vars(T) ; vars(T') .
+  eq vars(T != T') = vars(T) ; vars(T') .
+
+  --- INP: PosConj
+  --- PRE: PosConj has no ff literals
+  --- OUT: UnificationProblem
+  op toUnifProb : PosEqConj -> UnificationProblem .
+  ------------------------------------------------
+  eq toUnifProb((T ?= T') /\ PEC1) = T =? T' /\ toUnifProb(PEC1) .
+  eq toUnifProb(T ?= T')           = T =? T' .
 endfm
 ```
