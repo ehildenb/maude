@@ -21,6 +21,22 @@ reduce in EQFORM-TEST : f2 :: Form .
 rewrites: 21
 result Bool: true
 ==========================================
+reduce in EQFORM-TEST : tt .
+rewrites: 0
+result TrueLit: tt
+==========================================
+reduce in EQFORM-TEST : tt \/ tt .
+rewrites: 1
+result TrueLit: tt
+==========================================
+reduce in EQFORM-TEST : ff /\ ff .
+rewrites: 1
+result FalseLit: ff
+==========================================
+reduce in EQFORM-TEST : ff .
+rewrites: 0
+result FalseLit: ff
+==========================================
 reduce in EQFORM-TEST : ff .
 rewrites: 0
 result FalseLit: ff
@@ -36,6 +52,22 @@ result Form: F:Form
 reduce in EQFORM-TEST : F:Form .
 rewrites: 0
 result Form: F:Form
+==========================================
+reduce in EQFORM-TEST : 'B:Bar ?= 'foo.Foo /\ 'B:Bar != 'foo.Foo .
+rewrites: 1
+result FalseLit: ff
+==========================================
+reduce in EQFORM-TEST : 'B:Bar ?= 'foo.Foo \/ 'B:Bar != 'foo.Foo .
+rewrites: 1
+result TrueLit: tt
+==========================================
+reduce in EQFORM-TEST : t1 ?= t1 .
+rewrites: 2
+result TrueLit: tt
+==========================================
+reduce in EQFORM-TEST : t1 != t1 .
+rewrites: 2
+result FalseLit: ff
 ==========================================
 reduce in EQFORM-TEST : nnf(f1) .
 rewrites: 118

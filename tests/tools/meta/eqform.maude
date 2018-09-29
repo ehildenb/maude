@@ -29,7 +29,7 @@ fmod EQFORM-TEST is
   inc EQFORM-OPERATIONS .
   inc EQFORM-SET-OPERATIONS .
 
-  var T : Term .
+  vars T T' : Term .
 
   ops t1 t2 : -> Term .
   eq t1 = 'bar.Bar .
@@ -38,8 +38,10 @@ fmod EQFORM-TEST is
   op f : Term -> Term .
   eq f(T) = 'f[T] .
 
-  sorts Foo Bar Baz Wop Stu Roc .
-  subsorts Foo < Bar .
+  op ~' : Form -> Form .
+  eq ~' (T ?= T') = T != T' .
+  eq ~' (T != T') = T ?= T' .
+
   ops a b c d e : -> Lit .
   eq a = 'foo.Foo ?= 'B:Bar .
   eq b = 'F:Foo != f('bar.Bar) .
@@ -69,12 +71,25 @@ reduce f1 :: Form .
 reduce f2 :: Form .
 
 --- testing identities
+reduce tt /\ tt .
+reduce tt \/ tt .
+
+reduce ff /\ ff .
+reduce ff \/ ff .
+
 reduce tt /\ ff .
 reduce tt \/ ff .
 
 --- testing idempotency
 reduce tt /\ F:Form .
 reduce ff \/ F:Form .
+
+--- simplifications
+reduce 'B:Bar ?= 'foo.Foo /\ 'B:Bar != 'foo.Foo .
+reduce 'B:Bar ?= 'foo.Foo \/ 'B:Bar != 'foo.Foo .
+
+reduce t1 ?= t1 .
+reduce t1 != t1 .
 
 --- testing transformations
 reduce nnf(f1) .

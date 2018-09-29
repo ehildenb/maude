@@ -144,7 +144,7 @@ fmod EQFORM-IMPL{X :: TRIV} is
   subsort EqDisj{X} < NegTruthDisj{X} < NoTrueDisj{X} NoFalseDisj{X} < NormDisj{X} < Disj{X} .
   subsort EqForm{X} < NegTruthForm{X} < NoTrueForm{X} NoFalseForm{X} < NormForm{X} < Form{X} .
 
-  vars F F' : Form{X} . var EqL : EqLit{X} .
+  vars X X' : X$Elt . var EqL : EqLit{X} . vars F F' : Form{X} .
 
   --- Define Literals
   op tt : -> TrueLit{X} [ctor] .
@@ -193,11 +193,23 @@ fmod EQFORM-IMPL{X :: TRIV} is
   op _\/_ : NoFalseForm{X} NoFalseForm{X} -> NoFalseForm{X} [ctor ditto] .
   op _\/_ : Form{X} Form{X} -> Form{X} [ctor ditto] .
   ---------------------------------------------------
+  eq ~ tt = ff .
+  eq ~ ff = tt .
+
+  eq ff /\ ff = ff .
+  eq tt \/ tt = tt .
+
   eq ff /\ EqL = ff .
   eq tt \/ EqL = tt .
 
   eq EqL /\ EqL = EqL .
   eq EqL \/ EqL = EqL .
+
+  eq X ?= X = tt .
+  eq X != X = ff .
+
+  eq X ?= X' /\ X != X' = ff .
+  eq X ?= X' \/ X != X' = tt .
 
   --- Implication
   op _=>_  : Form{X} Form{X} -> Form{X} .
