@@ -166,7 +166,6 @@ fmod VAR-SAT is
   --- formula handling
   pr QFFOFORMSET-OPERATIONS .
   pr QFFOFORM-SUBSTITUTIONSET .
-  pr QFFOFORMSIMPLIFY .
   pr FORMS-TERMS-AUX .
   --- finite sort checking
   pr FIN-SORT-REWTH .
@@ -190,7 +189,7 @@ fmod VAR-SAT is
   op fin-consistent?  : FModule QidList Stream{UnitList}{WrapTermList} NegConj -> Bool .
   op inf-consistent?  : FModule NegConj                                        -> Bool .
 
-  var Q : Qid  . var QS : QidSet  . var PC : PosConj . var F? : FOForm? . var SBS : SubstitutionSet .
+  var Q : Qid  . var QS : QidSet  . var PC : PosConj . var F : FOForm . var F? : FOForm? . var SBS : SubstitutionSet .
   var C : Conj . var M  : Module  . var NC : NegConj . var QL : QidList . var SB  : Substitution    .
   var S : Sort . var FM : FModule . var QF : QFForm  . var CS : ConjSet . var NCS : NegConjSet      .
   var SS FSS ISS : SortSet . var SL : Stream{UnitList}{WrapTermList} . var WTL : WrapTermList .
@@ -225,7 +224,7 @@ fmod VAR-SAT is
   --- NB: Special Pattern Recognition Before DNF conversion
  ceq var-sat-opt(FM,FSS,PC /\ NC? /\ D) = var-sat-opt(FM,FSS,disj-join($renameForm(FM,(NC? /\ D) << ctor-unifiers(FM,toUnifProb(PC)))))
   if not PC :: ConstConj .
-  eq var-sat-opt(FM,FSS,QF) = var-sat-disj(FM,FSS,simplify(toDNF(QF))) [owise] .
+  eq var-sat-opt(FM,FSS,QF) = var-sat-disj(FM,FSS,toDNF(QF)) [owise] .
 
   eq var-sat-disj(FM,FSS,tt)      = true .
   eq var-sat-disj(FM,FSS,ff)      = false .
