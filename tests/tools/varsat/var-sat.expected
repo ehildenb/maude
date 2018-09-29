@@ -1,196 +1,196 @@
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y)) == true .
-rewrites: 2019
+rewrites: 2012
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool != upTerm(X < Y)) == true .
-rewrites: 305
+rewrites: 298
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < X)) == false .
-rewrites: 119
+rewrites: 112
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X <= Y)) == true .
-rewrites: 170
+rewrites: 163
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X <= X)) == true .
-rewrites: 158
+rewrites: 151
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y) /\ 'true.Bool ?=
     upTerm(Y <= Z)) == true .
-rewrites: 636
+rewrites: 631
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y) \/ 'true.Bool ?=
     upTerm(Y <= Z)) == true .
-rewrites: 189
+rewrites: 182
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y) /\ 'true.Bool ?=
     upTerm(Y < X)) == false .
-rewrites: 519
+rewrites: 514
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y) \/ 'true.Bool ?=
     upTerm(Y < X)) == true .
-rewrites: 180
+rewrites: 173
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y) /\ 'true.Bool ?=
     upTerm(Z < X) /\ 'true.Bool ?= upTerm(Y < Z)) == false .
-rewrites: 672
+rewrites: 667
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, ('true.Bool ?= upTerm(X < Y)) => ('true.Bool
     ?= '_<_['_+_['X:Nat,'1.NzNat],'Y:Nat])) == true .
-rewrites: 187
+rewrites: 180
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'Z:Bool ?= '_<_['_+_['N:Nat,'N:Nat],'_+_[
     'M:Nat,'M:Nat]] /\ 'M:Nat != 'N:Nat /\ 'Z:Bool != 'true.Bool) == true .
-rewrites: 1186
+rewrites: 1520
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B1:Bool ?= '_<_['N:Nat,'M:Nat] /\ 'M:Nat !=
     'N:Nat) == true .
-rewrites: 1013
+rewrites: 1008
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-valid(nat, ('true.Bool ?= upTerm(X < Y)) => (
     'true.Bool ?= '_<_['X:Nat,'_+_['Y:Nat,'1.NzNat]])) == true .
-rewrites: 647
+rewrites: 642
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-valid(nat, ('true.Bool ?= upTerm(X < Y)) => (
     'true.Bool ?= '_<_['_+_['X:Nat,'1.NzNat],'Y:Nat])) == false .
-rewrites: 720
+rewrites: 715
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-valid(nat, ('true.Bool ?= upTerm(X < Y)) => (
     'true.Bool ?= upTerm(Y < X))) == false .
-rewrites: 608
+rewrites: 603
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B2:Bool ?= 'true.Bool /\ 'B2:Bool ?= '_<_[
     'N2:Nat,'N1:Nat]) == true .
-rewrites: 391
+rewrites: 477
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B2:Bool ?= '_<_['N2:Nat,'N1:Nat] /\ 'N1:Nat
     ?= 'N2:Nat) == true .
-rewrites: 568
+rewrites: 563
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B2:Bool ?= 'true.Bool /\ 'B2:Bool ?= '_<_[
     'N2:Nat,'N1:Nat] /\ 'N1:Nat ?= 'N2:Nat) == false .
-rewrites: 435
+rewrites: 430
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B1:Bool ?= '_<_['N1:Nat,'N2:Nat] /\ 'N1:Nat
     != 'N2:Nat) == true .
-rewrites: 1013
+rewrites: 1008
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B2:Bool ?= 'true.Bool /\ 'B2:Bool ?= '_<_[
     'N2:Nat,'N1:Nat] /\ 'N1:Nat != 'N2:Nat) == true .
-rewrites: 1096
+rewrites: 1420
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'B1:Bool ?= '_<_['N2:Nat,'_+_['N1:Nat,
     'N1:Nat]] /\ 'B1:Bool != 'true.Bool) == true .
-rewrites: 552
+rewrites: 545
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'N1:Nat ?= 'head['L':NeNatList] /\ 'N2:Nat
     ?= 'head['L:NeNatList] /\ 'N1:Nat != 'N2:Nat) == true .
-rewrites: 2977
+rewrites: 2970
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'B2:Bool ?= 'true.Bool /\ 'N2:Nat ?= 'head[
     'L':NeNatList] /\ 'N1:Nat ?= 'head['L:NeNatList] /\ 'L':NeNatList ?=
     'L:NeNatList /\ 'N1:Nat != 'N2:Nat) == false .
-rewrites: 1028
+rewrites: 1770
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'N2:Nat ?= 'head['L':NeNatList] /\ 'N1:Nat
     ?= 'head['L:NeNatList] /\ 'B1:Bool != 'true.Bool /\ 'N1:Nat != 'N2:Nat) ==
     true .
-rewrites: 2406
+rewrites: 2399
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'I2:Nat
     ?= 'head['M:NeNatList] /\ 'I1:Nat != 'I2:Nat) == true .
-rewrites: 1579
+rewrites: 1572
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'I2:Nat /\ 'I1:Nat ?= 'head[
     'L:NeNatList] /\ 'I2:Nat ?= 'head['M:NeNatList]) == true .
-rewrites: 1818
+rewrites: 1812
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'N2:Nat ?= 'head['L':NeNatList] /\ 'N1:Nat
     ?= 'head['L:NeNatList] /\ 'B1:Bool != 'true.Bool) == true .
-rewrites: 1472
+rewrites: 1465
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'I2:Nat
     ?= 'head['M:NeNatList]) == true .
-rewrites: 965
+rewrites: 960
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'B2:Bool ?= 'true.Bool /\ 'N2:Nat ?= 'head[
     'L':NeNatList] /\ 'L':NeNatList ?= 'L:NeNatList /\ 'N1:Nat ?= 'head[
     'L:NeNatList]) == true .
-rewrites: 928
+rewrites: 923
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'X:Nat !=
     'head['L:NeNatList] /\ 'Y:Nat != 'head['L:NeNatList]) == true .
-rewrites: 1358
+rewrites: 1351
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'I1:Nat
     != 'X:Nat /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head[
     'L:NeNatList]) == true .
-rewrites: 1452
+rewrites: 1445
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'I1:Nat
     != 'Y:Nat /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head[
     'L:NeNatList]) == true .
-rewrites: 1452
+rewrites: 1445
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'X:Nat !=
     'Y:Nat /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head['L:NeNatList])
     == true .
-rewrites: 1456
+rewrites: 1449
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'I1:Nat
     != 'X:Nat /\ 'I1:Nat != 'Y:Nat /\ 'X:Nat != 'Y:Nat /\ 'X:Nat != 'head[
     'L:NeNatList] /\ 'Y:Nat != 'head['L:NeNatList]) == true .
-rewrites: 1653
+rewrites: 1646
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'X:Nat /\ 'I1:Nat ?= 'head[
     'L:NeNatList] /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head[
     'L:NeNatList]) == false .
-rewrites: 2537
+rewrites: 2530
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'Y:Nat /\ 'I1:Nat ?= 'head[
     'L:NeNatList] /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head[
     'L:NeNatList]) == false .
-rewrites: 2537
+rewrites: 2530
 result Bool: true
 ==========================================
 reduce in TEST-LIST : var-sat(list, 'I1:Nat ?= 'head['L:NeNatList] /\ 'X:Nat ?=
     'Y:Nat /\ 'X:Nat != 'head['L:NeNatList] /\ 'Y:Nat != 'head['L:NeNatList])
     == true .
-rewrites: 1556
+rewrites: 1673
 result Bool: true
 Bye.
