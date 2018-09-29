@@ -26,6 +26,7 @@ fmod EQFORM-TEST is
   inc EQFORM-DNF .
   inc EQFORM-LIST .
   inc EQFORM-SET .
+  inc EQFORM-OPERATIONS .
 
   var T : Term .
 
@@ -87,3 +88,27 @@ reduce cnf(f2) .
 
 reduce dnf(f1) .
 reduce dnf(f2) .
+
+--- testing operations
+reduce wellFormed(upModule('EQFORM-TEST-MODULE), t1 ?= t2) .
+reduce wellFormed(upModule('EQFORM-TEST-MODULE), c) .
+reduce wellFormed(upModule('EQFORM-TEST-MODULE), f1) .
+reduce wellFormed(upModule('EQFORM-TEST-MODULE), f2) .
+reduce wellFormed(upModule('EQFORM-TEST-MODULE), f1 /\ 'T:BadSort ?= '0.Term) .
+
+reduce normalize(upModule('NAT), 's_['s_['0.Nat]] ?= '0.Nat) .
+
+reduce normalize(upModule('EQFORM-TEST-MODULE), t1 ?= t2) .
+reduce    reduce(upModule('EQFORM-TEST-MODULE), t1 ?= t2) .
+reduce normalize(upModule('EQFORM-TEST-MODULE), f(f(t1)) ?= f(t2)) .
+reduce    reduce(upModule('EQFORM-TEST-MODULE), f(f(t1)) ?= f(t2)) .
+reduce normalize(upModule('EQFORM-TEST-MODULE), f1) .
+reduce    reduce(upModule('EQFORM-TEST-MODULE), f1) .
+reduce normalize(upModule('EQFORM-TEST-MODULE), f2) .
+reduce    reduce(upModule('EQFORM-TEST-MODULE), f2) .
+
+reduce vars('s_ ['s_['X:Nat]] ?= '0.Nat) .
+reduce vars(f1) .
+reduce vars(f2) .
+
+reduce toUnifProb(a /\ c /\ e) .
