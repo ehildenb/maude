@@ -579,7 +579,7 @@ fmod EQFORM-OPERATIONS is
 
   op  wellFormed : Module Form -> Bool .
   op $wellFormed : Module Form -> Bool .
-  -----------------------------------------
+  --------------------------------------
  ceq  wellFormed(M,F)        = $wellFormed(M,F) if wellFormed(M) .
  ceq $wellFormed(M,F1 /\ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) if F1 =/= tt /\ F2 =/= tt .
  ceq $wellFormed(M,F1 \/ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) if F1 =/= ff /\ F2 =/= ff .
@@ -590,7 +590,6 @@ fmod EQFORM-OPERATIONS is
   --- true/false lit or mtForm
   eq $wellFormed(M,TL)       = true .
 
-  --- TODO: Rename this to `metaNormalize` for consitancy with prelude
   op normalize : Module Form -> Form .
   ------------------------------------
  ceq normalize(M,F1 /\ F2) = normalize(M,F1) /\ normalize(M,F2) if F1 =/= tt /\ F2 =/= tt .
@@ -599,6 +598,15 @@ fmod EQFORM-OPERATIONS is
   eq normalize(M,T ?= T')  = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
   eq normalize(M,T != T')  = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
   eq normalize(M,TL)       = TL .
+
+  op reduce : Module Form -> Form .
+  ---------------------------------
+ ceq reduce(M,F1 /\ F2) = reduce(M,F1) /\ reduce(M,F2) if F1 =/= tt /\ F2 =/= tt .
+ ceq reduce(M,F1 \/ F2) = reduce(M,F1) \/ reduce(M,F2) if F1 =/= ff /\ F2 =/= ff .
+  eq reduce(M,~ F)      = ~ reduce(M,F) .
+  eq reduce(M,T ?= T')  = getTerm(metaReduce(M,T)) ?= getTerm(metaReduce(M,T')) .
+  eq reduce(M,T != T')  = getTerm(metaReduce(M,T)) != getTerm(metaReduce(M,T')) .
+  eq reduce(M,TL)       = TL .
 
   op vars : Form -> QidSet .
   --------------------------
