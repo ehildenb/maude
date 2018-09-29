@@ -201,4 +201,18 @@ reduce in EQFORM-TEST : toPosEqLits(f3) .
 rewrites: 19
 result PosEqLitNeSet: ('B:Bar ?= 'foo.Foo) | ('H:Baz ?= 'f['I:Wop]) | ('U:Stu
     ?= 'W:Roc)
+==========================================
+reduce in EQFORM-TEST : (f1 | f2) << (
+  'H:Baz <- 'bar.Bar) | (
+  'H:Baz <- 'baz.Baz) .
+rewrites: 316
+result FormNeSet: (~ 'U:Stu ?= 'W:Roc /\ ~ ('B:Bar ?= 'foo.Foo /\ 'F:Foo != 'f[
+    'bar.Bar]) \/ ~ ('W:Wop ?= 'bar.Bar /\ 'bar.Bar ?= 'f['I:Wop] \/ 'f[
+    'bar.Bar] != 'f['f['I:Wop]])) | (~ 'U:Stu ?= 'W:Roc /\ ~ ('B:Bar ?=
+    'foo.Foo /\ 'F:Foo != 'f['bar.Bar]) \/ ~ ('W:Wop ?= 'bar.Bar /\ 'baz.Baz ?=
+    'f['I:Wop] \/ 'f['baz.Baz] != 'f['f['I:Wop]])) | (~ ('B:Bar ?= 'foo.Foo /\
+    'F:Foo != 'f['bar.Bar]) \/ ~ ('W:Wop ?= 'bar.Bar /\ 'bar.Bar ?= 'f['I:Wop]
+    \/ 'f['bar.Bar] != 'f['f['I:Wop]])) | (~ ('B:Bar ?= 'foo.Foo /\ 'F:Foo !=
+    'f['bar.Bar]) \/ ~ ('W:Wop ?= 'bar.Bar /\ 'baz.Baz ?= 'f['I:Wop] \/ 'f[
+    'baz.Baz] != 'f['f['I:Wop]]))
 Bye.
