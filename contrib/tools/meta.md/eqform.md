@@ -93,6 +93,7 @@ base sort which helps ensure preregularity in complex cases (this gives
 
 ```maude
 load terms.maude
+load ../meta/meta-aux.maude
 
 set include BOOL off .
 
@@ -565,5 +566,55 @@ fmod EQFORM-SET is
   op (_|_) : EqFormNeSet    EqFormSet      -> EqFormNeSet    [ctor ditto] .
   op (_|_) : NormFormNeSet  NormFormSet    -> NormFormNeSet  [ctor ditto] .
   op (_|_) : FormNeSet      FormSet        -> FormNeSet      [ctor ditto] .
+endfm
+```
+
+```maude
+fmod EQFORM-OPERATIONS is
+  pr EQFORM .
+  pr TERM-EXTRA . --- defines vars() : Term -> QidSet
+
+  vars F F1 F2 : Form . vars TL : TruthLit . vars PEC1 : PosEqConj .
+  vars M : Module . vars T T' : Term .
+
+  op  wellFormed : Module Form -> Bool .
+  op $wellFormed : Module Form -> Bool .
+  -----------------------------------------
+ ceq  wellFormed(M,F)        = $wellFormed(M,F) if wellFormed(M) .
+ ceq $wellFormed(M,F1 /\ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) if F1 =/= tt /\ F2 =/= tt .
+ ceq $wellFormed(M,F1 \/ F2) = $wellFormed(M,F1) and-then $wellFormed(M,F2) if F1 =/= ff /\ F2 =/= ff .
+  eq $wellFormed(M,~ F)      = $wellFormed(M,F) .
+  --- eq lit
+  eq $wellFormed(M,T ?= T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+  eq $wellFormed(M,T != T')  = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+  --- true/false lit or mtForm
+  eq $wellFormed(M,TL)       = true .
+
+  --- TODO: Rename this to `metaNormalize` for consitancy with prelude
+  op normalize : Module Form -> Form .
+  ------------------------------------
+ ceq normalize(M,F1 /\ F2) = normalize(M,F1) /\ normalize(M,F2) if F1 =/= tt /\ F2 =/= tt .
+ ceq normalize(M,F1 \/ F2) = normalize(M,F1) \/ normalize(M,F2) if F1 =/= ff /\ F2 =/= ff .
+  eq normalize(M,~ F)      = ~ normalize(M,F) .
+  eq normalize(M,T ?= T')  = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
+  eq normalize(M,T != T')  = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
+  eq normalize(M,TL)       = TL .
+
+  op vars : Form -> QidSet .
+  --------------------------
+ ceq vars(F1 /\ F2) = vars(F1) ; vars(F2) if F1 =/= tt /\ F2 =/= tt .
+ ceq vars(F1 \/ F2) = vars(F1) ; vars(F2) if F1 =/= ff /\ F2 =/= ff .
+  eq vars(~ F)      = vars(F) .
+  eq vars(T ?= T')  = vars(T) ; vars(T') .
+  eq vars(T != T')  = vars(T) ; vars(T') .
+  eq vars(TL)       = none .
+
+  --- INP: PosConj
+  --- PRE: PosConj has no ff literals
+  --- OUT: UnificationProblem
+  op toUnifProb : PosEqConj -> UnificationProblem .
+  ------------------------------------------------
+  eq toUnifProb((T ?= T') /\ PEC1) = T =? T' /\ toUnifProb(PEC1) .
+  eq toUnifProb(T ?= T')           = T =? T' .
 endfm
 ```

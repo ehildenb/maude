@@ -82,4 +82,49 @@ rewrites: 553
 result EqForm: ('F:Foo ?= 'f['bar.Bar] /\ 'U:Stu != 'W:Roc) \/ ('B:Bar !=
     'foo.Foo /\ 'U:Stu != 'W:Roc) \/ ('U:Stu != 'W:Roc /\ 'W:Wop != 'bar.Bar)
     \/ 'f['H:Baz] ?= 'f['f['I:Wop]] /\ 'H:Baz != 'f['I:Wop] /\ 'U:Stu != 'W:Roc
+==========================================
+reduce in EQFORM-TEST : wellFormed(upModule('EQFORM-TEST-MODULE), f1) .
+rewrites: 127
+result Bool: true
+==========================================
+reduce in EQFORM-TEST : wellFormed(upModule('EQFORM-TEST-MODULE), f2) .
+rewrites: 159
+result Bool: true
+==========================================
+reduce in EQFORM-TEST : wellFormed(upModule('EQFORM-TEST-MODULE), f1 /\ '0.Term
+    ?= 'T:BadSort) .
+rewrites: 30
+result Bool: false
+==========================================
+reduce in EQFORM-TEST : normalize(upModule('NAT), '0.Nat ?= 's_['s_['0.Nat]]) .
+rewrites: 13
+result PosEqLit: '0.Zero ?= 's_^2['0.Zero]
+==========================================
+reduce in EQFORM-TEST : normalize(upModule('EQFORM-TEST-MODULE), f1) .
+rewrites: 105
+result Form: ~ ('B:Bar ?= 'foo.Foo /\ 'F:Foo != 'f['bar.Bar]) \/ ~ ('W:Wop ?=
+    'bar.Bar /\ 'H:Baz ?= 'f['I:Wop] \/ 'f['H:Baz] != 'f['f['I:Wop]])
+==========================================
+reduce in EQFORM-TEST : normalize(upModule('EQFORM-TEST-MODULE), f2) .
+rewrites: 134
+result Form: ~ 'U:Stu ?= 'W:Roc /\ ~ ('B:Bar ?= 'foo.Foo /\ 'F:Foo != 'f[
+    'bar.Bar]) \/ ~ ('W:Wop ?= 'bar.Bar /\ 'H:Baz ?= 'f['I:Wop] \/ 'f['H:Baz]
+    != 'f['f['I:Wop]])
+==========================================
+reduce in EQFORM-TEST : vars('0.Nat ?= 's_['s_['X:Nat]]) .
+rewrites: 11
+result Variable: 'X:Nat
+==========================================
+reduce in EQFORM-TEST : vars(f1) .
+rewrites: 100
+result NeQidSet: 'B:Bar ; 'F:Foo ; 'H:Baz ; 'I:Wop ; 'W:Wop
+==========================================
+reduce in EQFORM-TEST : vars(f2) .
+rewrites: 127
+result NeQidSet: 'B:Bar ; 'F:Foo ; 'H:Baz ; 'I:Wop ; 'U:Stu ; 'W:Roc ; 'W:Wop
+==========================================
+reduce in EQFORM-TEST : toUnifProb(a /\ c /\ e) .
+rewrites: 7
+result UnificationProblem: 'B:Bar =? 'foo.Foo /\ 'H:Baz =? 'f['I:Wop] /\ 'U:Stu
+    =? 'W:Roc
 Bye.
