@@ -27,6 +27,7 @@ fmod EQFORM-TEST is
   inc EQFORM-LIST .
   inc EQFORM-SET .
   inc EQFORM-OPERATIONS .
+  inc EQFORM-SET-OPERATIONS .
 
   var T : Term .
 
@@ -52,6 +53,9 @@ fmod EQFORM-TEST is
 
   op f2 : -> Form .
   eq f2 = (f1 /\ ~ e) /\ (d \/ tt) .
+
+  op f3 : -> Form .
+  eq f3 = (a /\ c) \/ e .
 endfm
 
 --- substitutions
@@ -112,3 +116,14 @@ reduce vars(f1) .
 reduce vars(f2) .
 
 reduce toUnifProb(a /\ c /\ e) .
+
+reduce toConjSet(t1 ?= t2) .
+reduce toDisjSet(t1 ?= t2) .
+
+reduce toConjSet(f1) .
+reduce toDisjSet(f1) .
+
+reduce toConjSet(f2) .
+reduce toDisjSet(f2) .
+
+reduce toPosEqLits(f3) .

@@ -633,3 +633,67 @@ fmod EQFORM-OPERATIONS is
   eq toUnifProb(T ?= T')           = T =? T' .
 endfm
 ```
+
+```maude
+fmod EQFORM-SET-OPERATIONS is
+  pr EQFORM-OPERATIONS .
+  pr EQFORM-SET .
+  pr EQFORM-CNF .
+  pr EQFORM-DNF .
+
+  var C : EqConj . var D : EqDisj .
+  var FS : FormSet . var F F' : Form . var UP : UnificationProblem .
+  var PEA : PosEqLit . var PELS : PosEqLitSet . var T T' : Term . var M : Module .
+
+  op wellFormed : Module FormSet -> Bool .
+  ----------------------------------------
+  eq wellFormed(M , F | F' | FS) = wellFormed(M,F) and-then wellFormed(M,F' | FS) .
+  eq wellFormed(M , mtFormSet)   = true .
+
+  op disj-join : FormSet -> [Form] .
+  op disj-join : FormSet -> [Form] .
+  ----------------------------------
+  eq disj-join(F | FS)    = F \/ disj-join(FS) .
+  eq disj-join(mtFormSet) = ff .
+
+  op conj-join : FormSet -> [Form] .
+  op conj-join : FormSet -> [Form] .
+  ----------------------------------
+  eq conj-join(F | FS)    = F /\ conj-join(FS) .
+  eq conj-join(mtFormSet) = tt .
+
+  op toDisjSet  : Form -> [EqDisjSet] .
+  op toDisjSet' : Form -> [EqDisjSet] .
+  -------------------------------------
+  eq toDisjSet (F)      = toDisjSet'(cnf(F)) .
+  eq toDisjSet'(tt)     = mtFormSet .
+  eq toDisjSet'(ff)     = mtFormSet .
+  eq toDisjSet'(D /\ F) = D | toDisjSet'(F) .
+
+  op toConjSet  : Form -> [EqConjSet] .
+  op toConjSet' : Form -> [EqConjSet] .
+  -------------------------------------
+  eq toConjSet (F)      = toConjSet'(dnf(F)) .
+  eq toConjSet'(tt)     = mtFormSet .
+  eq toConjSet'(ff)     = mtFormSet .
+  eq toConjSet'(C \/ F) = C | toConjSet'(F) .
+
+  op toEqSet : PosEqLitSet -> EquationSet .
+  -----------------------------------------
+  eq toEqSet((T ?= T') | PELS) = (eq T = T' [none] .) toEqSet(PELS) .
+  eq toEqSet(mtFormSet)        = none .
+
+  op toPosEqLits : PosEqForm          -> PosEqLitSet .
+  op toPosEqLits : UnificationProblem -> PosEqLitSet .
+  ----------------------------------------------------
+  eq toPosEqLits(tt)      = mtFormSet .
+  eq toPosEqLits(ff)      = mtFormSet .
+  eq toPosEqLits(T ?= T') = T ?= T' .
+  eq toPosEqLits(~ F)     = toPosEqLits(F) .
+ ceq toPosEqLits(F /\ F') = toPosEqLits(F) | toPosEqLits(F') if F =/= tt /\ F' =/= tt .
+ ceq toPosEqLits(F \/ F') = toPosEqLits(F) | toPosEqLits(F') if F =/= ff /\ F' =/= ff .
+
+  eq toPosEqLits(T =? T' /\ UP) = (T ?= T') | toPosEqLits(UP) .
+  eq toPosEqLits(T =? T')       = T ?= T' .
+endfm
+```
