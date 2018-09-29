@@ -14,10 +14,10 @@
 
 load sort-ops.maude       --- empty and finite sort constructions
 load ctor-var-unif.maude  --- computing constructor variants and unifiers
-load foform.maude         --- formula data structure
+load ../meta/eqform.maude --- formula data structure
 
 fmod FORMS-TERMS-AUX is
-  pr QFFOFORM .
+  pr EQFORM .
 
   var EL : EqLit . var ED : EqDisj . var EC : EqConj .
   var T T' : Term . var NTL : NeTermList .
@@ -112,16 +112,16 @@ endfm
 
 fmod EQUALITY-INJECTION is
   pr UNIT-FM .
-  pr QFFOFORM .
+  pr EQFORM .
   pr CTOR-SIG .
   op equalExt   : FModule -> FModule [memo] .
-  op unequal    : FModule NegConj -> Bool .
-  op liftdiseqs : NegConj -> Term .
-  op $unequal   : ResultPair NegConj -> Bool .
+  op unequal    : FModule NegEqConj -> Bool .
+  op liftdiseqs : NegEqConj -> Term .
+  op $unequal   : ResultPair NegEqConj -> Bool .
   op pruneBool  : OpDeclSet -> OpDeclSet .
   var M : Module .
   var T T' : Term .
-  var NC : NegConj .
+  var NC : NegEqConj .
   var OS : OpDeclSet .
   --- INP: Module
   --- PRE: Module does not have sorts/ops with the prefix/suffix @##/##@
@@ -164,8 +164,8 @@ fmod VAR-SAT is
   pr UNIT-FM .
   pr EQUALITY-INJECTION .
   --- formula handling
-  pr QFFOFORMSET-OPERATIONS .
-  pr QFFOFORM-SUBSTITUTIONSET .
+  pr EQFORM-SET-OPERATIONS .
+  pr EQFORM-DNF .
   pr FORMS-TERMS-AUX .
   --- finite sort checking
   pr FIN-SORT-REWTH .
@@ -176,34 +176,34 @@ fmod VAR-SAT is
   pr TERM-EXTRA .
 
   --- Main functions
-  op var-valid        : Module QFForm                 -> Bool .
-  op var-sat          : Module QFForm                 -> Bool .
-  op var-valid        : Module SortSet SortSet QFForm -> Bool .
-  op var-sat          : Module SortSet SortSet QFForm -> Bool .
-  op var-sat-opt      : Module SortSet QFForm         -> Bool .
-  op var-sat-disj     : FModule SortSet QFForm        -> Bool .
-  op var-sat-conj     : FModule SortSet Conj          -> Bool .
-  op var-sat-conjset  : FModule SortSet NegConjSet    -> Bool .
+  op var-valid        : Module Form                  -> Bool .
+  op var-sat          : Module Form                  -> Bool .
+  op var-valid        : Module SortSet SortSet Form  -> Bool .
+  op var-sat          : Module SortSet SortSet Form  -> Bool .
+  op var-sat-opt      : Module SortSet Form          -> Bool .
+  op var-sat-disj     : FModule SortSet Form         -> Bool .
+  op var-sat-conj     : FModule SortSet Conj         -> Bool .
+  op var-sat-conjset  : FModule SortSet NegEqConjSet -> Bool .
   --- Consistency checking
-  op consistent?      : FModule SortSet NegConjSet                             -> Bool .
-  op fin-consistent?  : FModule QidList Stream{UnitList}{WrapTermList} NegConj -> Bool .
-  op inf-consistent?  : FModule NegConj                                        -> Bool .
+  op consistent?      : FModule SortSet NegEqConjSet                             -> Bool .
+  op fin-consistent?  : FModule QidList Stream{UnitList}{WrapTermList} NegEqConj -> Bool .
+  op inf-consistent?  : FModule NegEqConj                                        -> Bool .
 
-  var Q : Qid  . var QS : QidSet  . var PC : PosConj . var F : FOForm . var F? : FOForm? . var SBS : SubstitutionSet .
-  var C : Conj . var M  : Module  . var NC : NegConj . var QL : QidList . var SB  : Substitution    .
-  var S : Sort . var FM : FModule . var QF : QFForm  . var CS : ConjSet . var NCS : NegConjSet      .
+  var Q : Qid  . var QS : QidSet  . var PC : PosEqConj . var F : Form . var SBS : SubstitutionSet .
+  var C : Conj . var M  : Module  . var NC : NegEqConj . var QL : QidList . var SB  : Substitution    .
+  var S : Sort . var FM : FModule . var QF : Form  . var CS : EqConjSet . var NCS : NegEqConjSet      .
   var SS FSS ISS : SortSet . var SL : Stream{UnitList}{WrapTermList} . var WTL : WrapTermList .
-  var T T' : Term . var TS : TermSet . var D : Disj . var NC? : NegConj? .
+  var T T' : Term . var TS : TermSet . var D : Disj .
 
   --- FIXME: filtering NC finite sorts by set computed by original formula QF is slightly incorrect ---
   ---        this is because NC, under instantiation, may have variables in sorts in a lower type ---
   ---        thus we should filter by all types in QF or below --- assuming that variant equations all
   ---        have no free vars on RHS, then this means the new types of variables cannot be by rewriting
-  --- INP: Module [SortSet SortSet] QFForm
-  --- PRE: [1] Sorts and QFForm are well-defined in Module
+  --- INP: Module [SortSet SortSet] Form
+  --- PRE: [1] Sorts and Form are well-defined in Module
   ---      [2] The Module represents an OS-Compact theory
   --- OUT: This function takes a Module (optionally two finite/infinite sort sets)
-  ---      and a QFFORM and returns true iff the QFForm is valid/satisfiable in
+  ---      and a QFFORM and returns true iff the Form is valid/satisfiable in
   ---      the given Module. It proceeds by:
   ---      [1] (negating the formula in, converting to NNF, in case of validity) and computing the finite sort set [eqs 1-4]
   ---      [2] recognizing certain patterns which can be optimized and then doing DNF conversion
@@ -217,14 +217,14 @@ fmod VAR-SAT is
 
   --- NB: Entry point(s)/pre-processing
   eq var-valid(M,QF)            = var-valid(M,none,none,QF) .
-  eq var-valid(M,FSS,ISS,QF)    = not var-sat(M,FSS,ISS,toNNF(~ QF)) .
+  eq var-valid(M,FSS,ISS,QF)    = not var-sat(M,FSS,ISS,nnf(~ QF)) .
   eq var-sat(M,QF)              = var-sat(M,none,none,QF) .
   eq var-sat(M,FSS,ISS,QF)      = var-sat-opt(addDecls(emptyFModule,setRls(M,none)),fin-sorts(M,QF,FSS,ISS),QF) .
 
   --- NB: Special Pattern Recognition Before DNF conversion
- ceq var-sat-opt(FM,FSS,PC /\ NC? /\ D) = var-sat-opt(FM,FSS,disj-join($renameForm(FM,(NC? /\ D) << ctor-unifiers(FM,toUnifProb(PC)))))
-  if not PC :: ConstConj .
-  eq var-sat-opt(FM,FSS,QF) = var-sat-disj(FM,FSS,toDNF(QF)) [owise] .
+ ceq var-sat-opt(FM,FSS,PC /\ NC /\ D) = var-sat-opt(FM,FSS,disj-join($renameForm(FM,(NC /\ D) << ctor-unifiers(FM,toUnifProb(PC)))))
+  if not PC :: TruthLit .
+  eq var-sat-opt(FM,FSS,QF) = var-sat-disj(FM,FSS,dnf(QF)) [owise] .
 
   eq var-sat-disj(FM,FSS,tt)      = true .
   eq var-sat-disj(FM,FSS,ff)      = false .
@@ -259,22 +259,22 @@ fmod VAR-SAT is
   eq inf-consistent?(FM,NC)             = unequal(FM,NC) .
 
   --- Auxiliary functions
-  op fin-sorts : Module QFForm SortSet SortSet -> SortSet .
+  op fin-sorts : Module Form SortSet SortSet -> SortSet .
   eq fin-sorts(FM,QF,FSS,ISS) = FSS ; get-finite-sorts(ctor-sig(FM),getType(vars(QF)) - (FSS ; ISS)) .
 
   op not-empty? : SubstitutionSet -> Bool .
   eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
 
-  op $renameForm : Module ConjSet -> ConjSet .
-  op $renameForm : Module FOForm? -> FOForm? .
-  op $renameForm : Module Conj -> Conj .
+  op $renameForm : Module EqConjSet -> [EqConjSet] .
+  op $renameForm : Module Form      -> [Form] .
+  op $renameForm : Module Conj      -> [Conj] .
   eq $renameForm(M,CS) = downTerm(renameTmpVar(M,upTerm(CS)),ff) .
-  eq $renameForm(M,F?) = downTerm(renameTmpVar(M,upTerm(F?)),ff) .
+  eq $renameForm(M,F)  = downTerm(renameTmpVar(M,upTerm(F)),ff) .
 
-  op nf-ctor-variants : FModule NegConj -> NegConjSet .
+  op nf-ctor-variants : FModule NegEqConj -> NegEqConjSet .
   eq nf-ctor-variants(FM,NC) = toDUPs(getTerms(ctor-variants(hl-func(FM),toHL(FM,FormToTL(NC))))) .
 
-  op toDUPs : TermSet ~> NegEqConjSet .
+  op toDUPs : TermSet -> [NegEqConjSet] .
   eq toDUPs(T | TS) = TLToNegEqConj((toTL(T))) | toDUPs(TS) .
   eq toDUPs(.TermSet) = mtFormSet .
 endfm
