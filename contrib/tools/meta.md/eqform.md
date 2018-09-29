@@ -566,6 +566,17 @@ fmod EQFORM-SET is
   op (_|_) : EqFormNeSet     EqFormSet     -> EqFormNeSet    [ctor ditto] .
   op (_|_) : NormFormNeSet   NormFormSet   -> NormFormNeSet  [ctor ditto] .
   op (_|_) : FormNeSet       FormSet       -> FormNeSet      [ctor ditto] .
+
+  var S : Substitution . var NeSS : NeSubstitutionSet . var SS : SubstitutionSet .
+  var F : Form         . var FNeS : FormNeSet         . var FS : FormSet .
+
+  op _<<_ : FormSet SubstitutionSet -> [FormSet] .
+  ------------------------------------------------
+  eq mtFormSet  << SS = mtFormSet .
+  eq (F | FNeS) << SS = (F << SS) | (FNeS << SS) .
+
+  eq FS << .SubstitutionSet = mtFormSet .
+  eq FS << (S | NeSS)       = (FS << S) | (FS << NeSS) .
 endfm
 ```
 

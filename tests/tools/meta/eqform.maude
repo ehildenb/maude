@@ -127,3 +127,10 @@ reduce toConjSet(f2) .
 reduce toDisjSet(f2) .
 
 reduce toPosEqLits(f3) .
+
+reduce (f1 | f2) << (('H:Baz <- 'baz.Baz) | ('H:Baz <- 'bar.Bar))
+    == ( ( f1 << ('H:Baz <- 'baz.Baz) )
+       | ( f1 << ('H:Baz <- 'bar.Bar) )
+       | ( f2 << ('H:Baz <- 'baz.Baz) )
+       | ( f2 << ('H:Baz <- 'bar.Bar) )
+       ) .
