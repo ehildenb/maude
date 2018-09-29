@@ -203,14 +203,27 @@ fmod EQFORM-IMPL{X :: TRIV} is
   op _\/_ : Form{X}           Form{X}           -> Form{X}          [ditto] .
   ---------------------------------------------------------------------------
 
+  vars X X' : X$Elt .
   var EqL : EqLit{X} .
   vars F F' : Form{X} .
+
+  eq ~ tt = ff .
+  eq ~ ff = tt .
+
+  eq ff /\ ff = ff .
+  eq tt \/ tt = tt .
 
   eq ff /\ EqL = ff .
   eq tt \/ EqL = tt .
 
   eq EqL /\ EqL = EqL .
   eq EqL \/ EqL = EqL .
+
+  eq X ?= X = tt .
+  eq X != X = ff .
+
+  eq X ?= X' /\ X != X' = ff .
+  eq X ?= X' \/ X != X' = tt .
 
   --- Implication
   op _=>_  : Form{X} Form{X} -> Form{X} .

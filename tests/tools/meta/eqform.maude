@@ -73,12 +73,25 @@ reduce f1 :: Form .
 reduce f2 :: Form .
 
 --- testing identities
+reduce tt /\ tt .
+reduce tt \/ tt .
+
+reduce ff /\ ff .
+reduce ff \/ ff .
+
 reduce tt /\ ff .
 reduce tt \/ ff .
 
 --- testing idempotency
 reduce tt /\ F:Form .
 reduce ff \/ F:Form .
+
+--- simplifications
+reduce 'B:Bar ?= 'foo.Foo /\ 'B:Bar != 'foo.Foo .
+reduce 'B:Bar ?= 'foo.Foo \/ 'B:Bar != 'foo.Foo .
+
+reduce t1 ?= t1 .
+reduce t1 != t1 .
 
 --- testing transformations
 reduce nnf(f1) .
