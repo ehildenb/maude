@@ -216,4 +216,14 @@ reduce in EQFORM-TEST : toPosEqLits(f3) .
 rewrites: 19
 result PosEqLitNeSet: ('B:Bar ?= 'foo.Foo) | ('H:Baz ?= 'f['I:Wop]) | ('U:Stu
     ?= 'W:Roc)
+==========================================
+reduce in EQFORM-TEST : (f1 | f2) << (
+  'H:Baz <- 'bar.Bar) | (
+  'H:Baz <- 'baz.Baz) == (f1 << (
+  'H:Baz <- 'baz.Baz)) | (f1 << (
+  'H:Baz <- 'bar.Bar)) | (f2 << (
+  'H:Baz <- 'bar.Bar)) | (f2 << (
+  'H:Baz <- 'baz.Baz)) .
+rewrites: 461
+result Bool: true
 Bye.
