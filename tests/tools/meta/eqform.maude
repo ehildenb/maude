@@ -1,18 +1,48 @@
 load ../../../contrib/tools/meta/eqform.maude
 
+fmod EQFORM-TEST-MODULE is
+    sorts Foo Bar Baz Wop Stu Roc .
+    -------------------------------
+    subsorts Wop < Foo Bar < Baz .
+    subsorts Roc < Stu .
+
+    op wop : -> Wop .
+    op foo : -> Foo .
+    op bar : -> Bar .
+    op baz : -> Baz .
+    op roc : -> Roc .
+    op stu : -> Stu .
+
+    op f : Baz -> Baz .
+    -------------------
+    eq f(baz) = baz .
+    eq f(bar) = baz .
+    eq f(foo) = bar .
+    eq f(wop) = wop .
+endfm
+
 fmod EQFORM-TEST is
   inc EQFORM-CNF .
   inc EQFORM-DNF .
   inc EQFORM-LIST .
   inc EQFORM-SET .
 
-  ops t1 t2 : -> Term .
-  ops a b c d e : -> Lit .
+  var T : Term .
 
-  eq a = 'F:Foo ?= 'G:Bar .
-  eq b = 'F:Foo != 'G:Bar .
-  eq c = 'H:Baz ?= 'I:Wop .
-  eq d = 'H:Baz != 'I:Wop .
+  ops t1 t2 : -> Term .
+  eq t1 = 'bar.Bar .
+  eq t2 = 'W:Wop .
+
+  op f : Term -> Term .
+  eq f(T) = 'f[T] .
+
+  sorts Foo Bar Baz Wop Stu Roc .
+  subsorts Foo < Bar .
+  ops a b c d e : -> Lit .
+  eq a = 'foo.Foo ?= 'B:Bar .
+  eq b = 'F:Foo != f('bar.Bar) .
+  eq c = 'H:Baz ?= f('I:Wop) .
+  eq d = f('H:Baz) != f(f('I:Wop)) .
   eq e = 'U:Stu ?= 'W:Roc .
 
   op f1 : -> Form .
