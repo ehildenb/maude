@@ -89,6 +89,7 @@ reduce var-sat(nat,
      /\ 'B1:Bool != 'true.Bool)
      == true .
 
+red var-sat(nat, 'true.Bool != upTerm(X + X < Y + Y)) .
 
 --- These checks are to make sure we work with the theories that nelson oppen
 --- uses for testing.
