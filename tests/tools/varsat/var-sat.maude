@@ -11,6 +11,12 @@ fmod TEST-NAT is
   eq nat  = upModule('FVP-NAT-PRED,       true) .
 endfm
 
+red nf-ctor-variants(nat, 'true.Bool != '_<_['X:Nat,'Y:Nat]) .
+red toDUPs(getTerms(ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat]))))) .
+red getTerms(ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat])))) .
+red ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat]))) .
+red toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat])) .
+
 --- Satisfiability
 red var-sat(nat, upTerm(X <  Y) ?= 'true.Bool)    == true  .
 red var-sat(nat, upTerm(X <  Y) != 'true.Bool)    == true  .

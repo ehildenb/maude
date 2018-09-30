@@ -1,4 +1,33 @@
 ==========================================
+reduce in TEST-NAT : nf-ctor-variants(nat, 'true.Bool != '_<_['X:Nat,'Y:Nat]) .
+rewrites: 1347
+result NegEqLitSet: 'false.Bool != 'true.Bool | 'true.Bool != 'true.Bool
+==========================================
+reduce in TEST-NAT : toDUPs(getTerms(ctor-variants(hl-func(nat), toHL(nat,
+    FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat]))))) .
+rewrites: 159
+result NegEqLitSet: 'false.Bool != 'true.Bool | 'true.Bool != 'true.Bool
+==========================================
+reduce in TEST-NAT : getTerms(ctor-variants(hl-func(nat), toHL(nat, FormToTL(
+    'true.Bool != '_<_['X:Nat,'Y:Nat])))) .
+rewrites: 146
+result NeTermSet: ('_|_['@S['true.Bool],'@S['false.Bool]]) | ('_|_['@S[
+    'true.Bool],'@S['true.Bool]])
+==========================================
+reduce in TEST-NAT : ctor-variants(hl-func(nat), toHL(nat, FormToTL('true.Bool
+    != '_<_['X:Nat,'Y:Nat]))) .
+rewrites: 143
+result VariantTripleSet: {'_|_['@S['true.Bool],'@S['false.Bool]],
+  'X:Nat <- '_+_['%7:Nat,'%8:Nat] ; 
+  'Y:Nat <- '%7:Nat,8,0,false} |
+{'_|_['@S['true.Bool],'@S['true.Bool]],
+  'X:Nat <- '%4:Nat ; 
+  'Y:Nat <- '_+_['%4:Nat,'%5:NzNat],5,0,true}
+==========================================
+reduce in TEST-NAT : toHL(nat, FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat])) .
+rewrites: 33
+result Term: '_|_['@S['true.Bool],'@S['_<_['X:Nat,'Y:Nat]]]
+==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y)) == true .
 rewrites: 2012
 result Bool: true
