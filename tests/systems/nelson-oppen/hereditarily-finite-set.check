@@ -1,0 +1,1 @@
+check_config_h USE_CVC4 || return "$exit_code_skip"

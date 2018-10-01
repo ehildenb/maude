@@ -19,7 +19,6 @@ TESTS = \
 	CU_Unification.maude \
 	assocUnification.maude \
 	sreduce.maude \
-	smtTest.maude \
 	narrow.maude \
 	continue.maude \
 	parse.maude \

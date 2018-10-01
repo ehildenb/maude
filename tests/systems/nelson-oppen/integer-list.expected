@@ -1,0 +1,60 @@
+Warning: sort declarations for operator removeNonExecs failed preregularity
+    check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator $rmVariants failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 47 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in TEST-NO-SMT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'INTEGER),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'INTEGER-LIST), '1.Integer ?= '_-_['_*_['2.Integer,'head[
+    'L:NeIntegerList]],'_*_['2.Integer,'head['M:NeIntegerList]]]) == (
+    false).Bool .
+rewrites: 341
+result Bool: (true).Bool
+==========================================
+reduce in TEST-NO-SMT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'INTEGER),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'INTEGER-LIST), '0.Integer ?= '_-_['_*_['2.Integer,'head[
+    'L:NeIntegerList]],'_*_['2.Integer,'head['M:NeIntegerList]]]) == (
+    true).Bool .
+rewrites: 3519
+result Bool: (false).Bool
+==========================================
+reduce in TEST-NO-SMT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'INTEGER),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'INTEGER-LIST), '0.Integer ?= '_-_['head['L:NeIntegerList],'_*_['2.Integer,
+    'head['M:NeIntegerList]]]) == (true).Bool .
+rewrites: 7464
+result Bool: (true).Bool
+==========================================
+reduce in TEST-NO-SMT-LIST : nelson-oppen-valid(tagged(tt, ('check-sat >
+    'smt-sat) ; 'mod > 'INTEGER),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'INTEGER-LIST), ('true.Boolean ?= '_<=_['1.Integer,'head['L:NeIntegerList]]
+    /\ 'true.Boolean ?= '_<=_['head['L:NeIntegerList],'2.Integer]) => (
+    '1.Integer ?= 'head['L:NeIntegerList] \/ '2.Integer ?= 'head[
+    'L:NeIntegerList])) .
+Purified:
+	tagged('#makeVariable`(head`[L:NeIntegerList`]`):Integer ?= 'head[
+    'L:NeIntegerList] /\ '#makeVariable`(1.Integer`):Integer !=
+    '#makeVariable`(head`[L:NeIntegerList`]`):Integer /\
+    '#makeVariable`(2.Integer`):Integer !=
+    '#makeVariable`(head`[L:NeIntegerList`]`):Integer, ('check-sat > 'var-sat)
+    ; ('convex > 'false) ; 'mod > 'INTEGER-LIST)
+	tagged('#makeVariable`(1.Integer`):Integer ?= '1.Integer /\
+    '#makeVariable`(2.Integer`):Integer ?= '2.Integer /\ 'true.Boolean ?=
+    '_<=_['#makeVariable`(head`[L:NeIntegerList`]`):Integer,'2.Integer] /\
+    'true.Boolean ?= '_<=_['1.Integer,
+    '#makeVariable`(head`[L:NeIntegerList`]`):Integer] /\
+    '#makeVariable`(1.Integer`):Integer !=
+    '#makeVariable`(head`[L:NeIntegerList`]`):Integer /\
+    '#makeVariable`(2.Integer`):Integer !=
+    '#makeVariable`(head`[L:NeIntegerList`]`):Integer, ('check-sat > 'smt-sat)
+    ; ('convex > 'false) ; 'mod > 'INTEGER)
+rewrites: 1851
+result Bool: (true).Bool
+Bye.

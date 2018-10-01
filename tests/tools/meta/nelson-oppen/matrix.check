@@ -1,0 +1,2 @@
+check_config_h USE_YICES2 || \
+return "$exit_code_skip"

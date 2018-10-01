@@ -121,12 +121,20 @@ build_test_smt() {
     build_maude_cvc4
     build_tangle
     build_test tests/Misc/smtTest
+    build_test tests/tools/meta/nelson-oppen/hereditarily-finite-set
+    build_test tests/tools/meta/nelson-oppen/integer-list
+    build_test tests/tools/meta/nelson-oppen/lexical-trichotomy-law
+    build_test tests/tools/meta/nelson-oppen/matrix
 
     build_clean
     build_deps
     build_maude_yices2
     build_tangle
     build_test tests/Misc/smtTest
+    build_test tests/tools/meta/nelson-oppen/hereditarily-finite-set
+    build_test tests/tools/meta/nelson-oppen/integer-list
+    build_test tests/tools/meta/nelson-oppen/lexical-trichotomy-law
+    build_test tests/tools/meta/nelson-oppen/matrix
 
     git checkout -- src/Mixfix/tokenizer.cc
 }

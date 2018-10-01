@@ -5,11 +5,17 @@ load ../../../contrib/tools/varsat/var-sat.maude
 
 fmod TEST-NAT is
   pr VAR-SAT .
-  pr FOFORM-DEFINEDOPS .
+  pr EQFORM-OPERATIONS .
   pr NAT       . op nat  : -> Module . vars U V W X Y Z : Nat .
-  var F : QFForm .
-  eq nat  = upModule('FVP-NAT-PRED,       true) .
+  var F : Form .
+  eq nat = upModule('FVP-NAT-PRED, true) .
 endfm
+
+red nf-ctor-variants(nat, 'true.Bool != '_<_['X:Nat,'Y:Nat]) .
+red toDUPs(getTerms(ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat]))))) .
+red getTerms(ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat])))) .
+red ctor-variants(hl-func(nat),toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat]))) .
+red toHL(nat,FormToTL('true.Bool != '_<_['X:Nat,'Y:Nat])) .
 
 --- Satisfiability
 red var-sat(nat, upTerm(X <  Y) ?= 'true.Bool)    == true  .
@@ -83,6 +89,7 @@ reduce var-sat(nat,
      /\ 'B1:Bool != 'true.Bool)
      == true .
 
+red var-sat(nat, 'true.Bool != upTerm(X + X < Y + Y)) .
 
 --- These checks are to make sure we work with the theories that nelson oppen
 --- uses for testing.
@@ -107,8 +114,8 @@ endfm
 
 fmod TEST-LIST is
   pr VAR-SAT .
-  pr FOFORM-DEFINEDOPS .
-  var F : QFForm .
+  pr EQFORM-OPERATIONS .
+  var F : Form .
   op list : -> Module .
   eq list = upModule('MYNATLIST, true) .
 endfm

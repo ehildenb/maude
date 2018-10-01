@@ -1,0 +1,97 @@
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : M,M,M' == M,M' .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {{empty},empty,{{empty}}} == {{
+    empty},empty,{{empty}}} .
+rewrites: 1
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : empty C= {empty} == tt .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= empty .
+rewrites: 1
+result MyBool: ff
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty}} .
+rewrites: 0
+result MyBool: {empty} C= {{empty}}
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {empty,{empty}} ==
+    tt .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty} C= {{empty},{{empty}}}
+    .
+rewrites: 0
+result MyBool: {empty} C= {{empty},{{empty}}}
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {M,M'} C= {M,M'} .
+rewrites: 1
+result MyBool: tt
+==========================================
+reduce in TEST-HEREDITARILY-FINITE-SET-SANITY : {empty,empty} C= {empty} .
+rewrites: 2
+result MyBool: tt
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
+    C= {X:Real}) .
+rewrites: 2
+result Term: '_C=_['`{_`}['_`,_['Z:Real,'Y:Real]],'`{_`}['X:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real}
+    C= {A:Real}) .
+rewrites: 1
+result Term: '_C=_['`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]],'`{_`}['A:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : upTerm({X:Real,Z:Real,Y:Real})
+    .
+rewrites: 1
+result Term: '`{_`}['_`,_['Z:Real,'X:Real,'Y:Real]]
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty})) .
+rewrites: 1488
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty}) /\ 'empty.Set != upTerm(
+    M)) .
+rewrites: 339
+result Bool: (false).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({empty,M} C= {empty,M'})) .
+rewrites: 549
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), upTerm({X:Real}) ?= upTerm({X:Real,Z:Real,Y:Real})) == (true).Bool .
+rewrites: 224
+result Bool: (true).Bool
+==========================================
+reduce in HEREDITARILY-FINITE-SET-TEST-VARSAT : var-sat(upModule('HFS-REAL,
+    true), 'tt.MyBool ?= upTerm({X:Real,Z:Real,Y:Real} C= {X:Real})) == (
+    true).Bool .
+rewrites: 144
+result Bool: (true).Bool
+Warning: sort declarations for operator removeNonExecs failed preregularity
+    check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator $rmVariants failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 47 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in NELSON-OPPEN-COMBINATION : nelson-oppen-valid(tagged(tt, ('check-sat
+    > 'smt-sat) ; 'mod > 'REAL),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'HFS-REAL), ('tt.MyBool ?= '_C=_['`{_`}['_`,_['_*_['Z:Real,'Z:Real],'_*_[
+    'X:Real,'X:Real],'_*_['Y:Real,'Y:Real]]],'`{_`}['_`,_['A:Real]]] /\ 'X:Real
+    != 'Y:Real) => ('X:Real ?= 'Z:Real \/ 'Y:Real ?= 'Z:Real)) .

@@ -1,0 +1,27 @@
+Warning: sort declarations for operator removeNonExecs failed preregularity
+    check on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator $rmVariants failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator clearNonExec failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 47 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+==========================================
+reduce in TEST-NO-NAT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'var-sat) ; 'mod > 'MYLISTNAT*),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'NAT*), ('tt.Bool* ?= '_<Nat_['_:+_['head['L':NeNatList*],'head[
+    'L':NeNatList*]],'_:+_['head['L:NeNatList*],'head['L:NeNatList*]]]) => (
+    'tt.Bool* ?= '_<Nat_['head['L':NeNatList*],'head['L:NeNatList*]] /\
+    'L':NeNatList* != 'L:NeNatList*)) == (true).Bool .
+rewrites: 13619
+result Bool: (true).Bool
+==========================================
+reduce in TEST-NO-NAT-LIST : nelson-oppen-sat(tagged(tt, ('check-sat >
+    'var-sat) ; 'mod > 'MYLISTNAT*),tagged(tt, ('check-sat > 'var-sat) ; 'mod >
+    'NAT*), 'L':NeNatList* ?= 'L:NeNatList* /\ 'tt.Bool* ?= '_<Nat_['head[
+    'L':NeNatList*],'head['L:NeNatList*]]) == (false).Bool .
+rewrites: 3369
+result Bool: (true).Bool
+Bye.

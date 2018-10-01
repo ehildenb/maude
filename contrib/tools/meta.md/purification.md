@@ -97,10 +97,12 @@ endfm
 Breaking Equalities
 ===================
 
-Breaking equality atoms means taking an equality atom between terms of different modules and reforming them:
+-   `T ?= T'` goes to `x ?= T /\ x ?= x' /\ x' ?= T'` for `x` and `x'` variables of sort common to `T` and `T'`.
+-   `T != T'` goes to `x ?= T /\ x != x' /\ x' ?= T'` for `x` and `x'` variables of sort greater than that `T'`.
 
--   `T ?= T'` goes to `x ?= T /\ x ?= T'` for `x` a variable of sort common to `T` and `T'`.
--   `T != T'` goes to `x ?= T /\ x != T'` for `x` a variable of sort greater than that `T'`.
+We generate two different variables `x` and `x'` each having names determined by `T` and `T'`. This means
+that if the terms are encountered elsewhere in the algorithm, the identifications are automatically shared
+without any seconday checks.
 
 ```maude
 fmod BREAK-EQATOMS is
@@ -108,7 +110,7 @@ fmod BREAK-EQATOMS is
    protecting EQFORM .
 
     vars EqC EqC' : EqConj . vars MOD MOD' : Module . vars ME ME' : ModuleExpression .
-    vars T T' : Term . var NV : Variable .
+    vars T T' : Term . var NV NV' : Variable .
 
     op break-eqatoms : Module Module EqConj -> EqConj .
     op break-eqatoms : ModuleExpression ModuleExpression EqConj -> EqConj .
@@ -116,14 +118,21 @@ fmod BREAK-EQATOMS is
     eq break-eqatoms(ME,  ME',  EqC)         = break-eqatoms(upModule(ME, true), upModule(ME', true), EqC) .
     eq break-eqatoms(MOD, MOD', EqC /\ EqC') = break-eqatoms(MOD, MOD', EqC) /\ break-eqatoms(MOD, MOD', EqC') .
 
-    ceq break-eqatoms(MOD, MOD', T ?= T') = T ?= NV /\ T' ?= NV if not (T :: Variable or T' :: Variable)
-                                                                /\ NV := joint-variable(MOD, MOD', T) .
-    ceq break-eqatoms(MOD, MOD', T != T') = T ?= NV /\ T' != NV if not (T :: Variable or T' :: Variable)
-                                                                /\ NV := joint-variable(MOD, MOD', T)
-                                                                /\ sortLeq(MOD, leastSort(MOD, T), leastSort(MOD, NV)) .
-    ceq break-eqatoms(MOD, MOD', T != T') = T ?= NV /\ T' != NV if not (T :: Variable or T' :: Variable)
-                                                                /\ NV := joint-variable(MOD, MOD', T)
-                                                                /\ sortLeq(MOD', leastSort(MOD', T), leastSort(MOD', NV)) .
+   ceq break-eqatoms(MOD, MOD', T ?= T') =    T  ?= NV
+                                           /\ NV ?= NV'
+                                           /\ T' ?= NV'
+    if not (T :: Variable or T' :: Variable)
+    /\ NV  := joint-variable(MOD, MOD', T)
+    /\ NV' := joint-variable(MOD', MOD, T')
+       .
+--- XXX: Everett please review this rule. Have I put all the primes in?
+   ceq break-eqatoms(MOD, MOD', T != T') =    T  ?= NV
+                                           /\ NV != NV'
+                                           /\ T' ?= NV'
+    if not (T :: Variable or T' :: Variable)
+    /\ NV  := joint-variable(MOD, MOD', T)  /\ sortLeq(MOD,  leastSort(MOD , T ), leastSort(MOD , NV ))
+    /\ NV' := joint-variable(MOD', MOD, T') /\ sortLeq(MOD', leastSort(MOD', T'), leastSort(MOD', NV'))
+       .
 endfm
 ```
 
@@ -241,6 +250,8 @@ If so, then it leaves it alone, otherwise more work is required on the equationa
 
     op purify : ModulePair Form -> [Form] .
     ---------------------------------------
+    eq purify(modulePair(M, M'), tt)      = tt .
+    eq purify(modulePair(M, M'), ff)      = ff .
    ceq purify(modulePair(M, M'), F)       = F if (F in M) .
     eq purify(modulePair(M, M'), ~ F)     = ~ purify(modulePair(M, M'), F) .
    ceq purify(modulePair(M, M'), F /\ F') = purify(modulePair(M, M'), F) /\ purify(modulePair(M, M'), F')
@@ -260,7 +271,9 @@ TODO: Abstract ?= vs !=
    ceq purify(modulePair(M, M'), Q[TL] ?= T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) ?= T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
    ceq purify(modulePair(M, M'), Q[TL] != T2) = purify(modulePair(M, M'), purify(M, M', Q[TL]) != T2) if not wellFormed(M, Q[TL]) and not wellFormed(M', Q[TL]) and Q inO asTemplate(M) .
    ceq purify(modulePair(M, M'), T1 ?= T2) = break-eqatoms(M, M', T1 ?= T2)                           if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
+   ceq purify(modulePair(M, M'), T1 != T2) = break-eqatoms(M, M', T1 != T2)                           if     wellFormed(M, T1) and wellFormed(M', T2) and not wellFormed(M, T2) .
    ceq purify(modulePair(M, M'), T1 ?= T2) = T1 ?= T2                                                 if     wellFormed(M, T1) and wellFormed(M, T2) .
+   ceq purify(modulePair(M, M'), T1 != T2) = T1 != T2                                                 if     wellFormed(M, T1) and wellFormed(M, T2) .
 ```
 
 Purifying Terms
