@@ -180,44 +180,57 @@ crl '<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]] => '<_>['_|_[
 ==========================================
 reduce in MODULE-TEMPLATE : asTemplate(upModule('BAKERY-FVP, true)) .
 rewrites: 3
-result NeModuleDeclSet: (sorts 'BState ; 'Bool> ; 'Mode ; 'Nat> ; 'NcMode ;
-    'NzNat> ; 'Zero> .)
+result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
+    'NzNat .)
 subsort 'NcMode < 'Mode .
-subsort 'NzNat> < 'Nat> .
-subsort 'Zero> < 'Nat> .
-eq '_>_['n:Nat>,'_+_['n:Nat>,'m:Nat>]] = 'ff.Bool> [variant] .
-eq '_>_['_+_['n:Nat>,'n':NzNat>],'n:Nat>] = 'tt.Bool> [variant] .
-rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [label('p2_wait)] .
-rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] => '<_`,_`,_`,_>['P:Mode,
-    'X:Nat>,'sleep.NcMode,'0.Zero>] [label('p2_crit)] .
-rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.NzNat>,'X:Nat>]] [label('p2_sleep)] .
-rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [label('p1_crit)] .
-rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'wait.NcMode,'_+_['1.NzNat>,'Y:Nat>],'Q:Mode,'Y:Nat>] [label('p1_sleep)] .
-rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
-    'crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [label('p1_wait)] .
-op '0 : nil -> 'Zero> [ctor] .
-op '1 : nil -> 'NzNat> [ctor] .
-op '<_`,_`,_`,_> : 'Mode 'Nat> 'Mode 'Nat> -> 'BState [ctor] .
-op '_+_ : 'Nat> 'Nat> -> 'Nat> [assoc comm ctor id('0.Zero>)] .
-op '_+_ : 'Nat> 'NzNat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-op '_+_ : 'NzNat> 'Nat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-op '_+_ : 'NzNat> 'NzNat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-op '_>_ : 'Nat> 'Nat> -> 'Bool> [none] .
+subsort 'NzNat < 'Nat .
+eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+rl '<_`,_`,_`,_>['P:Mode,'0.Nat,'wait.NcMode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    '0.Nat,'crit.Mode,'Y:Nat] [label('p2_wait1)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'sleep.NcMode,'0.Nat] [label('p2_crit)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'wait.NcMode,'_+_['1.NzNat,'X:Nat]] [label('p2_sleep)] .
+rl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'sleep.NcMode,'0.Nat,'Q:Mode,'Y:Nat] [label('p1_crit)] .
+rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'_+_['1.NzNat,'Y:Nat],'Q:Mode,'Y:Nat] [label('p1_sleep)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat,'Q:Mode,'0.Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'0.Nat] [label('p1_wait1)] .
+op '0 : nil -> 'Nat [ctor] .
+op '1 : nil -> 'NzNat [ctor] .
+op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
 op 'crit : nil -> 'Mode [ctor] .
-op 'ff : nil -> 'Bool> [ctor] .
+op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+op 'max : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 'min : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 's : 'Nat -> 'Nat [none] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm] .
 op 'sleep : nil -> 'NcMode [ctor] .
-op 'tt : nil -> 'Bool> [ctor] .
+op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
 op 'wait : nil -> 'NcMode [ctor] .
-crl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] if '_>_['X:Nat>,'Y:Nat>] = 'tt.Bool> [
-    label('p2_wait)] .
-crl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] if '_>_['X:Nat>,'Y:Nat>] = 'ff.Bool> [
-    label('p1_wait)] .
+crl '<_`,_`,_`,_>['P:Mode,'X:Nat,'wait.NcMode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'crit.Mode,'Y:Nat] if '_<_['Y:Nat,'X:Nat] = 'true.Bool [label(
+    'p2_wait2)] .
+crl '<_`,_`,_`,_>['wait.NcMode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] if '_<=_['X:Nat,'Y:Nat] = 'true.Bool [
+    label('p1_wait2)] .
 ==========================================
 reduce in MODULE-TEMPLATE : fromTemplate('TEST, none) .
 rewrites: 3
@@ -345,44 +358,57 @@ reduce in MODULE-TEMPLATE : fromTemplate('BAKERY-FVP, asTemplate(upModule(
 rewrites: 6
 result SModule: mod 'BAKERY-FVP is
   nil
-  sorts 'BState ; 'Bool> ; 'Mode ; 'Nat> ; 'NcMode ; 'NzNat> ; 'Zero> .
+  sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ; 'NzNat .
   subsort 'NcMode < 'Mode .
-  subsort 'NzNat> < 'Nat> .
-  subsort 'Zero> < 'Nat> .
-  op '0 : nil -> 'Zero> [ctor] .
-  op '1 : nil -> 'NzNat> [ctor] .
-  op '<_`,_`,_`,_> : 'Mode 'Nat> 'Mode 'Nat> -> 'BState [ctor] .
-  op '_+_ : 'Nat> 'Nat> -> 'Nat> [assoc comm ctor id('0.Zero>)] .
-  op '_+_ : 'Nat> 'NzNat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-  op '_+_ : 'NzNat> 'Nat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-  op '_+_ : 'NzNat> 'NzNat> -> 'NzNat> [assoc comm ctor id('0.Zero>)] .
-  op '_>_ : 'Nat> 'Nat> -> 'Bool> [none] .
+  subsort 'NzNat < 'Nat .
+  op '0 : nil -> 'Nat [ctor] .
+  op '1 : nil -> 'NzNat [ctor] .
+  op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+  op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+  op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+  op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+  op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+  op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
   op 'crit : nil -> 'Mode [ctor] .
-  op 'ff : nil -> 'Bool> [ctor] .
+  op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+  op 'max : 'Nat 'Nat -> 'Nat [assoc comm] .
+  op 'min : 'Nat 'Nat -> 'Nat [assoc comm] .
+  op 's : 'Nat -> 'Nat [none] .
+  op 'sd : 'Nat 'Nat -> 'Nat [comm] .
   op 'sleep : nil -> 'NcMode [ctor] .
-  op 'tt : nil -> 'Bool> [ctor] .
+  op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
   op 'wait : nil -> 'NcMode [ctor] .
   none
-  eq '_>_['n:Nat>,'_+_['n:Nat>,'m:Nat>]] = 'ff.Bool> [variant] .
-  eq '_>_['_+_['n:Nat>,'n':NzNat>],'n:Nat>] = 'tt.Bool> [variant] .
-  rl '<_`,_`,_`,_>['P:Mode,'0.Zero>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'0.Zero>,'crit.Mode,'Y:Nat>] [label('p2_wait)] .
-  rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'X:Nat>,'sleep.NcMode,'0.Zero>] [label('p2_crit)] .
-  rl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'sleep.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'X:Nat>,'wait.NcMode,'_+_['1.NzNat>,'X:Nat>]] [label('p2_sleep)] .
-  rl '<_`,_`,_`,_>['crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'sleep.NcMode,'0.Zero>,'Q:Mode,'Y:Nat>] [label('p1_crit)] .
-  rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'wait.NcMode,'_+_['1.NzNat>,'Y:Nat>],'Q:Mode,'Y:Nat>] [label('p1_sleep)] .
-  rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'0.Zero>] => '<_`,_`,_`,_>[
-    'crit.Mode,'X:Nat>,'Q:Mode,'0.Zero>] [label('p1_wait)] .
-  crl '<_`,_`,_`,_>['P:Mode,'X:Nat>,'wait.NcMode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'P:Mode,'X:Nat>,'crit.Mode,'Y:Nat>] if '_>_['X:Nat>,'Y:Nat>] = 'tt.Bool> [
-    label('p2_wait)] .
-  crl '<_`,_`,_`,_>['wait.NcMode,'X:Nat>,'Q:Mode,'Y:Nat>] => '<_`,_`,_`,_>[
-    'crit.Mode,'X:Nat>,'Q:Mode,'Y:Nat>] if '_>_['X:Nat>,'Y:Nat>] = 'ff.Bool> [
-    label('p1_wait)] .
+  eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+  eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+  eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+  eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+  eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+  eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+  eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+  eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+  eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+  eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+  rl '<_`,_`,_`,_>['P:Mode,'0.Nat,'wait.NcMode,'Y:Nat] => '<_`,_`,_`,_>[
+    'P:Mode,'0.Nat,'crit.Mode,'Y:Nat] [label('p2_wait1)] .
+  rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'sleep.NcMode,'0.Nat] [label('p2_crit)] .
+  rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'Y:Nat] => '<_`,_`,_`,_>[
+    'P:Mode,'X:Nat,'wait.NcMode,'_+_['1.NzNat,'X:Nat]] [label('p2_sleep)] .
+  rl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'sleep.NcMode,'0.Nat,'Q:Mode,'Y:Nat] [label('p1_crit)] .
+  rl '<_`,_`,_`,_>['sleep.NcMode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'_+_['1.NzNat,'Y:Nat],'Q:Mode,'Y:Nat] [label('p1_sleep)] .
+  rl '<_`,_`,_`,_>['wait.NcMode,'X:Nat,'Q:Mode,'0.Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'0.Nat] [label('p1_wait1)] .
+  crl '<_`,_`,_`,_>['P:Mode,'X:Nat,'wait.NcMode,'Y:Nat] => '<_`,_`,_`,_>[
+    'P:Mode,'X:Nat,'crit.Mode,'Y:Nat] if '_<_['Y:Nat,'X:Nat] = 'true.Bool [
+    label('p2_wait2)] .
+  crl '<_`,_`,_`,_>['wait.NcMode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] if '_<=_['X:Nat,'Y:Nat] = 'true.Bool [
+    label('p1_wait2)] .
 endm
 ==========================================
 reduce in MODULE-TEMPLATE : wellFormed(fromTemplate('TEST, none)) .

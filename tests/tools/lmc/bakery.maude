@@ -4,12 +4,19 @@ load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 load ../../../contrib/tools/meta/narrowing.maude
 
+fmod RENAMED-FVP-NARROWING-GRAPH is
+   protecting ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
+            * ( sort   Nat to   NatP
+              , sort NzNat to NzNatP
+              ) .
+endfm
+
 --- Module BAKERY-NARROWING-GRAPH
 --- =============================
 
 mod BAKERY-NARROWING-GRAPH is
    protecting BAKERY .
-    extending FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    extending RENAMED-FVP-NARROWING-GRAPH .
 
     eq #M = upModule('BAKERY, true) .
 
@@ -17,13 +24,13 @@ mod BAKERY-NARROWING-GRAPH is
     -----------------------
     eq upIdle = upTerm([idle]) .
 
-    op init : Nat -> [Term] .
-    -------------------------
-    eq init(0) = upTerm(0 ; 0 ; [idle] [idle]) .
-    eq init(1) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
-    eq init(2) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
-    eq init(3) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,'X:Name]]], upIdle, upIdle, 'PWS:ProcWaitSet]] .
-    eq init(4) = '_;_;_['X:Name,'Y:Name,'__[upIdle,upIdle]] .
+    op init : NatP -> [Term] .
+    --------------------------
+    eq init((0).NatP) = upTerm(0 ; 0 ; [idle] [idle]) .
+    eq init((1).NatP) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
+    eq init((2).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
+    eq init((3).NatP) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,'X:Name]]], upIdle, upIdle, 'PWS:ProcWaitSet]] .
+    eq init((4).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,upIdle]] .
 endm
 
 --- Low-level functions
@@ -76,10 +83,9 @@ reduce bfs(state(init(4)), 10) .
 
 mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
    protecting BAKERY-FVP-CTOR .
-    extending FVP-NARROWING-GRAPH .
-    extending GRAPH-ANALYSIS .
+    extending RENAMED-FVP-NARROWING-GRAPH .
 
-    var N : Nat . vars NeNS NeNS' : NeNodeSet .
+    var N : NatP . vars NeNS NeNS' : NeNodeSet .
 
     op states : NodeSet -> [NodeSet] .
     ----------------------------------
@@ -90,18 +96,18 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
 
     eq #M = upModule('BAKERY-FVP-CTOR, true) .
 
-    op init : Nat -> [Term] .
-    -------------------------
-    eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat>,'1.NzNat>,'1.NzNat>],'wait.NcMode,'_+_['1.NzNat>,'1.NzNat>]] .
-    eq init(1) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:Nat>   ] .
-    eq init(2) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:Nat>   , 'QNC:NcMode   , 'Y2:Nat>   ] .
-    eq init(3) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat>   , 'sleep.NcMode , 'X0:Nat>   ] .
-    eq init(4) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat>   , 'sleep.NcMode , 'X1:Nat>   ] .
-    eq init(5) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:NzNat> ] .
-    eq init(6) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat> , 'QNC:NcMode   , 'Y2:Nat>   ] .
-    eq init(7) = '<_`,_`,_`,_>[ 'wait.NcMode  , 'Y1:Nat>   , 'QC:Mode      , 'Y2:NzNat> ] .
-    eq init(8) = '<_`,_`,_`,_>[ 'QC:Mode      , 'Y1:NzNat> , 'wait.NcMode  , 'Y2:Nat>   ] .
-    eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat>   , 'crit.Mode    , 'X3:Nat>   ] .
+    op init : NatP -> [Term] .
+    --------------------------
+    eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat,'1.NzNat,'1.NzNat],'wait.NcMode,'_+_['1.NzNat,'1.NzNat]] .
+    eq init(1) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:Nat   ] .
+    eq init(2) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:Nat   , 'QNC:NcMode   , 'Y2:Nat   ] .
+    eq init(3) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat   , 'sleep.NcMode , 'X0:Nat   ] .
+    eq init(4) = '<_`,_`,_`,_>[ 'sleep.NcMode , 'X0:Nat   , 'sleep.NcMode , 'X1:Nat   ] .
+    eq init(5) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:NzNat ] .
+    eq init(6) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ] .
+    eq init(7) = '<_`,_`,_`,_>[ 'wait.NcMode  , 'Y1:Nat   , 'QC:Mode      , 'Y2:NzNat ] .
+    eq init(8) = '<_`,_`,_`,_>[ 'QC:Mode      , 'Y1:NzNat , 'wait.NcMode  , 'Y2:Nat   ] .
+    eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat   , 'crit.Mode    , 'X3:Nat   ] .
 endm
 
 ***(Desired initial states and invariant:
@@ -136,37 +142,34 @@ reduce states(3) <= states(1 ; 2) .
 reduce states(1) <= states(1 ; 2) .
 reduce states(2) <= states(1) .
 
---- regression for when we had `ops 0 1 : -> Zero> [ctor] .`
-reduce leastSort(#M, '_+_['1.Zero>,'@3:Nat>]) .
+reduce state('wait.NcMode)           <= state('PC:Mode) .
+reduce state('_+_['1.NzNat,'@3:Nat]) <= state('Y1:NzNat) .
+--- reduce state('Y1:NzNat)             <= state('_+_['1.NzNat,'@3:Nat]) .
+reduce state('@2:NcMode)             <= state('QNC:NcMode) .
+reduce state('@3:Nat)                <= state('Y2:Nat) .
 
-reduce state('wait.NcMode)            <= state('PC:Mode) .
-reduce state('_+_['1.Zero>,'@3:Nat>]) <= state('Y1:NzNat>) .
---- reduce state('Y1:NzNat>)              <= state('_+_['1.Zero>,'@3:Nat>]) .
-reduce state('@2:NcMode)              <= state('QNC:NcMode) .
-reduce state('@3:Nat>)                <= state('Y2:Nat>) .
-
-reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.Zero>,'@3:Nat>] ,  '@2:NcMode , '@3:Nat> ])
-    <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat>              , 'QNC:NcMode , 'Y2:Nat> ]) .
+reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'@3:Nat] ,  '@2:NcMode , '@3:Nat ])
+   <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat               , 'QNC:NcMode , 'Y2:Nat ]) .
 
 
 reduce state('sleep.NcMode) <= state('PNC:NcMode) .
-reduce state('0.Zero>)      <= state('X1:Nat>) .
+reduce state('0.Nat)        <= state('X1:Nat) .
 reduce state('@2:NcMode)    <= state('QC:Mode) .
-reduce state('@3:Nat>)      <= state('X2:NzNat>) .
+reduce state('@3:Nat)       <= state('X2:NzNat) .
 
-reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Zero>   , '@2:NcMode    , '@3:Nat>   ])
-    <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:NzNat> ]) .
+reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat  , '@2:NcMode , '@3:Nat   ])
+   <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat , 'QC:Mode   , 'X2:NzNat ]) .
 
-reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Zero>   , '@2:NcMode    , '@3:Nat>   ])
-    <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat> , 'QNC:NcMode   , 'Y2:Nat>   ])
-       ; state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat>   , 'QC:Mode      , 'X2:NzNat> ])
-       ; state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Zero>   , 'sleep.NcMode , '0.Zero>   ])
+reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , '@2:NcMode    , '@3:Nat   ])
+   <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ])
+       ; state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:NzNat ])
+       ; state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'sleep.NcMode , '0.Nat    ])
        ) .
 
-reduce intersect(state('@2:NzNat>), state('@3:Zero>)) .
-reduce intersect(state('@2:NzNat>), state('@3:Nat>)) .
-reduce intersect( state('<_`,_`,_`,_>['@1:Mode,'0.Zero>,'crit.Mode,'@2:Nat>])
-                , state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat>,'@3:NzNat>],'crit.Mode,'@2:Nat>])
+reduce intersect(state('@2:NzNat), state('@3:Nat)) .
+reduce intersect(state('@2:NzNat), state('@3:Nat)) .
+reduce intersect( state('<_`,_`,_`,_>['@1:Mode,'0.Nat,'crit.Mode,'@2:Nat])
+                , state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat,'@3:NzNat],'crit.Mode,'@2:Nat])
                 ) .
 
 --- both initial states yield finite state-graphs
