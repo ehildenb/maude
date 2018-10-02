@@ -52,13 +52,17 @@ reduce in THERMOSTAT-NARROWING-GRAPH : wellFormed(#M, cinit(1, 0, '_+_[
 rewrites: 7
 result Bool: (true).Bool
 ==========================================
+reduce in THERMOSTAT-NARROWING-GRAPH : isUnsat(cond(0, 'TMP:Nat)) .
+rewrites: 726
+result Bool: (false).Bool
+==========================================
+reduce in THERMOSTAT-NARROWING-GRAPH : isUnsat(cond(2, 'TMP:Nat)) .
+rewrites: 531
+result Bool: (true).Bool
+==========================================
 reduce in THERMOSTAT-NARROWING-GRAPH : step(state(cinit(0, 0, 'TMP:Nat))) .
-rewrites: 3558
+rewrites: 6103
 result NeTransitionSet: < label('inmode-on, 
-  'TMP:Nat <- '0.Nat),state('_st_['<_`,_`,_>['0.Nat,'0.Nat,'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '1.NzNat),state('_st_['<_`,_`,_>['0.Nat,'1.NzNat,'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
   'TMP:Nat <- '@1:Nat),state('_st_['<_`,_`,_>['0.Nat,'@1:Nat,'on.InMode],'_/\_[
     '_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
@@ -71,85 +75,6 @@ result NeTransitionSet: < label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'@1:Nat]]]]) >,<
     label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_[
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on,
-    
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,
-    '_+_['1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,<
-    label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),
-    state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on,
-    
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,<
-    label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_[
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on,
-    
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>[
-    '0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,<
-    label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state(
-    '_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),
-    state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on,
-    
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,<
-    label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_[
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on,
-    
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat]),state('_st_['<_`,_`,_>[
@@ -194,37 +119,7 @@ result NeTransitionSet: < label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}]) >,<
-    label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}]) >,< label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat]),state('_st_['<_`,_`,_>[
-    '0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat],'on.InMode],'ff.FalseLit`{Bool`}]) >,<
     label('turning-off, 
-  'TMP:Nat <- '0.Nat),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'0.Nat,
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '1.NzNat),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],
-    '1.NzNat,'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
   'TMP:Nat <- '@1:Nat),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'@1:Nat,
     'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
@@ -237,91 +132,6 @@ result NeTransitionSet: < label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat],'@1:Nat]]]]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,
-    '1.NzNat],'_+_['1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_[
-    '1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),
-    state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_[
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,
-    '1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,<
-    label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,
-    '1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_[
-    '1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state(
-    '_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),
-    state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_[
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,
-    '1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,<
-    label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,
-    '1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat]),state('_st_['<_`,_`,_>[
@@ -332,45 +142,6 @@ result NeTransitionSet: < label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]]],'_?=_['true.Bool,
     '_<_['_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'%1:NzNat]]]]) >,<
     label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_['<_`,_`,_>['_+_[
-    '1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state('_st_[
-    '<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),state(
-    '_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}]) >,< label(
-    'turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]),
-    state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat]),state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}]) >,< label('turning-off, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
@@ -386,34 +157,15 @@ result NeTransitionSet: < label('inmode-on,
     '1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'tt.TrueLit`{Bool`}]) >,<
-    label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat]),state('_st_['<_`,_`,_>['_+_[
-    '1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}]) >
+    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'tt.TrueLit`{Bool`}]) >
 ==========================================
 reduce in THERMOSTAT-NARROWING-GRAPH : bfs(state(cinit(0, 0, 20)), 5) .
-rewrites: 2576
+rewrites: 895
 result FoldedLabeledGraph?: (0 -[label('inmode-on, none)]-> 2
-0 -[label('turning-off, none)]-> 4
-2 -[label('tick, none)]-> 6
-4 -[label('tick, none)]-> 8
-6 -[label('inmode-on, none)]-> 10
-6 -[label('turning-off, none)]-> 12
-8 -[label('delaying, none)]-> 14
-10 -[label('tick, none)]-> 16
-12 -[label('tick, none)]-> 20
-14 -[label('tick, none)]-> 18
-16 -[label('inmode-on, none)]-> 22
-16 -[label('turning-off, none)]-> 24
-18 -[label('delaying, none)]-> 26
-20 -[label('delaying, none)]-> 28)
+2 -[label('tick, none)]-> 4
+4 -[label('inmode-on, none)]-> 6
+6 -[label('tick, none)]-> 8
+8 -[label('turning-off, none)]-> 10)
 | 0 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['10.NzNat,'10.NzNat],'on.InMode],
     '_/\_['_?=_['_<_['min.Nat,'_+_['10.NzNat,'10.NzNat]],'true.Bool],'_?=_[
     '_<_['_+_['10.NzNat,'10.NzNat],'max.Nat],'true.Bool]]])
@@ -421,269 +173,75 @@ result FoldedLabeledGraph?: (0 -[label('inmode-on, none)]-> 2
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
     'on.InMode],'tt.TrueLit`{Bool`}])
-4 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-6 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+4 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-8 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-10 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+6 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-12 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
+8 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-14 |-> state('_st_['<_`,_`,_>['1.NzNat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-16 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'tt.TrueLit`{Bool`}])
-18 |-> state('_st_['`{_`,_`,_`}['1.NzNat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-20 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-22 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-24 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
+10 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
     'off.InMode]],'tt.TrueLit`{Bool`}])
-26 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-28 |-> state('_st_['<_`,_`,_>['1.NzNat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-| 29
-| 22 ; 24 ; 26 ; 28
+| 11
+| 10
 ==========================================
 reduce in THERMOSTAT-NARROWING-GRAPH : bfs(state(cinit(0, 0, 'TMP:Nat)), 1) .
-rewrites: 29295
+rewrites: 8793
 result FoldedLabeledGraph?: (0 -[label('inmode-on, 
-  'TMP:Nat <- '0.Nat)]-> 2
-0 -[label('inmode-on, 
-  'TMP:Nat <- '1.NzNat)]-> 4
-0 -[label('inmode-on, 
-  'TMP:Nat <- '@1:Nat)]-> 6
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 8
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 10
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 12
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 14
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]->
-    16
+  'TMP:Nat <- '@1:Nat)]-> 2
 0 -[label('inmode-on, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 18
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 4
 0 -[label('inmode-on, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 6
+0 -[label('inmode-on, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 8
+0 -[label('inmode-on, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 10
+0 -[label('inmode-on, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat])]-> 12
+0 -[label('inmode-on, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat])]-> 14
+0 -[label('turning-off, 
+  'TMP:Nat <- '@1:Nat)]-> 16
+0 -[label('turning-off, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 18
+0 -[label('turning-off, 
+  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat])]-> 20
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 22
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 24
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 26
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 28
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 30
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 32
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 34
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat])]-> 36
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 38
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 40
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 42
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 44
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 46
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 48
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 50
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 52
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat])]-> 54
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 56
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat])]-> 58
-0 -[label('turning-off, 
-  'TMP:Nat <- '0.Nat)]-> 60
-0 -[label('turning-off, 
-  'TMP:Nat <- '1.NzNat)]-> 62
-0 -[label('turning-off, 
-  'TMP:Nat <- '@1:Nat)]-> 64
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 66
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 68
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 70
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 72
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]->
-    74
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 76
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat])]-> 78
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 80
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 82
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 84
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 86
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 88
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 90
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 92
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat])]-> 94
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 96
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 98
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 100
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 102
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 104
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat])]-> 106
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 108
 0 -[label('turning-off, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat])]-> 110
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat])]-> 112
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat])]-> 114
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat])]-> 116)
+    '1.NzNat,'1.NzNat,'1.NzNat])]-> 22)
 | 0 |-> state('_st_['`{_`,_`,_`}['0.Nat,'TMP:Nat,'on.InMode],'_/\_['_?=_['_<_[
     'min.Nat,'TMP:Nat],'true.Bool],'_?=_['_<_['TMP:Nat,'max.Nat],'true.Bool]]])
-2 |-> state('_st_['<_`,_`,_>['0.Nat,'0.Nat,'on.InMode],'ff.FalseLit`{Bool`}])
-4 |-> state('_st_['<_`,_`,_>['0.Nat,'1.NzNat,'on.InMode],'ff.FalseLit`{Bool`}])
-6 |-> state('_st_['<_`,_`,_>['0.Nat,'@1:Nat,'on.InMode],'_/\_['_?=_['true.Bool,
+2 |-> state('_st_['<_`,_`,_>['0.Nat,'@1:Nat,'on.InMode],'_/\_['_?=_['true.Bool,
     '_<_['@1:Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
@@ -694,97 +252,33 @@ result FoldedLabeledGraph?: (0 -[label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'@1:Nat]]]])
-8 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-10 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}])
-12 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}])
-14 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-16 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-18 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-20 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-22 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-24 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-26 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}])
-28 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'on.InMode],'ff.FalseLit`{Bool`}])
-30 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-32 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-34 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-36 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-38 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-40 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-42 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+4 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat],
     'on.InMode],'_/\_['_?=_['true.Bool,'_<_['%1:NzNat,'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]]],'_?=_['false.Bool,
     '_<_['_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'%1:NzNat]]]])
-44 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+6 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
     'on.InMode],'tt.TrueLit`{Bool`}])
-46 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+8 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
     'on.InMode],'tt.TrueLit`{Bool`}])
-48 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+10 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-50 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+12 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-52 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
+14 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-54 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-56 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-58 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'@1:Nat],'on.InMode],
-    'ff.FalseLit`{Bool`}])
-60 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'0.Nat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-62 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'1.NzNat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-64 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'@1:Nat,'delay[
+16 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'@1:Nat,'delay[
     'off.InMode]],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
@@ -796,110 +290,28 @@ result FoldedLabeledGraph?: (0 -[label('inmode-on,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
     '@1:Nat]]]])
-66 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-68 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-70 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-72 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-74 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-76 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-78 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-80 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-82 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-84 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-86 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-88 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-90 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-92 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-94 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-96 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-98 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-100 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
+18 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '%1:NzNat],'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<_['%1:NzNat,'_+_[
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]]],
     '_?=_['true.Bool,'_<_['_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],
     '%1:NzNat]]]])
-102 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-104 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-106 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-108 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-110 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay['off.InMode]],
-    'ff.FalseLit`{Bool`}])
-112 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
+20 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
     'off.InMode]],'tt.TrueLit`{Bool`}])
-114 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
+22 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'delay[
     'off.InMode]],'tt.TrueLit`{Bool`}])
-116 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '@1:Nat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-| 117
-| 2 ; 4 ; 6 ; 8 ; 10 ; 12 ; 14 ; 16 ; 18 ; (20).NzNat ; 22 ; 24 ; 26 ; 28 ; 30
-    ; 32 ; 34 ; 36 ; 38 ; 40 ; 42 ; 44 ; 46 ; 48 ; 50 ; 52 ; 54 ; 56 ; 58 ; 60
-    ; 62 ; 64 ; 66 ; 68 ; 70 ; 72 ; 74 ; 76 ; 78 ; 80 ; 82 ; 84 ; 86 ; 88 ; 90
-    ; 92 ; 94 ; 96 ; 98 ; 100 ; 102 ; 104 ; 106 ; 108 ; 110 ; 112 ; 114 ; 116
+| 23
+| 2 ; 4 ; 6 ; 8 ; 10 ; 12 ; 14 ; 16 ; 18 ; (20).NzNat ; 22
 ==========================================
 reduce in THERMOSTAT-NARROWING-GRAPH : bfs(state(cinit(0, 1, 'TMP:Nat)), 2) .
-rewrites: 10529
+rewrites: 4901
 result FoldedLabeledGraph?: (0 -[label('inmode-on, 
   'TMP:Nat <- '0.Nat)]-> 2
 0 -[label('inmode-on, 
@@ -910,58 +322,20 @@ result FoldedLabeledGraph?: (0 -[label('inmode-on,
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 8
 0 -[label('inmode-on, 
   'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 10
-0 -[label('inmode-on, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 12
-0 -[label('turning-off, 
-  'TMP:Nat <- '0.Nat)]-> 14
-0 -[label('turning-off, 
-  'TMP:Nat <- '1.NzNat)]-> 16
-0 -[label('turning-off, 
-  'TMP:Nat <- '@1:Nat)]-> 18
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 20
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 22
-0 -[label('turning-off, 
-  'TMP:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 24
-2 -[label('tick, none)]-> 26
-4 -[label('tick, none)]-> 28
+2 -[label('tick, none)]-> 12
+4 -[label('tick, none)]-> 14
 6 -[label('tick, 
-  '@1:Nat <- '0.Nat)]-> 26
+  '@1:Nat <- '0.Nat)]-> 12
 6 -[label('tick, 
-  '@1:Nat <- '1.NzNat)]-> 28
+  '@1:Nat <- '1.NzNat)]-> 14
 6 -[label('tick, 
-  '@1:Nat <- '@1:Nat)]-> 34
+  '@1:Nat <- '@1:Nat)]-> 20
 6 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 36
+  '@1:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 22
 6 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 38
-6 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 40
-8 -[label('tick, none)]-> 36
-10 -[label('tick, none)]-> 38
-12 -[label('tick, 
-  '%1:NzNat <- '@1:NzNat)]-> 40[fold(
-  '%1:NzNat <- '@1:NzNat)]
-14 -[label('tick, none)]-> 48
-16 -[label('tick, none)]-> 50
-18 -[label('tick, 
-  '@1:Nat <- '0.Nat)]-> 48
-18 -[label('tick, 
-  '@1:Nat <- '1.NzNat)]-> 50
-18 -[label('tick, 
-  '@1:Nat <- '@1:Nat)]-> 56
-18 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat])]-> 58
-18 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 60
-18 -[label('tick, 
-  '@1:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat,'%1:NzNat])]-> 62
-20 -[label('tick, none)]-> 58
-22 -[label('tick, none)]-> 60
-24 -[label('tick, 
-  '%1:NzNat <- '@1:NzNat)]-> 62[fold(
-  '%1:NzNat <- '@1:NzNat)])
+  '@1:Nat <- '_+_['1.NzNat,'1.NzNat,'1.NzNat])]-> 24
+8 -[label('tick, none)]-> 22
+10 -[label('tick, none)]-> 24)
 | 0 |-> state('_st_['`{_`,_`,_`}['0.Nat,'TMP:Nat,'on.InMode],'_/\_['_?=_['_<_[
     'TMP:Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]],'true.Bool],
     '_?=_['_<=_['_+_['1.NzNat,'1.NzNat,'1.NzNat,'TMP:Nat],'_+_['1.NzNat,
@@ -979,61 +353,23 @@ result FoldedLabeledGraph?: (0 -[label('inmode-on,
     'tt.TrueLit`{Bool`}])
 10 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat],
     'on.InMode],'tt.TrueLit`{Bool`}])
-12 |-> state('_st_['<_`,_`,_>['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '%1:NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-14 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'0.Nat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-16 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'1.NzNat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-18 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'@1:Nat,'delay[
-    'off.InMode]],'_/\_['_?=_['true.Bool,'_<=_['@1:Nat,'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat]]],'_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat]]],'_?=_['true.Bool,'_<_['_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'@1:Nat]]]])
-20 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat],
-    'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-22 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-24 |-> state('_st_['<_`,_`,_>['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '1.NzNat,'%1:NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-26 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat],'on.InMode],
+12 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat],'on.InMode],
     'tt.TrueLit`{Bool`}])
-28 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat],
+14 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat],
     'on.InMode],'tt.TrueLit`{Bool`}])
-34 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'@1:Nat],
+20 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'@1:Nat],
     'on.InMode],'_/\_['_?=_['true.Bool,'_<=_['@1:Nat,'_+_['1.NzNat,'1.NzNat,
     '1.NzNat]]],'_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat]]],'_?=_['false.Bool,'_<_['_+_['1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'@1:Nat]]]])
-36 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
+22 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-38 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
+24 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
     '1.NzNat,'1.NzNat],'on.InMode],'tt.TrueLit`{Bool`}])
-40 |-> state('_st_['`{_`,_`,_`}['0.Nat,'_+_['1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'%1:NzNat],'on.InMode],'ff.FalseLit`{Bool`}])
-48 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'-_['1.NzNat],'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-50 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'0.Nat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-56 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_['@1:Nat,'-_[
-    '1.NzNat]],'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<=_['@1:Nat,'_+_[
-    '1.NzNat,'1.NzNat,'1.NzNat]]],'_?=_['true.Bool,'_<_['@1:Nat,'_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat]]],'_?=_['true.Bool,'_<_['_+_['1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,
-    '1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat,'1.NzNat],'@1:Nat]]]])
-58 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'1.NzNat,'delay[
-    'off.InMode]],'ff.FalseLit`{Bool`}])
-60 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,
-    '1.NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-62 |-> state('_st_['`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_['1.NzNat,'1.NzNat,
-    '%1:NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}])
-| 69
-| 26 ; 28 ; 34 ; 36 ; 38 ; 40 ; 48 ; 50 ; 56 ; 58 ; 60 ; 62
+| 29
+| 12 ; 14 ; (20).NzNat ; 22 ; 24
 ==========================================
 reduce in THERMOSTAT-NARROWING-GRAPH : state(init(0, 20)) <= state(init(4, 20))
     .

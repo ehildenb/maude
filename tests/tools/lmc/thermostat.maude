@@ -1,5 +1,6 @@
 load ../../../contrib/systems/thermostat.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
+load ../../../contrib/tools/meta/variables.maude
 
 set include BOOL off .
 
@@ -8,10 +9,38 @@ mod THERMOSTAT-NARROWING-GRAPH is
     extending CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
     extending UNCONDITIONALIZE-FVP-BOOL .
 
-    vars TMP T T' : Term . vars N M : Nat . var L : Label .
+    vars N M : Nat . var L : Label .
+    vars TMP T T' C : Term . var TS : TermSet . vars NeTS NeTS' : NeTermSet .
+    var SUB : Substitution . vars RL Q : Qid . vars V V' : Variant . var VS : VariantSet .
+    var P : Parent . var B : Bool .
 
     eq #tSort = 'Conf .
     eq #MO    = upModule('THERMOSTAT-INT-COMFORTABLE, true) .
+
+   ceq prune(< label(RL, SUB) , state(Q[T, C]) >) = .TransitionSet if Q = #cTerm /\ isUnsat(C) .
+
+    op isUnsat : Term -> [Bool] .
+    -----------------------------
+   ceq isUnsat(T) = false                       if T == #cTrue .
+   ceq isUnsat(T) = true                        if T == #cFalse .
+   ceq isUnsat(T) = filterFalse(TS) == .TermSet if not T == #cTrue /\ not T == #cFalse
+                                                /\ TS := getTerms(filterRenaming(variants(#M, renameTmpVar(#M, T)))) .
+
+    op filterFalse : TermSet -> [TermSet] .
+    ---------------------------------------
+    eq filterFalse(T) = if T == #cFalse then .TermSet else T fi .
+
+    eq filterFalse(.TermSet)     = .TermSet .
+    eq filterFalse(NeTS | NeTS') = filterFalse(NeTS) | filterFalse(NeTS') .
+
+    op 20 : -> Term .
+    -----------------
+    eq 20 = '_+_['10.NzNat, '10.NzNat] .
+
+   ops lt le : Term Term -> [Term] .
+   ---------------------------------
+    eq lt(T, T') = '_?=_['_<_[T, T'], 'true.Bool] .
+    eq le(T, T') = '_?=_['_<=_[T, T'], 'true.Bool] .
 
     op init : Nat Term -> [Term] .
     ------------------------------
@@ -24,10 +53,7 @@ mod THERMOSTAT-NARROWING-GRAPH is
     eq init(5, TMP) = '`{_`,_`,_`}[ 'TIME:Nat , TMP , 'DM:DelayMode ] .
     eq init(6, TMP) = '`{_`,_`,_`}[ 'TIME:Nat , TMP , 'M:Mode       ] .
 
-   ops lt le : Term Term -> [Term] .
-   ---------------------------------
-    eq lt(T, T') = '_?=_['_<_[T, T'], 'true.Bool] .
-    eq le(T, T') = '_?=_['_<=_[T, T'], 'true.Bool] .
+    eq init(7, TMP) = '`{_`,_`,_`}['_+_['1.NzNat,'1.NzNat],'_+_[20,'1.NzNat,'1.NzNat,TMP],'delay['off.InMode]] .
 
     op cond : Nat Term -> [Term] .
     ------------------------------
@@ -38,14 +64,9 @@ mod THERMOSTAT-NARROWING-GRAPH is
 
     eq cond(2, TMP) = '_/\_[lt(TMP, 20), lt(20, TMP)] .
 
-
     op cinit : Nat Nat Term -> [Term] .
     -----------------------------------
     eq cinit(N, M, T) = '_st_[init(N, T), cond(M, T)] .
-
-    op 20 : -> Term .
-    -----------------
-    eq 20 = '_+_['10.NzNat, '10.NzNat] .
 endm
 
 reduce wellFormed(#M, init(0, 20)) .
@@ -61,6 +82,9 @@ reduce wellFormed(#M, cond(0, '_+_['TMP:Nat, '1.NzNat])) .
 
 reduce wellFormed(#M, cinit(0, 0, 'TMP:Nat)) .
 reduce wellFormed(#M, cinit(1, 0, '_+_['TMP:Nat, '1.NzNat])) .
+
+reduce isUnsat(cond(0, 'TMP:Nat)) .
+reduce isUnsat(cond(2, 'TMP:Nat)) .
 
 reduce step(state(cinit(0,0,'TMP:Nat))) .
 
