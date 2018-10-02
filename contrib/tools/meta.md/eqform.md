@@ -207,30 +207,30 @@ fmod EQFORM-IMPL{X :: TRIV} is
   var EqL : EqLit{X} .
   vars F F' : Form{X} .
 
-  eq ~ tt = ff .
-  eq ~ ff = tt .
+  eq ~ tt = ff [variant] .
+  eq ~ ff = tt [variant] .
 
-  eq ff /\ ff = ff .
-  eq tt \/ tt = tt .
+  eq ff /\ ff = ff [variant] .
+  eq tt \/ tt = tt [variant] .
 
-  eq ff /\ EqL = ff .
-  eq tt \/ EqL = tt .
+  eq ff /\ EqL = ff [variant] .
+  eq tt \/ EqL = tt [variant] .
 
-  eq EqL /\ EqL = EqL .
-  eq EqL \/ EqL = EqL .
+  eq EqL /\ EqL = EqL [variant] .
+  eq EqL \/ EqL = EqL [variant] .
 
-  eq X ?= X = tt .
-  eq X != X = ff .
+  eq X ?= X = tt [variant] .
+  eq X != X = ff [variant] .
 
-  eq X ?= X' /\ X != X' = ff .
-  eq X ?= X' \/ X != X' = tt .
+  eq X ?= X' /\ X != X' = ff [variant] .
+  eq X ?= X' \/ X != X' = tt [variant] .
 
   --- Implication
   op _=>_  : Form{X} Form{X} -> Form{X} .
   op _<=>_ : Form{X} Form{X} -> Form{X} .
   ---------------------------------------
-  eq F  => F' = (~ F) \/ F' .
-  eq F <=> F' = (F => F') /\ (F' => F) .
+  eq F  => F' = (~ F) \/ F'            [variant] .
+  eq F <=> F' = (F => F') /\ (F' => F) [variant] .
 endfm
 
 view Term from TRIV to META-TERM is sort Elt to Term . endv

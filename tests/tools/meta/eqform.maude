@@ -15,11 +15,25 @@ fmod EQFORM-TEST-MODULE is
 
     op f : Baz -> Baz .
     -------------------
-    eq f(baz) = baz .
-    eq f(bar) = baz .
-    eq f(foo) = bar .
-    eq f(wop) = wop .
+    eq f(baz) = baz [variant] .
+    eq f(bar) = baz [variant] .
+    eq f(foo) = bar [variant] .
+    eq f(wop) = wop [variant] .
 endfm
+
+view Baz from TRIV to EQFORM-TEST-MODULE is sort Elt to Baz . endv
+
+fmod EQFORM-TEST-INSTANTIATION is
+    protecting EQFORM-IMPL{Baz} .
+endfm
+
+get variants f(f(B:Baz)) .
+get variants f(f(B:Bar)) .
+get variants f(f(W:Wop)) .
+
+get variants f(f(B:Baz)) ?= f(f(B:Bar)) .
+get variants f(f(B:Baz)) ?= W:Wop .
+get variants baz ?= f(B:Bar) .
 
 fmod EQFORM-TEST is
   inc EQFORM-CNF .
