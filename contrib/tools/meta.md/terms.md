@@ -39,6 +39,7 @@ Substitution Sets
 ```maude
 fmod SUBSTITUTION-SET is
    protecting TERM-SET .
+   protecting EXT-BOOL .
 
     sort SubstitutionSet NeSubstitutionSet .
     ----------------------------------------
@@ -85,6 +86,11 @@ fmod SUBSTITUTION-SET is
 
     eq SUBS << .SubstitutionSet   = .SubstitutionSet .
     eq SUBS << (NeSUBS | NeSUBS') = (SUBS << NeSUBS) | (SUBS << NeSUBS') .
+
+    op isRenaming : Substitution -> Bool .
+    --------------------------------------
+    eq isRenaming(none)         = true .
+    eq isRenaming(V <- T ; SUB) = (T :: Variable) and-then isRenaming(SUB) .
 endfm
 ```
 
