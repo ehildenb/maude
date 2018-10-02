@@ -107,8 +107,10 @@ fmod GRAPH-FOLDING-SEARCH is
    ceq fold(ND ; NeNS , ND') = F F' if F  := fold(ND, ND')
                                     /\ F' := fold(NeNS, ND') .
 
-    op step : Node -> [TransitionSet] .
-    -----------------------------------
+    op step : NodeSet -> [TransitionSet] .
+    --------------------------------------
+    eq step(.NodeSet)     = .TransitionSet .
+    eq step(NeNS ; NeNS') = step(NeNS) , step(NeNS') .
 
     op all-step : NodeSet -> [LabeledGraph] .
     -----------------------------------------
