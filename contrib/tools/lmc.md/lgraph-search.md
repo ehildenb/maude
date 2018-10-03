@@ -393,6 +393,9 @@ fmod CONDITIONAL-NARROWING-GRAPH is
     --- Probably theory specific, maybe best to leave the choice of `memo` to each individual theory.
     op implies? : Term Term -> [Bool] .
     -----------------------------------
+    eq implies?(C, C)  = true .
+   ceq implies?(C, C') = true if C' = #cTrue  .
+   ceq implies?(C, C') = true if C  = #cFalse .
 
    ceq intersect(state(Q[T,C]), state(Q[T',C'])) = .NodeSet
     if Q = #cTerm /\ noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .

@@ -278,7 +278,7 @@ result FoldedLabeledGraph: (0 -[label('deposit,
 | 11
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : bfs(state(cinit(1)), 1) .
-rewrites: 859
+rewrites: 875
 result FoldedLabeledGraph?: (0 -[label('deposit, 
   'MSGS:MsgConf <- '%1:MsgConf ; 
   'N:Nat <- '_+_['%2:Nat,'%3:Nat] ; 
@@ -370,12 +370,12 @@ rewrites: 2
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : implies?(pred(0), pred(1)) .
-rewrites: 13
+rewrites: 15
 result Bool: false
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : implies?(pred(1), pred(2)) .
-rewrites: 13
-result Bool: false
+rewrites: 14
+result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(state(cinit(0))) .
 rewrites: 172
