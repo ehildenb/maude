@@ -68,6 +68,12 @@ fmod LABELED-GRAPH is
     eq N -> .TransitionSet = .LabeledGraph .
     eq N -> < L , N' >     = N -[ L ]-> N' .
     eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
+
+    op nodes : TransitionSet -> [NodeSet] .
+    ---------------------------------------
+    eq nodes(.TransitionSet) = .NodeSet .
+    eq nodes(< L , N >)      = N .
+    eq nodes((NeTS , NeTS')) = nodes(NeTS) ; nodes(NeTS') .
 endfm
 ```
 
