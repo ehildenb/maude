@@ -51,20 +51,20 @@ mod BANK-ACCOUNT is
     *** requesting to draw money having sufficient funds; the amount requested is
     *** added to the amount of pending withdraw requests
 
-    rl < bal: n + m + x pend: x     overdraft: false > #               msgs
-    => < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs .
+    rl [initWithdrawal] : < bal: n + m + x pend: x     overdraft: false > #               msgs
+                       => < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs .
 
     *** actual withdrawing of money from account
 
-    rl < bal: n pend: x overdraft: false > # withdraw(m) , msgs
-    => [ n < m , < bal: n           pend: x           overdraft: true  > # msgs
-               , < bal: (n monus m) pend: (x monus m) overdraft: false > # msgs
-       ] .
+    rl [doWithdrawal] : < bal: n pend: x overdraft: false > # withdraw(m) , msgs
+                     => [ n < m , < bal: n           pend: x           overdraft: true  > # msgs
+                                , < bal: (n monus m) pend: (x monus m) overdraft: false > # msgs
+                        ] .
 
     *** more money can at any time be deposited in the account if it is not in overdraft
 
-    rl < bal: n     pend: x overdraft: false > # msgs
-    => < bal: n + m pend: x overdraft: false > # msgs .
+    rl [overdraft] : < bal: n     pend: x overdraft: false > # msgs
+                  => < bal: n + m pend: x overdraft: false > # msgs .
 endm
 ```
 
@@ -105,29 +105,29 @@ mod BANK-ACCOUNT-CTOR is
     vars n n' m x y x' y' : Nat . vars b b' : Bool .
     var msgs : MsgConf .
 
-    rl < bal: n + m + x pend: x     overdraft: false > #               msgs
-    => < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs
-    [narrowing label initWithdrawal] .
+    rl [initWithdrawal] : < bal: n + m + x pend: x     overdraft: false > #               msgs
+                       => < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs
+       [narrowing] .
 
      *** actual withdrawing of money from account (done with ctor variants of original rule)
 
-    rl < bal: N1:Nat + N3:Nat + N4:Nat pend: N3:Nat overdraft: false > # M2:MsgConf , withdraw(N3:Nat + N4:Nat)
-    => < bal: N1:Nat                   pend: 0      overdraft: false > # M2:MsgConf
-    [narrowing label doWithdrawal1] .
+    rl [doWithdrawal1] : < bal: N1:Nat + N3:Nat + N4:Nat pend: N3:Nat overdraft: false > # M2:MsgConf , withdraw(N3:Nat + N4:Nat)
+                      => < bal: N1:Nat                   pend: 0      overdraft: false > # M2:MsgConf
+       [narrowing] .
 
-    rl < bal: N1:Nat + N3:Nat pend: N3:Nat + N4:Nat overdraft: false > # M2:MsgConf , withdraw(N3:Nat)
-    => < bal: N1:Nat          pend: N4:Nat          overdraft: false > # M2:MsgConf
-    [narrowing label doWithdrawal2] .
+    rl [doWithdrawal2] : < bal: N1:Nat + N3:Nat pend: N3:Nat + N4:Nat overdraft: false > # M2:MsgConf , withdraw(N3:Nat)
+                      => < bal: N1:Nat          pend: N4:Nat          overdraft: false > # M2:MsgConf
+       [narrowing] .
 
-    rl < bal: N1:Nat pend: N2:Nat overdraft: false > # M3:MsgConf , withdraw(1 + N1:Nat + N4:Nat)
-    => < bal: N1:Nat pend: N2:Nat overdraft: true  > # M3:MsgConf
-    [narrowing label overdraft] .
+    rl [overdraft] : < bal: N1:Nat pend: N2:Nat overdraft: false > # M3:MsgConf , withdraw(1 + N1:Nat + N4:Nat)
+                  => < bal: N1:Nat pend: N2:Nat overdraft: true  > # M3:MsgConf
+       [narrowing] .
 
     *** more money can at any time be deposited in the account if it is not in overdraft
 
-    rl < bal: n     pend: x overdraft: false > # msgs
-    => < bal: n + m pend: x overdraft: false > # msgs
-    [narrowing label deposit] .
+    rl [deposit] : < bal: n     pend: x overdraft: false > # msgs
+                => < bal: n + m pend: x overdraft: false > # msgs
+       [narrowing] .
 endm
 ```
 

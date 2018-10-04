@@ -1,7 +1,7 @@
 Warning: "bank-account.maude", line 66 (mod BANK-ACCOUNT): variable m is used
     before it is bound in rule:
 rl < bal: n pend: x overdraft: false > # msgs => < bal: n + m pend: x
-    overdraft: false > # msgs .
+    overdraft: false > # msgs [label overdraft] .
 Warning: "bank-account.maude", line 128 (mod BANK-ACCOUNT-CTOR): variable m is
     used before it is bound in rule:
 rl < bal: n pend: x overdraft: false > # msgs => < bal: n + m pend: x
