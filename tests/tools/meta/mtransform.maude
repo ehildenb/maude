@@ -1,8 +1,8 @@
-
-
 load ../../../contrib/systems/dijkstra.maude
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/systems/qlock.maude
+load ../../../contrib/systems/oc.maude
+load ../../../contrib/systems/thermostat.maude
 load ../../../contrib/tools/meta/mtransform.maude
 
 --- Module SUBTHEORY-ABSTRACTION
@@ -34,3 +34,42 @@ reduce stripConditions(asTemplate(upModule('QLOCK-STATE , true))) .
 reduce wellFormed(fromTemplate('DIJKSTRA    , stripConditions(asTemplate(upModule('DIJKSTRA    , true))))) .
 reduce wellFormed(fromTemplate('BAKERY-FVP  , stripConditions(asTemplate(upModule('BAKERY-FVP  , true))))) .
 reduce wellFormed(fromTemplate('QLOCK-STATE , stripConditions(asTemplate(upModule('QLOCK-STATE , true))))) .
+
+fmod DIJKSTRA-UNCONDITIONALIZED is
+   protecting UNCONDITIONALIZE-FVP-BOOL .
+
+    eq #tSort = 'State .
+
+    op M : -> Module [memo] .
+    -------------------------
+    eq M = unconditionalize(upModule('DIJKSTRA, false)) .
+endfm
+
+reduce M .
+reduce wellFormed(M) .
+
+fmod FT-COMM-UNCONDITIONALIZED is
+   protecting UNCONDITIONALIZE-FVP-BOOL .
+
+    eq #tSort = 'State .
+
+    op M : -> Module [memo] .
+    -------------------------
+    eq M = unconditionalize(upModule('FT-COMM, false)) .
+endfm
+
+reduce M .
+reduce wellFormed(M) .
+
+fmod THERMOSTAT-UNCONDITIONALIZED-TEST is
+   protecting UNCONDITIONALIZE-FVP-BOOL .
+
+    eq #tSort = 'Conf .
+
+    op M : -> Module [memo] .
+    -------------------------
+    eq M = unconditionalize(upModule('THERMOSTAT, false)) .
+endfm
+
+reduce M .
+reduce wellFormed(M) .

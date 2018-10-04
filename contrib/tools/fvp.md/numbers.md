@@ -11,6 +11,8 @@ For instantiating for formulae over FVP naturals, we'll use the `eqform` package
 
 ```maude
 load ../meta/eqform.maude
+load ../meta/mtransform.maude
+load ../meta/variables.maude
 ```
 
 FVP Booleans
@@ -238,4 +240,30 @@ endfm
 
 fmod FVP-NAT-EQFORM is protecting EQFORM-IMPL{Nat} . endfm
 fmod FVP-INT-EQFORM is protecting EQFORM-IMPL{Int} . endfm
+```
+
+Unconditionalizing Theories with FVP Natural conditions
+-------------------------------------------------------
+
+Instantiations of this still must specify the top sort of the target rewrite system (`#tSort`).
+
+```maude
+fmod UNCONDITIONALIZE-FVP-BOOL is
+    including UNCONDITIONALIZE .
+   protecting DETERMINISTIC-VARIABLES .
+
+    vars T T' : Term . var S : Sort . vars EqC EqC' : EqCondition .
+
+    eq #cModule   = 'FVP-BOOL-EQFORM .
+    eq #cSort     = 'Form`{Bool`} .
+    eq #cTrue     = 'tt.TrueLit`{Bool`} .
+    eq #cFalse    = 'ff.FalseLit`{Bool`} .
+    eq #cConjunct = '_/\_ .
+    -----------------------
+
+    eq #mkCondition(T  = T') = '_?=_[T, T'] .
+    eq #mkCondition(T := T') = '_?=_[T, T'] .
+    eq #mkCondition(T : S)   = '_?=_[T, #var(T, S)] .
+    -------------------------------------------------
+endfm
 ```

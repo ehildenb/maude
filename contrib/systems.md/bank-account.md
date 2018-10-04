@@ -17,6 +17,8 @@ Here is the high-level specification of the bank account system.
 mod BANK-ACCOUNT is
    protecting FVP-NAT-PRED .
 
+    var N : Nat . var MSGS : MsgConf .
+
     sorts Msg MsgConf .
     -------------------
     subsort Msg < MsgConf .
@@ -24,6 +26,11 @@ mod BANK-ACCOUNT is
     op withdraw : Nat -> Msg [ctor] .
     op mt       : -> MsgConf [ctor] .
     op _,_ : MsgConf MsgConf -> MsgConf [ctor assoc comm id: mt] .
+
+    op debts : MsgConf -> Nat .
+    ---------------------------
+    eq debts(mt)                 = 0 .
+    eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
 
     sort Account .
     ------------
@@ -74,6 +81,8 @@ After performing constructor decomposition, you should arrive at this specificat
 mod BANK-ACCOUNT-CTOR is
    protecting FVP-NAT-PRED .
 
+    var N : Nat . var MSGS : MsgConf .
+
     sorts Msg MsgConf .
     -------------------
     subsort Msg < MsgConf .
@@ -81,6 +90,11 @@ mod BANK-ACCOUNT-CTOR is
     op withdraw : Nat -> Msg [ctor] .
     op mt       : -> MsgConf [ctor] .
     op _,_ : MsgConf MsgConf -> MsgConf [ctor assoc comm id: mt] .
+
+    op debts : MsgConf -> Nat .
+    ---------------------------
+    eq debts(mt)                 = 0 .
+    eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
 
     sort Account .
     --------------
@@ -128,24 +142,5 @@ mod BANK-ACCOUNT-CTOR is
     rl [deposit] : < bal: n     pend: x overdraft: false > # msgs
                 => < bal: n + m pend: x overdraft: false > # msgs
        [narrowing] .
-endm
-```
-
-Defined Operations
-------------------
-
-The following operations help to specify claims about the bank account system.
-
-```maude
-mod BANK-ACCOUNT-DEFINEDOPS is
-   protecting BANK-ACCOUNT-CTOR .
-   protecting FVP-BOOL-EQFORM .
-
-    var N : Nat . var MSGS : MsgConf .
-
-    op debts : MsgConf -> Nat .
-    ---------------------------
-    eq debts(mt)                 = 0 .
-    eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
 endm
 ```

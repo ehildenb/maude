@@ -9,6 +9,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 
 mod BANK-ACCOUNT-INIT-STATES is
     extending FVP-CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+   protecting UNCONDITIONALIZE-FVP-BOOL .
 
     var N : Nat . vars NeNS NeNS' : NeNodeSet . vars T T' : Term .
 
@@ -73,12 +74,6 @@ mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     vars C C' : Term .
 
     eq #tSort  = 'State .
-
-    eq #cModule   = 'BANK-ACCOUNT-DEFINEDOPS .
-    eq #cSort     = 'Form`{Bool`} .
-    eq #cTrue     = 'tt.TrueLit`{Bool`} .
-    eq #cFalse    = 'ff.FalseLit`{Bool`} .
-    eq #cConjunct = '_/\_ .
 
     eq #MO = upModule('BANK-ACCOUNT-CTOR, false) .
 
