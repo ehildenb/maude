@@ -1,132 +1,129 @@
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(0)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(0)) .
 rewrites: 4
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(1)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(1)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(2)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(2)) .
 rewrites: 3
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(3)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(3)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(4)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(4)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(5)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(5)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(6)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(6)) .
 rewrites: 4
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : wellFormed(##m##, init(7)) .
+reduce in NAT-HARNESS : wellFormed(##m##, init(7)) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(0)) .
+reduce in NAT-HARNESS : variants(##m##, init(0)) .
 rewrites: 8
-result Variant: {'#1:Nat>,
-  'X:Nat> <- '#1:Nat>,1,none,false}
+result Variant: {'#1:Nat,
+  'X:Nat <- '#1:Nat,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(1)) .
+reduce in NAT-HARNESS : variants(##m##, init(1)) .
 rewrites: 8
-result Variant: {'_+_['1.NzNat>,'#1:Nat>],
-  'Y:Nat> <- '#1:Nat>,1,none,false}
+result Variant: {'_+_['1.NzNat,'#1:Nat],
+  'Y:Nat <- '#1:Nat,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(2)) .
+reduce in NAT-HARNESS : variants(##m##, init(2)) .
 rewrites: 8
-result Variant: {'#1:NzNat>,
-  'Z:NzNat> <- '#1:NzNat>,1,none,false}
+result Variant: {'#1:NzNat,
+  'Z:NzNat <- '#1:NzNat,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(3)) .
+reduce in NAT-HARNESS : variants(##m##, init(3)) .
+rewrites: 18
+result VariantSet: {'false.Bool,
+  'X:Nat <- '_+_['%2:Nat,'%1:NzNat] ; 
+  'Z:NzNat <- '%1:NzNat,2,0,false} #
+{'true.Bool,
+  'X:Nat <- '%1:Nat ; 
+  'Z:NzNat <- '_+_['%1:Nat,'%2:NzNat],2,0,true} #
+{'_<_['#1:Nat,'#2:NzNat],
+  'X:Nat <- '#1:Nat ; 
+  'Z:NzNat <- '#2:NzNat,2,none,false}
+==========================================
+reduce in NAT-HARNESS : variants(##m##, init(4)) .
 rewrites: 22
-result VariantSet: {'ff.Bool>,
-  'X:Nat> <- '%1:Nat> ; 
-  'Z:NzNat> <- '_+_['%1:Nat>,'%2:NzNat>],2,0,true} #
-{'ff.Bool>,
-  'X:Nat> <- '%1:NzNat> ; 
-  'Z:NzNat> <- '_+_['%2:Nat>,'%1:NzNat>],2,0,true} #
-{'tt.Bool>,
-  'X:Nat> <- '_+_['%1:NzNat>,'%2:NzNat>] ; 
-  'Z:NzNat> <- '%1:NzNat>,2,0,false} #
-{'_>_['#1:Nat>,'#2:NzNat>],
-  'X:Nat> <- '#1:Nat> ; 
-  'Z:NzNat> <- '#2:NzNat>,2,none,false}
+result VariantSet: {'false.Bool,
+  'X:Nat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat] ; 
+  'Y:Nat <- '%1:Nat,2,0,false} #
+{'true.Bool,
+  'X:Nat <- '%1:Nat ; 
+  'Y:Nat <- '_+_['%1:Nat,'%2:Nat],2,0,true} #
+{'true.Bool,
+  'X:Nat <- '_+_['1.NzNat,'%1:Nat] ; 
+  'Y:Nat <- '_+_['%1:Nat,'%2:NzNat],2,0,true} #
+{'_<_['#1:Nat,'_+_['1.NzNat,'#2:Nat]],
+  'X:Nat <- '#1:Nat ; 
+  'Y:Nat <- '#2:Nat,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(4)) .
+reduce in NAT-HARNESS : variants(##m##, init(5)) .
 rewrites: 22
-result VariantSet: {'ff.Bool>,
-  'X:Nat> <- '%1:Nat> ; 
-  'Y:Nat> <- '_+_['%1:Nat>,'%2:Nat>],2,0,true} #
-{'ff.Bool>,
-  'X:Nat> <- '_+_['1.NzNat>,'%1:Nat>] ; 
-  'Y:Nat> <- '_+_['%1:Nat>,'%2:Nat>],2,0,true} #
-{'tt.Bool>,
-  'X:Nat> <- '_+_['1.NzNat>,'%1:Nat>,'%2:NzNat>] ; 
-  'Y:Nat> <- '%1:Nat>,2,0,false} #
-{'_>_['#1:Nat>,'_+_['1.NzNat>,'#2:Nat>]],
-  'X:Nat> <- '#1:Nat> ; 
-  'Y:Nat> <- '#2:Nat>,2,none,false}
+result VariantSet: {'false.Bool,
+  'Y:Nat <- '%1:Nat ; 
+  'Z:NzNat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat],2,0,false} #
+{'true.Bool,
+  'Y:Nat <- '_+_['%1:Nat,'%2:NzNat] ; 
+  'Z:NzNat <- '_+_['1.NzNat,'%1:Nat],2,0,true} #
+{'true.Bool,
+  'Y:Nat <- '_+_['%2:Nat,'%1:NzNat] ; 
+  'Z:NzNat <- '%1:NzNat,2,0,true} #
+{'_<_['#1:NzNat,'_+_['1.NzNat,'#2:Nat]],
+  'Y:Nat <- '#2:Nat ; 
+  'Z:NzNat <- '#1:NzNat,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(5)) .
-rewrites: 22
-result VariantSet: {'ff.Bool>,
-  'Y:Nat> <- '_+_['%1:Nat>,'%2:Nat>] ; 
-  'Z:NzNat> <- '_+_['1.NzNat>,'%1:Nat>],2,0,true} #
-{'ff.Bool>,
-  'Y:Nat> <- '_+_['%2:Nat>,'%1:NzNat>] ; 
-  'Z:NzNat> <- '%1:NzNat>,2,0,true} #
-{'tt.Bool>,
-  'Y:Nat> <- '%1:Nat> ; 
-  'Z:NzNat> <- '_+_['1.NzNat>,'%1:Nat>,'%2:NzNat>],2,0,false} #
-{'_>_['#1:NzNat>,'_+_['1.NzNat>,'#2:Nat>]],
-  'Y:Nat> <- '#2:Nat> ; 
-  'Z:NzNat> <- '#1:NzNat>,2,none,false}
-==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(6)) .
+reduce in NAT-HARNESS : variants(##m##, init(6)) .
 rewrites: 10
-result Variant: {'tt.Bool>,
-  'Y:Nat> <- '#1:Nat>,1,none,false}
+result Variant: {'false.Bool,
+  'Y:Nat <- '#1:Nat,1,none,false}
 ==========================================
-reduce in NAT>-HARNESS : variants(##m##, init(7)) .
+reduce in NAT-HARNESS : variants(##m##, init(7)) .
 rewrites: 11
-result Variant: {'ff.Bool>,
-  'X:Nat> <- '#1:Nat> ; 
-  'Y:Nat> <- '#2:Nat>,2,none,false}
+result Variant: {'true.Bool,
+  'X:Nat <- '#1:Nat ; 
+  'Y:Nat <- '#2:Nat,2,none,false}
 ==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(0))) .
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(0))) .
 rewrites: 10
-result Variable: '#1:Nat>
+result Variable: '#1:Nat
 ==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(3))) .
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(3))) .
+rewrites: 22
+result NeTermList: 'false.Bool,'true.Bool,'_<_['#1:Nat,'#2:NzNat]
+==========================================
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(4))) .
 rewrites: 27
-result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:Nat>,'#2:NzNat>]
+result NeTermList: 'false.Bool,'true.Bool,'true.Bool,'_<_['#1:Nat,'_+_[
+    '1.NzNat,'#2:Nat]]
 ==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(4))) .
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(5))) .
 rewrites: 27
-result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:Nat>,'_+_['1.NzNat>,
-    '#2:Nat>]]
+result NeTermList: 'false.Bool,'true.Bool,'true.Bool,'_<_['#1:NzNat,'_+_[
+    '1.NzNat,'#2:Nat]]
 ==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(5))) .
-rewrites: 27
-result NeTermList: 'ff.Bool>,'ff.Bool>,'tt.Bool>,'_>_['#1:NzNat>,'_+_[
-    '1.NzNat>,'#2:Nat>]]
-==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(6))) .
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(6))) .
 rewrites: 12
-result Constant: 'tt.Bool>
+result Constant: 'false.Bool
 ==========================================
-reduce in NAT>-HARNESS : getTerms(variants(##m##, init(7))) .
+reduce in NAT-HARNESS : getTerms(variants(##m##, init(7))) .
 rewrites: 13
-result Constant: 'ff.Bool>
+result Constant: 'true.Bool
 ==========================================
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
     'a.PreState], 0) .
