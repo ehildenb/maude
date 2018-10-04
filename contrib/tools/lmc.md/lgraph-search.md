@@ -314,20 +314,20 @@ endfm
 ### Conditional Narrowing
 
 ```maude
-fmod FVP-NARROWING-MODULO-T-GRAPH is
+fmod FVP-CONDITIONAL-NARROWING-GRAPH is
    protecting FVP-NARROWING-GRAPH .
-    extending META-CONDITIONAL-LMC-PARAMETERS .
+   protecting META-CONDITIONAL-LMC-PARAMETERS .
 
     vars ND ND' : Node . vars T T' C C' : Term .
     var Q : Qid . var SUB : Substitution . var N : Nat .
 
-    op foldAny  : Node Node Nat -> [Fold] .
-    ---------------------------------------
+    op foldAny : Node Node Nat -> [Fold] .
+    --------------------------------------
     eq fold(ND, ND') = foldAny(ND, ND', 0) [owise] .
 
    ceq foldAny(ND, ND', N) = if implies?(C << SUB, C' << SUB) then fold(SUB) else foldAny(ND, ND', s N) fi
-                          if state(Q[T,  C ]) := ND  /\ Q == #ST
-                          /\ state(Q[T', C']) := ND' /\ Q == #ST
+                          if state(Q[T  , C ]) := ND  /\ Q == #cTerm
+                          /\ state(Q[T' , C']) := ND' /\ Q == #cTerm
                           /\ SUB := metaMatch(#M, T', T, nil, N) .
 ```
 

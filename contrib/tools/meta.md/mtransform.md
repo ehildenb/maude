@@ -4,7 +4,6 @@ Module Transformations
 ```maude
 load purification.maude
 load mconstruction.maude
-load variables.maude
 ```
 
 \newcommand{\R}{\mathcal{R}}
@@ -89,55 +88,24 @@ Removing Conditional Equations/Rules
 fmod UNCONDITIONALIZE is
    protecting META-LEVEL .
    protecting MODULE-TEMPLATE .
-   protecting DETERMINISTIC-VARIABLES .
 
     vars Q OP : Qid . var M : Module . var FM : FModule . vars S S' CS : Sort .
-    vars T T' C' : Term . var AS : AttrSet . var C : Condition . var V : Variable .
-    var H : Header . var MDS : ModuleDeclSet .
+    vars T T' C' : Term . vars A A' : Attr . var AS : AttrSet .
+    var C : Condition . var V : Variable .
+    var H : Header . var MD : ModuleDecl . var MDS : ModuleDeclSet .
     vars NeMDS NeMDS' : NeModuleDeclSet .
-    var IS : ImportDeclSet . var SDS : SortDeclSet .
+    var IDS : ImportDeclSet . var SDS : SortDeclSet .
     var SSDS : SubsortDeclSet . var OPDS : OpDeclSet . var MAS : MembAxSet .
-    var EQS : EquationSet . var RLS : RuleSet .
-
-    op cSort : Sort -> Sort .
-    -------------------------
-    eq cSort(S) = qid("C" + string(S)) .
-
-    op rmConditions : Sort Sort Qid ModuleDeclSet -> [ModuleDeclSet] .
-    ------------------------------------------------------------------
-    eq rmConditions(S, CS, OP, IS SDS SSDS OPDS MAS EQS) = IS SDS SSDS OPDS MAS EQS .
-    eq rmConditions(S, CS, OP, NeMDS NeMDS')             = rmConditions(S, CS, OP, NeMDS) rmConditions(S, CS, OP, NeMDS') .
+    var EQS : EquationSet . var RLS : RuleSet . vars EqC EqC' : EqCondition .
+    vars NeRLS NeRLS' : NeRuleSet .
 ```
 
-The following rules add an extra variable to each rule to capture the accumulated condition.
-Currently, we assume syntax `'_/\_` exists to conjunct the conditions together (though the transformation could probably be made parametric in this).
-Note that we must transform both conditional and unconditional rules, so that narrowing substitutions into the original term also instantiate variables in the condition.
-This also assumes that the given theory is topmost.
+The following allow for simple manipulation of modules with coonditions, including removing and retrieving conditions for rules.
 
 ```maude
-   ceq rmConditions(S, CS, OP, rl T => T' [AS] .) = ( rl OP[T, V] => OP[T', V] [AS] . )
-    if V := #var((T, T'), CS) .
-
-   ceq rmConditions(S, CS, OP, crl T => T' if C [AS] .) = ( rl OP[T, V] => OP[T', '_/\_[V, C']] [AS] . )
-    if C' := upTerm(C)
-    /\ V  := #var((T, T', C'), CS) .
-
-    op unconditionalize : Sort Sort Qid Qid ModuleDeclSet -> [ModuleDeclSet] .
-    --------------------------------------------------------------------------
-   ceq unconditionalize(S, CS, OP, Q, MDS)
-     = ( pr Q . )
-       ( sorts cSort(S) . )
-       ( op OP : S CS -> cSort(S) [none] . )
-       rmConditions(S, CS, OP, MDS)
-    if S' := qid("C" + string(S)) .
-
-    op unconditionalize : Sort Sort Qid Qid Module -> [Module] .
-    ------------------------------------------------------------
-    eq unconditionalize(S, CS, OP, Q, M) = fromTemplate(getName(M), unconditionalize(S, CS, OP, Q, asTemplate(M))) .
-
     op stripConditions : ModuleDeclSet -> [ModuleDeclSet] .
     -------------------------------------------------------
-    eq stripConditions(IS SDS SSDS OPDS MAS EQS)    = IS SDS SSDS OPDS MAS EQS .
+    eq stripConditions(IDS SDS SSDS OPDS MAS EQS)   = IDS SDS SSDS OPDS MAS EQS .
     eq stripConditions(NeMDS NeMDS')                = stripConditions(NeMDS) stripConditions(NeMDS') .
     eq stripConditions(  rl T => T'      [ AS ] . ) = ( rl T => T' [ AS ] . ) .
     eq stripConditions( crl T => T' if C [ AS ] . ) = ( rl T => T' [ AS ] . ) .
@@ -154,5 +122,73 @@ This also assumes that the given theory is topmost.
     op conditionFor : Qid Module -> [Condition] .
     ---------------------------------------------
     eq conditionFor(Q, M) = conditionFor(Q, asTemplate(M)) .
+```
+
+### Unconditionalize
+
+The general algorithm for unconditionalizing rules with equational conditions follows.
+It's parametric in several operators and sorts (prefixed below with `#`) about the module which the conditions will be translated into.
+
+```maude
+    op unconditionalize : ModuleDeclSet -> [ModuleDeclSet] .
+    --------------------------------------------------------
+   ceq unconditionalize(IDS SDS SSDS OPDS MAS EQS RLS)
+     = IDS  ( pr #cModule . )
+       SDS  ( sorts CS . )
+       SSDS
+       OPDS ( op #cTerm : #tSort #cSort -> CS [ctor prec(57)] . )
+       MAS
+       EQS
+       unconditionalizeRules(RLS)
+    if CS := qid("C" + string(#tSort)) .
+
+    op unconditionalize : Module -> [Module] .
+    ------------------------------------------
+    eq unconditionalize(M) = fromTemplate(getName(M), unconditionalize(asTemplate(M))) .
+
+    op unconditionalizeRules : RuleSet -> [RuleSet] .
+    -------------------------------------------------
+    eq unconditionalizeRules(none)         = none .
+    eq unconditionalizeRules(NeRLS NeRLS') = unconditionalizeRules(NeRLS) unconditionalizeRules(NeRLS') .
+
+   ceq unconditionalizeRules(rl T => T' [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', V] [narrowing AS] . )
+    if V := qid("###COND###:" + string(#cSort)) .
+
+   ceq unconditionalizeRules(crl T => T' if EqC [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', C'] [narrowing AS] . )
+    if V  := qid("###COND###:" + string(#cSort))
+    /\ C' := #cConjunct[V, #mkCondition(EqC)] .
+```
+
+The parameters of the transformation are as follows:
+
+-   `#tSort`: topmost sort of the rules from the conditional theory.
+-   `#cModule`: module that the conditions (of sort `#cSort`) come from.
+-   `#cSort`: sort of the conditions from the conditional theory.
+-   `#cTrue`: true/top element of the conditional sort `#cSort`.
+-   `#cFalse`: false/bottom element of the conditional sort `#cSort`.
+-   `#cConjunct`: conjunction operator in condition module `#cModule`.
+-   `#cTerm`: operator to join the a `#tSort` and a `#cSort` together (currently set to `_st_`).
+-   `#mkCondition`: translation from an `EqCondition` atom to a term of sort `#cSort`.
+
+```maude
+    op #tSort : -> Sort .
+    ---------------------
+
+    op #cModule   : -> Qid .
+    op #cSort     : -> Sort .
+    op #cTrue     : -> Constant .
+    op #cFalse    : -> Constant .
+    op #cConjunct : -> Qid .
+    ------------------------
+
+    op #cTerm : -> Qid .
+    --------------------
+    eq #cTerm = '_st_ .
+
+    op #mkCondition : EqCondition -> Term .
+    ---------------------------------------
+    eq #mkCondition(nil)         = #cTrue .
+   ceq #mkCondition(EqC /\ EqC') = #cConjunct[#mkCondition(EqC), #mkCondition(EqC')]
+                                if EqC =/= nil /\ EqC' =/= nil .
 endfm
 ```
