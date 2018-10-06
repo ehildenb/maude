@@ -87,6 +87,7 @@ fmod GRAPH-FOLDING-SEARCH is
     extending LABELED-GRAPH .
 
     vars D D' : Depth . var B : Bound .
+    var T : Transition . vars NeTS NeTS' : NeTransitionSet .
     vars NS NS' NS'' : NodeSet . vars NeNS NeNS' NeNS'' : NeNodeSet .
     vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
     var L : Label . vars LG LG' LG'' LG''' : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
@@ -117,6 +118,12 @@ fmod GRAPH-FOLDING-SEARCH is
     --------------------------------------
     eq step(.NodeSet)     = .TransitionSet .
     eq step(NeNS ; NeNS') = step(NeNS) , step(NeNS') .
+
+    op prune : TransitionSet -> [TransitionSet] .
+    ---------------------------------------------
+    eq prune(T)              = T [owise] .
+    eq prune(.TransitionSet) = .TransitionSet .
+    eq prune(NeTS , NeTS')   = prune(NeTS) , prune(NeTS') .
 
     op all-step : NodeSet -> [LabeledGraph] .
     -----------------------------------------
@@ -320,7 +327,7 @@ fmod NARROWING-GRAPH-COMMON is
 
     op transition : NarrowStepResults -> [TransitionSet] .
     ------------------------------------------------------
-    eq transition({RL : T , SUB })    = < label(RL, SUB) , state(T) > .
+    eq transition({RL : T , SUB })    = prune(< label(RL, SUB) , state(T) >) .
     eq transition(.NarrowStepResults) = .TransitionSet .
     eq transition(NSR || NeNSRS)      = transition(NSR) , transition(NeNSRS) .
 
