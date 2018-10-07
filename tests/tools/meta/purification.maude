@@ -86,6 +86,13 @@ endfm
 --- Function `moduleIntersect`
 --- --------------------------
 
+reduce moduleIntersect(asTemplate(natMultMod),  asTemplate(natMultMod))  == asTemplate(natMultMod) .
+reduce moduleIntersect(asTemplate(natOrderMod), asTemplate(natOrderMod)) == asTemplate(natOrderMod) .
+reduce moduleIntersect(asTemplate(natListMod),  asTemplate(natListMod))  == asTemplate(natListMod) .
+reduce moduleIntersect(asTemplate(natMultMod),  asTemplate(natOrderMod)) == asTemplate(upModule('FVP-NAT, true)) .
+reduce moduleIntersect(asTemplate(natMultMod),  asTemplate(natListMod))  == asTemplate(upModule('FVP-NAT-SORT, true)) .
+reduce moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod))  == asTemplate(upModule('FVP-NAT-SORT, true)) asTemplate(upModule('FVP-BOOL-CTOR, true)) .
+
 reduce 'Foo     inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
 reduce 'NatList inS moduleIntersect(asTemplate(natOrderMod), asTemplate(natListMod)) == false .
 

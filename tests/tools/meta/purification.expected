@@ -57,6 +57,37 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
     SortDeclSet).
 ==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natMultMod), asTemplate(
+    natMultMod)) == asTemplate(natMultMod) .
+rewrites: 26
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natOrderMod), asTemplate(
+    natOrderMod)) == asTemplate(natOrderMod) .
+rewrites: 30
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natListMod), asTemplate(
+    natListMod)) == asTemplate(natListMod) .
+rewrites: 16
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natMultMod), asTemplate(
+    natOrderMod)) == asTemplate(upModule('FVP-NAT, true)) .
+rewrites: 33
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natMultMod), asTemplate(
+    natListMod)) == asTemplate(upModule('FVP-NAT-SORT, true)) .
+rewrites: 18
+result Bool: true
+==========================================
+reduce in TEST-PURIFY : moduleIntersect(asTemplate(natOrderMod), asTemplate(
+    natListMod)) == asTemplate(upModule('FVP-BOOL-CTOR, true))
+asTemplate(upModule('FVP-NAT-SORT, true)) .
+rewrites: 26
+result Bool: true
+==========================================
 reduce in TEST-PURIFY : 'Foo inS moduleIntersect(asTemplate(natOrderMod),
     asTemplate(natListMod)) == false .
 rewrites: 21
