@@ -11,6 +11,7 @@ build_dir="$top_dir/.build"
 include_dir="$build_dir/include"
 lib_dir="$build_dir/lib"
 contrib_dir="contrib"
+tests_dir="tests"
 
 cvc4_dir="ext/cvc4"
 yices2_dir="ext/yices2"
@@ -141,6 +142,17 @@ build_test_all() {
     git checkout -- src/Mixfix/tokenizer.cc
 }
 
+build_test_approve() {
+    local test_prefix test_out test_expected
+
+    test_prefix="${1:-$tests_dir/}"
+
+    for test_out in $(find "$test_prefix" -iname "*.out"); do
+        test_expected="${test_out%.out}.expected"
+        cp $test_out $test_expected
+    done
+}
+
 # Main
 # ----
 
@@ -153,8 +165,9 @@ case "$build_command" in
     maude-yices2)   build_maude_yices2  "$@" ;;
     tangle)         build_tangle        "$@" ;;
     test)           build_test          "$@" ;;
-    test-smt)       build_test_smt      "$@" ;;
     test-all)       build_test_all      "$@" ;;
+    test-smt)       build_test_smt      "$@" ;;
+    test-approve)   build_test_approve  "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
            $0 maude <options>
@@ -167,12 +180,14 @@ case "$build_command" in
     $0 maude-yices2 ...: build maude using the yices2 git submodule
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
 
-    developers: $0 test <test-name>
+    developers: $0 test <test-path>
                 $0 test-all
                 $0 test-smt
+                $0 test-approve [<test-prefix>]
 
-    $0 test <test-path>: run test at <test-path> (eg. tests/tools/fvp/numbers).
-    $0 test-all:         Clean build and run non-smt tests.
-    $0 test-smt:         Run tests that are conditional on an SMT engine being compiled.
+    $0 test:         Run test at <test-path> (eg. tests/tools/fvp/numbers).
+    $0 test-all:     Clean build and run all tests.
+    $0 test-smt:     Clean build and run smt tests.
+    $0 test-approve: Copy test '.out' file to '.expected' under directory <test-prefix> (default: $tests_dir).
 " ;;
 esac
