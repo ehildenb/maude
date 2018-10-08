@@ -1,0 +1,77 @@
+--- name: backend-lib.maude
+--- info: collects all modules used by backend tools
+
+load prelude-aux.maude    --- library of extensions to Maude's prelude
+
+load meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
+load unsortify.maude      --- code to send ordersorted terms to unsorted and back
+load renaming.maude       --- next-gen renaming library
+load sort-ops.maude       --- empty and finite sort constructions
+
+load var-unif.maude       --- computing variants/unifiers
+load mgci.maude           --- most general constructor instance operation
+load ctor-var-unif.maude  --- computing constructor variants and unifiers
+
+load foform.maude         --- formula data structure
+load cstrterm.maude       --- constrained term data structure
+load reachform.maude      --- defines reach formulas
+
+load config.maude         --- set of config flags that can affect proofs
+load proofstate.maude     --- models the state of our proofs
+
+fmod RLTOOL-BACKEND is
+  pr FOFORM .
+  pr MAYBE-BOOL .
+  pr REACH-PROOF-STATE .
+  pr TRANSITION-OPERATIONS . --- wellFormed
+
+  op checkVal : ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsat : ProofMetadata QFForm? -> MaybeBool .
+  op checkValInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsatInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkValFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsatFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkVal : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsat : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+
+  var SR : ScopedRegistry .
+  var D : ProofMetadata .
+  var F : QFForm? .
+  var SM : ScopedMap .
+  var MQL : ScopedMapList .
+
+  eq checkVal((reg(SR) ; D),F)  = checkValInit(SR['validity,(nil).ScopedMapList],(reg(SR) ; D),F) .
+  eq checkValInit(nil,D,F) = errb('No 'validity 'checkers 'loaded; 'did 'you 'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive?) .
+  eq checkValInit(MQL,D,F) = checkValFindTool(MQL,D,F) [owise] .
+  eq checkValFindTool(SM MQL,D,F) = if wellFormed(getmodules(SM),F) then checkVal(SM,MQL,D,F) else checkValFindTool(MQL,D,F) fi .
+  eq checkValFindTool(nil,D,F) = errb('No 'acceptable 'validity 'checker 'loaded) .
+
+  eq checkUnsat((reg(SR) ; D),F)  = checkUnsatInit(SR['unsatisfiability,(nil).ScopedMapList],(reg(SR) ; D),F) .
+  eq checkUnsatInit(nil,D,F) = errb('No 'unsatisfiability 'checkers 'loaded; 'did 'you 'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive?) .
+  eq checkUnsatInit(MQL,D,F) = checkUnsatFindTool(MQL,D,F) [owise] .
+  eq checkUnsatFindTool(SM MQL,D,F) = if wellFormed(getmodules(SM),F) then checkUnsat(SM,MQL,D,F) else checkUnsatFindTool(MQL,D,F) fi .
+  eq checkUnsatFindTool(nil,D,F) = errb('No 'acceptable 'unsatisfiability 'checker 'loaded) .
+endfm
+
+--- a backend implementation for testing purposes
+fmod DUMB-BACKEND-IMPL is
+  pr RLTOOL-BACKEND .
+
+  var D : ProofMetadata .
+  var MQL : ScopedMapList .
+  var F : QFForm? .
+  var M : Module .
+  var ModArgs : ModuleList .
+
+  eq checkVal  ((M,'return-false,ModArgs),MQL,D,F) = false .
+  eq checkUnsat((M,'return-false,ModArgs),MQL,D,F) = false .
+
+  eq checkVal  ((M,'return-nobool,ModArgs),MQL,D,F) = nobool .
+  eq checkUnsat((M,'return-nobool,ModArgs),MQL,D,F) = nobool .
+
+  eq checkVal  ((M,'return-true,ModArgs),MQL,D,F) = true .
+  eq checkUnsat((M,'return-true,ModArgs),MQL,D,F) = true .
+
+  eq checkVal  ((M,'return-err,ModArgs),MQL,D,F) = errb('this 'error 'is 'expected) .
+  eq checkUnsat((M,'return-err,ModArgs),MQL,D,F) = errb('this 'error 'is 'expected) .
+endfm

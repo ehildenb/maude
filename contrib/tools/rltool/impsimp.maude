@@ -1,0 +1,128 @@
+--- Module provides a variant unification-based clause simplifier;
+--- given a clause set, the simplifier checks if any atoms in the antecedent of any clause
+--- fall within the FVP fragment---if so, it unifies them and applies
+--- the unifiers to the respective clause to generate a set of simpler clauses
+--- NOTE: if FVP part has no unifiers, we generate the empty set of clauses
+fmod VAR-UNIF-CLAUSE-SIMPLIFIER is
+  pr FOFORMSET .              --- provides FOFormSets
+  pr FOFORM-TUPLES .          --- provides FOFormPairs
+  pr FOFORM-OPERATIONS .      --- provides wellFormed() for FOForm?
+  pr NNF .                    --- provides toNNF()
+  pr EQ-VARIANT .             --- provides var-unifiers()
+  pr FOFORM-SUBSTITUTIONSET . --- provides _<<_ operator for SubstitutionSets
+  pr UNIT-FM .                --- provides noModule
+
+  op vu-clause-simp  : Module Disj? ~> QFForm? .
+  op vu-clause-simp2 : Module FOFormPair PosDisj ~> QFForm? .
+  op filter-disj     : Module Disj? Disj? Disj? ~> FOFormPair .
+  ---
+  var EA : EqAtom . var D1 D2 D3 : Disj?  . var ND : NegDisj . var N1 N2 : NegDisj? .
+  var U  : Module . var PD : PosDisj .
+  --- INP: Module DisjSet (ClauseSet)
+  --- PRE: Module has FVP
+  --- OUT: DisjSet' where any FVP part of any clause has been solved
+  eq vu-clause-simp(U,ND \/ PD)    = if U == noModule then ND \/ PD else vu-clause-simp2(U,filter-disj(U,ND,mtForm,mtForm),PD) fi .
+  eq vu-clause-simp(U,D1)          = D1 [owise] .
+  eq vu-clause-simp2(U,(N1,N2),PD) = if N1 =/= mtForm then vu-clause-simp(U,(N2 \/ PD) << var-unifiers(U,toUnifProb(toNNF(~ N1)))) else N1 \/ N2 \/ PD fi .
+  --- INP: Module NegDisj? NegDisj? NegDisj?
+  --- PRE: None
+  --- OUT: Filters atoms in D1 into D2 iff they are wellFormed() in U and into D3 otherwise
+  eq filter-disj(U,EA \/ D1,D2,D3) = if wellFormed(U,EA) then filter-disj(U,D1,D2 \/ EA,D3) else filter-disj(U,D1,D2,D3 \/ EA) fi .
+  eq filter-disj(U,mtForm,D2,D3)   = (D2,D3) .
+endfm
+
+fmod SORTIFY-FORM is
+  pr UNSORTIFY .
+  pr SORTIFY .
+  pr FOFORM .
+
+  op unsortify : QFForm?              -> QFForm? .
+  op sortify   : QFForm? QidTripleSet -> QFForm? .
+
+  var F1 F2 : QFForm . var T T' : Term . var QTS : QidTripleSet .
+
+  --- lift unsorted/sorted conversions to modules
+  eq unsortify(mtForm)         = mtForm .
+  eq unsortify(F1 /\ F2)       = unsortify(F1) /\ unsortify(F2) .
+  eq unsortify(F1 \/ F2)       = unsortify(F1) \/ unsortify(F2) .
+  eq unsortify(~ F1)           = ~ unsortify(F1) .
+  eq unsortify(T ?= T')        = unsortify(T) ?= unsortify(T') .
+  eq unsortify(T != T')        = unsortify(T) != unsortify(T') .
+  eq sortify(mtForm,QTS)       = mtForm .
+  eq sortify(F1 /\ F2,QTS)     = sortify(F1,QTS) /\ sortify(F2,QTS) .
+  eq sortify(F1 \/ F2,QTS)     = sortify(F1,QTS) \/ sortify(F2,QTS) .
+  eq sortify(~ F1,QTS)         = ~ sortify(F1,QTS) .
+  eq sortify(T ?= T',QTS)      = sortify(T,QTS) ?= sortify(T',QTS) .
+  eq sortify(T != T',QTS)      = sortify(T,QTS) != sortify(T',QTS) .
+endfm
+
+fmod IMP-SIMP-IMPL is
+  pr FOFORM-TUPLES .                --- NeModListFOFormPair
+  pr FOFORMSIMPLIFY .               --- simplify
+  pr FOFORMREDUCE .                 --- reduce
+  pr FOFORM-EXTRACT-SUBSTITUTION .  --- extract-imp-sub
+  pr VAR-UNIF-CLAUSE-SIMPLIFIER .   --- vu-clause-simp
+  pr REFLECT .                      --- modReduce
+
+  var RewMod VSMod SimpMod : Module . var D : Disj .
+  op imp-simp-impl1 : NeModListFOFormPair ~> NeModListFOFormPair .
+  eq imp-simp-impl1((RewMod ; VSMod ; SimpMod,D)) =
+    (RewMod ; VSMod ; SimpMod,
+      simplify(
+        downTerm(modReduce(SimpMod,
+          upTerm(reduce(RewMod,false,
+                   extract-clause-sub(RewMod,
+                     vu-clause-simp(VSMod,D))))),error("imp-simp-impl1 failed")))) .
+endfm
+
+view imp-simp-impl from FUN to IMP-SIMP-IMPL is sort Elt to NeModListFOFormPair . op F to imp-simp-impl1 . endv
+
+fmod IMP-SIMP is
+  pr FOFORMSET-OPERATIONS .       --- provides DisjSet data structure and conversion in DisjSet
+  pr CNF .                        --- provides toCNF()
+  pr FIXF{imp-simp-impl} * (op FixF to imp-simp-impl) .
+
+  --- OUT: returns a simplified conjunction of disjunctions
+  op imp-simp : Module Module Module QFForm -> QFForm .
+  op imp-simp-conj : Module Module Module QFForm -> QFForm .
+  op imp-simp-disj : Module Module Module Disj -> Disj .
+
+  var RewMod VSMod SimpMod : Module .
+  var F : QFForm .
+  var D : Disj .
+  var TA : TruthAtom .
+  var P : PosDisj . var N : NegDisj .
+
+  eq imp-simp(RewMod,VSMod,SimpMod,F) = imp-simp-conj(RewMod,VSMod,SimpMod,simplify(toCNF(F))) .
+
+  eq imp-simp-conj(RewMod,VSMod,SimpMod,TA) = TA .
+  eq imp-simp-conj(RewMod,VSMod,SimpMod,D /\ F) = imp-simp-disj(RewMod,VSMod,SimpMod,D) /\ imp-simp-conj(RewMod,VSMod,SimpMod,F) .
+  eq imp-simp-conj(RewMod,VSMod,SimpMod,D) = imp-simp-disj(RewMod,VSMod,SimpMod,D) .
+
+  --- TODO: until fixed point is reached
+  ---       [1] try to use variant unification to solve pieces: vu-clause-simp(VSMod,D)
+  ---       [2] try to use substitution extraction to solve pieces
+  ---       [3] rewrite with all lemmas, reducing to normal form: reduce(RewMod,false,D)
+  ---       [4] apply generic implication simplification rules: downTerm(getTerm(metaReduce(SimpMod,upTerm(D))))
+  --- If all else fails, turn LHS vars into constants and then... let the user see them I guess
+  eq imp-simp-disj(RewMod,VSMod,SimpMod,D) = getForm(imp-simp-impl((RewMod ; VSMod ; SimpMod,D))) .
+endfm
+
+fmod IMP-SIMP-BACKEND-IMPL is
+  pr RLTOOL-BACKEND .
+  pr IMP-SIMP .
+  pr REACH-PROOF-STATE-OPS .
+
+  var D : ProofMetadata .
+  var MQL : ScopedMapList .
+  var F : QFForm? .
+  var M : Module .
+  var ModArgs : ModuleList .
+
+  eq checkVal((M,'impsimp,ModArgs),MQL,D,F) =
+    if ModArgs :: Module then
+      if imp-simp(get-mod(D),getbackend('validity,'varsat,get-reg(D)),ModArgs,F) == tt then true else nobool fi
+      else errb('impsimp 'requires 'single 'module 'argument)
+    fi .
+  eq checkUnsat((M,'impsimp,ModArgs),MQL,D,F) = nobool .
+endfm

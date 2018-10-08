@@ -1,0 +1,331 @@
+==========================================
+reduce in TEST : vars(mtForm) .
+result EmptyTypeSet: (none).EmptyTypeSet
+==========================================
+reduce in TEST : vars(f1) .
+result NeQidSet: 'X:Nat ; 'Y:Nat
+==========================================
+reduce in TEST : vars(f2) .
+result NeQidSet: 'Y:Nat ; 'Z:Nat
+==========================================
+reduce in TEST : vars(f3) .
+result NeQidSet: 'X:Nat ; 'Y:Nat ; 'Z:Nat
+==========================================
+reduce in TEST : vars(f4) .
+result NeQidSet: 'X:Nat ; 'Y:Nat ; 'Z:Nat
+==========================================
+reduce in TEST : wellFormed(testmod, mtForm) .
+result Bool: true
+==========================================
+reduce in TEST : wellFormed(testmod, f1) .
+result Bool: true
+==========================================
+reduce in TEST : wellFormed(testmod, f2) .
+result Bool: true
+==========================================
+reduce in TEST : wellFormed(testmod, f3) .
+result Bool: true
+==========================================
+reduce in TEST : wellFormed(testmod, f4) .
+result Bool: true
+==========================================
+reduce in TEST : reduce(testmod, false, f1) .
+result PosEqAtom: '0.Nat ?= '_+_['1.NzNat,'1.NzNat,'X:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f2) .
+result NegEqAtom: '_+_['1.NzNat,'Y:Nat] != '_+_['1.NzNat,'Y:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f3) .
+result EqConj: '0.Nat ?= '_+_['1.NzNat,'1.NzNat,'X:Nat] /\ '_+_['1.NzNat,
+    'Y:Nat] != '_+_['1.NzNat,'Y:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f4) .
+result QFForm: ~ ('0.Nat ?= '_+_['1.NzNat,'1.NzNat,'X:Nat] /\ '_+_['1.NzNat,
+    'Y:Nat] != '_+_['1.NzNat,'Y:Nat]) \/ '0.Nat ?= '_+_['1.NzNat,'1.NzNat,
+    'X:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f1') .
+result NegEqAtom: '0.Nat != '_+_['1.NzNat,'1.NzNat,'X:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f2') .
+result PosEqAtom: '_+_['1.NzNat,'Y:Nat] ?= '_+_['1.NzNat,'Y:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f3') .
+result PosEqConj: '0.Nat ?= '_+_['1.NzNat,'1.NzNat,'X:Nat] /\ '_+_['1.NzNat,
+    'Y:Nat] ?= '_+_['1.NzNat,'Y:Nat]
+==========================================
+reduce in TEST : reduce(testmod, false, f4') .
+result QFForm: ~ ('0.Nat ?= '_+_['1.NzNat,'1.NzNat,'X:Nat] /\ '_+_['1.NzNat,
+    'Y:Nat] != '_+_['1.NzNat,'Y:Nat]) \/ '0.Nat != '_+_['1.NzNat,'1.NzNat,
+    'X:Nat]
+==========================================
+reduce in TEST : reduce(testmod, true, f1) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : reduce(testmod, true, f2) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : reduce(testmod, true, f3) .
+result ConstConj: ff /\ ff
+==========================================
+reduce in TEST : reduce(testmod, true, f4) .
+result QFForm: ff \/ ~ (ff /\ ff)
+==========================================
+reduce in TEST : reduce(testmod, true, f1') .
+result TrueAtom: tt
+==========================================
+reduce in TEST : reduce(testmod, true, f2') .
+result TrueAtom: tt
+==========================================
+reduce in TEST : reduce(testmod, true, f3') .
+result ConstConj: tt /\ ff
+==========================================
+reduce in TEST : reduce(testmod, true, f4') .
+result QFForm: tt \/ ~ (ff /\ ff)
+==========================================
+reduce in TEST : toNNF(f1) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : toNNF(f2) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : toNNF(f3) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : toNNF(f4) .
+result EqDisj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : toCNF(f1) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : toCNF(f2) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : toCNF(f3) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : toCNF(f4) .
+result EqDisj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : toDNF(f1) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : toDNF(f2) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : toDNF(f3) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : toDNF(f4) .
+result EqDisj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : varsafe-simplify(f1) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : varsafe-simplify(f2) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : varsafe-simplify(f3) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : varsafe-simplify(f4) .
+result QFForm: ~ ('_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat] /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]) \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(f1)) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(f2)) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(f3)) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(f4)) .
+result EqDisj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : simplify(f1) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : simplify(f2) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : simplify(f3) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : simplify(f4) .
+result QFForm: ~ ('_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat] /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]) \/ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : simplify(f1') .
+result NegEqAtom: '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : simplify(f2') .
+result PosEqAtom: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : simplify(f3') .
+result PosEqConj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] /\ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : simplify(f4') .
+result QFForm: ~ ('_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat] /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]) \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : simplify(toNNF(f1)) .
+result PosEqAtom: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : simplify(toNNF(f2)) .
+result NegEqAtom: '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : simplify(toNNF(f3)) .
+result EqConj: '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+    /\ '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat]
+==========================================
+reduce in TEST : simplify(toNNF(f4)) .
+result TrueAtom: tt
+==========================================
+reduce in TEST : simplify(toNNF(f1')) .
+result NegEqAtom: '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],
+    '3.NzNat]
+==========================================
+reduce in TEST : simplify(toNNF(f2')) .
+result PosEqAtom: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat]
+==========================================
+reduce in TEST : simplify(toNNF(f3')) .
+result PosEqConj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] /\ '_monus_['Y:Nat,'Y:Nat] ?= 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : simplify(toNNF(f4')) .
+result EqDisj: '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],
+    'Z:Nat] \/ '_monus_['Y:Nat,'Y:Nat] != 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat]
+==========================================
+reduce in TEST : varsafe-simplify(fA) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fB) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fC) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fD) .
+result QFForm: ~ ('X:Nat ?= 'Y:Nat) \/ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fE) .
+result QFForm: ~ ('X:Nat ?= 'Y:Nat) /\ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fH) .
+result PosConj: ff /\ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fI) .
+result PosDisj: tt \/ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(fJ) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fA)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fB)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fC)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fD)) .
+result EqDisj: 'X:Nat ?= 'Y:Nat \/ 'X:Nat != 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fE)) .
+result EqConj: 'X:Nat ?= 'Y:Nat /\ 'X:Nat != 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fH)) .
+result PosConj: ff /\ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fI)) .
+result PosDisj: tt \/ 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : varsafe-simplify(toNNF(fJ)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(fA) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(fB) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(fC) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(fD) .
+result TrueAtom: tt
+==========================================
+reduce in TEST : simplify(fE) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : simplify(fH) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : simplify(fI) .
+result TrueAtom: tt
+==========================================
+reduce in TEST : simplify(fJ) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(toNNF(fA)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(toNNF(fB)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(toNNF(fC)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+==========================================
+reduce in TEST : simplify(toNNF(fD)) .
+result TrueAtom: tt
+==========================================
+reduce in TEST : simplify(toNNF(fE)) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : simplify(toNNF(fH)) .
+result FalseAtom: ff
+==========================================
+reduce in TEST : simplify(toNNF(fI)) .
+result TrueAtom: tt
+==========================================
+reduce in TEST : simplify(toNNF(fJ)) .
+result PosEqAtom: 'X:Nat ?= 'Y:Nat
+Bye.

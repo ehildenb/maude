@@ -1,0 +1,21 @@
+load ../../systems/dumb-comm-protocol.maude
+load ../../rltool.maude
+
+(select DUMB-COMM-PROTOCOL .)
+(use tool varsat  for validity on DUMB-COMM-PROTOCOL     .)
+
+(declare-vars (NS:NeDataList) U (NR:NeDataList) U (S:DataList) U (R:DataList) U 
+              (N:Nat)         U (N':Nat)        U (I:Nat) .)
+
+(def-term-set (< nil , R , N >) | true .)
+
+(add-goal end-loop-1 : (< NS , NR , N >) | true => (< nil , NS NR , N' >) | true .)
+
+--- NOTE: this goal must use the axiom above in order to prove that
+---       it will eventually terminate, so we set axiom below
+(add-goal receive-correctly : (< S , nil , 0 >) | true => (< nil , S , N >) | true .)
+(on 2 use strat end-loop-1  .)
+
+(start-proof .)
+(step .)
+(step .)

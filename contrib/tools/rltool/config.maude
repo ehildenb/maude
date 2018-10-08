@@ -1,0 +1,17 @@
+fmod RLTOOL-SWITCHES is
+  pr TRUTH-VALUE .
+  op printAxiomFailures : -> Bool .
+  op skipQuantifierCheck : -> Bool .
+endfm
+
+fmod RLTOOL-DEFAULT-CONFIG is
+  pr RLTOOL-SWITCHES .
+  eq printAxiomFailures = false .
+  eq skipQuantifierCheck = true .
+endfm
+
+fmod RLTOOL-DEBUG-CONFIG is
+  pr RLTOOL-SWITCHES .
+  eq printAxiomFailures = true .
+  eq skipQuantifierCheck = true .
+endfm

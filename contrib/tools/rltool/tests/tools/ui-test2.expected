@@ -1,0 +1,39 @@
+
+	    Maude Reachability Logic Prover v0.2.9 -- Sep. 21st 2018
+
+Set module to CHOICE
+Loaded function varsat for validity
+Declared variable(s):
+       { M:MSet, N:Nat }
+Added terminating state:
+       [N:Nat] |  true
+Added goal(s):
+       [test-invariant-1 : {M&1:MSet} |  true  => [M&2:MSet] |  true]
+Added goal(s):
+       [test-invariant-2 : {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Started proof:
+       [1     | {M&1:MSet} |  true  => [M&2:MSet] |  true]
+       [2     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Warning: narrowing on goal [8     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+    generated zero successors
+Notice: proof branch failed: [8     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+       [inactive | none  | 1     | simplify  | {M&1:MSet} |  true  => [
+    M&2:MSet] |  true]
+       [inactive | none  | 2     | simplify  | {N&1:Nat} |  true  => [N&2:Nat]
+    |  true]
+       [inactive | 1     | 3     | subsume   | {M&1:MSet} |  true  => [
+    M&2:MSet] |  true]
+       [inactive | 2     | 4     | subsume   | {N&1:Nat} |  true  => [N&2:Nat]
+    |  true]
+       [inactive | 3     | 5     | termcheck | {M&1:MSet} |  true  => [
+    M&2:MSet] |  true]
+       [inactive | 4     | 6     | termcheck | {N&1:Nat} |  true  => [N&2:Nat]
+    |  true]
+       [inactive | 5     | 7     | step      | {M&1:MSet} |  true  => [
+    M&2:MSet] |  true]
+       [inactive | 6     | 8     | step      | {N&1:Nat} |  true  => [N&2:Nat]
+    |  true]
+       [active   | 7     | 9     | simplify  | {&10:MSet} |  true  => [
+    M&11:MSet] |  true]
+CONTINUE> type (continue .) to continue
+Bye.

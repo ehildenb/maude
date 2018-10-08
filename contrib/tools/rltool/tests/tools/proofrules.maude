@@ -1,0 +1,292 @@
+--- load tool
+load ../../rltool-lib.maude
+
+--- configure printing
+print reveal __ _&_ _;_ .
+print conceal hist .
+
+--- don't include BOOL
+set include BOOL off .
+
+fmod QLOCK-STATE is
+  sort Nat* .
+  ops 1 0  :           -> Nat*  [ctor] .
+  op  _:+_ : Nat* Nat* -> Nat*  [assoc comm ctor id: 0] .
+
+  sort Soup .
+  subsort Nat* < Soup .
+  op mt :              -> Soup [ctor] .
+  op __ : Soup Soup    -> Soup [ctor assoc comm id: mt] .
+
+  sort NeQueue Queue .
+  subsort Nat* < NeQueue < Queue .
+  op nil :                 -> Queue   [ctor] .
+  op _@_ : NeQueue NeQueue -> NeQueue [ctor assoc] .
+
+  sort Pred .
+  op _=/=_ : Pred Pred -> Pred [ctor] .
+  op true  :           -> Pred [ctor] .
+  op _in_  : Nat* Soup -> Pred [ctor] .
+  op dupl  : Soup      -> Pred [ctor] .
+  var N : Nat* . var S : Soup .
+  eq N in N      = true [variant] .
+  eq N in N S    = true [variant] .
+  eq dupl(N N)   = true [variant] .
+  eq dupl(N N S) = true [variant] .
+endfm
+
+mod QLOCK is
+  pr QLOCK-STATE .
+  sort Conf State' .
+  op _|_|_|_ : Soup Soup Soup Queue -> Conf   [ctor] .
+  op <_>     : Conf                 -> State' [ctor] .
+  op [_]     : Conf                 -> State' [ctor] .
+  var Si Sw Sc : Soup . var Q : NeQueue . var N N' : Nat* . var C : Conf .
+  --- inactive to waiting
+  --- waiting  to critical
+  --- critical to inactive
+  --- join/leave
+  --- terminate
+  rl [i2w]  : < Si N | Sw   | Sc   | Q      > => < Si   | Sw N | Sc   | Q @ N  > .
+  rl [i2w]  : < Si N | Sw   | Sc   | nil    > => < Si   | Sw N | Sc   | N      > .
+ crl [w2c]  : < Si   | Sw N | Sc   | N' @ Q > => < Si   | Sw   | Sc N | N' @ Q > if N = N' .
+ crl [w2c]  : < Si   | Sw N | Sc   | N'     > => < Si   | Sw   | Sc N | N'     > if N = N' .
+  rl [c2i]  : < Si   | Sw   | Sc N | N' @ Q > => < Si N | Sw   | Sc   | Q      > .
+  rl [c2i]  : < Si   | Sw   | Sc N | N'     > => < Si N | Sw   | Sc   | nil    > .
+ crl [join] : < Si   | Sw   | Sc N | Q      > => < Si N | Sw   | Sc   | Q      > if dupl(Si N) =/= true = true [nonexec] .
+  rl [exit] : < Si N | Sw   | Sc   | Q      > => < Si   | Sw   | Sc   | Q      > .
+  rl [term] : < C > => [ C ] .
+endm
+
+mod QLOCK-JUNK is
+  pr QLOCK .
+  op foogle : -> State' [ctor] .
+endm
+
+mod RLTOOL-TEST is
+  pr RLTL-UI .
+  pr RLTOOL-DEBUG-CONFIG .
+  pr DUMB-BACKEND-IMPL .
+  pr QLOCK .
+  pr VAR-SAT .
+  pr CONSTRAINED-TERMSET-OPERATIONS .
+
+  --- need arguments:
+  --- [1] a subject module (w/appropriate variable names)
+  --- [2] a set of axioms (w/appropriate variable names)
+  --- [3] a terminating state set
+  --- [4] a proper ProofAttrSet
+  ---   [i]   including rlmod
+  ---   [ii]  including tool registry
+  ---   [iii] axiom hist
+  ---   [iv]  goal number
+  --- [5] a goal
+
+  var REG : ScopedRegistry .
+  var MN : Nat .
+  var I J K L : Nat* .
+  var IS JS KS R S T U V W X Y Z : Soup .
+  var NQ A B C : NeQueue .
+
+  op rlmod : -> Module .
+  eq rlmod = upModule('QLOCK,true) .
+
+  op junkmod : -> Module .
+  eq junkmod = upModule('QLOCK-JUNK,true) .
+
+  op fvpmod : -> Module .
+  eq fvpmod = upModule('QLOCK-STATE,true) .
+
+  op registry : -> ScopedRegistry .
+  eq registry = 'validity |-> (fvpmod,'varsat,nilmod), 'unsatisfiability |-> (fvpmod,'varsat,nilmod) .
+
+  op noboolreg : -> ScopedRegistry .
+  eq noboolreg = 'validity |-> (fvpmod,'return-nobool,nilmod), 'unsatisfiability |-> (fvpmod,'return-nobool,nilmod) .
+
+  op falsereg : -> ScopedRegistry .
+  eq falsereg = 'validity |-> (fvpmod,'return-false,nilmod), 'unsatisfiability |-> (fvpmod,'return-false,nilmod) .
+
+  op emptyreg : -> ScopedRegistry .
+  eq emptyreg = 'validity |-> nil, 'unsatisfiability |-> nil .
+
+  op rls : -> LabelLCCRuleSet .
+  eq rls = abstract-rules(rlmod,getRls(rlmod),'true.Pred) .
+
+  op badrls : -> LabelLCCRuleSet .
+  eq badrls = ('badrule : ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'Sc:Soup,'NeQ:NeQueue]] | tt) => ('foo['Sw:Soup] | tt)) .
+
+  op varrls : -> LabelLCCRuleSet .
+  eq varrls = ('varrule : ('<_>['_|_|_|_['U:Soup,'V:Soup,'S:Soup,'NQ:NeQueue]] | tt) =>
+                          ('<_>['_|_|_|_['S:Soup,'U:Soup,'V:Soup,'NQ:NeQueue]] | tt)) .
+
+  ops qlock-axs-1 qlock-axs-2 qlock-axs-3 qlock-axs-4 qlock-axs-5 : -> LabelReachForm .
+  eq qlock-axs-1 =
+    (('a1 : ('<_>['_|_|_|_['I:Soup,'W:Soup,'mt.Soup,'Q:Queue]] | 'true.Pred != 'dupl['__['I:Soup,'W:Soup]])
+     => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm))) .
+
+  eq qlock-axs-2 =
+     ('a2 : ('<_>['_|_|_|_['I:Soup,'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__['I:Soup,'N:Nat*,'W:Soup]])
+     => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)) .
+
+  eq qlock-axs-3 =
+     ('a3 : ('<_>['_|_|_|_['I:Soup,'W:Soup,'N:Nat*,'_@_['M:Nat*,'Q:Queue]]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__['I:Soup,'N:Nat*,'W:Soup]])
+     => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*)
+     |  ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)) .
+
+  eq qlock-axs-4 =
+     ('a4 : ('<_>['_|_|_|_['I:Soup,'W:Soup,'N:Nat*,'_@_['M:Nat*,'Q:Queue]]] | tt)
+     => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)) .
+
+  eq qlock-axs-5 =
+     ('a5 : ('<_>['_|_|_|_['I:Soup,'W:Soup,'N:Nat*,'_@_['M:Nat*,'Q:Queue]]] | tt)
+     => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | tt)) .
+
+  op init-data : Nat ScopedRegistry -> ProofMetadata .
+  eq init-data(MN,REG) =
+     mod(rlmod) ; dcl(none) ; cnt(100) ; gn(MN) ; reg(REG) ;
+     rls(empty) ; prf(mt) ; axs(nil) ; tst(noterm) ; his(empty) .
+
+  --- most general states
+  op t-nil-s : Soup Soup Soup NeQueue -> QFCTerm .
+  op t-non-s : Soup Soup Soup NeQueue -> QFCTerm .
+  op t-nil-e : Soup Soup Soup NeQueue -> QFCTerm .
+  op t-non-e : Soup Soup Soup NeQueue -> QFCTerm .
+  eq t-nil-s(IS,JS,KS,NQ) = ( upTerm(< IS | JS | KS | nil >) | tt ) .
+  eq t-non-s(IS,JS,KS,NQ) = ( upTerm(< IS | JS | KS | NQ  >) | tt ) .
+  eq t-nil-e(IS,JS,KS,NQ) = ( upTerm([ IS | JS | KS | nil ]) | tt ) .
+  eq t-non-e(IS,JS,KS,NQ) = ( upTerm([ IS | JS | KS | NQ  ]) | tt ) .
+
+  --- < 3 IS | JS | KS | NQ > with common in JS, KS, or JS/KS
+  op t1 : Soup Soup Soup NeQueue -> QFCTerm .
+  eq t1(IS,JS,KS,NQ) = ( upTerm(< 1 :+ 1 :+ 1 IS | JS | KS | NQ >) | upTerm(dupl(JS KS)) ?= upTerm((true).Pred) ) .
+
+  --- < IS | JS | 2 KS | 1 @ NQ >
+  op t2 : Soup Soup Soup NeQueue -> QFCTerm .
+  eq t2(IS,JS,KS,NQ) = ( upTerm(< IS | JS | 1 :+ 1 | 1 @ NQ >) | upTerm(dupl(IS JS)) ?= upTerm((true).Pred)
+                                                              /\ upTerm(dupl(IS))    != upTerm((true).Pred)) .
+
+  --- have empty set of instances because condition(s) unsatisfiable
+  op t-unsat1 : Soup Soup Soup NeQueue -> QFCTerm .
+  eq t-unsat1(IS,JS,KS,NQ) = ( upTerm(< IS | JS | KS | NQ >) | ff ) .
+
+  op t-unsat2 : Soup Soup Soup NeQueue Nat* -> QFCTerm .
+  eq t-unsat2(IS,JS,KS,NQ,I) = ( upTerm(< IS | JS | KS | NQ >) | upTerm(dupl(IS JS)) != upTerm((true).Pred)
+							      /\ upTerm(dupl(IS JS)) ?= upTerm((true).Pred) ) .
+
+  op t-unsat3 : Soup Soup Soup NeQueue Nat* -> QFCTerm .
+  eq t-unsat3(IS,JS,KS,NQ,I) = ( upTerm(< IS | JS | KS | NQ >) | upTerm(I in IS)     != upTerm((true).Pred)
+							      /\ upTerm(I in IS)     ?= upTerm((true).Pred) ) .
+
+  op t-unsat4 : Soup Soup Soup NeQueue Nat* -> QFCTerm .
+  eq t-unsat4(IS,JS,KS,NQ,I) = ( upTerm(< IS | JS | KS | NQ >) | upTerm(dupl(IS JS)) != upTerm((true).Pred)
+                                                              /\ upTerm(I in IS JS)  ?= upTerm((true).Pred)
+                                                              /\ upTerm(I in JS)     != upTerm((true).Pred)
+							      /\ upTerm(I in IS)     != upTerm((true).Pred) ) .
+
+  op t-unsat5 : Soup Soup Soup NeQueue Nat* -> QFCTerm .
+  eq t-unsat5(IS,JS,KS,NQ,I) = ( upTerm(< IS | JS | KS | NQ >) | upTerm(dupl(IS JS)) != upTerm((true).Pred)
+                                                              /\ upTerm(I in IS JS)  ?= upTerm((true).Pred)
+                                                              /\ upTerm(I in JS)     != upTerm((true).Pred)
+							      /\ upTerm(I in KS)     ?= upTerm((true).Pred)
+							      /\ upTerm(dupl(IS KS)) != upTerm((true).Pred) ) .
+endm
+
+set show stats off .
+set show timing off .
+set show loop stats off .
+set show loop timing off .
+
+--- warm up
+red rls .
+red badrls .
+red wellFormed(rlmod,antc(trans(badrls))) == true .
+red wellFormed(rlmod,trans(rls)) == true .
+red t1(R,S,T,A) => t2(U,V,W,B) .
+red [none,4,step,active,t1(R,S,T,A) => t2(U,V,W,B)] .
+
+--- foform function examples
+----------------------------
+
+--- below whether we try to simplify the equality to true/false
+--- or not, we cannot, as it is already in normal form and we
+--- cannot use sort information to prove the terms are not equal
+red reduce(rlmod,false,tt /\ 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]) .
+red reduce(rlmod,true ,tt /\ 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]) .
+
+--- constrained term functions
+------------------------------
+
+--- these two terms do not match, so the original term is essentially unchanged
+red overapproximateDiff(rlmod,t1(R,S,T,A),t2(U,V,W,B)) .
+
+--- reach formula functions
+---------------------------
+
+--- test the goal simplification routines --- but there is no change here since
+--- [1] the overapproximation does not yield anything interesting
+--- [2] the terms in the condition have nothing to reduce
+red lhs-cond(goal-simplify(rlmod,t1(R,S,T,A) => t2(U,V,W,B))) .
+red lhs-cond(full-goal-simplify(rlmod,t1(R,S,T,A) => t2(U,V,W,B))) .
+
+set print conceal on .
+print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
+
+--- step-action
+--- successful
+red step-action(init-data(50,registry),rlmod,rls,[none,4,step,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- fails because unsatisfiability check error: no checker loaded
+red step-action(init-data(50,emptyreg),rlmod,rls,[none,4,step,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- fails because no successors
+red step-action(init-data(50,registry),rlmod,rls,[none,4,step,active,t-non-e(R,S,T,A) => t2(U,V,W,B)]) .
+--- fails because of narrowing error: shared variable error
+red step-action(init-data(50,registry),rlmod,varrls,[none,4,step,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- fails because ill-formed rule causes narrowing to fail successor
+red step-action(init-data(50,registry),rlmod,badrls,[none,4,step,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+
+--- diff-action
+--- successful
+red termcheck-action(init-data(50,registry),rlmod,t-nil-s(IS,JS,KS,NQ),[none,4,termcheck,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- unknown termination
+red termcheck-action(init-data(50,noboolreg),rlmod,t-non-s(IS,JS,KS,NQ),[none,4,termcheck,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- failed termination check
+red termcheck-action(init-data(50,falsereg),rlmod,t-non-s(IS,JS,KS,NQ),[none,4,termcheck,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- TODO: find case that gives an error on termination check
+
+--- simp-action
+--- successful
+red simp-action(init-data(50,registry),rlmod,[none,4,simplify,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- successful because junkmod contains all of the symbols used in submodules
+red simp-action(init-data(50,registry),junkmod,[none,4,simplify,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+
+--- sub-action
+--- successful no subsumption
+red sub-action(init-data(50,registry),rlmod,[none,4,subsume,active,t1(R,S,T,A) => t2(U,V,W,B)]) .
+--- successful subsumption
+red sub-action(init-data(50,registry),rlmod,[none,4,subsume,active,t-unsat1(R,S,T,A) => t2(U,V,W,B)]) .
+--- successful subsumption
+red sub-action(init-data(50,registry),rlmod,[none,4,subsume,active,t-unsat2(R,S,T,A,I) => t2(U,V,W,B)]) .
+--- warns about possibly subsumed goal
+red sub-action(init-data(50,noboolreg),rlmod,[none,4,subsume,active,t-unsat2(R,S,T,A,I) => t2(U,V,W,B)]) .
+
+--- NOTE: these functions don't care about goal proof strat
+--- ax-action
+--- successful application with one MGU and one successor
+red ax-action(init-data(50,registry),rlmod,qlock-axs-4,[none,4,step,active,t-non-s(R,S,K,J @ NQ) => t-non-e(U,V,Z,B)]) .
+--- successful application with one MGU and three successors
+red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+--- failed to generate syntactic successors b/c of match error
+red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(W,S,K,I) => t-non-e(U,V,Z,B)]) .
+--- failed validity check because of error
+red ax-action(init-data(50,emptyreg),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+--- notes that axiom validity is unknown
+red ax-action(init-data(50,noboolreg),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+--- notes that no syntactically usable axioms found
+red ax-action(init-data(50,registry),rlmod,qlock-axs-1,[none,4,step,active,t-non-s(R,S,T,A) => t-non-e(U,V,Z,B)]) .
+
+--- done
+quit

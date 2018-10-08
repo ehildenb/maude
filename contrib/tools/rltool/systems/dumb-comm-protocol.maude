@@ -1,0 +1,52 @@
+set include BOOL off .
+
+fmod DUMB-COMM-PROTOCOL-DATA is
+  sort Nat .
+  op 0   : -> Nat [ctor] .
+  op 1   : -> Nat [ctor] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm] .
+
+  eq 0 + N:Nat = N:Nat [variant] .
+
+  sort Data NeDataList DataList .
+  subsort Data < NeDataList < DataList .
+  op {_} : Nat -> Data [ctor] .
+  op __  : NeDataList NeDataList -> NeDataList [ctor assoc] .
+  op nil : -> DataList [ctor] .
+endfm
+
+fmod DUMB-COMM-PROTOCOL-OPS is
+  pr DUMB-COMM-PROTOCOL-DATA .
+
+  var L L' : NeDataList .
+
+  op len : DataList -> Nat .
+  eq len(nil) = 0 .
+  eq len({N:Nat}) = 1 .
+  eq len(L L') = len(L) + len(L') .
+endfm
+
+mod DUMB-COMM-PROTOCOL is
+  pr DUMB-COMM-PROTOCOL-DATA .
+  pr DUMB-COMM-PROTOCOL-OPS  .
+
+  var S R : NeDataList .
+  var D : Data .
+  var N : Nat .
+
+  sort State .
+  op <_,_,_> : DataList DataList Nat -> State [ctor] .
+
+  rl < D   , nil , N > => < nil , D   , N + 1 > .
+  rl < S D , nil , N > => < S   , D   , N + 1 > .
+  rl < D   , R   , N > => < nil , D R , N + 1 > .
+  rl < S D , R   , N > => < S   , D R , N + 1 > .
+endm
+
+mod DUMB-COMM-PROTOCOL-STOP is
+  pr DUMB-COMM-PROTOCOL .
+  var S R : DataList . var N : Nat .
+
+  op [_,_,_] : DataList DataList Nat -> State [ctor] .
+  rl < S , R , N > => [ S , R , N ] .
+endm

@@ -1,0 +1,18 @@
+--- file: frontend-lib.maude
+--- info: loads frontend stuff (proofs, goals, rules, UI)
+
+--- load backend support and backends here
+load backend-lib.maude
+load var-sat.maude
+load impsimp.maude
+
+fmod RLTOOL-BACKEND-IMPL is
+  pr RLTOOL-BACKEND .
+  --- load backends here
+  pr VAR-SAT-BACKEND-IMPL .
+  pr IMP-SIMP-BACKEND-IMPL .
+endfm
+
+--- load frontend stuff here
+load proofinit.maude
+load proofrules.maude

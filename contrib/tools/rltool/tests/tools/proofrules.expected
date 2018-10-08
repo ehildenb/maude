@@ -1,0 +1,483 @@
+==========================================
+reduce in RLTOOL-TEST : rls .
+result LabelLCCRuleSet: ('c2i : ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'__['Sc:Soup,
+    'N:Nat*],'N':Nat*]] | tt) => ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,
+    'Sc:Soup,'nil.Queue]] | mtForm)) |
+('c2i : ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'__['Sc:Soup,'N:Nat*],'_@_['N':Nat*,
+    'Q:NeQueue]]] | tt) => ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,
+    'Sc:Soup,'Q:NeQueue]] | mtForm)) |
+('exit : ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,'Sc:Soup,'Q:NeQueue]] |
+    tt) => ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'Sc:Soup,'Q:NeQueue]] | mtForm)) |
+('i2w : ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,'Sc:Soup,'Q:NeQueue]] |
+    tt) => ('<_>['_|_|_|_['Si:Soup,'__['Sw:Soup,'N:Nat*],'Sc:Soup,'_@_[
+    'Q:NeQueue,'N:Nat*]]] | mtForm)) |
+('i2w : ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,'Sc:Soup,'nil.Queue]] |
+    tt) => ('<_>['_|_|_|_['Si:Soup,'__['Sw:Soup,'N:Nat*],'Sc:Soup,'N:Nat*]] |
+    mtForm)) |
+('join : ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'__['Sc:Soup,'N:Nat*],'Q:NeQueue]] |
+    tt) => ('<_>['_|_|_|_['__['Si:Soup,'N:Nat*],'Sw:Soup,'Sc:Soup,'Q:NeQueue]]
+    | 'true.Pred != 'dupl['__['Si:Soup,'N:Nat*]])) |
+('term : ('<_>['C:Conf] | tt) => ('`[_`]['C:Conf] | mtForm)) |
+('w2c : ('<_>['_|_|_|_['Si:Soup,'__['Sw:Soup,'N:Nat*],'Sc:Soup,'N':Nat*]] | tt)
+    => ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'__['Sc:Soup,'N:Nat*],'N':Nat*]] |
+    'N':Nat* ?= 'N:Nat*)) |
+('w2c : ('<_>['_|_|_|_['Si:Soup,'__['Sw:Soup,'N:Nat*],'Sc:Soup,'_@_['N':Nat*,
+    'Q:NeQueue]]] | tt) => ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'__['Sc:Soup,
+    'N:Nat*],'_@_['N':Nat*,'Q:NeQueue]]] | 'N':Nat* ?= 'N:Nat*))
+==========================================
+reduce in RLTOOL-TEST : badrls .
+result LabelLCCRule: ('badrule : ('<_>['_|_|_|_['Si:Soup,'Sw:Soup,'Sc:Soup,
+    'NeQ:NeQueue]] | tt) => ('foo['Sw:Soup] | tt))
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rlmod, antc(trans(badrls))) == (true).Bool .
+result Bool: (true).Bool
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rlmod, trans(rls)) == (true).Bool .
+result Bool: (true).Bool
+==========================================
+reduce in RLTOOL-TEST : t1(R, S, T, A) => t2(U, V, W, B) .
+result QFCRule: ('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'__['1.Nat*,'R:Soup]],
+    'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]])
+    => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B:NeQueue]]] | 'true.Pred ?= 'dupl['__['V:Soup,'U:Soup]] /\ 'true.Pred !=
+    'dupl['U:Soup])
+==========================================
+reduce in RLTOOL-TEST : [none,4,step,active,t1(R, S, T, A) => t2(U, V, W, B)] .
+result ProofGoal: [none,4,step,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'__[
+    '1.Nat*,'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    'S:Soup,'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__['V:Soup,
+    'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])]
+==========================================
+reduce in RLTOOL-TEST : reduce(rlmod, false, tt /\ 'true.Pred ?= 'dupl['__[
+    'S:Soup,'T:Soup]]) .
+result PosConj: tt /\ 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]
+==========================================
+reduce in RLTOOL-TEST : reduce(rlmod, true, tt /\ 'true.Pred ?= 'dupl['__[
+    'S:Soup,'T:Soup]]) .
+result PosConj: tt /\ 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]
+==========================================
+reduce in RLTOOL-TEST : overapproximateDiff(rlmod, t1(R, S, T, A), t2(U, V, W,
+    B)) .
+result CCTerm: ('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'__['1.Nat*,'R:Soup]],
+    'S:Soup,'T:Soup,'A:NeQueue]] | tt /\ 'true.Pred ?= 'dupl['__['S:Soup,
+    'T:Soup]])
+==========================================
+reduce in RLTOOL-TEST : lhs-cond(goal-simplify(rlmod, t1(R, S, T, A) => t2(U,
+    V, W, B))) .
+result PosEqAtom: 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]
+==========================================
+reduce in RLTOOL-TEST : lhs-cond(full-goal-simplify(rlmod, t1(R, S, T, A) =>
+    t2(U, V, W, B))) .
+result PosEqAtom: 'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]
+==========================================
+reduce in RLTOOL-TEST : step-action(init-data(50, registry), rlmod, rls, [none,
+    4,step,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || [4,0,giveup,active,('<_>['_|_|_|_['mt.Soup,
+    '&101:Soup,'&102:Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__['&101:Soup,
+    '&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,1,giveup,active,('<_>['_|_|_|_['mt.Soup,'__['&101:Soup,'_:+_['1.Nat*,
+    '1.Nat*,'1.Nat*]],'&102:Soup,'_@_['&103:NeQueue,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]]]] | 'true.Pred ?= 'dupl['__['&101:Soup,'&102:Soup]]) => ('<_>[
+    '_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\
+    'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,2,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '__['&103:Nat*,'&102:Soup],'&104:Nat*]] | '&103:Nat* ?= '&104:Nat* /\
+    'true.Pred ?= 'dupl['__['&103:Nat*,'&101:Soup,'&102:Soup]]) => ('<_>[
+    '_|_|_|_['U&105:Soup,'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&107:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\
+    'true.Pred != 'dupl['U&105:Soup])] &&
+
+[4,3,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '__['&103:Nat*,'&102:Soup],'_@_['&104:Nat*,'&105:NeQueue]]] | '&103:Nat* ?=
+    '&104:Nat* /\ 'true.Pred ?= 'dupl['__['&103:Nat*,'&101:Soup,'&102:Soup]])
+    => ('<_>['_|_|_|_['U&106:Soup,'V&107:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_[
+    '1.Nat*,'B&108:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&106:Soup,
+    'V&107:Soup]] /\ 'true.Pred != 'dupl['U&106:Soup])] &&
+
+[4,4,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'mt.Soup,'__[
+    '&102:Nat*,'&101:Soup],'_@_['&103:Nat*,'&104:NeQueue]]] | '&102:Nat* ?=
+    '&103:Nat* /\ 'true.Pred ?= 'dupl['__['&102:Nat*,'&101:Soup]]) => ('<_>[
+    '_|_|_|_['U&105:Soup,'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&107:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\
+    'true.Pred != 'dupl['U&105:Soup])] &&
+
+[4,5,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'mt.Soup,'__[
+    '&102:Nat*,'&101:Soup],'&103:Nat*]] | '&102:Nat* ?= '&103:Nat* /\
+    'true.Pred ?= 'dupl['__['&102:Nat*,'&101:Soup]]) => ('<_>['_|_|_|_[
+    'U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\
+    'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,6,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,7,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]] /\ 'true.Pred != 'dupl['__['&101:Nat*,'_:+_[
+    '1.Nat*,'1.Nat*,'1.Nat*]]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,
+    '_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?=
+    'dupl['__['U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])]
+    &&
+
+[4,8,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'nil.Queue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]]) => ('<_>['_|_|_|_['U&103:Soup,'V&104:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&105:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&103:Soup,'V&104:Soup]] /\ 'true.Pred != 'dupl['U&103:Soup])] &&
+
+[4,9,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'&104:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]] /\ 'true.Pred != 'dupl['__['&101:Nat*,
+    '_:+_['1.Nat*,'1.Nat*,'1.Nat*]]]) => ('<_>['_|_|_|_['U&105:Soup,
+    'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&107:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\ 'true.Pred != 'dupl[
+    'U&105:Soup])] &&
+
+[4,10,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'nil.Queue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,
+    'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl[
+    'U&104:Soup])] &&
+
+[4,11,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'&104:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]]) => ('<_>['_|_|_|_['U&105:Soup,
+    'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&107:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\ 'true.Pred != 'dupl[
+    'U&105:Soup])] &&
+
+[4,12,giveup,active,('`[_`]['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '&102:Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__['&101:Soup,
+    '&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])])
+==========================================
+reduce in RLTOOL-TEST : step-action(init-data(50, emptyreg), rlmod, rls, [none,
+    4,step,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || [4,0,giveup,active,('<_>['_|_|_|_['mt.Soup,
+    '&101:Soup,'&102:Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__['&101:Soup,
+    '&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,1,giveup,active,('<_>['_|_|_|_['mt.Soup,'__['&101:Soup,'_:+_['1.Nat*,
+    '1.Nat*,'1.Nat*]],'&102:Soup,'_@_['&103:NeQueue,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]]]] | 'true.Pred ?= 'dupl['__['&101:Soup,'&102:Soup]]) => ('<_>[
+    '_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\
+    'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,2,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '__['&103:Nat*,'&102:Soup],'&104:Nat*]] | '&103:Nat* ?= '&104:Nat* /\
+    'true.Pred ?= 'dupl['__['&103:Nat*,'&101:Soup,'&102:Soup]]) => ('<_>[
+    '_|_|_|_['U&105:Soup,'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&107:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\
+    'true.Pred != 'dupl['U&105:Soup])] &&
+
+[4,3,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '__['&103:Nat*,'&102:Soup],'_@_['&104:Nat*,'&105:NeQueue]]] | '&103:Nat* ?=
+    '&104:Nat* /\ 'true.Pred ?= 'dupl['__['&103:Nat*,'&101:Soup,'&102:Soup]])
+    => ('<_>['_|_|_|_['U&106:Soup,'V&107:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_[
+    '1.Nat*,'B&108:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&106:Soup,
+    'V&107:Soup]] /\ 'true.Pred != 'dupl['U&106:Soup])] &&
+
+[4,4,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'mt.Soup,'__[
+    '&102:Nat*,'&101:Soup],'_@_['&103:Nat*,'&104:NeQueue]]] | '&102:Nat* ?=
+    '&103:Nat* /\ 'true.Pred ?= 'dupl['__['&102:Nat*,'&101:Soup]]) => ('<_>[
+    '_|_|_|_['U&105:Soup,'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&107:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\
+    'true.Pred != 'dupl['U&105:Soup])] &&
+
+[4,5,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'mt.Soup,'__[
+    '&102:Nat*,'&101:Soup],'&103:Nat*]] | '&102:Nat* ?= '&103:Nat* /\
+    'true.Pred ?= 'dupl['__['&102:Nat*,'&101:Soup]]) => ('<_>['_|_|_|_[
+    'U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,
+    'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\
+    'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,6,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])] &&
+
+[4,7,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]] /\ 'true.Pred != 'dupl['__['&101:Nat*,'_:+_[
+    '1.Nat*,'1.Nat*,'1.Nat*]]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,
+    '_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?=
+    'dupl['__['U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])]
+    &&
+
+[4,8,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'mt.Soup,'nil.Queue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup]]) => ('<_>['_|_|_|_['U&103:Soup,'V&104:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&105:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&103:Soup,'V&104:Soup]] /\ 'true.Pred != 'dupl['U&103:Soup])] &&
+
+[4,9,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'&104:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]] /\ 'true.Pred != 'dupl['__['&101:Nat*,
+    '_:+_['1.Nat*,'1.Nat*,'1.Nat*]]]) => ('<_>['_|_|_|_['U&105:Soup,
+    'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&107:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\ 'true.Pred != 'dupl[
+    'U&105:Soup])] &&
+
+[4,10,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'nil.Queue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,
+    'V&105:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl[
+    'U&104:Soup])] &&
+
+[4,11,giveup,active,('<_>['_|_|_|_['__['&101:Nat*,'_:+_['1.Nat*,'1.Nat*,
+    '1.Nat*]],'&102:Soup,'&103:Soup,'&104:NeQueue]] | 'true.Pred ?= 'dupl['__[
+    '&101:Nat*,'&102:Soup,'&103:Soup]]) => ('<_>['_|_|_|_['U&105:Soup,
+    'V&106:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B&107:NeQueue]]] |
+    'true.Pred ?= 'dupl['__['U&105:Soup,'V&106:Soup]] /\ 'true.Pred != 'dupl[
+    'U&105:Soup])] &&
+
+[4,12,giveup,active,('`[_`]['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'1.Nat*],'&101:Soup,
+    '&102:Soup,'&103:NeQueue]] | 'true.Pred ?= 'dupl['__['&101:Soup,
+    '&102:Soup]]) => ('<_>['_|_|_|_['U&104:Soup,'V&105:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B&106:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'U&104:Soup,'V&105:Soup]] /\ 'true.Pred != 'dupl['U&104:Soup])])
+==========================================
+reduce in RLTOOL-TEST : step-action(init-data(50, registry), rlmod, rls, [none,
+    4,step,active,t-non-e(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (out('Warning: 'narrowing 'on 'goal ' '`[ '4 ' ' ' ' '| '
+    '`[ 'R:Soup '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '`] ' '| ' 'true ' '=> ' '<
+    'U:Soup '| 'V:Soup '| '1 ':+ '1 '| '1 '@ 'B:NeQueue '> ' '| ' '`( 'true
+    '=/= 'dupl '`( 'U:Soup '`) '/\ 'true '= 'dupl '`( 'V:Soup 'U:Soup '`) '`)
+    '`] ' 'generated 'zero 'successors '\n))
+==========================================
+reduce in RLTOOL-TEST : step-action(init-data(50, registry), rlmod, varrls, [
+    none,4,step,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (out('Warning: 'narrowing 'on 'goal ' '`[ '4 ' ' ' ' '| '
+    '< '`( '1 ':+ '1 ':+ '1 'R:Soup '`) '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '>
+    ' '| ' 'true '= 'dupl '`( 'S:Soup 'T:Soup '`) ' '=> ' '< 'U:Soup '| 'V:Soup
+    '| '1 ':+ '1 '| '1 '@ 'B:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'U:Soup
+    '`) '/\ 'true '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'encountered 'an
+    'error 'Unification 'unexpected 'shared 'variable '\n))
+==========================================
+reduce in RLTOOL-TEST : step-action(init-data(50, registry), rlmod, badrls, [
+    none,4,step,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+Advisory: could not find an operator foo with appropriate domain in meta-module
+    QLOCK when trying to interprete metaterm 'foo['#1:Soup].
+result ProofUpdate: (out('Warning: 'narrowing 'on 'goal '4 'generated
+    'ill-formed 'successors '\n))
+==========================================
+reduce in RLTOOL-TEST : termcheck-action(init-data(50, registry), rlmod,
+    t-nil-s(IS, JS, KS, NQ), [none,4,termcheck,active,t1(R, S, T, A) => t2(U,
+    V, W, B)]) .
+result ProofUpdate: (none || [4,0,termcheck,active,('<_>['_|_|_|_['_:+_[
+    '1.Nat*,'1.Nat*,'__['1.Nat*,'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] |
+    'true.Pred ?= 'dupl['__['S:Soup,'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,
+    'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?=
+    'dupl['__['V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])])
+==========================================
+reduce in RLTOOL-TEST : termcheck-action(init-data(50, noboolreg), rlmod,
+    t-non-s(IS, JS, KS, NQ), [none,4,termcheck,active,t1(R, S, T, A) => t2(U,
+    V, W, B)]) .
+result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
+    ':+ '1 'R:Soup '`) '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '> ' '| ' 'true '=
+    'dupl '`( 'S:Soup 'T:Soup '`) ' '=> ' '< 'U:Soup '| 'V:Soup '| '1 ':+ '1 '|
+    '1 '@ 'B:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'U:Soup '`) '/\ 'true
+    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'not 'provably 'non-terminating
+    '\n))
+==========================================
+reduce in RLTOOL-TEST : termcheck-action(init-data(50, falsereg), rlmod,
+    t-non-s(IS, JS, KS, NQ), [none,4,termcheck,active,t1(R, S, T, A) => t2(U,
+    V, W, B)]) .
+result ProofUpdate: (out('Error: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
+    ':+ '1 'R:Soup '`) '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '> ' '| ' 'true '=
+    'dupl '`( 'S:Soup 'T:Soup '`) ' '=> ' '< 'U:Soup '| 'V:Soup '| '1 ':+ '1 '|
+    '1 '@ 'B:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'U:Soup '`) '/\ 'true
+    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'provably 'non-terminating!
+    '\n))
+==========================================
+reduce in RLTOOL-TEST : simp-action(init-data(50, registry), rlmod, [none,4,
+    simplify,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || [4,0,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,
+    '1.Nat*,'__['1.Nat*,'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?=
+    'dupl['__['S:Soup,'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])])
+==========================================
+reduce in RLTOOL-TEST : simp-action(init-data(50, registry), junkmod, [none,4,
+    simplify,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || [4,0,giveup,active,('<_>['_|_|_|_['_:+_['1.Nat*,
+    '1.Nat*,'__['1.Nat*,'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?=
+    'dupl['__['S:Soup,'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])])
+==========================================
+reduce in RLTOOL-TEST : sub-action(init-data(50, registry), rlmod, [none,4,
+    subsume,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || [4,0,subsume,active,('<_>['_|_|_|_['_:+_['1.Nat*,
+    '1.Nat*,'__['1.Nat*,'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?=
+    'dupl['__['S:Soup,'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_[
+    '1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__[
+    'V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])])
+==========================================
+reduce in RLTOOL-TEST : sub-action(init-data(50, registry), rlmod, [none,4,
+    subsume,active,t-unsat1(R, S, T, A) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || mt)
+==========================================
+reduce in RLTOOL-TEST : sub-action(init-data(50, registry), rlmod, [none,4,
+    subsume,active,t-unsat2(R, S, T, A, I) => t2(U, V, W, B)]) .
+result ProofUpdate: (none || mt)
+==========================================
+reduce in RLTOOL-TEST : sub-action(init-data(50, noboolreg), rlmod, [none,4,
+    subsume,active,t-unsat2(R, S, T, A, I) => t2(U, V, W, B)]) .
+result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< 'R:Soup '|
+    'S:Soup '| 'T:Soup '| 'A:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'R:Soup
+    'S:Soup '`) '/\ 'true '= 'dupl '`( 'R:Soup 'S:Soup '`) '`) ' '=> ' '<
+    'U:Soup '| 'V:Soup '| '1 ':+ '1 '| '1 '@ 'B:NeQueue '> ' '| ' '`( 'true
+    '=/= 'dupl '`( 'U:Soup '`) '/\ 'true '= 'dupl '`( 'V:Soup 'U:Soup '`) '`)
+    '`] ' 'satisfaction 'unknown: 'conservatively 'retaining 'goal '\n) || [4,
+    0,subsume,active,('<_>['_|_|_|_['R:Soup,'S:Soup,'T:Soup,'A:NeQueue]] |
+    'true.Pred ?= 'dupl['__['R:Soup,'S:Soup]] /\ 'true.Pred != 'dupl['__[
+    'R:Soup,'S:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__['V:Soup,
+    'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup])])
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-4,
+    [none,4,step,active,t-non-s(R, S, K, J @ NQ) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a4 : ('<_>['_|_|_|_['I:Soup,
+    'W:Soup,'N:Nat*,'_@_['M:Nat*,'Q:Queue]]] | tt) => ('`[_`]['_|_|_|_[
+    'I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)), 
+  'I:Soup <- 'R:Soup ; 
+  'M:Nat* <- 'J:Nat* ; 
+  'N:Nat* <- 'K:Nat* ; 
+  'Q:Queue <- 'NQ:NeQueue ; 
+  'W:Soup <- 'S:Soup, tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
+    'Z:Soup,'B:NeQueue]] | tt)), nilax)) || [4,0,giveup,active,('`[_`][
+    '_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => (
+    '`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)])
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-2,
+    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
+    'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
+    'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`]['_|_|_|_['I':Soup,'W':Soup,
+    'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
+    '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
+  'I:Soup <- 'R:Soup ; 
+  'M:Nat* <- 'I:Nat* ; 
+  'N:Nat* <- 'K:Nat* ; 
+  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
+    'Z:Soup,'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm) => ('`[_`][
+    '_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)), nilax)) || [4,0,
+    giveup,active,('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt)] &&
+
+[4,1,giveup,active,('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,
+    'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
+    'Z:Soup,'B:NeQueue]] | tt)] &&
+
+[4,2,giveup,active,('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] |
+    mtForm) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)])
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-2,
+    [none,4,step,active,t-non-s(W, S, K, I) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (out('Warning: 'generating 'axiom '`[ 'a2 ': ' '< 'I:Soup
+    '| 'W:Soup '| 'N:Nat* '| 'M:Nat* '> ' '| ' '`( 'true '=/= 'dupl '`( 'I:Soup
+    'N:Nat* 'W:Soup '`) '/\ 'M:Nat* '= 'N:Nat* '`) ' '=> ' '`[ 'I':Soup '|
+    'W':Soup '| 'N':Nat* '| 'M':Nat* '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[
+    'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat* '@ 'Q':NeQueue '`] ' '| '
+    'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'mt '| 'EQ:Queue '`] '
+    '| ' 'true '`] 'successors 'for ' '`[ '4 ' ' ' ' '| ' '< 'W:Soup '| 'S:Soup
+    '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true ' '=> ' '`[ 'U:Soup '| 'V:Soup '|
+    'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] ' 'encountered 'an 'error 'Match
+    'unexpected 'shared 'variable '\n))
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, emptyreg), rlmod, qlock-axs-2,
+    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
+    'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
+    'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`]['_|_|_|_['I':Soup,'W':Soup,
+    'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
+    '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
+  'I:Soup <- 'R:Soup ; 
+  'M:Nat* <- 'I:Nat* ; 
+  'N:Nat* <- 'K:Nat* ; 
+  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
+    'Z:Soup,'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm) => ('`[_`][
+    '_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)))) ; out('Warning:
+    'axiom '`[ 'a2 ': ' '< 'I:Soup '| 'W:Soup '| 'N:Nat* '| 'M:Nat* '> ' '| '
+    '`( 'true '=/= 'dupl '`( 'I:Soup 'N:Nat* 'W:Soup '`) '/\ 'M:Nat* '= 'N:Nat*
+    '`) ' '=> ' '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat* '`] ' '| '
+    'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat*
+    '@ 'Q':NeQueue '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup
+    '| 'mt '| 'EQ:Queue '`] ' '| ' 'true '`] 'validity 'check 'for 'goal ' '`[
+    '4 ' ' ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true
+    ' '=> ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true
+    '`] ' 'encountered 'an 'error 'No 'validity 'checkers 'loaded; 'did 'you
+    'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive? '\n))
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, noboolreg), rlmod, qlock-axs-2,
+    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
+    'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
+    'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`]['_|_|_|_['I':Soup,'W':Soup,
+    'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
+    '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
+  'I:Soup <- 'R:Soup ; 
+  'M:Nat* <- 'I:Nat* ; 
+  'N:Nat* <- 'K:Nat* ; 
+  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
+    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
+    'Z:Soup,'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
+('`[_`]['_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm) => ('`[_`][
+    '_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)))) ; out('Notice:
+    'axiom '`[ 'a2 ': ' '< 'I:Soup '| 'W:Soup '| 'N:Nat* '| 'M:Nat* '> ' '| '
+    '`( 'true '=/= 'dupl '`( 'I:Soup 'N:Nat* 'W:Soup '`) '/\ 'M:Nat* '= 'N:Nat*
+    '`) ' '=> ' '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat* '`] ' '| '
+    'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat*
+    '@ 'Q':NeQueue '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup
+    '| 'mt '| 'EQ:Queue '`] ' '| ' 'true '`] 'validity 'for 'goal ' '`[ '4 ' '
+    ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true ' '=>
+    ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] '
+    'unknown '\n))
+==========================================
+reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-1,
+    [none,4,step,active,t-non-s(R, S, T, A) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (out('Notice: 'no 'syntactically 'usable 'instances 'of
+    'axiom '`[ 'a1 ': ' '< 'I:Soup '| 'W:Soup '| 'mt '| 'Q:Queue '> ' '| '
+    'true '=/= 'dupl '`( 'I:Soup 'W:Soup '`) ' '=> ' '`[ 'I':Soup '| 'W':Soup
+    '| 'N':Nat* '| 'M':Nat* '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '|
+    'W':Soup '| 'N':Nat* '| 'M':Nat* '@ 'Q':NeQueue '`] ' '| ' 'M':Nat* '=
+    'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'mt '| 'EQ:Queue '`] ' '| ' 'true
+    '`] 'found 'for ' '`[ '4 ' ' ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'T:Soup '|
+    'A:NeQueue '> ' '| ' 'true ' '=> ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '|
+    'B:NeQueue '`] ' '| ' 'true '`] '\n))
+Bye.

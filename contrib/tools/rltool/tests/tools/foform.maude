@@ -1,0 +1,163 @@
+load ../../backend-lib.maude
+load ../../theories/numbers.maude
+
+fmod NAT-TEST is
+  pr FVP-NAT-PRED .
+  pr FVP-NUMBERS .
+endfm
+
+fmod TEST is
+  pr FOFORMSIMPLIFY .
+  pr FOFORMREDUCE .
+  pr FOFORM-OPERATIONS .
+  pr FOFORM-DEFINEDOPS .
+  pr NNF .
+  pr CNF .
+  pr DNF .
+
+  op testmod : -> Module .
+  eq testmod = upModule('NAT-TEST,true) .
+
+  ops f1 f1' f2 f2' f3 f3' f4 f4' f5 : -> QFForm .
+
+  eq f1  = 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat] ?= '_monus_['Y:Nat,'Y:Nat] .
+  eq f2  = '_+_['Y:Nat,'1.NzNat] != 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat] .
+  eq f3  = f1 /\ f2 .
+  eq f4  = f3 ==> f1 .
+
+  eq f1' = 'sd['_+_['X:Nat,'5.NzNat],'3.NzNat] != '_monus_['Y:Nat,'Y:Nat] .
+  eq f2' = '_+_['Y:Nat,'1.NzNat] ?= 'sd['_+_['Z:Nat,'Y:Nat,'1.NzNat],'Z:Nat] .
+  eq f3' = f1 /\ f2' .
+  eq f4' = f3 ==> f1' .
+
+  ops fA fB fC fD fE fG fH fI fJ : -> QFForm .
+  eq fA = 'X:Nat ?= 'Y:Nat .
+  eq fB = fA /\ fA .
+  eq fC = fA \/ fA .
+  eq fD = fA <==> fB .
+  eq fE = fA /\ ~ fA .
+  eq fG = tt /\ fC .
+  eq fH = ff /\ fC .
+  eq fI = tt \/ fC .
+  eq fJ = ff \/ fC .
+endfm
+
+set show stats off .
+set show timing off .
+set show loop stats off .
+set show loop timing off .
+
+--- check that variable extraction works
+red vars(mtForm) .
+red vars(f1) .
+red vars(f2) .
+red vars(f3) .
+red vars(f4) .
+
+--- check well-formedness
+red wellFormed(testmod,mtForm) .
+red wellFormed(testmod,f1) .
+red wellFormed(testmod,f2) .
+red wellFormed(testmod,f3) .
+red wellFormed(testmod,f4) .
+
+--- check varsafe/full reduction works
+red reduce(testmod,false,f1 ) .
+red reduce(testmod,false,f2 ) .
+red reduce(testmod,false,f3 ) .
+red reduce(testmod,false,f4 ) .
+red reduce(testmod,false,f1') .
+red reduce(testmod,false,f2') .
+red reduce(testmod,false,f3') .
+red reduce(testmod,false,f4') .
+
+red reduce(testmod,true, f1 ) .
+red reduce(testmod,true, f2 ) .
+red reduce(testmod,true, f3 ) .
+red reduce(testmod,true, f4 ) .
+red reduce(testmod,true, f1') .
+red reduce(testmod,true, f2') .
+red reduce(testmod,true, f3') .
+red reduce(testmod,true, f4') .
+
+--- check NNF/CNF/DNF
+red toNNF(f1) .
+red toNNF(f2) .
+red toNNF(f3) .
+red toNNF(f4) .
+red toCNF(f1) .
+red toCNF(f2) .
+red toCNF(f3) .
+red toCNF(f4) .
+red toDNF(f1) .
+red toDNF(f2) .
+red toDNF(f3) .
+red toDNF(f4) .
+
+--- check varsafe/standard simplification
+red varsafe-simplify(f1) .
+red varsafe-simplify(f2) .
+red varsafe-simplify(f3) .
+red varsafe-simplify(f4) .
+
+red varsafe-simplify(toNNF(f1)) .
+red varsafe-simplify(toNNF(f2)) .
+red varsafe-simplify(toNNF(f3)) .
+red varsafe-simplify(toNNF(f4)) .
+
+red simplify(f1) .
+red simplify(f2) .
+red simplify(f3) .
+red simplify(f4) .
+red simplify(f1') .
+red simplify(f2') .
+red simplify(f3') .
+red simplify(f4') .
+
+red simplify(toNNF(f1)) .
+red simplify(toNNF(f2)) .
+red simplify(toNNF(f3)) .
+red simplify(toNNF(f4)) .
+red simplify(toNNF(f1')) .
+red simplify(toNNF(f2')) .
+red simplify(toNNF(f3')) .
+red simplify(toNNF(f4')) .
+
+--- check second series of formulas against simplification
+red varsafe-simplify(fA) .
+red varsafe-simplify(fB) .
+red varsafe-simplify(fC) .
+red varsafe-simplify(fD) .
+red varsafe-simplify(fE) .
+red varsafe-simplify(fH) .
+red varsafe-simplify(fI) .
+red varsafe-simplify(fJ) .
+
+red varsafe-simplify(toNNF(fA)) .
+red varsafe-simplify(toNNF(fB)) .
+red varsafe-simplify(toNNF(fC)) .
+red varsafe-simplify(toNNF(fD)) .
+red varsafe-simplify(toNNF(fE)) .
+red varsafe-simplify(toNNF(fH)) .
+red varsafe-simplify(toNNF(fI)) .
+red varsafe-simplify(toNNF(fJ)) .
+
+red simplify(fA) .
+red simplify(fB) .
+red simplify(fC) .
+red simplify(fD) .
+red simplify(fE) .
+red simplify(fH) .
+red simplify(fI) .
+red simplify(fJ) .
+
+red simplify(toNNF(fA)) .
+red simplify(toNNF(fB)) .
+red simplify(toNNF(fC)) .
+red simplify(toNNF(fD)) .
+red simplify(toNNF(fE)) .
+red simplify(toNNF(fH)) .
+red simplify(toNNF(fI)) .
+red simplify(toNNF(fJ)) .
+
+quit

@@ -1,0 +1,44 @@
+set include BOOL off .
+
+set print conceal on .
+print conceal mod_is_sorts_._____endm  fmod_is_sorts_.____endfm _;_ .
+
+fmod CHOICE-DATA is
+  sorts Nat MSet State Pred .
+  subsorts Nat < MSet .
+  op zero : -> Nat [ctor] .
+  op s    : Nat -> Nat [ctor] .
+  op __   : MSet MSet -> MSet [ctor assoc comm] .
+  op {_}  : MSet -> State [ctor] .
+  op tt   : -> Pred [ctor] .
+  op _=C_ : MSet MSet -> Pred [ctor] .  *** MSet containment
+  vars U V : MSet . var N : Nat .
+  eq U =C U = tt .
+  eq U =C U V = tt .
+endfm
+
+mod CHOICE is pr CHOICE-DATA .
+  vars U V : MSet .
+  rl [choice] : {U V} => {U} .
+endm
+
+load ../../rltool.maude
+
+set show stats off .
+set show timing off .
+set show loop stats off .
+set show loop timing off .
+
+(select     CHOICE      .)
+(use tool varsat for unsatisfiability on CHOICE-DATA .)
+(use tool varsat for validity         on CHOICE-DATA .)
+(declare-vars (M:MSet) U (N:Nat) .)
+(def-term-set ({N}) | true .)
+(add-goal ends-with-singleton : ({M}) | true => ({N}) | (N =C M) = (tt) .)
+(start-proof .)
+(case 1 on M:MSet by (M1:MSet M2:MSet) U (N':Nat) .)
+(step .)
+(step .)
+(list-goals .)
+
+quit

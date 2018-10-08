@@ -1,0 +1,550 @@
+--- file:     rltool.maude
+--- requires: full-maude, debug.maude
+--- comment:  This module defines the UI for the Reachability Logic Tool
+
+load frontend-lib.maude
+
+fmod PRINT-COMMAND is
+  pr REACH-PROOF-RULES-AUX .
+
+  var D : ProofMetadata .
+  var Q : Qid .
+  var R : ReachForm .
+  var RK : [ReachForm] .
+  var M M' : Module .
+  var ML : ModuleList .
+  var SM : ScopedMap .
+  var SML : ScopedMapList .
+  var SE SE' : ScopedRegistryEntry .
+  var SR : ScopedRegistry .
+  var B : Bool .
+
+  op print-command : ProofMetadata Qid [ReachForm] -> QidList .
+  eq print-command(D,'show,R) = ( printMeta(R) ) .
+
+  eq print-command(D,'subsume,R) =
+    ('reduce 'subsume? '`( $printSubData(D)
+                       '`, printMeta(true)
+                       '`, printMeta(R)
+                       '`) &sp '.) .
+
+  eq print-command(D,'applyMatchToCond,R) =
+    ('reduce 'applyMatchToCond '`( printMeta(get-mod(D),true)
+                               '`, printMeta(true)
+                               '`, printMeta(antc(R))
+                               '`, printMeta(succ(R))
+                               '`) &sp '.) .
+
+  eq print-command(D,Q,RK) =
+    if not Q in ('subsume)
+      then 'Error: 'Command 'not 'recognized
+      else 'Error: 'Goal 'not 'found
+    fi [owise] .
+
+  --- auxilliary functions
+  -------------------------------------------
+
+  op $printSubData : ProofMetadata -> QidList .
+  eq $printSubData(mod(M) ; reg((SE,SR)) ; D) =
+    'mod '`( printMeta(M,true) '`) '; 'reg '`( printMeta((SE,SR)) '`) .
+  eq $printSubData(D) =
+    '`( 'Error: 'required 'metadata 'not 'found! '`) .
+
+  op printMeta : ScopedRegistry -> QidList .
+  eq printMeta((SE,SE',SR)) = printMeta(SE) '`, printMeta((SE',SR)) .
+  eq printMeta(Q |-> SML) = printMeta(Q) '|-> printMeta(SML) .
+
+  op printMeta : ScopedMapList -> QidList .
+  eq printMeta((M,Q,ML) SM SML) = printMeta((M,Q,ML)) &sp printMeta(SM SML) .
+  eq printMeta((M,Q,ML)) =
+    '`( printMeta(M,true) '`, printMeta(Q) '`, printMeta(ML,true) '`) .
+
+  op printMeta : ModuleList Bool -> QidList .
+  eq printMeta(M ; M' ; ML,B) = printMeta(M,B) '; printMeta(M' ; ML,B) .
+  eq printMeta(nilmod,B) = 'nilmod .
+endfm
+
+fmod PARSE-FORM is
+  pr META-LEVEL .
+  pr LABEL-TRANSITION .
+  pr VARIABLES-TO-CONSTANTS .
+  pr SET{Nat} .
+  pr MODULE-LIST .
+  op parse-labeltrans : ModuleSubstPair Bool Term -> [LabelReachFormEx] .
+  op parse-reachform  : ModuleSubstPair Bool Term -> [ReachFormEx] .
+  op parse-matchform  : ModuleSubstPair Bool Term -> [QFCTermSet] .
+  op parse-qfform     : ModuleSubstPair Bool Term -> [QFForm] .
+  op parse-unifprob   : ModuleSubstPair Bool Term -> [UnificationProblem] .
+  op parse-eqset      : ModuleSubstPair Bool Term -> [EquationSet] .
+  op parse-termset    : ModuleSubstPair Bool Term -> [TermSet] .
+  op parse-varset     : ModuleSubstPair Term      -> [QidSet] .
+  op parse-varset2    : TermSet -> [QidSet] .
+  op parse-term       : ModuleSubstPair Bool Term -> [Term] .
+  op parse-term2      : ModuleSubstPair Bool Term -> [Term] .
+  op parse-modlist    : Term -> [ModuleList] .
+  op parse-modlist    : NeQidList -> [ModuleList] .
+  op parse-token      : Term -> [Qid] .
+  op parse-tokenlist  : Term -> [QidList] .
+  op downQid          : Term -> [Qid] .
+  op downNat          : Term -> [Nat] .
+  op downNeNatSet     : Term -> [NeSet{Nat}] .
+
+  var T T' : Term . var QL : QidList . var Q : Qid . var M : Module . var B : Bool . var TS : TermSet . var V : Variable .
+  var C : Constant . var S : Substitution . var NTL : NeTermList .
+  ---
+  eq parse-labeltrans((M,S),B,'_:_[T,T'])       = (parse-token(T) : parse-reachform((M,S),B,T')) .
+  eq parse-reachform((M,S),B,'_=>_[T,T'])       = parse-matchform((M,S),B,T) => parse-matchform((M,S),B,T') .
+  eq parse-matchform((M,S),B,'_\/_[T,T'])       = parse-matchform((M,S),B,T) | parse-matchform((M,S),B,T') .
+  eq parse-matchform((M,S),B,'`(_`)|_[T,T'])    = (parse-term((M,S),B,T) | parse-qfform((M,S),B,T')) .
+  eq parse-qfform((M,S),B,'_\/_[T,T'])          = parse-qfform((M,S),B,T) \/ parse-qfform((M,S),B,T') .
+  eq parse-qfform((M,S),B,'_/\_[T,T'])          = parse-qfform((M,S),B,T) /\ parse-qfform((M,S),B,T') .
+  eq parse-qfform((M,S),B,'`(_`)=`(_`)[T,T'])   = parse-term((M,S),B,T) ?= parse-term((M,S),B,T') .
+  eq parse-qfform((M,S),B,'`(_`)=/=`(_`)[T,T']) = parse-term((M,S),B,T) != parse-term((M,S),B,T') .
+  eq parse-qfform((M,S),B,'true.@QFForm@)       = tt .
+  ---
+  eq parse-unifprob((M,S),B,'_/\_[T,T']       ) = parse-unifprob((M,S),B,T) /\ parse-unifprob((M,S),B,T') .
+  eq parse-unifprob((M,S),B,'`(_`)=`(_`)[T,T']) = parse-term((M,S),B,T) =? parse-term((M,S),B,T') .
+  ---
+  eq parse-eqset((M,S),B,'_/\_[T,T']       ) = parse-eqset((M,S),B,T) parse-eqset((M,S),B,T') .
+  eq parse-eqset((M,S),B,'`(_`)=`(_`)[T,T']) = (eq parse-term((M,S),B,T) = parse-term((M,S),B,T') [none].) .
+  ---
+  eq parse-termset((M,S),B,'_U_[T,T']) = parse-termset((M,S),B,T) | parse-termset((M,S),B,T') .
+  eq parse-termset((M,S),B,'`(_`)[T])  = parse-term((M,S),B,T) .
+  ---
+  eq parse-varset((M,S),T)       = parse-varset2(parse-termset((M,S),false,T)) .
+  eq parse-varset2(V | TS)       = V ; parse-varset2(TS) .
+  eq parse-varset2(emptyTermSet) = none .
+  ---
+ ceq parse-term((M,S),B,'bubble[T]) = parse-term2((M,S),B,constsToVars(S,getTerm(metaParse(M,downTerm(T,(nil).QidList),anyType))))
+  if metaParse(M,downTerm(T,(nil).QidList),anyType) :: ResultPair .
+ ceq parse-term2((M,S),true,T) = getTerm(metaReduce(M,T)) if metaReduce(M,T) :: ResultPair .
+  eq parse-term2((M,S),false,T) = T .
+  ---
+  eq parse-modlist(T) = parse-modlist(parse-tokenlist(T)) .
+  eq parse-modlist(Q QL) = upModule(Q,true) ; parse-modlist(QL) .
+  eq parse-modlist(nil) = nilmod .
+  ---
+ ceq parse-token('token[Q]) = downTerm(Q,(nil).QidList) if downTerm(Q,(nil).QidList) :: Qid .
+  eq parse-tokenlist('neTokenList[NTL]) = downTerm(NTL,(nil).QidList) .
+ ceq downQid(T) = downTerm(T,(nil).QidList) if downTerm(T,(nil).QidList) :: Qid .
+ ceq downNat(T) = downTerm(T,(none).Parent) if downTerm(T,(none).Parent) :: Nat .
+ ceq downNeNatSet(T) = downTerm(T,(empty).Set{Nat}) if downTerm(T,(empty).Set{Nat}) :: NeSet{Nat} .
+endfm
+
+fmod META-RLTL-COMMAND is
+   pr SET{Nat} .
+   pr NAT-RANGE .
+   pr BUBBLES .
+
+   sort @QFForm@ @QFCTerm@ @NeQFCTermSet@ @Term@ @TermSet@ @ReachFormEx@ @LabelReachFormEx@ .
+   subsort @QFCTerm@ < @NeQFCTermSet@ .
+   subsort @Term@ < @TermSet@ .
+   op ((_))     : @Bubble@                      -> @Term@ [ctor] .
+   op _U_       : @TermSet@ @TermSet@           -> @TermSet@ [assoc comm ctor] .
+   op true      :                               -> @QFForm@ [ctor] .
+   op (_)=(_)   : @Bubble@ @Bubble@             -> @QFForm@ [ctor] .
+   op (_)=/=(_) : @Bubble@ @Bubble@             -> @QFForm@ [ctor] .
+   op _/\_      : @QFForm@ @QFForm@             -> @QFForm@ [prec 58 assoc comm ctor] .
+   op _\/_      : @QFForm@ @QFForm@             -> @QFForm@ [prec 59 assoc comm ctor] .
+   op (_)|_     : @Bubble@ @QFForm@             -> @QFCTerm@ [prec 60 ctor] .
+   op _\/_      : @NeQFCTermSet@ @NeQFCTermSet@ -> @NeQFCTermSet@ [prec 61 assoc comm ctor] .
+   op _=>_      : @NeQFCTermSet@ @NeQFCTermSet@ -> @ReachFormEx@ [prec 62 ctor] .
+   op _:_       : @Token@ @ReachFormEx@         -> @LabelReachFormEx@ [prec 63 ctor] .
+
+   sort MetaRLTLCommand .
+   op set`echo`on`.          : -> MetaRLTLCommand [ctor] .
+   op set`echo`off`.         : -> MetaRLTLCommand [ctor] .
+   op use`tool_for_on_.      : @Token@ @Token@ @Token@ -> MetaRLTLCommand [ctor] .
+   op use`tool_for_on_with_. : @Token@ @Token@ @Token@ @NeTokenList@ -> MetaRLTLCommand [ctor] .
+   op start-proof`.          : -> MetaRLTLCommand [ctor] .
+   op quit`.                 : -> MetaRLTLCommand [ctor] .
+   op list-goals`.           : -> MetaRLTLCommand [ctor] .
+   op list-goal-ids`.        : -> MetaRLTLCommand [ctor] .
+   op focus_.                : NeSet{Nat} -> MetaRLTLCommand [ctor] .
+   op subsumed_=<_.          : @QFCTerm@ @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
+   op intersect_=_.          : @QFCTerm@ @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
+   op add-goal_.             : @LabelReachFormEx@ -> MetaRLTLCommand [ctor] . --- add as goal and axiom
+   op add-goal!_.            : @LabelReachFormEx@ -> MetaRLTLCommand [ctor] . --- add as goal
+   op add-axiom_.            : @LabelReachFormEx@ -> MetaRLTLCommand [ctor] . --- add as axiom
+   --- NB: currently, this just sets axiosm, later should be extended
+   op on_use`strat_.         : Nat @NeTokenList@ -> MetaRLTLCommand  [ctor] . --- modify goal to use strategy
+   op declare-vars_.         : @TermSet@ -> MetaRLTLCommand [ctor] .
+   op inv_to_with_on_.       : @Token@ Qid @TermSet@ @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
+   op inv_to_on_.            : @Token@ Qid @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
+   op def-term-set_.         : @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
+   op step_.                 : Nat -> MetaRLTLCommand [ctor] .
+   op step*`.                : -> MetaRLTLCommand [ctor] .
+   op step`.                 : -> MetaRLTLCommand [ctor] .
+   op case_on_by_.           : Nat @Token@ @TermSet@ -> MetaRLTLCommand [ctor] .
+   op split_by_.             : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
+   op select-rls_.           : @NeTokenList@ -> MetaRLTLCommand [ctor] .
+   op select_.               : @Token@ -> MetaRLTLCommand [ctor] .
+   op continue`.             : -> MetaRLTLCommand [ctor] .
+   op debug`command_on_.     : @Token@ Nat -> MetaRLTLCommand [ctor] .
+endfm
+
+fmod RLTL-COMMAND is
+   pr REACH-PROOF-STATE .
+   sort RLTLCommand .
+   op set-echo          : Bool -> RLTLCommand [ctor] .
+   op usetool           : Qid Qid Module ModuleList -> RLTLCommand [ctor] .
+   op start             : -> RLTLCommand [ctor] .
+   op quit              : -> RLTLCommand [ctor] .
+   op ls                : Bool -> RLTLCommand  [ctor] .
+   op focus             : NeSet{Nat} -> RLTLCommand [ctor] .
+   op subsumed          : QFCTermSet QFCTermSet -> RLTLCommand [ctor] .
+   op intersect         : QFCTermSet QFCTermSet -> RLTLCommand [ctor] .
+   op add-goal          : LabelReachFormEx Bool -> RLTLCommand [ctor] .
+   op add-axiom         : LabelReachFormEx -> RLTLCommand  [ctor] .
+   op use-strat         : Nat NeQidList -> RLTLCommand [ctor] .
+   op declare-vars      : QidSet -> RLTLCommand  [ctor] .
+   op inv               : Qid Qid QidSet QFCTermSet -> RLTLCommand [ctor] .
+   op def-term-set      : NeQFCTermSet   -> RLTLCommand [ctor] .
+   op step              : Bound -> RLTLCommand [ctor] .
+   op case              : Nat Variable TermSet -> RLTLCommand  [ctor] .
+   op split             : Nat EqQFForm? -> RLTLCommand [ctor] .
+   op select-rls        : QidList -> RLTLCommand [ctor] .
+   op select            : Module Qid -> RLTLCommand [ctor] .
+   op continue          : -> RLTLCommand [ctor] .
+   op debug             : Qid Nat -> RLTLCommand [ctor] .
+endfm
+
+fmod PARSE-RLTLCOMMAND is
+   pr META-LEVEL .
+   pr TRANSITION .
+   pr REACH-PROOF-STATE-OPS .
+   pr PARSE-FORM .
+   pr VARIABLES-TO-CONSTANTS .
+   pr RLTL-COMMAND .
+
+   var M : Module . var S : Substitution . var TS : TermSet . var RF : ReachForm .
+   var T1 T2 T3 T4 : Term . var N : Nat . var D : ProofMetadata .
+
+   op rltl-parse : ProofMetadata Term ~> RLTLCommand .
+   op rltl-parse : ModuleSubstPair Term ~> RLTLCommand .
+
+   eq rltl-parse(D,T1)                                 = rltl-parse(varsToConsts#(get-mod(D),simple,get-dcl(D)),T1) .
+
+   --- run in OFF mode
+   eq rltl-parse((M,S),'start-proof`..MetaRLTLCommand) = start .
+   eq rltl-parse((M,S),'select_.[T1])                  = select(upModule(parse-token(T1),true),parse-token(T1)) .
+   eq rltl-parse((M,S),'select-rls_.[T1])              = select-rls(parse-tokenlist(T1)) .
+   eq rltl-parse((M,S),'declare-vars_.[T1])            = declare-vars(parse-varset((M,none),T1)) .
+   eq rltl-parse((M,S),'def-term-set_.[T1])            = def-term-set(parse-matchform((M,S),true,T1)) .
+   eq rltl-parse((M,S),'use`tool_for_on_.[T1,T2,T3])   = usetool(parse-token(T1),parse-token(T2),upModule(parse-token(T3),true),nilmod) .
+   eq rltl-parse((M,S),'use`tool_for_on_with_.[T1,T2,T3,T4])
+     = usetool(parse-token(T1),parse-token(T2),upModule(parse-token(T3),true),parse-modlist(T4)) .
+   eq rltl-parse((M,S),'add-goal_.[T1])                = add-goal(parse-labeltrans((M,S),true,T1),true) .
+   eq rltl-parse((M,S),'add-goal!_.[T1])               = add-goal(parse-labeltrans((M,S),true,T1),false) .
+   eq rltl-parse((M,S),'add-axiom_.[T1])               = add-axiom(parse-labeltrans((M,S),true,T1)) .
+   eq rltl-parse((M,S),'inv_to_with_on_.[T1,T2,T3,T4]) = inv(parse-token(T1),downQid(T2),parse-varset((M,S),T3),parse-matchform((M,S),true,T4)) .
+   eq rltl-parse((M,S),'inv_to_on_.[T1,T2,T3])         = inv(parse-token(T1),downQid(T2),none,                  parse-matchform((M,S),true,T3)) .
+   eq rltl-parse((M,S),'step_.[T1])                    = step(downNat(T1)) .
+   eq rltl-parse((M,S),'step`..MetaRLTLCommand)        = step(1) .
+   eq rltl-parse((M,S),'step*`..MetaRLTLCommand)       = step(unbounded) .
+
+   --- run in ON mode
+   eq rltl-parse((M,S),'case_on_by_.[T1,T2,T3])          = case(downNat(T1),parse-token(T2),parse-termset((M,S),true,T3)) .
+   eq rltl-parse((M,S),'split_by_.[T1,T2])               = split(downNat(T1),parse-qfform((M,S),true,T2)) .
+   eq rltl-parse((M,S),'focus_.[T1])                     = focus(downNeNatSet(T1)) .
+   eq rltl-parse((M,S),'list-goals`..MetaRLTLCommand)    = ls(true) .
+   eq rltl-parse((M,S),'list-goal-ids`..MetaRLTLCommand) = ls(false) .
+   eq rltl-parse((M,S),'continue`..MetaRLTLCommand)      = continue .
+
+   --- can be run any time
+   eq rltl-parse((M,S),'on_use`strat_.[T1,T2])          = use-strat(downNat(T1),parse-tokenlist(T2)) .
+   eq rltl-parse((M,S),'quit`..MetaRLTLCommand)         = quit .
+   eq rltl-parse((M,S),'set`echo`on`..MetaRLTLCommand)  = set-echo(true) .
+   eq rltl-parse((M,S),'set`echo`off`..MetaRLTLCommand) = set-echo(false) .
+   eq rltl-parse((M,S),'subsumed_=<_.[T1,T2])           = subsumed(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
+   eq rltl-parse((M,S),'intersect_=_.[T1,T2])           = intersect(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
+   eq rltl-parse((M,S),'debug`command_on_.[T1,T2])      = debug(parse-token(T1),downNat(T2)) .
+endfm
+
+--- Actions are the result of commands
+---
+--- update   - updates the internal state of the proof
+--- write    - prints out given qidlist
+--- skip     - action that does nothing
+--- set-mode - sets the proof mode
+--- continue - continues during active mode
+fmod RLTL-ACTION is
+  pr REACH-PROOF-STATE .
+
+  sort RLTLMode .
+  op off    : -> RLTLMode .
+  op on     : -> RLTLMode .
+  op active : Bound -> RLTLMode .
+
+  sort RLTLAction .
+  op update   : ProofMetadata  -> RLTLAction [ctor] .
+  op write    : QidList        -> RLTLAction [ctor] .
+  op set-mode : RLTLMode       -> RLTLAction [ctor] .
+  op continue :                -> RLTLAction [ctor] .
+  op skip     :                -> RLTLAction [ctor] .
+  op write-state :             -> RLTLAction [ctor] .
+  op write-branch : NeSet{Nat} -> RLTLAction [ctor] .
+
+  --- action sequencing
+  sort RLTLActionList .
+  subsort RLTLAction < RLTLActionList .
+  op _;_ : RLTLAction RLTLActionList -> RLTLAction [ctor gather (E e)] .
+  op nil : -> RLTLActionList [ctor] .
+  op _&_ : [ProofMetadata] [RLTLActionList] -> RLTLAction [ctor strat (1 0)] .
+endfm
+
+mod RLTL-ATTRIBUTES is
+  pr CONFIGURATION .
+  pr REACH-PROOF-STATE .
+  pr RLTL-ACTION .
+  --- NB: for compatibility with FULL-MAUDE, do not set first two as ctor
+  op input :_  : TermList -> Attribute .
+  op output :_ : QidList -> Attribute .
+  op echo :_   : Bool -> Attribute [ctor] .
+  op proof :_  : Proof -> Attribute [ctor format (nr o d n)] .
+  op mode :_   : RLTLMode -> Attribute [ctor] .
+endm
+
+mod RLTL-ACTION-IMPL is
+  pr REACH-PROOF-STATE-OPS .
+  pr VARIABLES-TO-CONSTANTS .
+  pr RLTL-ATTRIBUTES .
+  pr BOUND-REFINEMENT .
+
+  var AS : AttributeSet .
+  var B B' : Bool .
+  var BD : Bound .
+  var NBD : NzBound .
+  var U : Module .
+  var P : Proof .
+  var GS : ProofGoalSet .
+  var PM : ProofMetadata .
+  var L L' : QidList .
+  var A A' : RLTLAction .
+  var M M' : RLTLMode .
+  var NS : Set{Nat} .
+  var NNS : NeSet{Nat} .
+  var AK : [RLTLAction] .
+
+  op process-action : RLTLAction AttributeSet -> AttributeSet [strat (2 1 0)] .
+
+  eq process-action(skip, (AS)) = AS .
+  eq process-action(write(L'), (output : L, AS)) = output : (L L'), AS .
+  eq process-action(write-state, (proof : P, output : L, AS)) = proof : P, output : (L printGoalsOrSuccess(P)), AS .
+  eq process-action(write-branch(NNS), (proof : P, output : L, AS)) = proof : P, output : (L printDescendants(P,NNS)), AS .
+  eq process-action(update(PM),   (proof : P, AS)) =
+    process-action(write(get-out(PM)),proof : raw-set(P,clear(PM)), AS) [label foo] .
+  eq process-action(set-mode(M'), (mode : M, AS)) = mode : M', AS .
+  eq process-action(continue, (proof : [PM], mode : M, output : L, AS)) =
+     if active-mode?(M)
+       then run-cycle((AS,output : L),get-bound(M),{PM})
+       else proof : [PM],
+            mode : M,
+            output : (L 'Error: 'continue 'can 'only 'be 'used 'while 'taking 'proof 'steps)
+     fi, AS .
+  eq process-action(PM & AK,AS) =
+    if get-err(PM) == true
+      then process-action(write(get-out(PM)),AS)
+      else process-action(update(PM) ; AK,AS)
+    fi .
+  eq process-action(A ; A',AS) = process-action(A',process-action(A,AS)) .
+ ceq [process-action-err] :
+     process-action(AK,AS) =
+     process-action(write('Internal 'Error: 'Action 'Ill-defined),AS)
+   if not AK :: RLTLAction .
+
+  --- auxiliary functions
+  --- TODO: reorganize these to make them less ugly
+  --- TODO: add config option to print state after every internal loop
+  --- TODO: write expect script to automate this looping behavior
+  op run-cycle : AttributeSet Bound Proof -> AttributeSet .
+  eq run-cycle((AS, output : L),0,[PM]) =
+    proof : [flipPaused(clear(PM))],
+    if goalsByStatus(paused,get-prf(PM)) == mt
+      then mode : off, output : (L 'Proof 'Completed.)
+      else mode : off, output : (L 'Step 'Results: '\n printSpaces(8) printGoals(get-mod(PM),goalsByStatus(paused,get-prf(PM))))
+    fi .
+
+  eq run-cycle((AS, output : L),NBD,[PM]) =
+    if goalsByStatus(active,get-prf(PM)) && goalsByStatus(paused,get-prf(PM)) == mt
+      then proof : [clear(PM)], mode : off, output : (L get-out(PM) 'Proof 'Completed.)
+      else if get-out(PM) == nil and get-err(PM) == false
+        then run-cycle((AS, output : L),if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi,{PM})
+        else proof : [clear(PM)], mode : active(if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi),
+         output : (L get-out(PM)
+                  (if get-err(PM) then 'ERROR! else nil fi)
+                  (printSpaces(8) printStatusGoals(get-mod(PM),get-prf(PM)) '\n)
+                  'CONTINUE> 'type &sp '`( 'continue '. '`) &sp 'to 'continue)
+    fi fi .
+
+  op get-bound : RLTLMode ~> Bound .
+  eq get-bound(active(BD)) = BD .
+
+  op active-mode? : RLTLMode -> Bool .
+  eq active-mode?(active(BD)) = true .
+  eq active-mode?(M) = false [owise] .
+
+  op printDescendants : Proof Set{Nat} -> QidList .
+  eq printDescendants(P,NS) = printGoals(get-mod(data(P)),getdescendants(NS,get-prf(data(P)))) .
+
+  op printGoalsOrSuccess : Proof -> QidList .
+  eq printGoalsOrSuccess(P) =
+    printGoalsOrSuccess(get-mod(data(P)),get-prf(data(P))) .
+
+  op printGoalsOrSuccess : Module ProofGoalSet -> QidList .
+  eq printGoalsOrSuccess(U,mt) = ('Proof 'Completed.) .
+  eq printGoalsOrSuccess(U,GS) = printGoals(U,GS) .
+endm
+
+--- This module defines a state machine for command processing
+fmod RLTL-PROC-CMD is
+  --- backend
+  pr REACH-PROOF-STATE-PRINTER .    --- printer for proof state
+  pr REACH-PROOF-RULES-AUX .        --- proof rule actions
+  pr TRANSITION-INVARIANT       .   --- mk-inv/wrap-term()
+  pr LABEL-TRANSITION-CONVERSIONS . --- divide()
+  --- frontend
+  pr REACH-PROOF-INIT .             --- init()
+  pr PARSE-FORM .                   --- custom parser for formulas
+  pr RLTL-ACTION .                  --- tool actions
+  pr RLTL-COMMAND .                 --- tool commands
+  pr PRINT-COMMAND .                --- debug printing stuff
+
+  op proc    : RLTLCommand ProofMetadata                            -> RLTLAction .
+  op step    : ProofMetadata                                        -> RLTLAction .
+  op mod1    : ProofMetadata Module Qid                             -> RLTLAction .
+  op inv1    : ProofMetadata Qid QFCTermSet QidSet Qid              -> RLTLAction .
+  op inv2    : ProofMetadata LabelReachFormEx                       -> RLTLAction .
+  op decl1   : ProofMetadata Module QidSet                          -> RLTLAction .
+  op $padd   : ProofMetadata LabelReachFormEx Qid                   -> RLTLAction .
+  op $addgls : Module ProofMetadata LabelReachFormList Bool         -> ProofMetadata .
+  op $addgls : Module LabelReachFormList Nat                        -> ProofGoalSet .
+  op $renrf  : Module ReachForm                                     ~> ReachForm .
+
+  var BD : Bound . var NS : Set{Nat} . var N : Nat . var B : Bool .
+  var T : Term . var TS : TermSet .
+  var ID Q Q' : Qid . var QS : QidSet . var L : QidList . var V  : Variable . var QK : [Qid] .
+  var U : Module . var US : ModuleList .
+  var QF : EqQFForm? . var MF MF' : QFCTermSet .
+  var F : ReachForm .
+  var LX : LabelReachFormEx . var LF : LabelReachForm . var LS : LabelReachFormList . var LK : [LabelReachFormEx] .
+  var G : ProofGoal . var GK : [ProofGoalSet] . var R : ProofMetadata .
+
+  eq inv1(R,ID,MF,QS,Q) = inv2(R,(ID : wrap-term(get-mod(R),mk-inv(get-mod(R),QS,MF),Q))) .
+  eq inv2(R,LX)         = proc(add-goal(LX,true),R) .
+  eq inv2(R,LK)         = write('Internal 'Error: 'inv1) [owise] .
+
+  eq $addgls(U,R,LS,B)    = merge(R,lift-result(mt,R,if B then axs(LS) else none fi,$addgls(U,LS,0))) .
+  eq $addgls(U,LF ; LS,N) = mkGoals(none,N,default(LF),active,$renrf(U,trans(LF))) && $addgls(U,LS,s(N)) .
+  eq $addgls(U,nil,N)     = mt .
+ ceq $renrf(U,F)          = downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm)
+                              if downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm) =/= mt .
+  eq $padd(R,LX,Q)        = write('Added Q '`( 's '`) ': '\n printSpaces(8) print(get-mod(R),divide(LX))) .
+
+  --- commands to be typed BEFORE starting the proof
+  eq proc(add-goal(LX,B),    R) = $addgls(get-mod(R),R,divide(LX),B) & $padd(R,LX,'goal) .
+  eq proc(add-axiom(LX),     R) = update(merge(R,axs(tolist(divide(LX))))) ; $padd(R,LX,'axiom) .
+  eq proc(inv(ID,Q,QS,MF),   R) = inv1(R,ID,MF,QS,Q) .
+  eq proc(def-term-set(MF),  R) = merge(R,tst(MF)) & write('Added 'terminating 'state: '\n printSpaces(8) print(get-mod(R),MF)) .
+  eq proc(select(U,Q),       R) = set(R,mod(U)) & write('Set 'module 'to Q) .
+  eq proc(usetool(Q,Q',U,US),R) = merge(R,reg(Q' |-> (U,Q,US))) & write('Loaded 'function Q 'for Q') .
+  eq proc(select-rls(L),     R) = if get-mod(R) == noModule then write('Cannot 'select 'rules 'before 'loading 'rewrite 'theory) else
+                                    if L == nil then write('Internal 'Error: 'No 'rules 'selected) else
+                                      if not setRls(get-mod(R),L) :: Module then write('Some 'rules 'not 'found; 'aborting) else
+                                        mod(setRls(get-mod(R),L)) & write('Successfuly 'selected 'rules: L) fi fi fi .
+  eq proc(declare-vars(QS),  R) = merge(R,dcl(QS)) & write('Declared 'variable '`( 's '`) ': '\n printSpaces(8) '`{ &sp joinl(tolist(QS),'`, &sp) &sp '`}) .
+  eq proc(start,             R) = init(R) & (set-mode(on) ; write('Started 'proof: '\n printSpaces(8)) ; write-state) .
+
+  --- commands to be typed AFTER starting the proof
+  eq proc(case(N,V,TS),    R) = if getgl!(R,N) :: ProofGoal
+                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),case(V,TS)))) &
+                                    (write('Case 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
+                                  else write('Goal: qid(string(N,10)) 'not 'found)
+                                fi .
+  eq proc(split(N,QF),     R) = if getgl!(R,N) :: ProofGoal
+                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),split(QF)))) &
+                                    (write('Split 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
+                                  else write('Goal: qid(string(N,10)) 'not 'found)
+                                fi .
+  eq proc(ls(B),           R) = if B then write('All 'Goals: '\n printSpaces(8) printStatusGoals(get-mod(R),get-prf(R)))
+                                     else write('Goal 'Names: '\n printSpaces(8) printGoalIds(get-prf(R)))
+                                fi .
+  eq proc(continue,        R) = continue .
+  eq proc(step(BD),        R) = set-mode(active(BD)) ; continue .
+  eq proc(focus(NS),       R) = if getgl!(get-prf(R),NS) :: ProofGoalSet
+                                 then prf(getgl!(get-prf(R),NS)) & write('Successfully 'focused 'on 'target 'goal/goals)
+                                 else write('Some 'target 'goal/goals 'not 'found: '\n printSpaces(8) printNatSet(NS))
+                                fi .
+
+  --- commands to be typed ANYTIME
+  eq proc(use-strat(N,L),R) = if getgl!(get-prf(R),N) :: ProofGoalSet
+                                then if byName(toset(get-axs(R)),L) :: LabelReachFormList
+                                  then prf(setgl!(get-prf(R),
+                                   setstrat(getgl!(get-prf(R),N),default(byName(toset(get-axs(R)),L))))) &
+                                   write('Updated 'strategy 'for 'goal qid(string(N,10)))
+                                  else write('Strategy 'ill-formed)
+                                fi else write('Goal: qid(string(N,10)) 'not 'found)
+                              fi .
+  eq proc(debug(Q,N),    R) = write(print-command(R,Q,getbody(getgl!(get-prf(R),N)))) .
+endfm
+
+mod RLTL-UI is
+  inc LOOP-MODE .
+  pr RLTL-PROC-CMD .
+  pr REACH-PROOF-RULES .
+  pr PARSE-RLTLCOMMAND .
+  pr RLTL-ACTION-IMPL .
+  pr RLTL-ATTRIBUTES .
+  pr CONFIGURATION .
+
+  var IN OUT : NeQidList .
+  var QL QL' : QidList .
+  var AS : AttributeSet .
+  var PM : ProofMetadata .
+  var C : Configuration .
+
+  subsort Object < State .
+
+  op rltl-o    : -> Oid .
+  op rltl-c    : -> Cid .
+  op rltl-init : -> System .
+  op welcome   : -> QidList .
+
+  eq rltl-init =
+    [nil,< rltl-o : rltl-c | proof : [emptyData], output : nil, echo : false, mode : off >,welcome] .
+
+  eq welcome =
+    ('\n '\t '\s '\s '\s '\s 'Maude 'Reachability 'Logic
+     'Prover 'v0.2.9 '-- 'Sep. '21st '2018 '\n) .
+
+  op rltl-metaparse : NeQidList -> ResultPair? .
+  eq rltl-metaparse(IN) = metaParse(['META-RLTL-COMMAND],IN,'MetaRLTLCommand) .
+
+  rl [debug] :
+     ['debug,C:[Configuration],QL:[QidList]]
+  =>
+     [nil,C:[Configuration],QL:[QidList]] .
+
+  rl [in] :
+     [IN,< rltl-o : rltl-c | proof : [PM], AS > C,QL']
+  =>
+     if rltl-parse(PM,getTerm(rltl-metaparse(IN))) :: RLTLCommand
+       then [nil,< rltl-o : rltl-c |
+         process-action(proc(rltl-parse(PM,getTerm(rltl-metaparse(IN))),PM), proof : [PM], AS) >,QL']
+       else [nil,< rltl-o : rltl-c | proof : [PM], AS > C,
+         if not rltl-metaparse(IN) :: ResultPair
+           then QL' 'Parse 'failure: 'command 'not 'recognized
+           else QL' 'Parse 'failure 'in 'argument 'for 'command head(getTerm(rltl-metaparse(IN)))
+         fi ]
+     fi .
+
+  rl [out] :
+     [QL,< rltl-o : rltl-c | output : OUT, AS > C,QL']
+  =>
+     [QL,< rltl-o : rltl-c | output : nil, AS > C,OUT QL'] .
+endm
+
+mod RLTOOL is
+  pr RLTL-UI .
+  pr RLTOOL-DEFAULT-CONFIG .
+endm

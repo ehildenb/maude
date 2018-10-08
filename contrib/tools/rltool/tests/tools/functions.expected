@@ -1,0 +1,11 @@
+
+	    Maude Reachability Logic Prover v0.2.9 -- Sep. 21st 2018
+
+==========================================
+reduce in RLTOOL-TEST : toNNF(('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,
+    '1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] | ~ ('true.Pred ?= 'dupl['__['V:Soup,
+    'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup]))) .
+result QFCTerm: ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_[
+    '1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['U:Soup] \/ 'true.Pred !=
+    'dupl['__['V:Soup,'U:Soup]])
+Bye.

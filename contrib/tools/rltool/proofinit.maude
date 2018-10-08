@@ -1,0 +1,56 @@
+--- file: proofinit.maude
+--- reqs: prelude, full-maude, var-unif, var-sat, etc...
+--- info: this file contains code to define the operations necessary
+---       for doing reachablity proofs by hooking into backend function
+---       implementations defined in other modules
+
+fmod REACH-PROOF-INIT is
+  pr REACH-PROOF-STATE-OPS .
+  pr RLTOOL-BACKEND-IMPL .
+
+  var T T1 T2 T3 T4 T5 : Term . var F1 F2 F3 F4 F5 : FindResult .
+  var U : Module . var RT : ProofStrat . var PS : ProofGoalStatus . var B : Bool . var N : Nat .
+
+  var F : ReachForm . var TST' : QFCTermSet .
+  var FS FS' : ReachFormSet . var LFS LFS' : LabelReachFormSet .
+  var CRL CRL' AXL AXL' : LabelReachFormList . var ARS ARS' : LabelLCCRuleSet .
+  var D : ProofMetadata .
+  var GS : ProofGoalSet .
+
+  --- PRE: Arguments are well-defined with respect to Module
+  --- OUT: Initialize our proof state with goals from axioms
+  ---      and terminating states; rename everything so that name
+  ---      collisions won't happen between different pieces
+  op init  : ProofMetadata -> ProofMetadata .
+  eq init(D) =
+    if get-prf(D) == mt then
+        raw-set(D,st(err) ; out('Error: 'No 'goals 'specified))
+    else if get-mod(D) == noModule then
+        raw-set(D,st(err) ; out('Error: 'No 'module 'loaded))
+    else if get-reg(D) == empty then
+        raw-set(D,st(err) ; out('Error: 'No 'validity/satisfiability 'checking 'backend 'is 'loaded))
+    else if get-tst(D) == noterm then
+        raw-set(D,st(err) ; out('Terminating 'state 'set 'undefined))
+    else
+        init(get-mod(D),D)
+    fi fi fi fi .
+
+  op init : Module ProofMetadata -> ProofMetadata .
+ ceq init(U,D) = set(D,rls(ARS') ; tst(TST') ; axs(AXL') ;  prf(GS) ;  cnt(N) ; gn(1 + size(GS)))
+  if U               =/= noModule
+  --- rename variables to be fresh with respect to each other
+  /\ ARS             := abstract-rules(U,getRls(U),'true.Bool)                                  --- abstracted rewrite rules
+  /\ termdata(T1,F1) := #renameAllVar(U,highestSVar(U,upTerm(getbody(get-prf(D)))),upTerm(ARS)) --- renamed abstracted rewrite rules
+  /\ termdata(T2,F2) := #renameAllVar(U,F1,upTerm(get-tst(D)))                                  --- renamed final state pattern
+  /\ termdata(T3,F3) := #renameAllVar(U,F2,upTerm(get-axs(D)))                                  --- renamed axioms
+  --- rename these variables to be fresh with respect to above without prefixes
+  /\ termdata(T4,F4) := #renameTmpVar(U,F3,upTerm(get-prf(D)))
+  --- get all of the transformed values
+  /\ ARS'            := downTerm(T1,(empty).LabelLCCRuleSet)
+  /\ TST'            := downTerm(T2,(''Err.Qid | mtForm))
+  /\ AXL'            := downTerm(T3,(nil).LabelRuleEmptyList)
+  /\ GS              := downTerm(T4,(mt).ProofGoalSet)
+  /\ N               := if F4 == notFound then 0 else F4 fi .
+
+  eq init(U,D) = raw-set(D,st(err) ; out('Internal 'Error: 'init' 'failed)) [owise] .
+endfm

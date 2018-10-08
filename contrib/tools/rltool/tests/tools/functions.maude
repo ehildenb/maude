@@ -1,0 +1,35 @@
+load ../../rltool.maude
+
+fmod CHOICE-DATA is
+  sorts Nat MSet State Pred .
+  subsorts Nat < MSet .
+  op zero : -> Nat [ctor] .
+  op s    : Nat -> Nat [ctor] .
+  op __   : MSet MSet -> MSet [ctor assoc comm] .
+  op {_}  : MSet -> State [ctor] .
+  op tt   : -> Pred [ctor] .
+  op _=C_ : MSet MSet -> Pred [ctor] .
+  vars U V : MSet . var N : Nat .
+  eq U =C U = tt .
+  eq U =C U V = tt .
+endfm
+
+mod CHOICE is pr CHOICE-DATA .
+  vars U V : MSet .
+  rl [choice] : {U V} => {U} .
+endm
+
+mod RLTOOL-TEST is
+  pr RLTOOL .
+endm
+
+set show timing off .
+set show stats off .
+
+print reveal _;_ __ _,_ _&_ .
+
+--- check that NNF over constrained terms evaluates properly
+red toNNF(('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] |
+            ~ ('true.Pred ?= 'dupl['__['V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup]))) .
+
+quit

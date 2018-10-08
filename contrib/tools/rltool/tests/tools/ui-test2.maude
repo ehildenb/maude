@@ -1,0 +1,44 @@
+set include BOOL off .
+
+fmod CHOICE-DATA is
+  sorts Nat MSet State Pred .
+  subsorts Nat < MSet .
+  op zero : -> Nat [ctor] .
+  op s    : Nat -> Nat [ctor] .
+  op __   : MSet MSet -> MSet [ctor assoc comm] .
+  op {_}  : MSet -> State [ctor] .
+  op tt   : -> Pred [ctor] .
+  op _=C_ : MSet MSet -> Pred [ctor] .  *** MSet containment
+  vars U V : MSet . var N : Nat .
+  eq U =C U = tt .
+  eq U =C U V = tt .
+endfm
+
+mod CHOICE is pr CHOICE-DATA .
+  vars U V : MSet .
+  --- add extra bracket to test invariant creation
+  op [_] : MSet -> State .
+  rl [choice] : {U V} => {U} .
+endm
+
+load ../../rltool.maude
+
+set show stats off .
+set show timing off .
+set show loop stats off .
+set show loop timing off .
+
+(select CHOICE .)
+(use tool varsat for validity on CHOICE-DATA .)
+(declare-vars (M:MSet) U (N:Nat) .)
+(def-term-set ([N]) | true .)
+(inv test-invariant-1 to '`[_`] on ({M}) | true .)
+(inv test-invariant-2 to '`[_`] on ({N}) | true .)
+(start-proof .)
+(step .)
+
+--- test command parser against other use tool variants
+(use tool varsat for validty on CHOICE-DATA with CHOICE-DATA .)
+(use tool varsat for validty on CHOICE-DATA with CHOICE-DATA CHOICE-DATA .)
+
+quit

@@ -1,0 +1,21 @@
+load ../../systems/dumb-comm-protocol.maude
+load ../../rltool.maude
+
+(select DUMB-COMM-PROTOCOL .)
+(use tool impsimp for validity on DUMB-COMM-PROTOCOL with FOFORMSIMPLIFY .)
+
+(declare-vars (NS:NeDataList) U (NR:NeDataList) U (S:DataList) U (R:DataList) U 
+              (M:Nat)         U (N:Nat)         U (N':Nat) .)
+
+(def-term-set (< nil , R , N >) | true .)
+
+--- NOTE: this should work but it doesn't because the shared variable induces a match failure;
+---       this problem could and should be automatically resolved with a formula transformation
+---       that extracts all shared variables out of the terms on the RHS
+--- (add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) /\ (len(NS NR)) = (N)  => (< nil , NS NR , N >) | true .)
+
+(add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) /\ (len(NS NR)) = (N')  => (< nil , NS NR , N >) | (N) = (N') .)
+
+(start-proof .)
+(step .)
+(step .)

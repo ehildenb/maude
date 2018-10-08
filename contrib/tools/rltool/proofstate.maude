@@ -1,0 +1,848 @@
+--- file: proofstate.maude
+--- reqs: prelude, full-maude, prelude-aux, var-sat (plus dependencies), reachform (plus dependencies)
+--- info: models the state of a reachability logic proof
+
+fmod NAT-RANGE is pr SET{Nat} .
+  op _--_ : Nat Nat -> NeSet{Nat} .
+  var N M : Nat .
+ ceq N -- M = M -- N if N > M .
+  eq N -- M = if N == M then N else M , (N -- sd(M,1)) fi .
+endfm
+
+fmod REACH-PROOF-STRATEGY is
+  pr LABEL-TRANSITION-LIST .
+  pr TERMSET-FM .
+
+  var AX : LabelReachForm .
+  var AXL : LabelReachFormList .
+  var CN CN' CN'' : ProofStrat .
+  var PA : ProofRuleAction .
+  var B : Bool .
+
+  sort ProofRuleAction ProofStrat .
+  subsort ProofRuleAction < ProofStrat .
+  --- basic proof rule actions
+  op  subsume : -> ProofRuleAction [ctor] .
+  op  simplify : -> ProofRuleAction [ctor] .
+  op  termcheck : -> ProofRuleAction [ctor] .
+  op  step : -> ProofRuleAction [ctor] .
+  op  axiom : LabelReachForm -> ProofRuleAction [ctor] .
+  op  case  : Variable TermSet -> ProofRuleAction [ctor] .
+  op  split : EqQFForm -> ProofRuleAction [ctor] .
+  op  pause : -> ProofRuleAction [ctor] .
+  op  giveup : -> ProofRuleAction [ctor] .
+  op  result : Bool -> ProofStrat [ctor] .
+
+  --- sequencing
+  op _;;_ : ProofStrat ProofStrat -> ProofStrat [ctor strat (1 0) gather (e E)] .
+
+  --- short-circuited choice (pick the first one that succeeds)
+  op _|_ : ProofStrat ProofStrat -> ProofStrat [ctor strat (1 0) gather (e E)] .
+
+  --- evaluate result of proof steps
+  eq result(true)  | CN = result(true) .
+  eq result(false) | CN = CN .
+  eq result(true)  ;; CN = CN .
+  eq result(false) ;; CN = giveup .
+
+  op update  : Bool ProofStrat -> ProofStrat .
+  eq update(B,CN) = update2(update1(B,CN)) .
+
+  op update1 : Bool ProofStrat -> ProofStrat .
+  eq update1(B,CN ;; CN') = update1(B,CN) ;; CN' .
+  eq update1(B,CN | CN') = update1(B,CN) | CN' .
+  eq update1(B,PA)       = result(B) .
+
+  op update2 : ProofStrat -> ProofStrat .
+  eq update2(result(B)) = giveup .
+  eq update2(CN) = CN [owise] .
+
+  --- loop over axioms
+  op loop-axioms : LabelReachFormList ProofStrat -> ProofStrat [strat (1 0)] .
+  eq loop-axioms(AX ; AXL,CN) = axiom(AX) | loop-axioms(AXL,CN) .
+  eq loop-axioms(nil,CN) = CN .
+
+
+  --- the default proof strategy
+  op default : LabelReachFormList -> ProofStrat .
+  eq default(AXL) = simplify ;;
+                    subsume ;;
+                    termcheck ;;
+                    step ;;
+                    simplify ;;
+                    subsume ;;
+                    termcheck ;;
+                    pause ;;
+                    default-loop(AXL) .
+  op default-loop : LabelReachFormList -> ProofStrat .
+  eq default-loop(AXL) = loop-axioms(AXL,step) ;;
+                         simplify ;;
+                         subsume ;;
+                         termcheck ;;
+                         pause ;;
+                         default-loop(AXL) .
+
+  --- make a proof action come first
+  eq (CN | CN') | CN'' = CN | (CN' | CN'') .
+  eq (CN ;; CN') ;; CN'' = CN ;; (CN' ;; CN'') .
+
+  --- OUT: get head item
+  op nextaction : ProofStrat -> ProofRuleAction .
+  eq nextaction(CN ;; CN') = nextaction(CN) .
+  eq nextaction(CN | CN') = nextaction(CN) .
+  eq nextaction(PA) = PA .
+endfm
+
+fmod REACH-PROOF-GOAL is
+  pr TRANSITION-PROJECTIONS .
+  pr TRANSITIONSET-OPERATIONS .
+  pr CONSTRAINED-TERM-OPERATIONS .
+  pr NAT-RANGE .
+  pr TRANSITIONSET-RENAME .
+  pr REACH-PROOF-STRATEGY .
+  pr TRANSITION-SUBSTITUTION .
+
+  var N N' : Nat .
+  var P : Parent .
+  var PS PS' : ProofGoalStatus .
+  var CN CN' : ProofStrat .
+  var F : ReachForm .
+
+  sort ProofGoalStatus .
+  op active : -> ProofGoalStatus [ctor] .
+  op paused : -> ProofGoalStatus [ctor] .
+  op inactive : -> ProofGoalStatus [ctor] .
+
+  sort ProofGoal .
+  op [_,_,_,_,_]  : Parent Nat ProofStrat ProofGoalStatus ReachForm -> ProofGoal
+     [ctor format (g! o d d d d d d d d g! o)] .
+
+  ---# Parents
+  op getparent : ProofGoal -> Parent .
+  eq getparent([P,N,CN,PS,F]) = P .
+
+  ---# Id
+  op getid : ProofGoal -> Nat .
+  eq getid([P,N,CN,PS,F]) = N .
+
+  op addid : ProofGoal Nat -> ProofGoal .
+  eq addid([P,N,CN,PS,F],N') = [P,N + N',CN,PS,F] .
+
+  ---# Strategies
+  op getstrat : ProofGoal -> ProofStrat .
+  eq getstrat([P,N,CN,PS,F]) = CN .
+
+  op setstrat : ProofGoal ProofStrat -> ProofGoal .
+  eq setstrat ([P,N,CN,PS,F],CN') = [P,N,CN',PS,F] .
+
+  op prestrat : ProofGoal ProofStrat -> ProofGoal .
+  eq prestrat([P,N,CN,PS,F],CN') = [P,N,CN' ;; CN,PS,F] .
+
+  ---# Status
+  op getstatus : ProofGoal -> ProofGoalStatus .
+  eq getstatus([P,N,CN,PS,F]) = PS .
+
+  op setstatus : ProofGoalStatus ProofGoal -> ProofGoal .
+  eq setstatus(PS',[P,N,CN,PS,F]) = [P,N,CN,PS',F] .
+
+  op flipPaused : ProofGoal -> ProofGoal .
+  eq flipPaused([P,N,CN,PS,F]) = [P,N,CN,if PS == paused then active else PS fi,F] .
+
+  ---# Body
+  op getpvars : ProofGoal -> QidSet .
+  eq getpvars([P,N,CN,PS,F]) = vars(antc(F)) .
+
+  op getbody : ProofGoal -> ReachForm .
+  eq getbody([P,N,CN,PS,F]) = F .
+endfm
+
+fmod REACH-PROOF-GOALSET is
+  pr REACH-PROOF-GOAL .
+  pr SUBSTITUTIONSET .
+
+  var P P' : Parent .
+  var N N' M : Nat .
+  var CN CN' : ProofStrat .
+  var PS PS' : ProofGoalStatus .
+  var F F' : ReachForm .
+  var G G' : ProofGoal .
+  var GS GS' : ProofGoalSet .
+  var U : Module .
+  var Idx : FindResult .
+  var NS : Set{Nat} .
+  var FS : ReachFormSet .
+
+  sort NeProofGoalSet MaybeProofGoal ProofGoalSet .
+  subsort ProofGoal < MaybeProofGoal NeProofGoalSet < ProofGoalSet .
+  op _&&_ : ProofGoalSet ProofGoalSet -> ProofGoalSet [ctor assoc comm id: mt format (d d nn d)] .
+  op _&&_ : ProofGoalSet NeProofGoalSet -> NeProofGoalSet [ctor ditto] .
+  op mt : -> MaybeProofGoal [ctor] .
+
+  ---# Parents
+  op getparents : ProofGoalSet -> Set{Nat} .
+  eq getparents(G && G' && GS) = if getparent(G) :: Nat
+                                  then getparent(G)
+                                  else empty
+                                fi , getparents(G' && GS) .
+  eq getparents(mt) = empty .
+
+  op getdescendants : Set{Nat} ProofGoalSet -> ProofGoalSet .
+  eq getdescendants(NS,GS) = getdescendants(NS,GS,mt) .
+
+  op getdescendants : Set{Nat} ProofGoalSet ProofGoalSet -> ProofGoalSet .
+  eq getdescendants((N,NS),[N,M,CN,PS,F] && GS,GS') =
+    getdescendants((N,M,NS),GS,[N,M,CN,PS,F] && GS') .
+  eq getdescendants(NS,GS,GS') = GS' [owise] .
+
+  ---# Proof Strategy
+
+  op setstrat : ProofGoalSet ProofStrat -> ProofGoalSet .
+  eq setstrat(G && G' && GS,CN) = setstrat(G,CN) && setstrat(G' && GS,CN) .
+  eq setstrat(mt,CN) = mt .
+
+  op prestrat : ProofGoalSet ProofStrat -> ProofGoalSet .
+  eq prestrat(G && G' && GS,CN) = prestrat(G,CN) && prestrat(G' && GS,CN) .
+  eq prestrat(mt,CN) = mt .
+
+  ---# Status
+  op setstatus : ProofGoalStatus ProofGoalSet -> ProofGoalSet .
+  eq setstatus(PS,G && G' && GS) = setstatus(PS,G) && setstatus(PS,G' && GS) .
+  eq setstatus(PS,mt) = mt .
+
+  op flipPaused : ProofGoalSet -> ProofGoalSet .
+  eq flipPaused(G && G' && GS) = flipPaused(G) && flipPaused(G' && GS) .
+  eq flipPaused(mt) = mt .
+
+  ---# Body
+  op getbody : ProofGoalSet -> ReachFormSet .
+  eq getbody(G && G' && GS) = getbody(G) & getbody(G' && GS) .
+  eq getbody(mt) = mt .
+
+  ---# General Functions and Predicates
+
+  --- OUT: size of the given ProofGoalSet
+  op size : ProofGoalSet -> Nat .
+  eq size(G && GS) = s(size(GS)) .
+  eq size((mt).ProofGoalSet) = 0 .
+
+  --- OUT: true iff the one set/two sets have have a shared duplicate
+  op duplIdGoal? : ProofGoalSet -> Bool .
+  eq duplIdGoal?([P,N,CN,PS,F] && [P',N,CN',PS',F'] && GS') = true .
+  eq duplIdGoal?(GS) = false [owise] .
+
+  op duplIdGoal? : ProofGoalSet ProofGoalSet -> Bool .
+  eq duplIdGoal?([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = true .
+  eq duplIdGoal?(GS,GS') = false [owise] .
+
+  --- PRE: Goals are well-formed in module
+  --- OUT: Consistently renamed and ACU-normalized goals
+  op renameNormalizeGoal : Module FindResult ProofGoalSet -> ProofGoalSet .
+  eq renameNormalizeGoal(U,Idx,[P,N,CN,PS,F] && GS) =
+    [P,N,CN,PS,normalize(U,renameAllVar(U,Idx,F))] && renameNormalizeGoal(U,Idx,GS) .
+  eq renameNormalizeGoal(U,Idx,mt) = (mt).ProofGoalSet .
+
+  --- OUT: deletes duplicate goals in a set
+  op deleteDuplGoals : ProofGoalSet -> ProofGoalSet .
+  eq deleteDuplGoals([P,N,CN,PS,F] && [P',N',CN',PS',F] && GS) =
+    deleteDuplGoals(if N < N' then [P,N,CN,PS,F] else [P',N',CN',PS',F] fi && GS) .
+  eq deleteDuplGoals(GS) = GS [owise] .
+
+  --- OUT: Extracts a subset of ProofGoals whose IDs match those in the NatListSet
+  ---      The function getgl!() is strict; it will error out when it cannot find
+  ---      all specified ProofGoals where getgl() will return a subset of those
+  ---      matched without error
+  op getgl! : ProofGoalSet Set{Nat} -> [ProofGoalSet] .
+  eq getgl!([P,N,CN,PS,F] && GS,(N,NS)) = [P,N,CN,PS,F] && getgl!(GS,NS) .
+  eq getgl!(GS,empty) = mt .
+
+  op getgl : ProofGoalSet Set{Nat} -> ProofGoalSet .
+  eq getgl([P,N,CN,PS,F] && GS,(N,NS)) = [P,N,CN,PS,F] && getgl(GS,NS) .
+  eq getgl(mt,NS) = mt .
+  eq getgl(GS,NS) = mt [owise] .
+
+  --- OUT: Finds the goals with the same id in the set;
+  ---      sets its state to match this goal
+  op setgl! : ProofGoalSet ProofGoalSet ~> ProofGoalSet .
+  eq setgl!([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = [P',N,CN',PS',F'] && setgl!(GS,GS') .
+  eq setgl!(GS,mt) = GS .
+
+  op setgl : ProofGoalSet ProofGoalSet -> ProofGoalSet .
+  eq setgl([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = [P',N,CN',PS',F'] && setgl(GS,GS') .
+  eq setgl(GS,GS') = GS [owise] .
+
+  --- OUT: Finds the goals with the same id in the set and deletes them
+  op delgl : ProofGoalSet ProofGoalSet -> ProofGoalSet .
+  eq delgl([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = delgl(GS,[P',N,CN',PS',F'] && GS') .
+  eq delgl(GS,GS') = GS [owise] .
+
+  --- OUT: Get the set of active goals
+  op goalsByStatus : ProofGoalStatus ProofGoalSet -> ProofGoalSet .
+  eq goalsByStatus(PS,[P,N,CN,PS',F] && GS) =
+    if PS == PS' then [P,N,CN,active,F] else mt fi && goalsByStatus(PS,GS) .
+  eq goalsByStatus(PS,GS) = mt .
+
+  --- OUT: Get an active goal if it exists
+  op getActiveGoal : ProofGoalSet ~> ProofGoal .
+  eq getActiveGoal([P,N,CN,active,F] && GS) = [P,N,CN,active,F] .
+
+  ---# Goal set creation
+
+  --- OUT: build a set of goals using the supplied set of sequents;
+  ---      increment the goal number starting from Nat and with the
+  ---      Parent as first argument
+  op mkGoals : Parent Nat ProofStrat ProofGoalStatus ReachFormSet -> ProofGoalSet .
+  eq mkGoals(P,N,CN,PS,F & FS) = [P,N,CN,PS,F] && mkGoals(P,s(N),CN,PS,FS) .
+  eq mkGoals(P,N,CN,PS,mt)     = mt .
+
+  --- OUT: build child goals based on a parent goal
+  op newChildGoals : ProofGoal ProofStrat ProofGoalStatus ReachFormSet -> ProofGoalSet .
+  eq newChildGoals(G,CN,PS,FS) = mkGoals(getid(G),0,CN,PS,FS) .
+
+  --- OUT: build child goals based on a parent goal
+  op newChildGoals : ProofGoal ProofGoalStatus ReachFormSet -> ProofGoalSet .
+  eq newChildGoals(G,PS,FS) = mkGoals(getid(G),0,giveup,PS,FS) .
+
+  op newChildGoals : ProofGoal ReachFormSet -> ProofGoalSet .
+  eq newChildGoals(G,FS) = mkGoals(getid(G),0,giveup,active,FS) .
+
+  --- OUT: copy a goal to become a child of itself
+  op copyGoalToChild : ProofGoal -> ProofGoal .
+  eq copyGoalToChild(G) = mkGoals(getid(G),0,getstrat(G),active,getbody(G)) .
+
+  --- OUT: add Nat to each goal number
+  op renumberGoals : Nat ProofGoalSet -> ProofGoalSet .
+  eq renumberGoals(N,G && GS) = addid(G,N) && renumberGoals(N,GS) .
+  eq renumberGoals(N,mt) = mt .
+endfm
+
+fmod AXIOM-RESULT is
+  pr FOFORM .
+  pr TRANSITIONSET .
+  pr LABEL-TRANSITION .
+
+  var AX : LabelReachForm .
+  var S : Substitution .
+  var QF : QFForm? .
+  var FS : ReachFormSet .
+  var AR AR' : AxiomResult .
+  var ARL : AxiomResultList .
+
+  sort AxiomResult AxiomResultList .
+  subsort AxiomResult < AxiomResultList .
+  op axrule : LabelReachForm Substitution FOForm? ReachFormSet -> AxiomResult [ctor] .
+  op __ : AxiomResultList AxiomResultList -> AxiomResultList [ctor assoc id: nilax] .
+  op nilax : -> AxiomResultList [ctor] .
+  op errAxiomResult : QidList -> [AxiomResult] [ctor] .
+
+  op arAx : AxiomResultList -> LabelReachForm .
+  eq arAx(axrule(AX,S,QF,FS) ARL) = AX .
+  op arCond : AxiomResultList -> QFForm? .
+  eq arCond(axrule(AX,S,QF,FS) ARL) = QF .
+  op arRes : AxiomResultList -> ReachFormSet .
+  eq arRes(axrule(AX,S,QF,FS) ARL) = FS .
+
+  op head : AxiomResultList -> AxiomResult .
+  eq head(AR ARL) = AR .
+
+  op tail : AxiomResultList -> AxiomResultList .
+  eq tail(AR ARL) = ARL .
+
+  op delete : AxiomResult AxiomResultList -> AxiomResultList .
+  eq delete(AR,AR' ARL) = if AR == AR' then nilax else AR' fi delete(AR,ARL)  .
+  eq delete(AR,nilax) = nilax .
+
+  op errAxiomResultMsg : [AxiomResult] -> QidList .
+  eq errAxiomResultMsg(A:[AxiomResult] errAxiomResult(QL:QidList) B:[AxiomResult]) = QL:QidList .
+  eq errAxiomResultMsg(A:[AxiomResult]) = nil .
+endfm
+
+fmod AXIOM-RECORD is
+  pr AXIOM-RESULT .
+  sort AxiomRecord .
+  op axrec : AxiomResultList -> AxiomRecord .
+  op axrec : AxiomResult AxiomResultList -> AxiomRecord .
+endfm
+
+view AxiomRecord from TRIV to AXIOM-RECORD is sort Elt to AxiomRecord . endv
+
+fmod REACH-PROOF-STATUS is
+  sort ProofStatusCode .
+  op err : -> ProofStatusCode [ctor] .
+  op done : -> ProofStatusCode [ctor] .
+
+  sort NormalStatus ExceptionalStatus ProofStatus .
+  subsort NormalStatus ExceptionalStatus < ProofStatus .
+  subsort ProofStatusCode < ProofStatus .
+  op __ : NormalStatus NormalStatus -> NormalStatus [ctor assoc comm id: noStatus] .
+  op __ : ExceptionalStatus NormalStatus -> ExceptionalStatus [ctor ditto] .
+  op __ : ExceptionalStatus ExceptionalStatus -> ExceptionalStatus [ctor ditto] .
+  op __ : ProofStatus ProofStatus -> ProofStatus [ctor ditto] .
+  op noStatus : -> NormalStatus [ctor] .
+endfm
+
+fmod REACH-PROOF-STATE is
+  pr REACH-PROOF-STATUS .
+  pr REACH-PROOF-GOALSET .
+  pr LABEL-TRANSITION-SET .
+  pr LABEL-TRANSITION-LIST .
+  pr SCOPED-REGISTRY   .
+  pr MAP{Nat,AxiomRecord} .
+
+  sort ProofMetadatum .
+  op mod : Module -> ProofMetadatum [ctor format(g! o)] .               --- narrowing module
+  op dcl : QidSet -> ProofMetadatum [ctor format(g! o)] .               --- variables to be added to module for parsing
+  op reg : ScopedRegistry -> ProofMetadatum [ctor format(g! o)] .       --- solver backend registry
+  op cnt : Nat -> ProofMetadatum [ctor format(g! o)] .                  --- next free variable
+  op axs : LabelReachFormList -> ProofMetadatum [ctor format(g! o)] .   --- axioms
+  op rls : LabelLCCRuleSet -> ProofMetadatum [ctor format(g! o)] .      --- abstracted rewrite rules
+  op tst : QFCTermSet -> ProofMetadatum [ctor format(g! o)] .           --- terminating state set
+  op gn  : Nat -> ProofMetadatum [ctor format(g! o)] .                  --- next fresh goal number
+  op his : Map{Nat,AxiomRecord} -> ProofMetadatum [ctor format(g! o)] . --- history of tried axiom attempts
+  op out : QidList -> ProofMetadatum [ctor format(g! o)] .              --- output messages
+  op prf : ProofGoalSet -> ProofMetadatum [ctor format(g! o)] .         --- the proof goals
+  op st  : ProofStatus -> ProofMetadatum [ctor format(g! o)] .          --- indicates an exceptional state
+
+  sort ProofMetadata ProofMetadata? .
+  subsort ProofMetadatum < ProofMetadata < ProofMetadata? .
+  op _;_  : ProofMetadata ProofMetadata -> ProofMetadata [ctor assoc comm id: none] .
+  op none : -> ProofMetadata [ctor] .
+
+  --- successful/failed proof updates
+  --- NB: failed updates have no resulting sequents;
+  ---     resulting sequent set may be empty
+  sort ProofUpdate .
+  op ((_||_)) : ProofMetadata ProofGoalSet -> ProofUpdate [ctor] .
+  op ((_)) : ProofMetadata -> ProofUpdate [ctor] .
+
+  --- active/stopped proofs
+  sort Proof Proof? .
+  subsort Proof < Proof? .
+  op {_} : ProofMetadata -> Proof [ctor] .
+  op [_] : ProofMetadata -> Proof [ctor] .
+
+  op data : Proof -> ProofMetadata .
+  eq data({PM:[ProofMetadata]}) = PM:[ProofMetadata] .
+  eq data([PM:[ProofMetadata]]) = PM:[ProofMetadata] .
+endfm
+
+fmod REACH-PROOF-STATE-PRINTER is
+  pr LABEL-TRANSITIONSET-PRINTER .
+  pr REACH-PROOF-STATE .
+
+  var B : Bool .
+  var M : Module .
+  var N N' : Nat .
+  var P : Parent .
+  var G G' : ProofGoal .
+  var GS GS' : ProofGoalSet .
+  var NGS : NeProofGoalSet .
+  var D : ProofMetadata .
+  var QL : QidList .
+  var RF : ReachFormEx .
+  var SN : Set{Nat} .
+  var PRF : Proof .
+  var DK : [ProofMetadata] .
+  var GK : [ProofGoal] .
+  var MK : [Module] .
+
+  op printPar : Parent -> QidList .
+  eq printPar(none) = 'none .
+  eq printPar(N) = qid(string(N,10)) .
+
+  op printGoals : Module ProofGoalSet ~> QidList .
+  eq printGoals(M,G && NGS) = printGoals(M,G) '\n printSpaces(8) printGoals(M,NGS) .
+  eq printGoals(M,G) = '`[ printPad(printPar(getid(G)),5)
+                       '| &sp print(M,getbody(G)) '`] .
+  eq printGoals(M,(mt).ProofGoalSet) = &mt .
+  eq printGoals(MK:[Module],GK:[ProofGoal]) = 'Internal 'Error: 'printGoals [owise] .
+
+  op printStatus : ProofGoalStatus -> Qid .
+  eq printStatus(active)   = 'active .
+  eq printStatus(paused)   = 'paused .
+  eq printStatus(inactive) = 'inactive .
+
+  op printNext : ProofRuleAction -> Qid .
+  eq printNext(subsume) = 'subsume .
+  eq printNext(simplify) = 'simplify .
+  eq printNext(termcheck) = 'termcheck .
+  eq printNext(step) = 'step .
+  eq printNext(axiom(L:LabelReachForm)) = 'axiom .
+  eq printNext(case(V:Variable,T:TermSet)) = 'case .
+  eq printNext(split(F:EqQFForm)) = 'split .
+  eq printNext(giveup) = 'giveup .
+  eq printNext(result(B:Bool)) = 'result .
+  eq printNext(pause) = 'pause .
+  eq printNext(PS:ProofStrat) =
+    if PS:ProofStrat :: ProofRuleAction then 'Error: 'printnext 'ProofRuleAction
+                                        else 'Error: 'printnext 'ProofStrat fi .
+
+  op printStatusGoals : Module ProofGoalSet ~> QidList .
+  eq printStatusGoals(M,G && NGS) = printStatusGoals(M,G) '\n printSpaces(8) printStatusGoals(M,NGS) .
+  eq printStatusGoals(M,G) = '`[ printPad(printStatus(getstatus(G)),8)
+                             '| printPad(printPar(getparent(G)),5)
+                             '| printPad(printPar(getid(G)),5)
+                             '| printPad(printNext(nextaction(getstrat(G))),9)
+                             '| &sp print(M,getbody(G)) '`] .
+  eq printStatusGoals(M,(mt).ProofGoalSet) = &mt .
+  eq printStatusGoals(MK:[Module],GK:[ProofGoal]) = 'Internal 'Error: 'printStatusGoals [owise] .
+
+  op printGoalIds : ProofGoalSet ~> QidList .
+  eq printGoalIds(G) = printPar(getid(G)) .
+  eq printGoalIds(G && NGS) = printGoalIds(G) &sp ', &sp printGoalIds(NGS) .
+  eq printGoalIds(mt) = &mt .
+  eq printGoalIds(GK:[ProofGoal]) = 'Internal 'Error: 'printGoalIds [owise] .
+
+  op printOutData : ProofMetadata -> QidList .
+  op printOutData : Proof -> QidList .
+  eq printOutData(PRF) = printOutData(data(PRF)) .
+  eq printOutData((out(QL) ; DK)) = QL '\n printOutData(DK) .
+  eq printOutData(DK) = 'Internal 'Error: 'printOutData [owise] .
+
+  op printNatSet : Set{Nat} -> QidList .
+  eq printNatSet((N,N',SN)) = printPar(N) '; printNatSet((N',SN)) .
+  eq printNatSet(N) = printPar(N) .
+  eq printNatSet(empty) = 'empty .
+  eq printNatSet(NK:[Set{Nat}]) = 'Internal 'Error: 'printNatSet [owise] .
+endfm
+
+fmod REACH-PROOF-STATE-VALIDATION is
+  pr ABSTRACT-RULES    . --- defines abstract-rules()
+  pr RULES-SHARE-KIND  . --- defines rules-share-kind()
+  pr MOD-EXTRA         . --- defines protecting?()
+  pr UNIT-FM           . --- defines noModule
+  pr RLTOOL-SWITCHES   . --- defines tool switches
+  pr REACH-PROOF-STATE .
+  pr REACH-PROOF-STATE-PRINTER .
+  pr LABEL-TRANSITION-CONVERSIONS .
+
+  var AX : LabelReachFormList .
+  var CT : QFCTermSet .
+  var GS : ProofGoalSet .
+  var D : ProofMetadata .
+  var QL : QidList .
+  var QS : QidSet .
+  var Reg : ScopedRegistry .
+  var RF : ReachForm .
+  var MRF : MaybeReachFormEx .
+  var RFS : ReachFormSet .
+  var RL : LabelLCCRuleSet .
+  var U U' : Module .
+
+  --- OUT: if metadata is usable, return metadata;
+  ---      for any unusable metadata, return an error message
+  ---      embedded in an out() datum
+  --- PRE: [1] no mod() datum should appaar
+  ---      [2] all items should have no constantized variables in them
+  op validate : Module ProofMetadata -> ProofMetadata .
+
+  eq validate(U,D ; dcl(QS)) =
+    if U =/= noModule
+      then if uniqueNames(QS) and-then
+         wellFormedSet(U,termQidsToSet(QS)) == true and-then
+         varsToConsts#(U,simple,QS) :: ModuleSubstPair
+        then dcl(QS)
+        else st(err) ; out('Error: 'added 'variable 'declarations 'are 'not 'usable;
+                 'check 'for 'mistyped 'sort 'names 'and 'conflicting 'constant
+                 'operators '\n)
+      fi else st(err) ; out('Error: 'set 'module 'before 'declaring 'variables '\n)
+    fi ; validate(U,D) .
+
+  eq validate(U,D ; reg(Reg)) =
+    if U =/= noModule then
+      if protecting?(getmodules(Reg),U) == true
+        then none
+        else out('Warning: 'tool 'backend 'modules 'may 'not 'be 'submodules 'of 'primary 'module '\n)
+      fi else st(err) ; out('Error: 'set 'module 'before 'loading 'backends '\n)
+    fi ; reg(Reg) ; validate(U,D) .
+
+  eq validate(U,D ; axs(AX)) =
+    if form-check(U,'axiom,AX) == nil
+      then if not sameName(toset(AX))
+        then axs(AX)
+        else st(err) ; out('Error: 'axiom 'names 'are 'not 'unique '\n)
+      fi else st(err) ; out(form-check(U,'axiom,AX))
+    fi ; validate(U,D) .
+
+  eq validate(U,D ; rls(RL)) =
+    if form-check(U,'rule,trans(RL)) == nil
+      then if not sameName(RL)
+        then rls(RL)
+        else out('Notice: 'rewrite 'theory 'rule 'names 'are 'not 'unique '\n) ; rls(RL)
+      fi else st(err) ; out(form-check(U,'rule,trans(RL)))
+    fi ; validate(U,D) [label foo] .
+
+  eq validate(U,D ; tst(CT)) =
+    if form-check(U,'terminating 'state,CT) == nil
+      then tst(CT)
+      else st(err) ; out(form-check(U,'terminating 'state,CT))
+    fi ; validate(U,D) .
+
+  --- NB: goals need an additional check that vars are safe:
+  ---     hide check behind feature flag since currently buggy
+  eq validate(U,D ; prf(GS)) =
+    if form-check(U,'goal,getbody(GS)) == nil
+      then if duplIdGoal?(GS) == false
+        then if skipQuantifierCheck or-else unsafeVarSet(getbody(GS)) == mt
+          then prf(GS)
+          else st(err) ; out('Error: 'some 'goals 'have 'free 'variables 'in 'rhs
+                             'condition: print(U,unsafeVarSet(getbody(GS))))
+        fi else st(err) ; out('Internal 'Error: 'some 'goals 'have 'duplicate 'ids '\n)
+      fi else st(err) ; out(form-check(U,'goal,getbody(GS)))
+    fi ; validate(U,D) .
+
+  eq validate(U,D ; mod(U')) =
+    st(err) ; out('Interal 'Error: 'Unexpected 'module 'at 'validation 'time '\n) ;
+    validate(U,D) .
+
+  eq validate(U,D) = D [owise] .
+
+  --- OUT: return nil iff formulas are well-formed
+  ---      otherwise, return an error list
+  op form-check : Module QidList LabelReachFormList -> QidList .
+  eq form-check(U,QL,AX) = form-check(U,QL,trans(toset(AX))) .
+
+  op form-check : Module QidList ReachFormSet -> QidList .
+  eq form-check(U,QL,RFS) =
+    if U == noModule
+      then 'Error: 'set 'module 'before 'adding QL '`( 's '`) '\n
+      else if wellFormed(U,getRuleType(U),RFS)
+	then nil
+	else 'Error: QL '`(s`) 'are 'not 'well-formed:
+	      print(U,illFormedSet(U,RFS))
+    fi fi .
+
+  op form-check : Module QidList QFCTermSet -> QidList .
+  eq form-check(U,QL,CT) =
+    if U =/= noModule
+      then if wellFormed(U,getRuleType(U),CT)
+        then nil
+	else 'Error: QL '`( 's '`) 'are 'not 'well-defined: print(U,CT)
+      fi else 'Error: 'set 'module 'before 'adding QL '`( 's '`)
+    fi .
+
+  --- OUT: nil iff module is usable
+  ---      otherwise, return an error message
+  op mod-check : Module -> QidList .
+  eq mod-check(U) =
+    if wellFormed(U)
+      then if rules-share-kind(U) == true
+        then if kinds?(true,U) == false
+          then if abstract-rules(U) :: LabelReachFormSet
+            then nil
+            else 'Error: 'Module 'rule 'abstraction 'encountered 'an 'error '\n
+          fi else 'Error: 'Module 'has 'ill-formed 'or 'kind-valued 'expressions '\n
+        fi else 'Error: 'Module 'has 'no 'or 'ill-formed 'rules '\n
+      fi else 'Error: 'Module 'not 'well-formed '\n
+    fi .
+
+  --- PFE: M is head of original goal, F is a new goal generated after applying a rule
+  --- OUT: checks if implicit quantification was preserved during goal application
+  ---      The first argument is the source goal and the second argument is the generated goals
+  op quant-check : MaybeReachForm ReachFormSet -> QidList .
+  eq quant-check(MRF,RFS) =
+    if (not MRF :: ReachForm) or-else quant-check(antc(MRF),RFS) == mt
+      then nil
+      else 'Internal 'Error: 'Quantifier 'Check 'Failed '\n
+    fi .
+
+  op quant-check : QFCTermSet ReachFormSet -> ReachFormSet .
+  eq quant-check(CT,RF & RFS) = if not intersection(vars(CT),vars(succ(RF))) subset vars(antc(RF)) then RF else mt fi & quant-check(CT,RFS) .
+  eq quant-check(CT,mt)     = mt .
+endfm
+
+fmod REACH-PROOF-STATE-OPS is
+  pr REACH-PROOF-STATE-VALIDATION .
+
+  var B B' : Bool .
+  var D D' D'' : ProofMetadata .
+  var QS QS' : QidSet .
+  var N N' : Nat .
+  var Reg Reg' : ScopedRegistry .
+  var AX AX' : LabelReachFormList .
+  var RL RL' : LabelLCCRuleSet .
+  var G : ProofGoal .
+  var MG : MaybeProofGoal .
+  var GS GS' : ProofGoalSet .
+  var PS PS' : ProofStatus .
+  var EXPS   : ExceptionalStatus .
+  var CT CT' : QFCTermSet .
+  var QL QL' : QidList .
+  var NQL : NeQidList .
+  var U U' : Module .
+  var AH AH' : Map{Nat,AxiomRecord} .
+
+  --- OUT: empty proof metadata
+  op emptyData : -> ProofMetadata .
+  eq emptyData = mod(noModule) ;
+		 dcl(none) ;
+		 reg(empty) ;
+		 cnt(0) ;
+		 gn(1) ;
+		 axs(nil) ;
+		 rls(empty) ;
+		 tst(noterm) ;
+		 prf(mt) ;
+		 his(empty) ;
+                 out(nil) ;
+                 st(noStatus) .
+
+  --- OUT: get specified attribute
+  op get-mod : ProofMetadata ~> Module .
+  op get-dcl : ProofMetadata ~> QidSet .
+  op get-reg : ProofMetadata ~> ScopedRegistry .
+  op get-cnt : ProofMetadata ~> Nat .
+  op get-gn : ProofMetadata ~> Nat .
+  op get-axs : ProofMetadata ~> LabelReachFormList .
+  op get-rls : ProofMetadata ~> LabelLCCRuleSet .
+  op get-tst : ProofMetadata ~> QFCTermSet .
+  op get-prf : ProofMetadata ~> ProofGoalSet .
+  op get-his : ProofMetadata ~> Map{Nat,AxiomRecord} .
+  op get-out : ProofMetadata ~> QidList .
+  op get-err : ProofMetadata ~> Bool .
+
+  eq get-mod(mod(U) ; D) = U .
+  eq get-dcl(dcl(QS) ; D) = QS .
+  eq get-reg(reg(Reg) ; D) = Reg .
+  eq get-cnt(cnt(N) ; D) = N .
+  eq get-gn(gn(N) ; D) = N .
+  eq get-axs(axs(AX) ; D) = AX .
+  eq get-rls(rls(RL) ; D) = RL .
+  eq get-tst(tst(CT) ; D) = CT .
+  eq get-prf(prf(GS) ; D) = GS .
+  eq get-his(his(AH) ; D) = AH .
+  eq get-out(out(QL) ; D) = QL .
+  eq get-out(D)           = nil [owise] .
+  eq get-err(st(err PS) ; D) = true .
+  eq get-err(D)              = false [owise] .
+
+  --- OUT: true iff the metadata has a duplicated item
+  op duplMetadata? : ProofMetadata ~> Bool .
+  eq duplMetadata?(mod(U) ; mod(U') ; D)     = true .
+  eq duplMetadata?(reg(Reg) ; reg(Reg') ; D) = true .
+  eq duplMetadata?(dcl(QS) ; dcl(QS') ; D)   = true .
+  eq duplMetadata?(cnt(N) ; cnt(N') ; D)     = true .
+  eq duplMetadata?(gn(N) ; gn(N') ; D)       = true .
+  eq duplMetadata?(axs(AX) ; axs(AX') ; D)   = true .
+  eq duplMetadata?(rls(RL) ; rls(RL') ; D)   = true .
+  eq duplMetadata?(tst(CT) ; tst(CT') ; D)   = true .
+  eq duplMetadata?(prf(GS) ; prf(GS') ; D)   = true .
+  eq duplMetadata?(his(AH) ; his(AH') ; D)   = true .
+  eq duplMetadata?(out(QL) ; out(QL') ; D)   = true .
+  eq duplMetadata?(st(PS)  ; st(PS')  ; D)   = true .
+  eq duplMetadata?(D)                        = false [owise] .
+
+  --- OUT: return data on left that does not have a matching datum on the right
+  ---  NB: as a special case, do not clear the out() datum
+  op clearLeftDupl : ProofMetadata ProofMetadata -> ProofMetadata .
+  eq clearLeftDupl(D ; mod(U), mod(U') ; D') = clearLeftDupl(D , mod(U') ; D') .
+  eq clearLeftDupl(D ; dcl(QS), dcl(QS') ; D') = clearLeftDupl(D , dcl(QS') ; D') .
+  eq clearLeftDupl(D ; reg(Reg), reg(Reg') ; D') = clearLeftDupl(D , reg(Reg') ; D') .
+  eq clearLeftDupl(D ; cnt(N), cnt(N') ; D') = clearLeftDupl(D , cnt(N') ; D') .
+  eq clearLeftDupl(D ; gn(N), gn(N') ; D') = clearLeftDupl(D , gn(N') ; D') .
+  eq clearLeftDupl(D ; axs(AX), axs(AX') ; D') = clearLeftDupl(D , axs(AX') ; D') .
+  eq clearLeftDupl(D ; rls(RL), rls(RL') ; D') = clearLeftDupl(D , rls(RL') ; D') .
+  eq clearLeftDupl(D ; tst(CT), tst(CT') ; D') = clearLeftDupl(D , tst(CT') ; D') .
+  eq clearLeftDupl(D ; prf(GS), prf(GS') ; D') = clearLeftDupl(D , prf(GS') ; D') .
+  eq clearLeftDupl(D ; his(AH), his(AH') ; D') = clearLeftDupl(D , his(AH') ; D') .
+  eq clearLeftDupl(D ; st(PS) , st(PS')  ; D') = clearLeftDupl(D , st(PS')  ; D') .
+  eq clearLeftDupl(D,D') = D [owise] .
+
+  --- OUT: clear output
+  op clear : ProofMetadata -> ProofMetadata .
+  eq clear(D ; out(NQL)) = clear(D ; out(nil)) .
+  eq clear(D ; st(EXPS)) = clear(D ; st(noStatus)) .
+  eq clear(D) = D [owise] .
+
+  --- OUT: a new proof where each field on right replaces copy on the left;
+  ---      any extra items on left are directly copied to the result
+  ---  NB: as a special case, ALWAYS accumulate output on the right
+  op raw-set : Proof ProofMetadata -> Proof? .
+  eq raw-set({D},D') = {raw-set(D,D')} .
+  eq raw-set([D],D') = [raw-set(D,D')] .
+
+  op raw-set : ProofMetadata ProofMetadata -> ProofMetadata? .
+  eq raw-set(D ; out(QL), out(QL') ; D') = raw-set(D,out(QL QL') ; D') .
+  eq raw-set(D, D') = clearLeftDupl(D,D') ; D' [owise] .
+
+  --- OUT: if argument is not noModule and well-formed,
+  ---      then set the mod() datum and clear ALL data except out()
+  ---      if argument is noModule, then do nothing
+  ---      if argument is not well-formed, print an error
+  op set-mod : ProofMetadata Module -> ProofMetadata? .
+  eq set-mod(D,noModule) = D .
+  eq set-mod(D,U) = raw-set(raw-set(D,emptyData),
+                      if mod-check(U) == nil
+                        then mod(U)
+	                else st(err) ; out(mod-check(U))
+                      fi) .
+
+  --- OUT: the module in the mod() datum if well-formed or noModule
+  op get-mod! : ProofMetadata -> Module .
+  eq get-mod!(D ; mod(U)) = if wellFormed(U) == true then U else noModule fi .
+  eq get-mod!(D) = noModule [owise] .
+
+  --- OUT: like raw-set, but checks consistency of right data w.r.t. left data
+  ---  NB: since all terms are checked for consistency with w.r.t mod() datum,
+  ---      ALWAYS copy it FIRST and clear other args to default values on LHS
+  ---      whenever a module is present
+  op set : Proof ProofMetadata ~> Proof? .
+  eq set({D},D') = {set(D,D')} .
+  eq set([D],D') = [set(D,D')] .
+
+  op set : ProofMetadata ProofMetadata -> ProofMetadata? .
+  eq set(D,D' ; mod(U)) = raw-set(D,validate(U,D') ; mod(U)) .
+  eq set(D,D') = raw-set(D,validate(get-mod!(D),D')) [owise] .
+
+  --- OUT: like raw-set, but use multiplication for any monoid operators
+  ---      i.e. any list/set-like operators as well as numbers
+  op raw-merge : ProofMetadata ProofMetadata -> ProofMetadata? .
+
+  eq raw-merge(D ; gn(N), gn(N') ; D') = gn(N + N') ; merge(D,D') .
+  eq raw-merge(D ; cnt(N), gn(N') ; D') = cnt(N + N') ; merge(D,D') .
+  eq raw-merge(D ; dcl(QS), dcl(QS') ; D') = dcl(QS ; QS') ; merge(D,D') .
+  eq raw-merge(D ; reg(Reg), reg(Reg') ; D') = reg(Reg * Reg') ; merge(D,D') .
+  eq raw-merge(D ; axs(AX), axs(AX') ; D') = axs(AX ; AX') ; merge(D,D') .
+  eq raw-merge(D ; rls(RL), rls(RL') ; D') = rls(RL ; RL') ; merge(D,D') .
+  eq raw-merge(D ; tst(CT), tst(CT') ; D') = tst(CT | CT') ; merge(D,D') .
+  eq raw-merge(D ; prf(GS), prf(GS') ; D') = prf(GS && GS') ; merge(D,D') .
+  eq raw-merge(D ; out(QL), out(QL') ; D') = out(QL QL') ; merge(D,D') .
+  eq raw-merge(D ; his(AH), his(AH') ; D') = his((AH, AH')) ; merge(D,D') .
+  eq raw-merge(D ;  st(PS), st(PS')  ; D') = st(PS PS') ; merge(D,D') .
+  eq raw-merge(D, D') = D ; D' [owise] .
+
+  --- OUT: like set, but use multiplication for any monoid operators
+  ---      i.e. any list/set-like operators as well as numbers
+  --- PRE: [1] right data should not contain mod() datum
+  ---      [2] left data should contain mod() datum
+  op merge : Proof ProofMetadata -> Proof? .
+  eq merge({D},D') = {merge(D,D')} .
+  eq merge([D],D') = [merge(D,D')] .
+
+  op merge : ProofMetadata ProofMetadata -> ProofMetadata? .
+  eq merge(D,D' ; mod(U)) = raw-set(D,st(err)) ; out('Internal 'Error: 'merge 'RHS 'mod 'datum) .
+  eq merge(D ; mod(U),D') = merge(U,D,D',none) [owise] .
+
+  --- NB: we separate the data to 'merged in' into two sets:
+  ---     [1] the data that can validated independently
+  ---     [2] the data that must be validated together
+  op merge : Module ProofMetadata ProofMetadata ProofMetadata -> ProofMetadata? .
+
+  eq merge(U,D ; dcl(QS), dcl(QS') ; D',D'') = merge(U,D,D',D'' ; dcl(QS ; QS')) .
+  eq merge(U,D ; axs(AX), axs(AX') ; D',D'') = merge(U,D,D',D'' ; axs(AX ; AX')) .
+  eq merge(U,D ; rls(RL), rls(RL') ; D',D'') = merge(U,D,D',D'' ; rls(RL ; RL')) .
+  eq merge(U,D,D',D'') = raw-merge(mod(U) ; D,validate(U,D') ; validate(U,D'')) [owise] .
+
+  --- Miscellaneous
+
+  op lift-result : MaybeProofGoal ProofMetadata ProofMetadata ProofGoalSet -> ProofMetadata? .
+  eq lift-result(MG,D,D',GS) = raw-set(D',gn(size(GS)) ; prf(setstatus(inactive,MG) && renumberGoals(get-gn(D),GS))) .
+
+  op delgl : ProofMetadata ProofGoalSet -> ProofMetadata? .
+  eq delgl(D ; prf(GS),GS') = D ; prf(delgl(GS,GS')) .
+
+  op getgl! : ProofMetadata Nat ~> ProofGoal .
+  eq getgl!(D,N) = getgl!(get-prf(D),N) .
+
+  op flipPaused : ProofMetadata -> ProofMetadata? .
+  eq flipPaused(D ; prf(GS)) = D ; prf(flipPaused(GS)) .
+endfm

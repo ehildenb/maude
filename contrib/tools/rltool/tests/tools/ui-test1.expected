@@ -1,0 +1,73 @@
+
+	    Maude Reachability Logic Prover v0.2.9 -- Sep. 21st 2018
+
+Set module to CHOICE
+Loaded function varsat for unsatisfiability
+Loaded function varsat for validity
+Declared variable(s):
+       { M:MSet, N:Nat }
+Added terminating state:
+       {N:Nat} |  true
+Added goal(s):
+       [ends-with-singleton : {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C
+    M:MSet]
+Started proof:
+       [1     | {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M:MSet]
+Case rule generated:
+       [2     | {N':Nat} |  true  => {N:Nat} |  tt = N:Nat =C N':Nat]
+       [3     | {M1:MSet M2:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M1:MSet
+    M2:MSet]
+Step Results:
+       [20    | {&5:MSet} |  true  => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet
+    &7:MSet]
+       [21    | {&5:MSet &6:MSet} |  true  => {N&7:Nat} |  tt = N&7:Nat =C
+    &5:MSet &6:MSet &8:MSet &9:MSet]
+Proof Completed.
+All Goals:
+       [inactive | none  | 1     | case      | {M:MSet} |  true  => {N:Nat} | 
+    tt = N:Nat =C M:MSet]
+       [inactive | 1     | 2     | simplify  | {N':Nat} |  true  => {N:Nat} | 
+    tt = N:Nat =C N':Nat]
+       [inactive | 1     | 3     | simplify  | {M1:MSet M2:MSet} |  true  => {
+    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
+       [inactive | 2     | 4     | subsume   | {N':Nat} |  true  => {N:Nat} | 
+    tt = N:Nat =C N':Nat]
+       [inactive | 3     | 5     | subsume   | {M1:MSet M2:MSet} |  true  => {
+    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
+       [inactive | 5     | 6     | termcheck | {M1:MSet M2:MSet} |  true  => {
+    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
+       [inactive | 6     | 7     | step      | {M1:MSet M2:MSet} |  true  => {
+    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
+       [inactive | 7     | 8     | simplify  | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &8:MSet &7:MSet]
+       [inactive | 7     | 9     | simplify  | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 7     | 12    | simplify  | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet]
+       [inactive | 7     | 14    | simplify  | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 9     | 13    | subsume   | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 13    | 16    | termcheck | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 14    | 15    | subsume   | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 15    | 18    | termcheck | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 16    | 17    | pause     | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 17    | 20    | axiom     | {&5:MSet} |  true  => {N&6:Nat}
+    |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 18    | 19    | pause     | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 19    | 21    | axiom     | {&5:MSet &6:MSet} |  true  => {
+    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 20    | 22    | simplify  | {N:Nat} |  tt = N:Nat =C &5:MSet
+     => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 21    | 23    | simplify  | {N:Nat} |  tt = N:Nat =C &5:MSet
+    &6:MSet  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 22    | 24    | subsume   | {N:Nat} |  tt = N:Nat =C &5:MSet
+     => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 23    | 25    | subsume   | {N:Nat} |  tt = N:Nat =C &5:MSet
+    &6:MSet  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+Bye.
