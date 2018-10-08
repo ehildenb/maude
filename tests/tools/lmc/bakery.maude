@@ -469,7 +469,8 @@ fmod FVP-BAKERY-INIT is
     eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat   , 'crit.Mode    , 'X3:Nat   ] .
 endfm
 
---- FVP-CONDITIONAL-NARROWING-GRAPH
+--- Look for safe starting states
+--- -----------------------------
 
 mod BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH is
     including FVP-BAKERY-INIT .
@@ -510,6 +511,40 @@ reduce nodes(bfs(state(inj(4)))) <= (state(inj(1)) ; state(inj(2))) .
 reduce bfs(state(inj(4))) .
 
 reduce (state(inj(5)) ; state(inj(6))) =>* state(inj(9)) .
+
+--- Reverse the rules, search from bad state to init states
+--- -------------------------------------------------------
+
+mod BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH is
+   protecting REVERSE-RULES .
+    including FVP-BAKERY-INIT .
+
+    var N : Nat .
+
+    eq #tSort = 'BState .
+    eq #MO    = reverseRules(upModule('BAKERY-FVP, true)) .
+
+    op fvpTT : -> Term .
+    --------------------
+    eq fvpTT = 'tt.TrueLit`{Bool`} .
+
+    op inj : Nat -> Term .
+    ----------------------
+    eq inj(N) = '_st_[init(N), fvpTT] .
+
+    op neq : Term Term -> Term .
+    ----------------------------
+endm
+
+--- shows we can reach one of these initial states from the bad final states
+reduce states(inj(9)) =>* states(inj(1) | inj(2)) .
+
+--- but we cannot reach a state where both are asleep
+reduce states(inj(9)) =>* states(inj(4)) .
+
+--- BFS from the bad final state
+reduce bfs(states(inj(4)), 2) .
+reduce bfs(states(inj(4)), 2) .
 
 mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
    protecting FVP-BAKERY-INIT .
