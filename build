@@ -116,6 +116,14 @@ build_test() {
     )
 }
 
+build_test_base() {
+    build_clean
+    build_deps
+    build_maude
+    build_tangle
+    make -s check "$@"
+}
+
 build_test_smt() {
     build_clean
     build_deps
@@ -133,13 +141,8 @@ build_test_smt() {
 }
 
 build_test_all() {
-    build_clean
-    build_deps
-    build_maude
-    build_tangle
-    make -s check "$@"
+    build_test_base "$@"
     build_test_smt
-    git checkout -- src/Mixfix/tokenizer.cc
 }
 
 build_test_approve() {
@@ -165,6 +168,7 @@ case "$build_command" in
     maude-yices2)   build_maude_yices2  "$@" ;;
     tangle)         build_tangle        "$@" ;;
     test)           build_test          "$@" ;;
+    test-base)      build_test_base     "$@" ;;
     test-all)       build_test_all      "$@" ;;
     test-smt)       build_test_smt      "$@" ;;
     test-approve)   build_test_approve  "$@" ;;
@@ -182,11 +186,13 @@ case "$build_command" in
 
     developers: $0 test <test-path>
                 $0 test-all
+                $0 test-base
                 $0 test-smt
                 $0 test-approve [<test-prefix>]
 
     $0 test:         Run test at <test-path> (eg. tests/tools/fvp/numbers).
     $0 test-all:     Clean build and run all tests.
+    $0 test-base:    Clean build and run non-smt tests.
     $0 test-smt:     Clean build and run smt tests.
     $0 test-approve: Copy test '.out' file to '.expected' under directory <test-prefix> (default: $tests_dir).
 " ;;
