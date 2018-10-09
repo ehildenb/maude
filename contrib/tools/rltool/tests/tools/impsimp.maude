@@ -1,8 +1,11 @@
 load ../../systems/dumb-comm-protocol.maude
 load ../../rltool-lib.maude
 
+set print attribute on .
 set print conceal on .
 print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
+set show stats off .
+set show timing off .
 
 reduce applyMatchToCond(upModule('DUMB-COMM-PROTOCOL,true),true,('<_`,_`,_>['nil.DataList,'__['&11:Data,'&12:NeDataList],'_+_['1.Nat,'&13:Nat]] | (('N'&14:Nat != '_+_[
     '1.Nat,'&13:Nat]/\ 'N'&14:Nat ?= '_+_['len['&12:NeDataList],'len['&11:Data]]) /\ '&13:Nat ?= 'len['&12:NeDataList])),('<_`,_`,_>['nil.DataList,'__['&11:Data,
@@ -13,3 +16,5 @@ reduce extract-clause-sub(upModule('DUMB-COMM-PROTOCOL,true),'N'&14:Nat ?= '_+_[
 reduce subsume?(mod(upModule('DUMB-COMM-PROTOCOL,true)); reg('validity |->(upModule('DUMB-COMM-PROTOCOL,true),'impsimp,upModule('FOFORMSIMPLIFY,true))),true,('<_`,_`,_>[
     'nil.DataList,'__['&11:Data,'&12:NeDataList],'_+_['1.Nat,'&13:Nat]] | (('N'&14:Nat != '_+_['1.Nat,'&13:Nat]/\ 'N'&14:Nat ?= '_+_['len['&12:NeDataList],'len[
     '&11:Data]]) /\ '&13:Nat ?= 'len['&12:NeDataList])) => ('<_`,_`,_>['nil.DataList,'__['&11:Data,'&12:NeDataList],'N&15:Nat] | 'N&15:Nat ?= 'N'&14:Nat)) .
+
+quit

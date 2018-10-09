@@ -16,4 +16,7 @@ diff "functions.out" "functions.expected"
 echo "foform"
 maude -no-banner "foform.maude" &> "foform.out"
 diff "foform.out" "foform.expected"
+echo "impsimp"
+maude -no-banner impsimp.maude &> impsimp.out
+diff impsimp.out impsimp.expected
 popd
