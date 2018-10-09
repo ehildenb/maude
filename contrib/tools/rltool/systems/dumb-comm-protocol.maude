@@ -22,7 +22,7 @@ fmod DUMB-COMM-PROTOCOL-OPS is
 
   op len : DataList -> Nat .
   eq len(nil) = 0 .
-  eq len({N:Nat}) = 1 .
+  eq len(D:Data) = 1 .
   eq len(L L') = len(L) + len(L') .
 endfm
 
