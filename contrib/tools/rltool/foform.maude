@@ -561,6 +561,17 @@ fmod FOFORM-OPERATIONS is
   eq  true2mt (F1)     = F1 [owise] .
   eq  false2mt(ff)     = mtForm .
   eq  false2mt(F1)     = F1 [owise] .
+
+  --- OUT: flip atom polarities
+  op flip : Atom -> Atom .
+
+  op flip : EqAtom -> EqAtom .
+  eq flip(T ?= T') = T != T' .
+  eq flip(T != T') = T ?= T' .
+
+  op flip : TruthAtom -> TruthAtom .
+  eq flip(tt) = ff .
+  eq flip(ff) = tt .
 endfm
 
 fmod FOFORM-QUANTIFIERS is
@@ -1054,48 +1065,62 @@ fmod FOFORMSET-OPERATIONS is
   pr FOFORMSET .
   pr CNF .
   pr DNF .
-  op disj-join    : FOForm?Set -> FOForm? .
-  op disj-join    : QFForm?Set -> QFForm? .
-  op conj-join    : FOForm?Set -> FOForm? .
-  op conj-join    : QFForm?Set -> QFForm? .
-  op toPosEqAtoms : PosEqQFForm -> PosEqAtomSet .
-  op toPosEqAtoms : UnificationProblem -> PosEqAtomSet .
-  op toEqSet      : PosEqAtomSet -> EquationSet .
+
+  var FS : FOForm?Set . var FF FF' : FOForm? . var F : QFForm? .
+  var D : Disj . var ND : NegDisj? . var C : Conj .
+  var UP : UnificationProblem .
+  var T T' : Term . var M : Module .
+  var A A' : Atom . var AS : AtomSet .
+  var PEA : PosEqAtom . var PEAS : PosEqAtomSet .
+  var S : Substitution . var V : Variable .
+
+  --- OUT: true iff each element in the set is wellformed
   op wellFormed   : Module FOForm?Set -> Bool .
-  ---
-  op toDisjSet  : QFForm? ~> DisjSet .
-  op toDisjSet' : QFForm? ~> DisjSet .
-  op toConjSet  : QFForm? ~> ConjSet .
-  op toConjSet' : QFForm? ~> ConjSet .
-  ---
-  var FS : FOForm?Set . var FF FF' : FOForm? . var F : QFForm? . var D : Disj . var UP : UnificationProblem .
-  var C : Conj . var PEA : PosEqAtom . var PEAS : PosEqAtomSet . var T T' : Term . var M : Module .
-  ---
-  eq toDisjSet (F)      = toDisjSet'(toCNF(F)) .
-  eq toDisjSet'(D /\ F) = D | toDisjSet'(F) .
-  eq toDisjSet'(mtForm) = mtFormSet .
-  ---
-  eq toConjSet (F)      = toConjSet'(toDNF(F)) .
-  eq toConjSet'(C \/ F) = C | toConjSet'(F) .
-  eq toConjSet (mtForm) = mtFormSet .
-  ---
-  eq disj-join(FF | FS)   = FF \/ disj-join(FS) .
-  eq disj-join(mtFormSet) = ff .
-  eq conj-join(FF | FS)   = FF /\ conj-join(FS) .
-  eq conj-join(mtFormSet) = tt .
-  ---
-  eq toPosEqAtoms(PEA /\ F) = PEA | toPosEqAtoms(F) .
-  eq toPosEqAtoms(PEA \/ F) = PEA | toPosEqAtoms(F) .
-  eq toPosEqAtoms(mtForm)   = mtFormSet .
-  ---
-  eq toPosEqAtoms(T =? T' /\ UP) = T ?= T' | toPosEqAtoms(UP) .
-  eq toPosEqAtoms(T =? T')       = T ?= T' .
-  ---
-  eq toEqSet(T ?= T' | PEAS) = (eq T = T' [none] .) toEqSet(PEAS) .
-  eq toEqSet(mtFormSet)      = none .
-  ---
   eq wellFormed(M,FF | FF' | FS) = wellFormed(M,FF) and-then wellFormed(M,FF' | FS) .
   eq wellFormed(M,mtFormSet)     = true .
+
+  --- OUT: a conjunction built from elements in the set
+  op conj-join : FOForm?Set -> FOForm? .
+  op conj-join : QFForm?Set -> QFForm? .
+  eq conj-join(FF | FS)   = FF /\ conj-join(FS) .
+  eq conj-join(mtFormSet) = tt .
+
+  --- OUT: a disjunction built from the elements in the set
+  op disj-join : FOForm?Set -> FOForm? .
+  op disj-join : QFForm?Set -> QFForm? .
+  eq disj-join(FF | FS)   = FF \/ disj-join(FS) .
+  eq disj-join(mtFormSet) = ff .
+
+  --- OUT: convert objects that have representations as positive equality
+  ---      sets into sets of postive equalities
+  op toPosEqAtoms : PosEqQFForm? -> PosEqAtomSet .
+  eq toPosEqAtoms(PEA /\ F) = PEA | toPosEqAtoms(F) .
+  eq toPosEqAtoms(PEA \/ F) = PEA | toPosEqAtoms(F) .
+  eq toPosEqAtoms(mtForm) = mtFormSet .
+
+  op toPosEqAtoms : UnificationProblem -> PosEqAtomSet .
+  eq toPosEqAtoms(T =? T' /\ UP) = T ?= T' | toPosEqAtoms(UP) .
+  eq toPosEqAtoms(T =? T') = T ?= T' .
+
+  op toPosEqAtoms : Substitution -> PosEqAtomSet .
+  eq toPosEqAtoms(V <- T ; S) = V ?= T | toPosEqAtoms(S) .
+  eq toPosEqAtoms(none) = mtFormSet .
+
+  op toPosEqAtoms : NegDisj? -> PosEqAtomSet .
+  eq toPosEqAtoms(T != T' \/ ND) = T ?= T' | toPosEqAtoms(ND) .
+  eq toPosEqAtoms(mtForm) = mtFormSet .
+
+  --- OUT: convert a positive equality atom set into equations
+  ---  NB: this isn't very safe for reduction, since equalities
+  ---      here are commutative on one side but not the other
+  op toEqSet : PosEqAtomSet -> EquationSet .
+  eq toEqSet(T ?= T' | PEAS) = (eq T = T' [none] .) toEqSet(PEAS) .
+  eq toEqSet(mtFormSet)      = none .
+
+  --- OUT: flip the polarities of a set of atoms
+  op flip : AtomSet -> AtomSet .
+  eq flip(A | A' | AS) = flip(A) | flip(A' | AS) .
+  eq flip(mtFormSet) = mtFormSet .
 endfm
 
 fmod FOFORM-DESCENT-MAP is
@@ -1125,47 +1150,50 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   pr FOFORM-OPERATIONS .
   pr FOFORMSET-OPERATIONS .
 
-  op is-sub?         : Module QFForm? -> Bool .
-  op #extract-subs   : Module QFForm? -> FOFormSubstPairSet .
-  op #extract-subs   : Module QFForm? FOFormSubstPairSet -> FOFormSubstPairSet .
+  var U : Module . var B : Bool .
+  var V : Variable . var T : Term . var S : Substitution .
+  var Q : QFForm? . var PC : PosConj .
+  var FS : FOFormSubstPairSet .
+  var TA : TruthAtom . var A : Atom . var AS AS' : AtomSet .
+  var PD : PosEqDisj? . var ND : NegEqDisj? .
+  var D : Disj? .
 
-  var Q1? Q2? : QFForm? . var Q Q' : QFForm . var C : Conj . var C1? C2? C3? : Conj? . var FS : FOFormSubstPairSet .
-  var V : Variable . var T : Term . var S : Substitution . var A : Atom . var U : Module .
-  var PD : PosDisj . var ND : NegDisj .
-
-  --- INP: QFForm?
-  --- PRE:
-  --- OUT: Check if the QFForm? is equivalent to a disjunction of substitutions (which is always satisfiable)
-  eq is-sub?(U,Q1?) = getForm(#extract-subs(U,Q1?)) == mtForm .
-
-  --- INP: QFForm?
-  --- PRE:
-  --- OUT: [1] QFForm? is first converted into a DNF
-  ---      [2] In each conjunct, substitution-like fragments are #extracted (but not applied) into a FOFormSubstPair
-  ---      [3] We return a set of all such pairs (one for each conjunct)
-  eq #extract-subs (U,Q1?)               = #extract-subs(U,toDNF(Q1?),mtFSPS) .
-  eq #extract-subs (U,mtForm,FS)         = FS .
-  eq #extract-subs (U,C \/ Q1?,FS)       = #extract-subs(U,Q1?,FS | #extract-sub(U,C)) .
-
-  --- OUT: given a clause, extracts substitutions out of it and applies them
-  ---  NB: a clause is a EqDisj
-  op extract-clause-sub : Module EqDisj ~> EqDisj .
-  eq extract-clause-sub(U,ND \/ PD) = ND \/ PD .
+  --- OUT: true iff this formula is a substitution
+  op is-sub? : Module QFForm? -> Bool .
+  eq is-sub?(U,PC) = getForm(#extract-sub(U,true,toPosEqAtoms(PC))) == mtFormSet .
+  eq is-sub?(U,Q) = false [owise] .
 
   --------------------------------------------------------------------------
 
-  op extract-sub : Module Conj? -> Conj? .
-  eq extract-sub(U,C1?) = getForm(#extract-sub(U,C1?)) .
+  --- OUT: given a clause, extracts substitutions out of it and applies them
+  ---  NB: a clause is a EqDisj
+  op extract-clause-sub : Module Disj? -> Disj? .
+  eq extract-clause-sub(U,mtForm) = mtForm .
+  eq extract-clause-sub(U,TA \/ D) = TA \/ extract-clause-sub(U,D) .
+  eq extract-clause-sub(U,ND \/ PD) = extract-clause-sub(#extract-sub(U,true,toPosEqAtoms(ND)),PD) .
 
-  --- OUT: An FOFormSubstPair (C'?,S?) such that C? = C'? /\ S?  and S? is the substitution-like fragment (may be empty)
-  op #extract-sub : Module Conj? -> FOFormSubstPair .
-  eq #extract-sub(U,C1?) = #extract-sub(U,C1?,mtForm,none) .
+  op extract-clause-sub : FOFormSetSubstPair PosEqDisj -> EqDisj .
+  eq extract-clause-sub((AS,S),PD) = disj-join(flip(AS)) \/ (PD << S) .
 
-  op #extract-sub : Module Conj? Conj? Substitution -> FOFormSubstPair .
- ceq #extract-sub(U,V ?= T /\ C1?,C2?,S) = #extract-sub(U,(C1? /\ C2?) << (V <- T),mtForm,S .. (V <- T))
+  --------------------------------------------------------------------------
+
+  --- OUT: a wrapper for the function below in the true case
+  op extract-sub : Module AtomSet -> AtomSet .
+  eq extract-sub(U,AS) = extract-sub(U,true,AS) .
+
+  --- OUT: given a set of atoms, extract the substitution-like atoms and apply them
+  ---      if Bool is true, only return the non-substitution atoms
+  ---      if Bool is false, also return the substitution atoms
+  op extract-sub : Module Bool AtomSet -> AtomSet .
+  eq extract-sub(U,B,AS) = getForm(#extract-sub(U,B,AS)) .
+
+  op #extract-sub : Module Bool AtomSet -> FOFormSetSubstPair .
+  eq #extract-sub(U,B,AS) = #extract-sub(U,B,AS,none) .
+
+  op #extract-sub : Module Bool AtomSet Substitution -> FOFormSetSubstPair .
+ ceq #extract-sub(U,B,V ?= T | AS,S) = #extract-sub(U,B,AS << (V <- T),S .. (V <- T))
   if sortLeq(U,leastSort(U,T),getType(V)) /\ not V in vars(T) .
-  eq #extract-sub(U,A /\ C1?,C2?,S)      = #extract-sub(U,C1?,C2? /\ A,S) [owise] .
-  eq #extract-sub(U,mtForm,C2?,S)        = (C2?,S) .
+  eq #extract-sub(U,B,AS,S) = (AS | if true then mtFormSet else toPosEqAtoms(S) fi,S) [owise] .
 endfm
 
 fmod FOFORM-PRINTER is pr FOFORM . pr GENERIC-PRINTER .
