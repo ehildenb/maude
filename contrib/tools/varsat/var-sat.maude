@@ -189,11 +189,11 @@ fmod VAR-SAT is
   op fin-consistent?  : FModule QidList Stream{UnitList}{WrapTermList} NegConj -> Bool .
   op inf-consistent?  : FModule NegConj                                        -> Bool .
 
-  var Q : Qid  . var QS : QidSet  . var PC : PosConj . var F? : FOForm?    . var SBS : SubstitutionSet .
-  var C : Conj . var M  : Module  . var NC : NegConj . var QL : QidList    . var SB  : Substitution    .
-  var S : Sort . var FM : FModule . var QF : QFForm  . var FS : QFForm?Set . var NCS : NegConjSet      .
+  var Q : Qid  . var QS : QidSet  . var PC : PosConj . var F  : FOForm    . var SBS : SubstitutionSet .
+  var C : Conj . var M  : Module  . var NC : NegConj . var QL : QidList   . var SB  : Substitution    .
+  var S : Sort . var FM : FModule . var QF : QFForm  . var FS : QFFormSet . var NCS : NegConjSet      .
   var SS FSS ISS : SortSet . var SL : Stream{UnitList}{WrapTermList} . var WTL : WrapTermList .
-  var T T' : Term . var TS : TermSet . var D : Disj . var NC? : NegConj? .
+  var T T' : Term . var TS : TermSet . var D : Disj .
 
   --- FIXME: filtering NC finite sorts by set computed by original formula QF is slightly incorrect ---
   ---        this is because NC, under instantiation, may have variables in sorts in a lower type ---
@@ -222,7 +222,7 @@ fmod VAR-SAT is
   eq var-sat(M,FSS,ISS,QF)      = var-sat-opt(addDecls(emptyFModule,setRls(M,none)),fin-sorts(M,QF,FSS,ISS),QF) .
 
   --- NB: Special Pattern Recognition Before DNF conversion
- ceq var-sat-opt(FM,FSS,PC /\ NC? /\ D) = var-sat-opt(FM,FSS,disj-join($renameForm(FM,(NC? /\ D) << ctor-unifiers(FM,toUnifProb(PC)))))
+ ceq var-sat-opt(FM,FSS,PC /\ NC /\ D) = var-sat-opt(FM,FSS,disj-join($renameForm(FM,(NC /\ D) << ctor-unifiers(FM,toUnifProb(PC)))))
   if not PC :: ConstConj .
   eq var-sat-opt(FM,FSS,QF) = var-sat-disj(FM,FSS,toDNF(QF)) [owise] .
 
@@ -269,7 +269,7 @@ fmod VAR-SAT is
   op not-empty? : SubstitutionSet -> Bool .
   eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
 
-  op $renameForm : Module QFForm?Set -> [QFForm?Set] .
+  op $renameForm : Module QFFormSet -> [QFFormSet] .
   eq $renameForm(M,FS) = downTerm(renameTmpVar(M,upTerm(FS)),ff) .
 
   op nf-ctor-variants : FModule NegConj -> NegConjSet .
