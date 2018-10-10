@@ -36,4 +36,6 @@ Notice: proof branch failed: [8     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
        [active   | 7     | 9     | simplify  | {&10:MSet} |  true  => [
     M&11:MSet] |  true]
 CONTINUE> type (continue .) to continue
+Loaded function varsat for validty
+Loaded function varsat for validty
 Bye.
