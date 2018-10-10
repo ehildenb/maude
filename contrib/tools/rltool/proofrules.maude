@@ -231,6 +231,7 @@ fmod REACH-PROOF-RULES-AUX is
   eq printAxFailure(D',U,BK,AX,G) = D' ; out('Warning: 'axiom print(U,AX) 'validity 'check 'for 'goal &sp printGoals(U,G) &sp 'encountered 'an 'error boolErrMsg(BK) '\n) .
 
   op usedAxRec : AxiomResultList AxiomResultList -> AxiomRecord .
+  eq usedAxRec(ARL,ARL') = axrec(head(ARL),delete(head(ARL),ARL')) .
 
   --- Derived Rules
 
