@@ -293,8 +293,12 @@ result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
     ':+ '1 'R:Soup '`) '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '> ' '| ' 'true '=
     'dupl '`( 'S:Soup 'T:Soup '`) ' '=> ' '< 'U:Soup '| 'V:Soup '| '1 ':+ '1 '|
     '1 '@ 'B:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'U:Soup '`) '/\ 'true
-    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'not 'provably 'non-terminating
-    '\n))
+    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'may 'have 'terminated '\n) || [
+    4,0,termcheck,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'__['1.Nat*,
+    'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?= 'dupl['__['S:Soup,
+    'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_[
+    '1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__['V:Soup,'U:Soup]] /\
+    'true.Pred != 'dupl['U:Soup])])
 ==========================================
 reduce in RLTOOL-TEST : termcheck-action(init-data(50, falsereg), rlmod,
     t-non-s(IS, JS, KS, NQ), [none,4,termcheck,active,t1(R, S, T, A) => t2(U,
@@ -354,7 +358,7 @@ result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< 'R:Soup '|
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-4,
     [none,4,step,active,t-non-s(R, S, K, J @ NQ) => t-non-e(U, V, Z, B)]) .
-result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a4 : ('<_>['_|_|_|_['I:Soup,
+result ProofUpdate: (his(4 |-> axrec(axrule(('a4 : ('<_>['_|_|_|_['I:Soup,
     'W:Soup,'N:Nat*,'_@_['M:Nat*,'Q:Queue]]] | tt) => ('`[_`]['_|_|_|_[
     'I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] | 'M':Nat* ?= 'N':Nat*)), 
   'I:Soup <- 'R:Soup ; 
@@ -368,19 +372,22 @@ result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a4 : ('<_>['_|_|_|_['I:Soup,
     '`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)])
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-2,
-    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
-result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
+    [none,4,step,active,conj(t-non-s(R, S, K, K), 'true.Pred != 'dupl['__[
+    'R:Soup,'S:Soup,'K:Nat*]]) => t-non-e(U, V, Z, B)]) .
+result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
     'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
     'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`]['_|_|_|_['I':Soup,'W':Soup,
     'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
     '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
   'I:Soup <- 'R:Soup ; 
-  'M:Nat* <- 'I:Nat* ; 
+  'M:Nat* <- 'K:Nat* ; 
   'N:Nat* <- 'K:Nat* ; 
-  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
-    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
-    'Z:Soup,'B:NeQueue]] | tt) &
+  'W:Soup <- 'S:Soup, ~ (tt /\ 'true.Pred != 'dupl['__['R:Soup,'S:Soup,
+    'K:Nat*]]) \/ 'K:Nat* ?= 'K:Nat* /\ 'true.Pred != 'dupl['__['R:Soup,
+    'K:Nat*,'S:Soup]], ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
 ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
     'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
     'B:NeQueue]] | tt) &
@@ -398,7 +405,8 @@ result ProofUpdate: (his(4 |-> usedAxRec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     mtForm) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,'B:NeQueue]] | tt)])
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-2,
-    [none,4,step,active,t-non-s(W, S, K, I) => t-non-e(U, V, Z, B)]) .
+    [none,4,step,active,conj(t-non-s(W, S, K, K), 'true.Pred != 'dupl['__[
+    'W:Soup,'S:Soup,'K:Nat*]]) => t-non-e(U, V, Z, B)]) .
 result ProofUpdate: (out('Warning: 'generating 'axiom '`[ 'a2 ': ' '< 'I:Soup
     '| 'W:Soup '| 'N:Nat* '| 'M:Nat* '> ' '| ' '`( 'true '=/= 'dupl '`( 'I:Soup
     'N:Nat* 'W:Soup '`) '/\ 'M:Nat* '= 'N:Nat* '`) ' '=> ' '`[ 'I':Soup '|
@@ -406,12 +414,14 @@ result ProofUpdate: (out('Warning: 'generating 'axiom '`[ 'a2 ': ' '< 'I:Soup
     'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat* '@ 'Q':NeQueue '`] ' '| '
     'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'mt '| 'EQ:Queue '`] '
     '| ' 'true '`] 'successors 'for ' '`[ '4 ' ' ' ' '| ' '< 'W:Soup '| 'S:Soup
-    '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true ' '=> ' '`[ 'U:Soup '| 'V:Soup '|
-    'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] ' 'encountered 'an 'error 'Match
+    '| 'K:Nat* '| 'K:Nat* '> ' '| ' '`( 'true '=/= 'dupl '`( 'W:Soup 'S:Soup
+    'K:Nat* '`) '/\ 'true '`) ' '=> ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '|
+    'B:NeQueue '`] ' '| ' 'true '`] ' 'encountered 'an 'error 'Match
     'unexpected 'shared 'variable '\n))
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, emptyreg), rlmod, qlock-axs-2,
-    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
+    [none,4,step,active,conj(t-non-s(R, S, K, K), 'true.Pred != 'dupl['__[
+    'R:Soup,'S:Soup,'K:Nat*]]) => t-non-e(U, V, Z, B)]) .
 result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
     'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
@@ -419,11 +429,13 @@ result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
     '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
   'I:Soup <- 'R:Soup ; 
-  'M:Nat* <- 'I:Nat* ; 
+  'M:Nat* <- 'K:Nat* ; 
   'N:Nat* <- 'K:Nat* ; 
-  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
-    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
-    'Z:Soup,'B:NeQueue]] | tt) &
+  'W:Soup <- 'S:Soup, ~ (tt /\ 'true.Pred != 'dupl['__['R:Soup,'S:Soup,
+    'K:Nat*]]) \/ 'K:Nat* ?= 'K:Nat* /\ 'true.Pred != 'dupl['__['R:Soup,
+    'K:Nat*,'S:Soup]], ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
 ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
     'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
     'B:NeQueue]] | tt) &
@@ -435,13 +447,15 @@ result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat*
     '@ 'Q':NeQueue '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup
     '| 'mt '| 'EQ:Queue '`] ' '| ' 'true '`] 'validity 'check 'for 'goal ' '`[
-    '4 ' ' ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true
-    ' '=> ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true
-    '`] ' 'encountered 'an 'error 'No 'validity 'checkers 'loaded; 'did 'you
-    'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive? '\n))
+    '4 ' ' ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'K:Nat* '> ' '| ' '`(
+    'true '=/= 'dupl '`( 'R:Soup 'S:Soup 'K:Nat* '`) '/\ 'true '`) ' '=> ' '`[
+    'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] '
+    'encountered 'an 'error 'No 'validity 'checkers 'loaded; 'did 'you 'forget
+    'to 'load 'one 'and/or 'mistype 'the 'loading 'directive? '\n))
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, noboolreg), rlmod, qlock-axs-2,
-    [none,4,step,active,t-non-s(R, S, K, I) => t-non-e(U, V, Z, B)]) .
+    [none,4,step,active,conj(t-non-s(R, S, K, K), 'true.Pred != 'dupl['__[
+    'R:Soup,'S:Soup,'K:Nat*]]) => t-non-e(U, V, Z, B)]) .
 result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'W:Soup,'N:Nat*,'M:Nat*]] | 'M:Nat* ?= 'N:Nat* /\ 'true.Pred != 'dupl['__[
     'I:Soup,'N:Nat*,'W:Soup]]) => ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
@@ -449,11 +463,13 @@ result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] | 'M':Nat* ?= 'N':Nat*) | ('`[_`][
     '_|_|_|_['I':Soup,'W':Soup,'mt.Soup,'EQ:Queue]] | mtForm)), 
   'I:Soup <- 'R:Soup ; 
-  'M:Nat* <- 'I:Nat* ; 
+  'M:Nat* <- 'K:Nat* ; 
   'N:Nat* <- 'K:Nat* ; 
-  'W:Soup <- 'S:Soup, tt \/ ~ tt, ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,
-    'M':Nat*]] | 'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,
-    'Z:Soup,'B:NeQueue]] | tt) &
+  'W:Soup <- 'S:Soup, ~ (tt /\ 'true.Pred != 'dupl['__['R:Soup,'S:Soup,
+    'K:Nat*]]) \/ 'K:Nat* ?= 'K:Nat* /\ 'true.Pred != 'dupl['__['R:Soup,
+    'K:Nat*,'S:Soup]], ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'M':Nat*]] |
+    'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
+    'B:NeQueue]] | tt) &
 ('`[_`]['_|_|_|_['I':Soup,'W':Soup,'N':Nat*,'_@_['M':Nat*,'Q':NeQueue]]] |
     'M':Nat* ?= 'N':Nat*) => ('`[_`]['_|_|_|_['U:Soup,'V:Soup,'Z:Soup,
     'B:NeQueue]] | tt) &
@@ -465,9 +481,10 @@ result ProofUpdate: (his(4 |-> axrec(axrule(('a2 : ('<_>['_|_|_|_['I:Soup,
     'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup '| 'N':Nat* '| 'M':Nat*
     '@ 'Q':NeQueue '`] ' '| ' 'M':Nat* '= 'N':Nat* '\/ '`[ 'I':Soup '| 'W':Soup
     '| 'mt '| 'EQ:Queue '`] ' '| ' 'true '`] 'validity 'for 'goal ' '`[ '4 ' '
-    ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'I:Nat* '> ' '| ' 'true ' '=>
-    ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] '
-    'unknown '\n))
+    ' ' '| ' '< 'R:Soup '| 'S:Soup '| 'K:Nat* '| 'K:Nat* '> ' '| ' '`( 'true
+    '=/= 'dupl '`( 'R:Soup 'S:Soup 'K:Nat* '`) '/\ 'true '`) ' '=> ' '`[
+    'U:Soup '| 'V:Soup '| 'Z:Soup '| 'B:NeQueue '`] ' '| ' 'true '`] ' 'unknown
+    '\n))
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, registry), rlmod, qlock-axs-1,
     [none,4,step,active,t-non-s(R, S, T, A) => t-non-e(U, V, Z, B)]) .

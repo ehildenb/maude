@@ -278,13 +278,13 @@ red sub-action(init-data(50,noboolreg),rlmod,[none,4,subsume,active,t-unsat2(R,S
 --- successful application with one MGU and one successor
 red ax-action(init-data(50,registry),rlmod,qlock-axs-4,[none,4,step,active,t-non-s(R,S,K,J @ NQ) => t-non-e(U,V,Z,B)]) .
 --- successful application with one MGU and three successors
-red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,conj(t-non-s(R,S,K,K),'dupl['__['R:Soup,'S:Soup,'K:Nat*]] != 'true.Pred) => t-non-e(U,V,Z,B)]) .
 --- failed to generate syntactic successors b/c of match error
-red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(W,S,K,I) => t-non-e(U,V,Z,B)]) .
+red ax-action(init-data(50,registry),rlmod,qlock-axs-2,[none,4,step,active,conj(t-non-s(W,S,K,K),'dupl['__['W:Soup,'S:Soup,'K:Nat*]] != 'true.Pred) => t-non-e(U,V,Z,B)]) .
 --- failed validity check because of error
-red ax-action(init-data(50,emptyreg),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+red ax-action(init-data(50,emptyreg),rlmod,qlock-axs-2,[none,4,step,active,conj(t-non-s(R,S,K,K),'dupl['__['R:Soup,'S:Soup,'K:Nat*]] != 'true.Pred) => t-non-e(U,V,Z,B)]) .
 --- notes that axiom validity is unknown
-red ax-action(init-data(50,noboolreg),rlmod,qlock-axs-2,[none,4,step,active,t-non-s(R,S,K,I) => t-non-e(U,V,Z,B)]) .
+red ax-action(init-data(50,noboolreg),rlmod,qlock-axs-2,[none,4,step,active,conj(t-non-s(R,S,K,K),'dupl['__['R:Soup,'S:Soup,'K:Nat*]] != 'true.Pred) => t-non-e(U,V,Z,B)]) .
 --- notes that no syntactically usable axioms found
 red ax-action(init-data(50,registry),rlmod,qlock-axs-1,[none,4,step,active,t-non-s(R,S,T,A) => t-non-e(U,V,Z,B)]) .
 
