@@ -245,6 +245,8 @@ fmod VAR-SAT is
   eq var-sat-conjset(FM,FSS,mtFormSet) = false .
 
   --- NB: Check each infinite-sort variant is consistent; instantiate finite vars lazily if needed
+  eq  consistent?(FM,FSS,tt | NCS) = consistent?(FM, FSS, NCS) .
+  eq  consistent?(FM,FSS,ff | NCS) = false .
   ceq consistent?(FM,FSS,NC | NCS) =
     if QL =/= nil then
       fin-consistent?(FM,QL,finite-subs(QL,sorts-gen(ctor-sig(FM),FSS)),NC)
