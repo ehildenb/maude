@@ -10,9 +10,9 @@ diff ui-test2.out ui-test2.expected
 echo "proofrules"
 maude -no-banner proofrules.maude &> proofrules.out
 diff proofrules.out proofrules.expected
-echo "functions"
-maude -no-banner "functions.maude" &> "functions.out"
-diff "functions.out" "functions.expected"
+echo "cstrterm"
+maude -no-banner cstrterm.maude &> cstrterm.out
+diff cstrterm.out cstrterm.expected
 echo "foform"
 maude -no-banner "foform.maude" &> "foform.out"
 diff "foform.out" "foform.expected"
