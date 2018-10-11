@@ -312,14 +312,14 @@ fmod CONSTRAINED-TERM-FUNCTOR is
   var CT : QFCTerm . var T T' : Term .
   var F F' : QFForm . var F? : QFForm? .
   var X Y : Sort . var XS : SortSet .
-  var O S : Qid . --- the operator prefix O and sort prefix S
+  var N O S : Qid . --- the operator prefix O and sort prefix S
 
   --- The module (signature) functor lifting
   op cterm-func : Module -> Module [memo] .
   eq cterm-func(U) = cterm-func(U,qid(opPrefix(U)),qid(sortPrefix(U))) .
 
   op cterm-func : Module Qid Qid -> Module .
-  eq cterm-func(U,O,S) = addSorts(join(S 'Form), addOps(literal-ops(O,S,getSorts(U)) nonliteral-ops(S),U)) .
+  eq cterm-func(U,O,S) = addSorts(join(S 'Form) ; join(S 'CTerm), addOps(literal-ops(O,S,getSorts(U)) nonliteral-ops(S),U)) .
 
   op nonliteral-ops : Qid -> OpDeclSet .
   eq nonliteral-ops(S) = (op '/\ : join(S 'Form) join(S 'Form) -> join(S 'Form) [assoc comm id(join('tt. S 'Form))].
@@ -329,11 +329,22 @@ fmod CONSTRAINED-TERM-FUNCTOR is
   op literal-ops : Qid Qid Sort -> OpDeclSet .
   eq literal-ops(O,S,X ; Y ; XS) = literal-ops(O,S,X) literal-ops(O,S,Y ; XS) .
   eq literal-ops(O,S,none) = none .
-  eq literal-ops(O,S,X)    = (op '|             : X join(S 'Form) -> join(S 'Form) [none].
-                              op eq-literal (O) : X X             -> join(S 'Form) [none].
-                              op neq-literal(O) : X X             -> join(S 'Form) [none].) .
+  eq literal-ops(O,S,X)    = (op '|             : X join(S 'Form) -> join(S 'CTerm) [none].
+                              op eq-literal (O) : X X             -> join(S 'Form ) [none].
+                              op neq-literal(O) : X X             -> join(S 'Form ) [none].) .
 
   --- Lifting constrained terms into terms in the functor meta-module
+
+  --- OUT: A CTerm with a conjunction free formula variable
+  op cterm-func-ext : Module Qid QFCTerm -> Term .
+  eq cterm-func-ext(U,N,CT) = cterm-func-ext(N,qid(opPrefix(U)),qid(sortPrefix(U)),CT) .
+
+  op cterm-func-ext : Qid Qid Qid QFCTerm -> Term .
+  eq cterm-func-ext(N,O,S,(T | mtForm)) = '|[T,'/\[tt-literal(S),form-variable(S)]] .
+  eq cterm-func-ext(N,O,S,(T | tt))     = '|[T,'/\[tt-literal(S),form-variable(S)]] .
+  eq cterm-func-ext(N,O,S,(T | F))      = '|[T,'/\[eqform-func(O,S,F),form-variable(S)]] .
+
+  --- OUT: An exact lifting of a CTerm
   op cterm-func : Module QFCTerm -> Term .
   eq cterm-func(U,CT) = cterm-func(qid(opPrefix(U)),qid(sortPrefix(U)),CT) .
 
@@ -391,9 +402,8 @@ fmod CONSTRAINED-TERMSET-MATCH is
   op matches# : Module Qid Qid QFCTermSet QFCTermSet -> SubstitutionSet .
   eq matches#(U,O,S,noterm,C) = empty .
   eq matches#(U,O,S,CS,CS')  = empty [owise] .
-  eq matches#(U,O,S,(T | F) | CS,C) =
-    safeMatch(cterm-func(U),cterm-func(U,(T | F)),cterm-func(U,C)) |
-    remove(safeMatch(cterm-func(U),'|[T,'/\[eqform-func(U,F),form-variable(S)]],cterm-func(U,C)),form-variable(S) <- tt-literal(O)) |
+  eq matches#(U,O,S,C' | CS,C) =
+    remove(safeMatch(cterm-func(U),cterm-func-ext(U,'X,C'),cterm-func(U,C)),form-variable(S) <- tt-literal(O)) |
     matches#(U,O,S,CS,C) .
 
   op matches : Module QFForm? QFForm? -> FOFormSubstPairSet .
@@ -404,7 +414,6 @@ fmod CONSTRAINED-TERMSET-MATCH is
 
   op matches# : Module Qid Qid QFForm? QFForm? -> SubstitutionSet .
   eq matches#(U,O,S,F,G) =
-    safeMatch(cterm-func(U),eqform-func(U,F),eqform-func(U,G)) |
     remove(safeMatch(cterm-func(U),'/\[eqform-func(U,F),form-variable(S)],eqform-func(U,G)),form-variable(S) <- tt-literal(O)) .
 endfm
 
