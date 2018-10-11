@@ -202,7 +202,7 @@ fmod RLTL-COMMAND is
    op def-term-set      : NeQFCTermSet   -> RLTLCommand [ctor] .
    op step              : Bound -> RLTLCommand [ctor] .
    op case              : Nat Variable TermSet -> RLTLCommand  [ctor] .
-   op split             : Nat EqQFForm? -> RLTLCommand [ctor] .
+   op split             : Nat Bool EqQFForm? QFForm? -> RLTLCommand [ctor] .
    op select-rls        : QidList -> RLTLCommand [ctor] .
    op select            : Module Qid -> RLTLCommand [ctor] .
    op continue          : -> RLTLCommand [ctor] .
@@ -245,7 +245,7 @@ fmod PARSE-RLTLCOMMAND is
 
    --- run in ON mode
    eq rltl-parse((M,S),'case_on_by_.[T1,T2,T3])          = case(downNat(T1),parse-token(T2),parse-termset((M,S),true,T3)) .
-   eq rltl-parse((M,S),'split_by_.[T1,T2])               = split(downNat(T1),parse-qfform((M,S),true,T2)) .
+   eq rltl-parse((M,S),'split_by_.[T1,T2])               = split(downNat(T1),true,parse-qfform((M,S),true,T2),toNNF(~ parse-qfform((M,S),true,T2))) .
    eq rltl-parse((M,S),'focus_.[T1])                     = focus(downNeNatSet(T1)) .
    eq rltl-parse((M,S),'list-goals`..MetaRLTLCommand)    = ls(true) .
    eq rltl-parse((M,S),'list-goal-ids`..MetaRLTLCommand) = ls(false) .
@@ -425,7 +425,7 @@ fmod RLTL-PROC-CMD is
   var T : Term . var TS : TermSet .
   var ID Q Q' : Qid . var QS : QidSet . var L : QidList . var V  : Variable . var QK : [Qid] .
   var U : Module . var US : ModuleList .
-  var QF : EqQFForm? . var MF MF' : QFCTermSet .
+  var QF QF' : QFForm? . var MF MF' : QFCTermSet .
   var F : ReachForm .
   var LX : LabelReachFormEx . var LF : LabelReachForm . var LS : LabelReachFormList . var LK : [LabelReachFormEx] .
   var G : ProofGoal . var GK : [ProofGoalSet] . var R : ProofMetadata .
@@ -461,8 +461,8 @@ fmod RLTL-PROC-CMD is
                                     (write('Case 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
                                   else write('Goal: qid(string(N,10)) 'not 'found)
                                 fi .
-  eq proc(split(N,QF),     R) = if getgl!(R,N) :: ProofGoal
-                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),split(QF)))) &
+  eq proc(split(N,B,QF,QF'), R) = if getgl!(R,N) :: ProofGoal
+                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),split(B,QF,QF')))) &
                                     (write('Split 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
                                   else write('Goal: qid(string(N,10)) 'not 'found)
                                 fi .

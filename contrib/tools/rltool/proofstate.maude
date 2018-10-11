@@ -28,7 +28,7 @@ fmod REACH-PROOF-STRATEGY is
   op  step : -> ProofRuleAction [ctor] .
   op  axiom : LabelReachForm -> ProofRuleAction [ctor] .
   op  case  : Variable TermSet -> ProofRuleAction [ctor] .
-  op  split : EqQFForm -> ProofRuleAction [ctor] .
+  op  split : Bool QFForm QFForm -> ProofRuleAction [ctor] .
   op  pause : -> ProofRuleAction [ctor] .
   op  giveup : -> ProofRuleAction [ctor] .
   op  result : Bool -> ProofStrat [ctor] .
@@ -171,6 +171,8 @@ fmod REACH-PROOF-GOALSET is
   var Idx : FindResult .
   var NS : Set{Nat} .
   var FS : ReachFormSet .
+  var T : Term .
+  var D : NeQFCTermSet .
 
   sort NeProofGoalSet MaybeProofGoal ProofGoalSet .
   subsort ProofGoal < MaybeProofGoal NeProofGoalSet < ProofGoalSet .
@@ -468,7 +470,7 @@ fmod REACH-PROOF-STATE-PRINTER is
   eq printNext(step) = 'step .
   eq printNext(axiom(L:LabelReachForm)) = 'axiom .
   eq printNext(case(V:Variable,T:TermSet)) = 'case .
-  eq printNext(split(F:EqQFForm)) = 'split .
+  eq printNext(split(B:Bool,F:QFForm?,F':QFForm?)) = 'split .
   eq printNext(giveup) = 'giveup .
   eq printNext(result(B:Bool)) = 'result .
   eq printNext(pause) = 'pause .

@@ -141,7 +141,7 @@ fmod REACH-PROOF-RULES-AUX is
 
   var ID GN VC : Nat . var CNT : FindResult .
   var V : Variable . var TS : TermSet .
-  var EQF : EqQFForm . var F F' : ReachForm . var FS : ReachFormSet .
+  var QF QF' : QFForm . var F F' : ReachForm . var FS : ReachFormSet .
   var G : ProofGoal . var GS : ProofGoalSet .
   var AR : AxiomResult . var ARL ARL' : AxiomResultList .
 
@@ -246,15 +246,26 @@ fmod REACH-PROOF-RULES-AUX is
       fi else (out('Warning: 'case 'rule 'variable 'must 'be 'in 'goal 'head '\n))
     fi .
 
-  op split-action : ProofMetadata Module EqQFForm ProofGoal -> ProofUpdate .
-  eq split-action(D,U,EQF,G) =
-    if intersection(vars(EQF),vars(succ(getbody(G))) \ vars(antc(getbody(G)))) == none
-      then (none || newChildGoals(G,conj-antc(getbody(G),EQF) & conj-antc(getbody(G),toNNF(~ EQF))))
-      else (out('Warning: 'split 'rule 'formula 'intersect 'unsafely 'with 'goal 'target '\n))
-    fi .
+  op split-action : ProofMetadata Module Bool QFForm QFForm ProofGoal -> ProofUpdate .
+  op split-action : ProofMetadata Module QFForm QFForm ProofGoal -> ProofUpdate .
+
+  eq split-action(D,U,true,QF,QF',G) = split-action(D,U,QF /\ rhs-cond(getbody(G)),QF' /\ rhs-cond(getbody(G)),G) .
+  eq split-action(D,U,false,QF,QF',G) = split-action(D,U,QF,QF',G) .
+
+  eq split-action(D,U,QF,QF',G) =
+    if QF == QF' then
+      (out('Warning: 'prevented 'attempted 'split 'on 'identical 'formulas))
+    else if QF == ff then
+      (st(err) ; out('Error: 'invalid 'split 'value))
+    else if safeVars(gather(getbody(G) & set-rhs-cond(getbody(G),QF) & if QF =/= ff then set-rhs-cond(getbody(G),QF') else mt fi))
+      then (none || newChildGoals(G,set-rhs-cond(getbody(G),QF) & if QF' == ff then mt else set-rhs-cond(getbody(G),QF') fi))
+      else (out('Warning: 'split 'rule 'formulas 'have 'unsafe 'variable 'sharing '\n))
+    fi fi fi .
 
   var PA : ProofRuleAction .
 
+  --- TODO: add flag (or separate function) for one-off runs, to support use-cases like the split rule
+  ---       so that we do not invalidate a goal after failing to apply the rule
   op apply-proof-strat : ProofMetadata ProofGoal -> ProofMetadata? .
   eq apply-proof-strat(D,G) = lift-result(G,getstrat(G),D,apply-proof-action(D,nextaction(getstrat(G)),G)) .
 
@@ -265,7 +276,7 @@ fmod REACH-PROOF-RULES-AUX is
   eq apply-proof-action(D,step,G)       = step-action(D,get-mod(D),get-rls(D),G) [print "step-action"] .
   eq apply-proof-action(D,axiom(AX),G)  = ax-action(D,get-mod(D),AX,G) [print "ax-action"] .
   eq apply-proof-action(D,case(V,TS),G) = case-action(D,get-mod(D),V,TS,G) [print "case-action"] .
-  eq apply-proof-action(D,split(EQF),G) = split-action(D,get-mod(D),EQF,G) [print "split-action"] .
+  eq apply-proof-action(D,split(B,QF,QF'),G) = split-action(D,get-mod(D),B,QF,QF',G) [print "split-action"] .
   eq apply-proof-action(D,pause,G)      = (none || newChildGoals(G,getstrat(G),paused,getbody(G))) [print "pause-action"] .
   eq apply-proof-action(D,giveup,G)     = (none || newChildGoals(G,getstrat(G),inactive,getbody(G))) [print "giveup-action"] .
 

@@ -288,5 +288,7 @@ red ax-action(init-data(50,noboolreg),rlmod,qlock-axs-2,[none,4,step,active,conj
 --- notes that no syntactically usable axioms found
 red ax-action(init-data(50,registry),rlmod,qlock-axs-1,[none,4,step,active,t-non-s(R,S,T,A) => t-non-e(U,V,Z,B)]) .
 
+--- TODO: add split/case rule functions
+
 --- done
 quit
