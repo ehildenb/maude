@@ -5,9 +5,9 @@ load ../../../contrib/tools/varsat/var-sat.maude
 
 fmod TEST-NAT is
   pr VAR-SAT .
-  pr FOFORM-DEFINEDOPS .
+  pr EQFORM-OPERATIONS .
   op nat  : -> Module . vars U V W X Y Z : Nat .
-  var F : QFForm .
+  var F : Form .
   eq nat = upModule('FVP-NAT-PRED, true) .
 endfm
 
@@ -131,8 +131,8 @@ endfm
 
 fmod TEST-LIST is
   pr VAR-SAT .
-  pr FOFORM-DEFINEDOPS .
-  var F : QFForm .
+  pr EQFORM-OPERATIONS .
+  var F : Form .
   op list : -> Module .
   eq list = upModule('MYNATLIST, true) .
 endfm
