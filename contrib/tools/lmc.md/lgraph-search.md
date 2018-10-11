@@ -128,6 +128,8 @@ The insert operation is aware of `Fold`s, and will not create new entries for ne
     ----------------------------------------
     eq (NID |-> ND NM) [ NID' ] = if NID == NID' then ND else NM [ NID' ] fi .
 
+    eq .NodeMap [ NS ] = .NodeSet .
+
     eq NM [ .NodeSet     ] = .NodeSet .
     eq NM [ NeNS ; NeNS' ] = (NM [ NeNS ]) ; (NM [ NeNS' ]) .
 
