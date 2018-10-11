@@ -1,6 +1,5 @@
 set show timing off .
 
-load ../../../contrib/systems/token.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
 --- Testing Harnesses
@@ -10,7 +9,7 @@ load ../../../contrib/tools/lmc/lgraph-search.maude
 --- --------------
 
 fmod GRAPH-FOLDING-SEARCH-TEST is
-    extending GRAPH-ANALYSIS .
+    extending FOLDING-LABELED-GRAPH-SEARCH .
 
     ops A B C D E F G : -> Node .
     ops x y z : -> Label .
@@ -135,8 +134,9 @@ reduce frontier(extend(E)) .
 reduce frontier(extend(A ; B ; C)) .
 reduce frontier(extend(A ; B ; C ; D ; E ; F ; G)) .
 
---- Test Module GRAPH-ANALYSIS
---- --------------------------
+
+--- Test Module FOLDING-LABELED-GRAPH-SEARCH
+--- ----------------------------------------
 
 reduce bfs(A, 0) .
 reduce bfs(A, 1) .

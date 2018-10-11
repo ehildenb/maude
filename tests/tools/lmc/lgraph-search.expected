@@ -147,7 +147,7 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : (0 |-> A
 2 |-> F
 3 |-> G)[7] .
 rewrites: 12
-result [Bound,NodeSet]: .NodeMap[7]
+result [NodeSet,Bound]: .NodeMap[7]
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : (0 |-> A
 1 |-> B
@@ -161,7 +161,7 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : (0 |-> A
 2 |-> F
 3 |-> G)[2 ; 3 ; 7] .
 rewrites: 35
-result [Bound,NodeSet]: F ; G ; .NodeMap[7]
+result [NodeSet,Bound]: F ; G ; .NodeMap[7]
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : insert(3 |-> A, .NodeMap) .
 rewrites: 2

@@ -9,7 +9,7 @@ set include BOOL off .
 mod THERMOSTAT-COMMON-INIT is
    protecting META-TERM .
    protecting RENAME-METAVARS .
-    extending CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    extending CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH .
 
     vars TIME TMP TMP' TMP'' T C : Term .
     vars RL Q : Qid . var SUB : Substitution .

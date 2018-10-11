@@ -3,9 +3,6 @@ Labelled Graph Search and Analysis
 
 Here is a labelled graph search algorithm and its instantiation to narrowing.
 
-Abstract Graph Search Algorithms
---------------------------------
-
 ```maude
 sload ../meta/narrowing.maude
 sload ../meta/cterms.maude
@@ -16,82 +13,41 @@ sload lmc.maude
 set include BOOL off .
 ```
 
-### Data Structures
+Data Structures
+---------------
 
-Sort `LabeledGraph` is an edge-labelled graph between `Node`s.
+### Node Maps
+
+Sort `NodeMap` can store a natural-number indexed set of nodes which support `fold`ing.
+Insertion returns the `NodeId`, which can either be a new natural number or an old natural number with an associated `fold`.
 
 ```maude
-fmod LABELED-GRAPH is
+fmod FOLDING-NODEMAP is
+   protecting NAT .
+   protecting EXT-BOOL .
+```
 
-    sorts Node NeNodeSet NodeSet .
-    ------------------------------
-    subsort Node < NeNodeSet < NodeSet .
+Natural numbers can be interpreted as `NodeId`s, which makes it possible to refer to nodes more compactly.
 
-    --- TODO: change variables N, N' to ND, ND'
-    vars N N' : Node . vars NeNS NeNS' : NeNodeSet .
+```maude
+    sorts NodeId Node NeNodeSet NodeSet .
+    -------------------------------------
+    subsort Nat < NodeId < Node < NeNodeSet < NodeSet .
+
+    vars N N' : Nat . vars NID NID' : NodeId .
+    vars ND ND' : Node . vars NeNS NeNS' NeNS'' : NeNodeSet . vars NS NS' : NodeSet .
 
     op .NodeSet : -> NodeSet .
     op _;_      : NodeSet   NodeSet ->   NodeSet [assoc comm id: .NodeSet] .
     op _;_      : NodeSet NeNodeSet -> NeNodeSet [ditto] .
     ------------------------------------------------------
     eq NeNS ; NeNS = NeNS .
-
-    sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
-    subsorts LabeledEdge < NeLabeledGraph < LabeledGraph .
-    ------------------------------------------------------
-    var L : Label . var NeLG : NeLabeledGraph .
-
-    op .LabeledGraph :                             ->   LabeledGraph .
-    op __            :   LabeledGraph LabeledGraph ->   LabeledGraph [assoc comm id: .LabeledGraph prec 55 format(d n d)] .
-    op __            : NeLabeledGraph LabeledGraph -> NeLabeledGraph [ditto] .
-    --------------------------------------------------------------------------
-    eq NeLG NeLG = NeLG .
-
-    op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
-    --------------------------------------------------------
-
-    sorts Transition NeTransitionSet TransitionSet .
-    ------------------------------------------------
-    subsorts Transition < NeTransitionSet < TransitionSet .
-
-    var TS : TransitionSet . vars NeTS NeTS' : NeTransitionSet .
-
-    op .TransitionSet :                               ->   TransitionSet .
-    op _,_            :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
-    op _,_            : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
-    ------------------------------------------------------------------------------
-    eq NeTS , NeTS = NeTS .
-
-    op <_,_> : Label Node -> Transition .
-    op _->_  : Node TransitionSet -> LabeledGraph [prec 50] .
-    ---------------------------------------------------------
-    eq N -> .TransitionSet = .LabeledGraph .
-    eq N -> < L , N' >     = N -[ L ]-> N' .
-    eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
-
-    op nodes : TransitionSet -> [NodeSet] .
-    ---------------------------------------
-    eq nodes(.TransitionSet) = .NodeSet .
-    eq nodes(< L , N >)      = N .
-    eq nodes((NeTS , NeTS')) = nodes(NeTS) ; nodes(NeTS') .
-endfm
 ```
 
-### Folding Search Command
+A `Fold` is a "witness" that a specified node is less general than another node.
+This allows building a `NodeId` which consists of a `Nat` and a `Fold`, indicating how the less general `Node` is subsumed in the more general.
 
 ```maude
-fmod GRAPH-FOLDING-SEARCH is
-   protecting NAT .
-   protecting EXT-BOOL .
-   protecting BOUND .
-    extending LABELED-GRAPH .
-
-    vars D D' : Depth . var B : Bound .
-    var T : Transition . vars NeTS NeTS' : NeTransitionSet .
-    vars NS NS' NS'' : NodeSet . vars NeNS NeNS' NeNS'' : NeNodeSet .
-    vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
-    var L : Label . vars LG LG' LG'' LG''' : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
-
     sort Fold NeFoldSet FoldSet .
     -----------------------------
     subsort Fold < NeFoldSet < FoldSet .
@@ -114,26 +70,8 @@ fmod GRAPH-FOLDING-SEARCH is
    ceq fold(ND ; NeNS , ND') = F F' if F  := fold(ND, ND')
                                     /\ F' := fold(NeNS, ND') .
 
-    op step : NodeSet -> [TransitionSet] .
-    --------------------------------------
-    eq step(.NodeSet)     = .TransitionSet .
-    eq step(NeNS ; NeNS') = step(NeNS) , step(NeNS') .
-
-    op prune : TransitionSet -> [TransitionSet] .
-    ---------------------------------------------
-    eq prune(T)              = T [owise] .
-    eq prune(.TransitionSet) = .TransitionSet .
-    eq prune(NeTS , NeTS')   = prune(NeTS) , prune(NeTS') .
-
-    op all-step : NodeSet -> [LabeledGraph] .
-    -----------------------------------------
-    eq all-step(ND)           = ND -> step(ND) .
-    eq all-step(.NodeSet)     = .LabeledGraph .
-    eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
-
-    sort NodeId .
-    -------------
-    subsorts Nat < NodeId < Node .
+    op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
+    --------------------------------------------------------
 
     --- TODO: add operator _~=_ for NodeSet equality
     --- TODO: extract this and common functionality from bae-symbolic branch
@@ -158,10 +96,12 @@ fmod GRAPH-FOLDING-SEARCH is
     op isEmpty? : NodeSet -> [Bool] .
     ---------------------------------
     eq isEmpty?(.NodeSet) = true .
+```
 
-    op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
-    --------------------------------------------------------
+A `NodeMap` is a lookup table of `Nat |-> Node`, which supports a lookup `_[_]` and `insert` operation.
+The insert operation is aware of `Fold`s, and will not create new entries for new nodes that are less general than existing ones.
 
+```maude
     sorts NodeAlias NeNodeMap NodeMap NodeMap? .
     --------------------------------------------
     subsorts NodeAlias < NeNodeMap < NodeMap .
@@ -171,10 +111,10 @@ fmod GRAPH-FOLDING-SEARCH is
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
     --------------------------------------------
 
-    op .NodeMap : -> NodeMap .
-    op __ : NeNodeMap NodeMap -> NeNodeMap [assoc id: .NodeMap prec 60 format(d n d)] .
-    op __ :   NodeMap NodeMap ->   NodeMap [ditto] .
-    ------------------------------------------------
+    op .NodeMap :                   ->   NodeMap .
+    op __       : NeNodeMap NodeMap -> NeNodeMap [assoc id: .NodeMap prec 60 format(d n d)] .
+    op __       :   NodeMap NodeMap ->   NodeMap [ditto] .
+    ------------------------------------------------------
     eq NeNM NeNM = NeNM .
 
     op nodes : NodeMap -> [NodeSet] .
@@ -204,7 +144,42 @@ fmod GRAPH-FOLDING-SEARCH is
                                                                  else #insert(N |-> ND, NM N' |-> ND', NM')
                                                  fi
                                               if F? := fold(ND, ND') .
+endfm
+```
 
+### Folding Edge-labeled Graphs
+
+Sort `LabeledGraph` is an edge-labelled graph between `Node`s.
+The `Label` used is left abstract.
+
+```maude
+fmod FOLDING-LABELED-GRAPH is
+   protecting FOLDING-NODEMAP .
+
+    var N : Nat . vars NID NID' NID'' : NodeId . vars ND ND' : Node .
+    vars NeNS NeNS' : NeNodeSet . var NS NS' NS'' : NodeSet .
+    vars NM NM' NM'' : NodeMap .
+
+    sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
+    -----------------------------------------------------
+    subsorts LabeledEdge < NeLabeledGraph < LabeledGraph .
+
+    var L : Label . var LG : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
+
+    op .LabeledGraph :                             ->   LabeledGraph .
+    op __            :   LabeledGraph LabeledGraph ->   LabeledGraph [assoc comm id: .LabeledGraph prec 55 format(d n d)] .
+    op __            : NeLabeledGraph LabeledGraph -> NeLabeledGraph [ditto] .
+    --------------------------------------------------------------------------
+    eq NeLG NeLG = NeLG .
+
+    op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
+    --------------------------------------------------------
+```
+
+A `FoldedLabeledGraph` will use the `NodeMap` to store nodes, instead of directly storing them as nodes.
+This will allow for "folding" the graph when a certain node is subsumed by another.
+
+```maude
     sorts FoldedLabeledGraph FoldedLabeledGraph? .
     ----------------------------------------------
     subsort FoldedLabeledGraph < FoldedLabeledGraph? .
@@ -247,6 +222,81 @@ fmod GRAPH-FOLDING-SEARCH is
     op flgraph : NodeSet -> FoldedLabeledGraph? .
     ---------------------------------------------
     eq flgraph(NS) = insert(NS, .FoldedLabeledGraph) .
+endfm
+```
+
+Folding Graph Searches
+----------------------
+
+### Single search step
+
+```maude
+fmod FOLDING-LABELED-GRAPH-STEP is
+   protecting FOLDING-LABELED-GRAPH .
+
+    vars N N' : Nat . vars ND ND' : Node .
+    vars NS : NodeSet . vars NeNS NeNS' : NeNodeSet . var NM : NodeMap .
+    var L : Label . var LG : LabeledGraph . var FLG : FoldedLabeledGraph .
+```
+
+A `Transition` can be used to represent a set of outgoing edges from a given `Node` compactly.
+
+```maude
+    sorts Transition NeTransitionSet TransitionSet .
+    ------------------------------------------------
+    subsorts Transition < NeTransitionSet < TransitionSet .
+
+    var T : Transition . vars NeTS NeTS' : NeTransitionSet .
+
+    op .TransitionSet :                               ->   TransitionSet .
+    op _,_            :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
+    op _,_            : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
+    ------------------------------------------------------------------------------
+    eq NeTS , NeTS = NeTS .
+
+    op <_,_> : Label Node -> Transition .
+    op _->_  : Node TransitionSet -> LabeledGraph [prec 50] .
+    ---------------------------------------------------------
+    eq ND -> .TransitionSet = .LabeledGraph .
+    eq ND -> < L , ND' >    = ND -[ L ]-> ND' .
+    eq ND -> NeTS , NeTS'   = ND -> NeTS ND -> NeTS' .
+
+    op nodes : TransitionSet -> [NodeSet] .
+    ---------------------------------------
+    eq nodes(.TransitionSet) = .NodeSet .
+    eq nodes(< L , ND >)     = ND .
+    eq nodes((NeTS , NeTS')) = nodes(NeTS) ; nodes(NeTS') .
+```
+
+The following operators must be instantiated to the given graph structure which is being searched.
+
+-   `step` *must* return the complete set of outgoing edges (`TransitionSet`).
+-   `prune` *can* optionally be instantiated to prune given transitions generated by `step`.
+
+**TODO**: `step` loses information about *which* `Node` resulted in each `Transition`.
+
+```maude
+    op step : NodeSet -> [TransitionSet] .
+    --------------------------------------
+    eq step(.NodeSet)     = .TransitionSet .
+    eq step(NeNS ; NeNS') = step(NeNS) , step(NeNS') .
+
+    op prune : TransitionSet -> [TransitionSet] .
+    ---------------------------------------------
+    eq prune(T)              = T [owise] .
+    eq prune(.TransitionSet) = .TransitionSet .
+    eq prune(NeTS , NeTS')   = prune(NeTS) , prune(NeTS') .
+```
+
+-   `all-step` will generate the labeled graph associated with doing a single step on a set of initial nodes.
+-   `extend` uses all the above functionality to explore the existing frontier of the current `FoldedLabeledGraph?`.
+
+```maude
+    op all-step : NodeSet -> [LabeledGraph] .
+    -----------------------------------------
+    eq all-step(ND)           = ND -> step(ND) .
+    eq all-step(.NodeSet)     = .LabeledGraph .
+    eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
 
     op extend : NodeSet             -> [FoldedLabeledGraph?] .
     op extend : FoldedLabeledGraph? -> [FoldedLabeledGraph?] .
@@ -258,12 +308,12 @@ fmod GRAPH-FOLDING-SEARCH is
 endfm
 ```
 
-### Graph Analysis
+### Full graph analysis
 
 ```maude
-fmod GRAPH-ANALYSIS is
-   protecting GRAPH-FOLDING-SEARCH .
-   protecting EXT-BOOL .
+fmod FOLDING-LABELED-GRAPH-SEARCH is
+   protecting FOLDING-LABELED-GRAPH-STEP .
+   protecting BOUND .
 
     var N : Nat . var B : Bound .
     vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet .
@@ -316,7 +366,7 @@ fmod NARROWING-GRAPH-COMMON is
    protecting NARROWING .
    protecting RENAME-METAVARS .
    protecting SUBSTITUTION-SET .
-    extending GRAPH-FOLDING-SEARCH .
+    extending FOLDING-LABELED-GRAPH-SEARCH .
     extending META-LMC-PARAMETERS .
 
     vars T T' : Term . var NeTS : NeTermSet . var M : Module . var SUB : Substitution . var TYPE : Type .

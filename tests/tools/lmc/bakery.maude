@@ -4,7 +4,7 @@ load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
 fmod RENAMED-NARROWING-GRAPH is
-    including ( NARROWING-GRAPH + GRAPH-ANALYSIS )
+    including NARROWING-GRAPH
             * ( sort   Nat to   NatP
               , sort NzNat to NzNatP
               ) .
@@ -63,7 +63,7 @@ reduce state(confManyWait) =>[10] state(confBad) .
 fmod FVP-BAKERY-INIT is
    protecting META-TERM .
    protecting UNCONDITIONALIZE-FVP-BOOL .
-    including CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    including CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH .
 
     op init : Nat -> [Term] .
     -------------------------
@@ -123,7 +123,7 @@ reduce (state(inj(5)) ; state(inj(6))) =>* state(inj(9)) .
 
 mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
    protecting FVP-BAKERY-INIT .
-    including NARROWING-GRAPH + GRAPH-ANALYSIS .
+    extending NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH .
 
     eq #M = upModule('BAKERY-FVP-CTOR, true) .
 endm

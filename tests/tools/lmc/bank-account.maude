@@ -8,7 +8,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 --- =============================
 
 mod BANK-ACCOUNT-INIT-STATES is
-    extending CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    extending CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH .
    protecting UNCONDITIONALIZE-FVP-BOOL .
 
     var N : Nat . vars NeNS NeNS' : NeNodeSet . vars T T' : Term .
