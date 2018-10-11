@@ -61,4 +61,54 @@ reduce in RLTOOL-TEST : gather(divide(ct('X:Nat, 'W:Nat, 'Z:Nat) | ct('X:Nat,
     'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat, 'W:Nat))) == (ct('X:Nat, 'W:Nat,
     'Z:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat, 'W:Nat)) .
 result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rf-func(upModule('CHOICE, true))) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : rf-func(upModule('CHOICE, true), ct('X:Nat, 'Y:Nat,
+    'Z:Nat) => ct('Q:Nat, 'W:Nat, 'W:Nat) | ct('U:Nat, 'Y:Nat, 'Z:Nat)) .
+result Term: '=>['|['`{_`}['__['X:Nat,'Y:Nat]],'@?=['tt.Pred,'_=C_['X:Nat,
+    'Z:Nat]]],'|['|['`{_`}['__['Q:Nat,'W:Nat]],'@?=['tt.Pred,'_=C_['Q:Nat,
+    'W:Nat]]],'|['`{_`}['__['U:Nat,'Y:Nat]],'@?=['tt.Pred,'_=C_['U:Nat,
+    'Z:Nat]]]]]
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rf-func(upModule('CHOICE, true)), rf-func(
+    upModule('CHOICE, true), ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat, 'Y:Nat,
+    'Z:Nat))) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rf-func(upModule('CHOICE, true)), rf-func(
+    upModule('CHOICE, true), ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('Q:Nat, 'W:Nat,
+    'W:Nat) | ct('U:Nat, 'Y:Nat, 'Z:Nat))) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rf-func(upModule('CHOICE, true)),
+    rf-func-ext(upModule('CHOICE, true), ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct(
+    'U:Nat, 'Y:Nat, 'Z:Nat))) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(rf-func(upModule('CHOICE, true)),
+    rf-func-ext(upModule('CHOICE, true), ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct(
+    'Q:Nat, 'W:Nat, 'W:Nat) | ct('U:Nat, 'Y:Nat, 'Z:Nat))) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : matches(upModule('CHOICE, true), ct('X:Nat, 'Y:Nat,
+    'Z:Nat) => ct('U:Nat, 'Y:Nat, 'Z:Nat), ct('W:Nat, 'Y:Nat, 'Q:Nat) => ct(
+    'U:Nat, 'Y:Nat, 'Q:Nat)) .
+result VarSubstitution: 
+  'U:Nat <- 'U:Nat ; 
+  'X:Nat <- 'W:Nat ; 
+  'Y:Nat <- 'Y:Nat ; 
+  'Z:Nat <- 'Q:Nat
+==========================================
+reduce in RLTOOL-TEST : matches(upModule('CHOICE, true), ct('X:Nat, 'Y:Nat,
+    'Z:Nat) => ct('U:Nat, 'Y:Nat, 'Z:Nat), ct('W:Nat, 'Y:Nat, 'Q:Nat) => ct(
+    'U:Nat, 'F:Nat, 'R:Nat) | ct('U:Nat, 'Y:Nat, 'Q:Nat)) .
+result Substitution: 
+  'C:@CTermSet <- '|['`{_`}['__['U:Nat,'F:Nat]],'@?=['tt.Pred,'_=C_['U:Nat,
+    'R:Nat]]] ; 
+  'U:Nat <- 'U:Nat ; 
+  'X:Nat <- 'W:Nat ; 
+  'Y:Nat <- 'Y:Nat ; 
+  'Z:Nat <- 'Q:Nat
 Bye.

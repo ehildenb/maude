@@ -3,8 +3,12 @@ load ../../rltool.maude
 
 mod RLTOOL-TEST is
   pr RLTOOL .
+  pr TRANSITION-MATCH .
 
   var X Y Z : Variable .
+
+  op choice : -> Module .
+  eq choice = upModule('CHOICE,true) .
 
   ops ct : Variable Variable Variable -> CTerm .
   eq ct(X,Y,Z) = ('`{_`}['__[X,Y]] | '_=C_[X,Z] ?= 'tt.Pred) .
@@ -48,5 +52,23 @@ red consistentParams(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('
 
 --- test divide/gather equivalence
 red gather(divide(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat))) == (ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat)) .
+
+--- test the reachform module conversion
+red wellFormed(rf-func(upModule('CHOICE,true))) == true .
+
+red rf-func(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat) | ct('Q:Nat,'W:Nat,'W:Nat)) .
+
+--- test the reachform term converion
+red wellFormed(rf-func(upModule('CHOICE,true)),rf-func(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat))) == true .
+red wellFormed(rf-func(upModule('CHOICE,true)),rf-func(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat) | ct('Q:Nat,'W:Nat,'W:Nat))) == true .
+
+red wellFormed(rf-func(upModule('CHOICE,true)),rf-func-ext(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat))) == true .
+red wellFormed(rf-func(upModule('CHOICE,true)),rf-func-ext(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat) | ct('Q:Nat,'W:Nat,'W:Nat))) == true .
+
+--- test reachform matching (without extension)
+red matches(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat),ct('W:Nat,'Y:Nat,'Q:Nat) => ct('U:Nat,'Y:Nat,'Q:Nat)) .
+
+--- test reachform matching (with extension)
+red matches(upModule('CHOICE,true),ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat),ct('W:Nat,'Y:Nat,'Q:Nat) => ct('U:Nat,'Y:Nat,'Q:Nat) | ct('U:Nat,'F:Nat,'R:Nat)) .
 
 quit

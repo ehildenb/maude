@@ -638,3 +638,59 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION is
   eq full-goal-simplify(U,R & RS) = getrf(full-goal-simplify-impl((U,R))) & full-goal-simplify(U,RS) .
   eq full-goal-simplify(U,mt) = mt .
 endfm
+
+fmod TRANSITION-FUNCTOR is
+  pr CONSTRAINED-TERM-FUNCTOR .
+  pr TRANSITION .
+
+  var U : Module .
+  var N O S : Qid .
+  var CT CT' : QFCTerm .
+  var CTS : QFCTermSet .
+
+  op rf-func : Module -> Module [memo] .
+  eq rf-func(U) = rf-func(U,qid(opPrefix(U)),qid(sortPrefix(U))) .
+
+  op rf-func : Module Qid Qid -> Module .
+  eq rf-func(U,O,S) =
+    addSorts(join(S 'ReachForm) ; join(S 'CTermSet),
+      addSubsorts(subsort join(S 'CTerm) < join(S 'CTermSet) .,
+        addOps(op '=>     : join(S 'CTerm)    join(S 'CTermSet) -> join(S 'ReachForm) [none].
+               op '|      : join(S 'CTermSet) join(S 'CTermSet) -> join(S 'CTermSet)  [assoc comm id(join('noterm. S 'CTermSet))].
+               op 'noterm : nil                                 -> join(S 'CTermSet)  [none].,
+          cterm-func(U,O,S)))) .
+
+  --- OUT: A term that represents the given reachform
+  op rf-func : Module ReachForm -> Term .
+  eq rf-func(U,CT => CTS) = '=>[cterm-func(U,CT),ctermset-func(U,CTS)] .
+
+  op ctermset-func : Module QFCTermSet -> Term .
+  eq ctermset-func(U,noterm) = join('noterm. qid(sortPrefix(U)) 'CTermSet) .
+  eq ctermset-func(U,CT) = cterm-func(U,CT) .
+  eq ctermset-func(U,CT | CT' | CTS) = '|[ctermset-func2(U,CT | CT' | CTS)] .
+
+  op ctermset-func2 : Module QFCTermSet -> TermList .
+  eq ctermset-func2(U,CT | CTS) = cterm-func(U,CT),ctermset-func2(U,CTS) .
+  eq ctermset-func2(U,noterm) = empty .
+
+  --- OUT: A term that represents the given reachform where the LHS
+  ---      has a formula variable conjoined to it
+  op rf-func-ext : Module ReachForm -> Term .
+  eq rf-func-ext(U,CT => CTS) = '=>[cterm-func-ext(U,'X,CT),ctermset-func-ext(U,'X,CTS)] .
+
+  op ctermset-func-ext : Module Qid QFCTermSet -> Term .
+  eq ctermset-func-ext(U,N,noterm) = join('C: qid(sortPrefix(U)) 'CTermSet) .
+  eq ctermset-func-ext(U,N,CT | CTS) = '|[ctermset-func2(U,CT | CTS),join('C: qid(sortPrefix(U)) 'CTermSet)] .
+endfm
+
+fmod TRANSITION-MATCH is
+  pr TRANSITION-FUNCTOR .
+  pr CONSTRAINED-TERMSET-MATCH .
+
+  var U : Module . var R R' : ReachForm .
+
+  op matches : Module ReachForm ReachForm -> SubstitutionSet .
+  eq matches(U,R,R') = remove(matches(rf-func(U),rf-func-ext(U,R),rf-func(U,R')),
+                         form-variable(qid(sortPrefix(U))) <- tt-literal(qid(opPrefix(U))) ;
+                         join('C: qid(sortPrefix(U)) 'CTermSet) <- join('noterm. qid(sortPrefix(U)) 'CTermSet)) .
+endfm
