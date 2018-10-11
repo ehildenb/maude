@@ -11,6 +11,11 @@ fmod TEST-NAT is
   eq nat  = upModule('FVP-NAT-PRED,       true) .
 endfm
 
+red consistent?(nat, 'Bool, ('true.Bool != 'true.Bool) | ('true.Bool != 'false.Bool)) .
+red consistent?(nat, 'Bool, tt                         | ('true.Bool != 'false.Bool)) .
+red consistent?(nat, 'Bool, ff                         | ('true.Bool != 'false.Bool)) .
+red consistent?(nat, 'Bool, tt | ff                    | ('true.Bool != 'false.Bool)) .
+
 --- Satisfiability
 red var-sat(nat, upTerm(X <  Y) ?= 'true.Bool)    == true  .
 red var-sat(nat, upTerm(X <  Y) != 'true.Bool)    == true  .

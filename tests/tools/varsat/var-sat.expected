@@ -1,6 +1,24 @@
 ==========================================
+reduce in TEST-NAT : consistent?(nat, 'Bool, 'false.Bool != 'true.Bool |
+    'true.Bool != 'true.Bool) .
+rewrites: 46
+result Bool: true
+==========================================
+reduce in TEST-NAT : consistent?(nat, 'Bool, tt | 'false.Bool != 'true.Bool) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in TEST-NAT : consistent?(nat, 'Bool, ff | 'false.Bool != 'true.Bool) .
+rewrites: 19
+result Bool: true
+==========================================
+reduce in TEST-NAT : consistent?(nat, 'Bool, tt | ff | 'false.Bool !=
+    'true.Bool) .
+rewrites: 3
+result Bool: true
+==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y)) == true .
-rewrites: 2197
+rewrites: 2182
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool != upTerm(X < Y)) == true .
