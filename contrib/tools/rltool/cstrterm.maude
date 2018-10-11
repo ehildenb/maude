@@ -149,7 +149,8 @@ fmod CONSTRAINED-TERM-OPERATIONS is
   op vars       : CTerm? -> QidSet .
   op termVars   : CTerm? -> QidSet .
   op formVars   : CTerm? -> QidSet .
-  var M : Module . var T : Term . var Y : Type . var F : FOForm? .
+  op setCond    : CTerm? FOForm? -> CTerm? .
+  var M : Module . var T : Term . var Y : Type . var F F' : FOForm? .
   eq wellFormed(M,(T | F))   = wellFormed(M,T) == true and-then wellFormed(M,F) == true .
   eq wellFormed(M,noterm)    = true .
   eq wellFormed(M,Y,(T | F)) = wellFormed(M,(T | F)) == true and-then sameKind(M,Y,leastSort(M,T)) .
@@ -162,6 +163,8 @@ fmod CONSTRAINED-TERM-OPERATIONS is
   eq termVars(noterm)        = none .
   eq formVars((T | F))       = vars(F) .
   eq formVars(noterm)        = none .
+  eq setCond((T | F),F')     = (T | F') .
+  eq setCond(noterm,F')      = noterm .
 endfm
 
 --- legacy names: vars, head-vars
@@ -169,28 +172,54 @@ fmod CONSTRAINED-TERMSET-OPERATIONS is
   pr CONSTRAINED-TERM-OPERATIONS .
   pr CONSTRAINED-TERMSET .
   pr CONSTRAINED-TERM-NNF . --- needed for nnf conversion
+
+  var M : Module . var CT CT' : CTerm . var CTS CTS' : CTermSet . var Y : Type .
+  var T : Term . var F : FOForm . var QS : QidSet .
+
+  --- OUT: true iff this constrained term set is wellformed
   op wellFormed : Module CTermSet -> Bool .
   op wellFormed : Module Type CTermSet -> Bool .
-  op normalize  : Module CTermSet -> CTermSet .
-  op vars       : CTermSet -> QidSet .
-  op termVars   : CTermSet -> QidSet .
-  op formVars   : CTermSet -> QidSet .
-  op sharedVars : CTerm CTermSet -> QidSet .
-  op negateCond : CTermSet -> CTermSet .
-  op toNNF      : CTermSet -> CTermSet .
-  var M : Module . var CT CT' : CTerm . var CTS : CTermSet . var Y : Type .
-  var T : Term . var F : FOForm .
   eq wellFormed(M,CT | CT' | CTS)   = wellFormed(M,CT) and-then wellFormed(M,CT' | CTS) .
   eq wellFormed(M,Y,CT | CT' | CTS) = wellFormed(M,Y,CT) and-then wellFormed(M,Y,CT' | CTS) .
-  eq normalize(M,CT | CT' | CTS)    = normalize(M,CT) | normalize(M,CT' | CTS) .
-  eq vars      (CT | CT' | CTS)     =     vars(CT) ;     vars(CT' | CTS) .
-  eq termVars  (CT | CT' | CTS)     = termVars(CT) ; termVars(CT' | CTS) .
-  eq formVars  (CT | CT' | CTS)     = formVars(CT) ; formVars(CT' | CTS) .
-  eq sharedVars(CT,CTS)             = intersection(vars(CT),vars(CTS)) .
-  eq negateCond(CT | CT' | CTS)     = negateCond(CT) | negateCond(CT' | CTS) .
-  eq negateCond(noterm)             = noterm .
-  eq negateCond((T | F))            = (T | ~ F) .
-  eq toNNF     (CT | CT' | CTS)     = toNNF(CT) | toNNF(CT' | CTS) .
+
+  --- OUT: a meta-normalized constrained term set
+  op normalize : Module CTermSet -> CTermSet .
+  eq normalize(M,CT | CT' | CTS) = normalize(M,CT) | normalize(M,CT' | CTS) .
+
+  --- OUT: constraint negation/normalization
+  op negateCond : CTermSet -> CTermSet .
+  eq negateCond(CT | CT' | CTS) = negateCond(CT) | negateCond(CT' | CTS) .
+  eq negateCond(noterm)         = noterm .
+  eq negateCond((T | F))        = (T | ~ F) .
+
+  --- OUT: apply NNF transformation to constraint
+  op toNNF : CTermSet -> CTermSet .
+  eq toNNF(CT | CT' | CTS) = toNNF(CT) | toNNF(CT' | CTS) .
+
+  --- OUT: variables in each constrained term in set
+  op vars : CTermSet -> QidSet .
+  eq vars(CT | CT' | CTS) =  vars(CT) ; vars(CT' | CTS) .
+
+  --- OUT: variables in term part of each constrained term in set
+  op termVars : CTermSet -> QidSet .
+  eq termVars(CT | CT' | CTS) = termVars(CT) ; termVars(CT' | CTS) .
+
+  --- OUT: variables in constraint part of each constrained term in set
+  op formVars : CTermSet -> QidSet .
+  eq formVars(CT | CT' | CTS) = formVars(CT) ; formVars(CT' | CTS) .
+
+  --- OUT: shared variables in each constrained term of a constrained term set
+  op sharedVars : CTermSet -> QidSet .
+  eq sharedVars(CT | CTS)    = sharedVars(vars(CT),CTS) .
+  eq sharedVars(noterm)      = none .
+
+  op sharedVars : QidSet CTermSet -> QidSet .
+  eq sharedVars(QS,CT | CTS) = sharedVars(intersection(QS,vars(CT)),CTS) .
+  eq sharedVars(QS,noterm)   = QS .
+
+  --- OUT: shared variables of two constrained term sets
+  op sharedVars : CTermSet CTermSet -> QidSet .
+  eq sharedVars(CTS,CTS') = intersection(vars(CTS),vars(CTS')) .
 endfm
 
 fmod CONSTRAINED-TERM-SUBSTITUTION is

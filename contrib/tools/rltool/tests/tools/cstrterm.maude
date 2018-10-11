@@ -1,35 +1,56 @@
+load ../../systems/choice.maude
 load ../../rltool.maude
-
-fmod CHOICE-DATA is
-  sorts Nat MSet State Pred .
-  subsorts Nat < MSet .
-  op zero : -> Nat [ctor] .
-  op s    : Nat -> Nat [ctor] .
-  op __   : MSet MSet -> MSet [ctor assoc comm] .
-  op {_}  : MSet -> State [ctor] .
-  op tt   : -> Pred [ctor] .
-  op _=C_ : MSet MSet -> Pred [ctor] .
-  vars U V : MSet . var N : Nat .
-  eq U =C U = tt .
-  eq U =C U V = tt .
-endfm
-
-mod CHOICE is pr CHOICE-DATA .
-  vars U V : MSet .
-  rl [choice] : {U V} => {U} .
-endm
 
 mod RLTOOL-TEST is
   pr RLTOOL .
+
+  var X Y Z : Variable .
+
+  ops ct : Variable Variable Variable -> CTerm .
+  eq ct(X,Y,Z) = ('`{_`}['__[X,Y]] | '_=C_[X,Z] ?= 'tt.Pred) .
 endm
 
 set show timing off .
 set show stats off .
+set show advisories off .
 
 print reveal _;_ __ _,_ _&_ .
 
---- check that NNF over constrained terms evaluates properly
-red toNNF(('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_['1.Nat*,'B:NeQueue]]] |
-            ~ ('true.Pred ?= 'dupl['__['V:Soup,'U:Soup]] /\ 'true.Pred != 'dupl['U:Soup]))) .
+red ct('X:Nat,'Y:Nat,'Z:Nat) :: CTerm .
+
+--- check term above is well-formeed in module
+red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Nat,'Z:Nat)) == true .
+
+--- check that this term is ill-formed
+red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Foo,'Z:Nat)) == false .
+
+--- check condition replacement/conjoining/negation/NNF works
+red setCond(ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
+red conj(ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
+red negateCond(conj(ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred)) .
+red toNNF(negateCond(conj(ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred))) .
+
+--- check that variable extraction works (also for sets)
+red vars(noterm) .
+red termVars(noterm) .
+red formVars(noterm) .
+
+red vars(ct('X:Nat,'Y:Nat,'Z:Nat)) .
+red termVars(ct('X:Nat,'Y:Nat,'Z:Nat)) .
+red formVars(ct('X:Nat,'Y:Nat,'Z:Nat)) .
+
+red vars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Q:Nat)) .
+red termVars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Q:Nat)) .
+red formVars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Q:Nat)) .
+
+--- check shared variable definitions (no shared vars)
+red sharedVars(noterm) .
+red sharedVars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Q:Nat)) .
+
+--- check shared variables definitions (with shared vars)
+red sharedVars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Y:Nat)) .
+
+--- check shared variables BETWEEN two term sets
+red sharedVars(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('N:Nat,'V:Nat,'Y:Nat),ct('W:Nat,'Y:Nat,'Q:Nat) | ct('X:Nat,'V:Nat,'Y:Nat))  .
 
 quit
