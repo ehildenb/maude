@@ -1,0 +1,64 @@
+
+	    Maude Reachability Logic Prover v0.2.9 -- Sep. 21st 2018
+
+==========================================
+reduce in RLTOOL-TEST : ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat,
+    'Z:Nat) :: ReachForm .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Nat, 'Z:Nat)
+    => ct('X:Nat, 'Y:Nat, 'Z:Nat)) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Nat, 'Z:Nat)
+    => ct('X:Nat, 'Y:Foo, 'Z:Nat)) == false .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : set-rhs-cond(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat,
+    'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]) .
+result QFCRule: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat])
+    => ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat])
+==========================================
+reduce in RLTOOL-TEST : conj-antc(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat,
+    'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]) .
+result QFCRule: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]
+    /\ 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat]) => ('`{_`}['__['X:Nat,'Y:Nat]] |
+    'tt.Pred ?= '_=C_['X:Nat,'Z:Nat])
+==========================================
+reduce in RLTOOL-TEST : vars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat, 'Y:Nat,
+    'Z:Nat)) .
+result NeVariableSet: 'U:Nat ; 'X:Nat ; 'Y:Nat ; 'Z:Nat
+==========================================
+reduce in RLTOOL-TEST : sharedVars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat,
+    'Y:Nat, 'Z:Nat)) .
+result NeVariableSet: 'Y:Nat ; 'Z:Nat
+==========================================
+reduce in RLTOOL-TEST : noDanglingVars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat,
+    'Y:Nat, 'Z:Nat)) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : noDanglingVars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('Q:Nat,
+    'W:Nat, 'W:Nat) | ct('U:Nat, 'Y:Nat, 'Z:Nat)) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : noDanglingVars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat,
+    'Y:Nat, 'W:Nat)) == false .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : noDanglingVars(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('U:Nat,
+    'Y:Nat, 'W:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) == false .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : consistentParams(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct(
+    'X:Nat, 'Y:Nat, 'W:Nat)) == true .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : consistentParams(ct('X:Nat, 'W:Nat, 'Z:Nat) | ct(
+    'X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat, 'W:Nat)) == false .
+result Bool: true
+==========================================
+reduce in RLTOOL-TEST : gather(divide(ct('X:Nat, 'W:Nat, 'Z:Nat) | ct('X:Nat,
+    'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat, 'W:Nat))) == (ct('X:Nat, 'W:Nat,
+    'Z:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat, 'Y:Nat, 'W:Nat)) .
+result Bool: true
+Bye.

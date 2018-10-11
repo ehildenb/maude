@@ -13,6 +13,9 @@ diff proofrules.out proofrules.expected
 echo "cstrterm"
 maude -no-banner cstrterm.maude &> cstrterm.out
 diff cstrterm.out cstrterm.expected
+echo "reachform"
+maude -no-banner reachform.maude &> reachform.out
+diff reachform.out reachform.expected
 echo "foform"
 maude -no-banner "foform.maude" &> "foform.out"
 diff "foform.out" "foform.expected"

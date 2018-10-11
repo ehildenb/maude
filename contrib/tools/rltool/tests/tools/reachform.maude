@@ -1,0 +1,52 @@
+load ../../systems/choice.maude
+load ../../rltool.maude
+
+mod RLTOOL-TEST is
+  pr RLTOOL .
+
+  var X Y Z : Variable .
+
+  ops ct : Variable Variable Variable -> CTerm .
+  eq ct(X,Y,Z) = ('`{_`}['__[X,Y]] | '_=C_[X,Z] ?= 'tt.Pred) .
+endm
+
+set show timing off .
+set show stats off .
+set show advisories off .
+
+red ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat) :: ReachForm .
+
+--- check term above is well-formeed in module
+red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat)) == true .
+
+--- check that this term is ill-formed
+red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Foo,'Z:Nat)) == false .
+
+--- check condition replacement/conjoining/negation/NNF works
+red set-rhs-cond(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
+red conj-antc(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
+
+--- get all variables
+red vars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat)) .
+
+--- get shared variables BETWEEN two term sets
+red sharedVars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat)) .
+
+--- NO dangling variables (in the second example, W is covered by RHS term)
+red noDanglingVars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat)) == true .
+red noDanglingVars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'Z:Nat) | ct('Q:Nat,'W:Nat,'W:Nat)) == true .
+
+--- HAS dangling variable W
+red noDanglingVars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'W:Nat)) == false .
+red noDanglingVars(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('U:Nat,'Y:Nat,'W:Nat) | ct('X:Nat,'Y:Nat,'Z:Nat)) == false .
+
+--- YES parameter consistency
+red consistentParams(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat)) == true .
+
+--- NO parameter consistency (one LHS has params X,Y --- other LHS has params X,W)
+red consistentParams(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat)) == false .
+
+--- test divide/gather equivalence
+red gather(divide(ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat))) == (ct('X:Nat,'Y:Nat,'Z:Nat) | ct('X:Nat,'W:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'W:Nat)) .
+
+quit

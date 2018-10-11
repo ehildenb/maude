@@ -73,71 +73,132 @@ fmod TRANSITIONSET-PROJECTIONS is pr TRANSITION-PROJECTIONS . pr TRANSITIONSET .
 endfm
 
 fmod TRANSITION-OPERATIONS is pr TRANSITION-PROJECTIONS . pr CONSTRAINED-TERMSET-OPERATIONS . pr CONSTRAINED-TERMSETPAIR .
-  op wellFormed   : Module ReachFormEx -> Bool .
-  op wellFormed   : Module Type ReachFormEx -> Bool .
-  op normalize    : Module ReachFormEx -> ReachFormEx .
-  op safeVars     : ReachFormEx -> Bool .
-  op safeVars     : QidSet CTermSet -> Bool .
-  op conj-antc    : ReachForm QFForm? -> ReachForm .
-  op reach-form   : QFCTermSetPair -> ReachFormEx .
-  op ctermsetpair : ReachFormEx -> QFCTermSetPair .
-  op vars         : ReachFormEx -> QidSet .
-  var M : Module . var Y : Type . var R : ReachForm . var VS : QidSet .
+
+  var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : QidSet .
   var T : Term . var C C' : QFForm . var CT : QFCTerm . var CTS CTS' : QFCTermSet .
-  eq wellFormed(M,R)              = wellFormed(M,antc(R)) and-then wellFormed(M,succ(R)) .
-  eq wellFormed(M,Y,R)            = wellFormed(M,Y,antc(R)) and-then wellFormed(M,Y,succ(R)) .
-  eq normalize(M,CTS => CTS')     = normalize(M,CTS) => normalize(M,CTS') .
-  eq safeVars(R)                  = safeVars(vars(antc(R)),succ(R)) .
-  eq safeVars(VS,CT | CTS)        = formVars(CT) subset (termVars(CT) ; VS) and-then safeVars(VS,CTS) .
-  eq safeVars(VS,noterm)          = true .
+
+  --- OUT: true iff this reachform is well-formed
+  op wellFormed : Module ReachFormEx -> Bool .
+  op wellFormed : Module Type ReachFormEx -> Bool .
+  eq wellFormed(M,R) = wellFormed(M,antc(R)) and-then wellFormed(M,succ(R)) .
+  eq wellFormed(M,Y,R) = wellFormed(M,Y,antc(R)) and-then wellFormed(M,Y,succ(R)) .
+
+  --- OUT: apply meta-normalization to this reachform
+  op normalize : Module ReachFormEx -> ReachFormEx .
+  eq normalize(M,CTS => CTS') = normalize(M,CTS) => normalize(M,CTS') .
+
+  --- OUT: conjoin a formula to the reachform precondition
+  op conj-antc : ReachForm QFForm? -> ReachForm .
   eq conj-antc((T | C) => CTS,C') = (T | (C /\ C')) => CTS .
-  eq reach-form((CTS,CTS'))       = CTS => CTS' .
-  eq ctermsetpair(CTS => CTS')    = (CTS,CTS') .
-  --- ### New
-  eq vars(CTS => CTS')            = vars(CTS | CTS') .
+
+  --- OUT: map ReachFormEx to QFCTermSetPair and back
+  op reach-form : QFCTermSetPair -> ReachFormEx .
+  eq reach-form((CTS,CTS')) = CTS => CTS' .
+  op ctermsetpair : ReachFormEx -> QFCTermSetPair .
+  eq ctermsetpair(CTS => CTS') = (CTS,CTS') .
+
+  --- OUT: return true iff this formula has no dangling variables
+  ---      AND a consistent set of parameters
+  op safeVars : ReachFormEx -> Bool .
+  eq safeVars(RX) = noDanglingVars(RX) and-then consistentParams(RX) .
+
+  --- OUT: return true iff this formula has no dangling variables, i.e.
+  ---      a variable in a LHS successor constriant that does not occur in
+  ---      either the LHS successor's term or *each* RHS
+  op noDanglingVars : ReachFormEx -> Bool .
+  op noDanglingVars : QidSet CTermSet -> Bool .
+  eq noDanglingVars(CTS => CTS') = noDanglingVars(sharedVars(CTS),CTS') .
+  eq noDanglingVars(VS,CT | CTS) = formVars(CT) subset (termVars(CT) ; VS) and-then noDanglingVars(VS,CTS) .
+  eq noDanglingVars(VS,noterm) = true .
+
+  --- OUT: return true iff this formula has consistent parameters, i.e.
+  ---      each LHS precondition shares the same variables with the union of
+  ---      the variables in each RHS midcondition
+  op consistentParams : ReachFormEx -> Bool .
+  eq consistentParams(CT | CTS => CTS') = consistentParams(vars(CTS'),sharedVars(CT,CTS'),CTS) .
+  eq consistentParams(noterm => CTS') = true .
+
+  op consistentParams : QidSet QidSet QFCTermSet -> Bool .
+  eq consistentParams(VS,VS',CT | CTS) =
+    intersection(vars(CT),VS) == VS' and-then consistentParams(VS,VS',CTS) .
+  eq consistentParams(VS,VS',noterm) = true .
+
+  --- OUT: return all variables that occur in this reachform
+  op vars : ReachFormEx -> QidSet .
+  eq vars(CTS => CTS') = vars(CTS | CTS') .
+
+  --- OUT: return variables shared between LHS and RHS
+  op sharedVars : ReachForm -> QidSet .
+  eq sharedVars(CT => CTS') = sharedVars(CT,CTS') .
+
+  --- OUT: set constraint for a reachform on the RHS
+  op set-rhs-cond : ReachForm QFForm -> ReachForm .
+  eq set-rhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
 endfm
 
 fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
-  op wellFormed   : Module ReachFormExSet -> Bool .
-  op wellFormed   : Module Type ReachFormExSet -> Bool .
-  op normalize    : Module ReachFormExSet -> ReachFormExSet .
-  op illFormedSet : Module ReachFormExSet -> ReachFormExSet .
-  op unsafeVarSet : ReachFormExSet -> ReachFormExSet .
-  op size         : ReachFormExSet -> Nat .
+
   var M : Module . var F F' : ReachFormEx . var FS : ReachFormExSet . var Y : Type .
-  eq wellFormed(M,F & F' & FS)   = wellFormed(M,F) and-then wellFormed(M,F' & FS) .
-  eq wellFormed(M,mt)            = true .
+
+  --- OUT: true iff ReachFormExSet is well-formed
+  op wellFormed : Module ReachFormExSet -> Bool .
+  eq wellFormed(M,F & F' & FS) = wellFormed(M,F) and-then wellFormed(M,F' & FS) .
+  eq wellFormed(M,mt) = true .
+
+  op wellFormed : Module Type ReachFormExSet -> Bool .
   eq wellFormed(M,Y,F & F' & FS) = wellFormed(M,Y,F) and-then wellFormed(M,Y,F' & FS) .
-  eq wellFormed(M,Y,mt)          = true .
-  eq normalize(M,F & F' & FS)    = normalize(M,F) & normalize(M,F' & FS) .
-  eq normalize(M,mt)             = mt .
-  eq illFormedSet(M,F & FS)      = if not wellFormed(M,F) then F else mt fi & illFormedSet(M,FS) .
-  eq illFormedSet(M,mt)          = mt .
-  eq unsafeVarSet(F & FS)        = if not safeVars(F) then F else mt fi & unsafeVarSet(FS) .
-  eq unsafeVarSet(mt)            = mt .
-  eq size(F & FS)                = s(size(FS)) .
-  eq size(mt)                    = 0 .
+  eq wellFormed(M,Y,mt) = true .
+
+  --- OUT: meta normalize a ReachFormExSet
+  op normalize : Module ReachFormExSet -> ReachFormExSet .
+  eq normalize(M,F & F' & FS) = normalize(M,F) & normalize(M,F' & FS) .
+  eq normalize(M,mt) = mt .
+
+  --- OUT: return a set of ill-formed reachforms
+  op illFormedSet : Module ReachFormExSet -> ReachFormExSet .
+  eq illFormedSet(M,F & FS) = if not wellFormed(M,F) then F else mt fi & illFormedSet(M,FS) .
+  eq illFormedSet(M,mt) = mt .
+
+  --- OUT: return a set of reachforms with unsafe variables
+  op unsafeVarSet : ReachFormExSet -> ReachFormExSet .
+  eq unsafeVarSet(F & FS) = if not safeVars(F) then F else mt fi & unsafeVarSet(FS) .
+  eq unsafeVarSet(mt) = mt .
+
+  --- OUT: compute the size of a reach formula set
+  op size : ReachFormExSet -> Nat .
+  eq size(F & FS) = s(size(FS)) .
+  eq size(mt) = 0 .
 endfm
 
 fmod TRANSITION-CONVERSIONS is pr TRANSITIONSET . pr TRANSITIONLIST .
-  op divide : ReachFormEx -> ReachFormSet .
-  op tolist : ReachFormExSet -> ReachFormExList .
-  op toset  : ReachFormExList -> ReachFormExSet .
-  op pick   : ReachFormExList Nat -> ReachFormExList .
-  var CT : QFCTerm     . var CTS CTS' : QFCTermSet . var N : Nat .
+
+  var CT CT' : QFCTerm     . var CTS CTS' : QFCTermSet . var N : Nat .
   var F  : ReachFormEx . var FS : ReachFormExSet   . var FL : ReachFormExList .
-  --- ReachFormEx to ReachFormSet
+
+  --- OUT: converts a ReachFormEx into a ReachFormSet
+  op divide : ReachFormEx -> ReachFormSet .
   eq divide(CT | CTS => CTS') = CT => CTS' & divide(CTS => CTS') .
   eq divide(noterm   => CTS') = mt .
-  --- ReachFormExSet to ReachFormExList and vice versa
-  eq tolist(F & FS)    = F ; tolist(FS) .
-  eq tolist(mt)        = nil .
-  eq toset(F ; FL)     = F & toset(FL) .
-  eq toset(nil)        = mt .
-  --- Pick an element from the list
+
+  --- OUT: inverse of divide
+  op gather : ReachFormSet ~> ReachFormEx .
+  eq gather(CT => CTS' & CTS => CTS' & FS) = gather(CT | CTS => CTS' & FS) .
+  eq gather(CTS => CTS') = CTS => CTS' .
+
+  --- OUT: ReachFormExSet to ReachFormExList and vice versa
+  op tolist : ReachFormExSet -> ReachFormExList .
+  eq tolist(F & FS) = F ; tolist(FS) .
+  eq tolist(mt) = nil .
+
+  op toset  : ReachFormExList -> ReachFormExSet .
+  eq toset(F ; FL) = F & toset(FL) .
+  eq toset(nil) = mt .
+
+  --- OUT: Pick an element from the list
+  op pick   : ReachFormExList Nat -> ReachFormExList .
   eq pick(F ; FL,s(N)) = pick(FL,N) .
-  eq pick(F ; FL,0)    = F .
-  eq pick(nil,N)       = nil .
+  eq pick(F ; FL,0) = F .
+  eq pick(nil,N) = nil .
 endfm
 
 fmod TRANSITION-SUBSTITUTION is pr CONSTRAINED-TEMRSET-SUBSTITUTION . pr TRANSITION-PROJECTIONS .
