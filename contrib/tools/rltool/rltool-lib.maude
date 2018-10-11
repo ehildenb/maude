@@ -179,6 +179,7 @@ fmod META-RLTL-COMMAND is
    op split_by_.             : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
    op replace_by_.           : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
    op split_by_and_.         : Nat @QFForm@ @QFForm@ -> MetaRLTLCommand [ctor] .
+   op subsume_by_.           : Nat Nat -> MetaRLTLCommand [ctor] .
    op select-rls_.           : @NeTokenList@ -> MetaRLTLCommand [ctor] .
    op select_.               : @Token@ -> MetaRLTLCommand [ctor] .
    op continue`.             : -> MetaRLTLCommand [ctor] .
@@ -205,6 +206,7 @@ fmod RLTL-COMMAND is
    op step              : Bound -> RLTLCommand [ctor] .
    op case              : Nat Variable TermSet -> RLTLCommand  [ctor] .
    op split             : Nat Bool EqQFForm? QFForm? -> RLTLCommand [ctor] .
+   op subsumeby         : Nat Nat -> RLTLCommand [ctor] .
    op select-rls        : QidList -> RLTLCommand [ctor] .
    op select            : Module Qid -> RLTLCommand [ctor] .
    op continue          : -> RLTLCommand [ctor] .
@@ -260,6 +262,7 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'quit`..MetaRLTLCommand)         = quit .
    eq rltl-parse((M,S),'set`echo`on`..MetaRLTLCommand)  = set-echo(true) .
    eq rltl-parse((M,S),'set`echo`off`..MetaRLTLCommand) = set-echo(false) .
+   eq rltl-parse((M,S),'subsume_by_.[T1,T2])            = subsumeby(downNat(T1),downNat(T2)) .
    eq rltl-parse((M,S),'subsumed_=<_.[T1,T2])           = subsumed(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
    eq rltl-parse((M,S),'intersect_=_.[T1,T2])           = intersect(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
    eq rltl-parse((M,S),'debug`command_on_.[T1,T2])      = debug(parse-token(T1),downNat(T2)) .
@@ -413,6 +416,7 @@ fmod RLTL-PROC-CMD is
   pr RLTL-ACTION .                  --- tool actions
   pr RLTL-COMMAND .                 --- tool commands
   pr PRINT-COMMAND .                --- debug printing stuff
+  pr TRANSITION-MATCH .             --- ReachForm matches() command
 
   op proc    : RLTLCommand ProofMetadata                            -> RLTLAction .
   op step    : ProofMetadata                                        -> RLTLAction .
@@ -425,7 +429,7 @@ fmod RLTL-PROC-CMD is
   op $addgls : Module LabelReachFormList Nat                        -> ProofGoalSet .
   op $renrf  : Module ReachForm                                     ~> ReachForm .
 
-  var BD : Bound . var NS : Set{Nat} . var N : Nat . var B : Bool .
+  var BD : Bound . var NS : Set{Nat} . var N M : Nat . var B : Bool .
   var T : Term . var TS : TermSet .
   var ID Q Q' : Qid . var QS : QidSet . var L : QidList . var V  : Variable . var QK : [Qid] .
   var U : Module . var US : ModuleList .
@@ -481,6 +485,15 @@ fmod RLTL-PROC-CMD is
                                 fi .
 
   --- commands to be typed ANYTIME
+  eq proc(subsumeby(N,M),R) = if getgl!(get-prf(R),(N,M)) :: ProofGoalSet
+                                then delgl(R,getgl!(R,N)) & if
+                                    matches(get-mod(R),getbody(getgl!(get-prf(R),M)),
+                                      getbody(getgl!(get-prf(R),N))) :: NeSubstitutionSet
+                                  then write('Goal printPar(N) 'subsumed 'by printPar(M) 'via 'matching '\n)
+                                  else write('Goal printPar(N) 'could 'not 'be 'automatically 'subsumed;
+                                             'for 'full 'verification '`, &sp 'please 'check 'the 'subsumption 'manually '\n)
+                                fi else write('Goals 'not 'found)
+                              fi .
   eq proc(use-strat(N,L),R) = if getgl!(get-prf(R),N) :: ProofGoalSet
                                 then if byName(toset(get-axs(R)),L) :: LabelReachFormList
                                   then prf(setgl!(get-prf(R),
