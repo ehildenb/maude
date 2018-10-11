@@ -27,6 +27,8 @@ set show stats off .
 set show timing off .
 set show loop stats off .
 set show loop timing off .
+set print conceal on .
+print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
 
 (select CHOICE .)
 (use tool varsat for validity on CHOICE-DATA .)
@@ -35,6 +37,18 @@ set show loop timing off .
 (inv test-invariant-1 to '`[_`] on ({M}) | true .)
 (inv test-invariant-2 to '`[_`] on ({N}) | true .)
 (start-proof .)
+--- these splits will succeed, since they do not change
+--- the sharing of any variable
+---set break on .
+break select split-action .
+(split 1 by (M&1:MSet) = (N) .)
+(replace 4 by (M&1:MSet) =/= (N':Nat) .)
+(split 5 by (N':Nat) = (N':Nat) and (M&1:MSet) = (N':Nat) .)
+--- these splits will fail due to to oversharing
+(split 2 by (M:MSet) = (N&2:Nat) .)
+(replace 3 by (M&2:MSet) =/= (N':Nat) .)
+(split 6 by (N':Nat) = (N':Nat) and (M&2:MSet) = (N':Nat) .)
+--- TOOD: add some splits that fail due to undersharing
 (step .)
 
 --- test command parser against other use tool variants

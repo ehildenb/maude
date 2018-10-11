@@ -14,28 +14,31 @@ Added goal(s):
 Started proof:
        [1     | {M&1:MSet} |  true  => [M&2:MSet] |  true]
        [2     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
-Warning: narrowing on goal [8     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
-    generated zero successors
-Notice: proof branch failed: [8     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
-       [inactive | none  | 1     | simplify  | {M&1:MSet} |  true  => [
+Split rule generated:
+       [3     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
+       [4     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] | 
+    true]
+Split rule generated:
+       [5     | {M&1:MSet} |  M&1:MSet =/= N':Nat  => [M&2:MSet] |  true]
+Split rule generated:
+       [6     | {M&1:MSet} |  M&1:MSet = N':Nat  => [M&2:MSet] |  true]
+       [7     | {M&1:MSet} |  N':Nat = N':Nat  => [M&2:MSet] |  true]
+Warning: split rule formulas have unsafe variable sharing
+Notice: proof branch failed: [2     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Split rule generated:
+        
+Warning: split rule formulas have unsafe variable sharing
+Notice: proof branch failed: [3     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true)
+    => [M&2:MSet] |  true]
+Split rule generated:
+        
+Warning: split rule formulas have unsafe variable sharing
+Notice: proof branch failed: [6     | {M&1:MSet} |  M&1:MSet = N':Nat  => [
     M&2:MSet] |  true]
-       [inactive | none  | 2     | simplify  | {N&1:Nat} |  true  => [N&2:Nat]
-    |  true]
-       [inactive | 1     | 3     | subsume   | {M&1:MSet} |  true  => [
-    M&2:MSet] |  true]
-       [inactive | 2     | 4     | subsume   | {N&1:Nat} |  true  => [N&2:Nat]
-    |  true]
-       [inactive | 3     | 5     | termcheck | {M&1:MSet} |  true  => [
-    M&2:MSet] |  true]
-       [inactive | 4     | 6     | termcheck | {N&1:Nat} |  true  => [N&2:Nat]
-    |  true]
-       [inactive | 5     | 7     | step      | {M&1:MSet} |  true  => [
-    M&2:MSet] |  true]
-       [inactive | 6     | 8     | step      | {N&1:Nat} |  true  => [N&2:Nat]
-    |  true]
-       [active   | 7     | 9     | simplify  | {&10:MSet} |  true  => [
-    M&11:MSet] |  true]
-CONTINUE> type (continue .) to continue
+Split rule generated:
+        
+Step Results:
+       [15    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
 Loaded function varsat for validty
 Loaded function varsat for validty
 Bye.

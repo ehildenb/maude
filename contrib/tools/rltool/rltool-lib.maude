@@ -177,6 +177,8 @@ fmod META-RLTL-COMMAND is
    op step`.                 : -> MetaRLTLCommand [ctor] .
    op case_on_by_.           : Nat @Token@ @TermSet@ -> MetaRLTLCommand [ctor] .
    op split_by_.             : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
+   op replace_by_.           : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
+   op split_by_and_.         : Nat @QFForm@ @QFForm@ -> MetaRLTLCommand [ctor] .
    op select-rls_.           : @NeTokenList@ -> MetaRLTLCommand [ctor] .
    op select_.               : @Token@ -> MetaRLTLCommand [ctor] .
    op continue`.             : -> MetaRLTLCommand [ctor] .
@@ -246,6 +248,8 @@ fmod PARSE-RLTLCOMMAND is
    --- run in ON mode
    eq rltl-parse((M,S),'case_on_by_.[T1,T2,T3])          = case(downNat(T1),parse-token(T2),parse-termset((M,S),true,T3)) .
    eq rltl-parse((M,S),'split_by_.[T1,T2])               = split(downNat(T1),true,parse-qfform((M,S),true,T2),toNNF(~ parse-qfform((M,S),true,T2))) .
+   eq rltl-parse((M,S),'replace_by_.[T1,T2])             = split(downNat(T1),false,parse-qfform((M,S),true,T2),ff) .
+   eq rltl-parse((M,S),'split_by_and_.[T1,T2,T3])        = split(downNat(T1),false,parse-qfform((M,S),true,T2),parse-qfform((M,S),true,T3)) .
    eq rltl-parse((M,S),'focus_.[T1])                     = focus(downNeNatSet(T1)) .
    eq rltl-parse((M,S),'list-goals`..MetaRLTLCommand)    = ls(true) .
    eq rltl-parse((M,S),'list-goal-ids`..MetaRLTLCommand) = ls(false) .
