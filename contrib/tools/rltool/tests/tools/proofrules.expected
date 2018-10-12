@@ -303,12 +303,16 @@ result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
 reduce in RLTOOL-TEST : termcheck-action(init-data(50, falsereg), rlmod,
     t-non-s(IS, JS, KS, NQ), [none,4,termcheck,active,t1(R, S, T, A) => t2(U,
     V, W, B)]) .
-result ProofUpdate: (out('Error: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
+result ProofUpdate: (out('Warning: 'goal ' '`[ '4 ' ' ' ' '| ' '< '`( '1 ':+ '1
     ':+ '1 'R:Soup '`) '| 'S:Soup '| 'T:Soup '| 'A:NeQueue '> ' '| ' 'true '=
     'dupl '`( 'S:Soup 'T:Soup '`) ' '=> ' '< 'U:Soup '| 'V:Soup '| '1 ':+ '1 '|
     '1 '@ 'B:NeQueue '> ' '| ' '`( 'true '=/= 'dupl '`( 'U:Soup '`) '/\ 'true
-    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'provably 'non-terminating!
-    '\n))
+    '= 'dupl '`( 'V:Soup 'U:Soup '`) '`) '`] ' 'may 'have 'terminated '\n) || [
+    4,0,termcheck,active,('<_>['_|_|_|_['_:+_['1.Nat*,'1.Nat*,'__['1.Nat*,
+    'R:Soup]],'S:Soup,'T:Soup,'A:NeQueue]] | 'true.Pred ?= 'dupl['__['S:Soup,
+    'T:Soup]]) => ('<_>['_|_|_|_['U:Soup,'V:Soup,'_:+_['1.Nat*,'1.Nat*],'_@_[
+    '1.Nat*,'B:NeQueue]]] | 'true.Pred ?= 'dupl['__['V:Soup,'U:Soup]] /\
+    'true.Pred != 'dupl['U:Soup])])
 ==========================================
 reduce in RLTOOL-TEST : simp-action(init-data(50, registry), rlmod, [none,4,
     simplify,active,t1(R, S, T, A) => t2(U, V, W, B)]) .
@@ -416,8 +420,7 @@ result ProofUpdate: (out('Warning: 'generating 'axiom '`[ 'a2 ': ' '< 'I:Soup
     '| ' 'true '`] 'successors 'for ' '`[ '4 ' ' ' ' '| ' '< 'W:Soup '| 'S:Soup
     '| 'K:Nat* '| 'K:Nat* '> ' '| ' '`( 'true '=/= 'dupl '`( 'W:Soup 'S:Soup
     'K:Nat* '`) '/\ 'true '`) ' '=> ' '`[ 'U:Soup '| 'V:Soup '| 'Z:Soup '|
-    'B:NeQueue '`] ' '| ' 'true '`] ' 'encountered 'an 'error 'Match
-    'unexpected 'shared 'variable '\n))
+    'B:NeQueue '`] ' '| ' 'true '`] ' 'encountered 'an 'error '\n))
 ==========================================
 reduce in RLTOOL-TEST : ax-action(init-data(50, emptyreg), rlmod, qlock-axs-2,
     [none,4,step,active,conj(t-non-s(R, S, K, K), 'true.Pred != 'dupl['__[

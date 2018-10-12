@@ -169,11 +169,13 @@ fmod REACH-PROOF-RULES-AUX is
   op termcheck-action : ProofMetadata Module QFCTermSet ProofGoal -> ProofUpdate .
   op termcheck-action : ProofMetadata Module Bool ProofGoal -> ProofUpdate .
   eq termcheck-action(D,U,TST,G) = termcheck-action(D,U,disjointOrSubsume(D,TST,getbody(G)),G) .
-  eq termcheck-action(D,U,true,G) = (none || copyGoalToChild(G)) .
-  eq termcheck-action(D,U,false,G) = (out('Error: 'goal &sp printGoals(U,G) &sp 'provably 'non-terminating! '\n)) .
-  eq termcheck-action(D,U,nobool,G) = (out('Warning: 'goal &sp printGoals(U,G) &sp 'may 'have 'terminated '\n) || copyGoalToChild(G)) .
+  eq termcheck-action(D,U,MB,G) =
+    if MB == true
+      then (none || copyGoalToChild(G))
+      else (out('Warning: 'goal &sp printGoals(U,G) &sp 'may 'have 'terminated '\n) || copyGoalToChild(G))
+    fi .
   eq [handle-error] :
-     termcheck-action(D,U,BK,G) = (out('Warning: 'termination 'check 'on &sp printGoals(U,G) &sp 'encountered 'an 'error boolErrMsg(BK) '\n)) .
+     termcheck-action(D,U,BK,G) = (out('Warning: 'termination 'check 'on &sp printGoals(U,G) &sp 'encountered 'an 'error boolErrMsg(BK) '\n)) [owise] .
 
   --- NOTE: we filter successfully generated step successors through
   ---       renaming + normalization and since A/C/U matching often
