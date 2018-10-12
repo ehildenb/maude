@@ -1,0 +1,20 @@
+load ../../systems/token.maude
+load ../../rltool.maude
+
+(select     2TOKEN-stop .)
+(use tool varsat for validity on 2TOKEN .)
+
+---(subsumed ({$ [a,wait] [b,wait]}) | true =< ({[a,crit] [b,wait]}) | true \/ ({[a,wait] [b,crit]}) | true \/ ({[a,wait] [b,wait] T:Token}) | true .)
+
+--- add goals with using invariant command
+(declare-vars (C:Conf) U (T:Token) .)
+(def-term-set ([C]) | true .)
+(inv mutex to '`[_`] on ({[a,crit] [b,wait]}) | true \/ ({[a,wait] [b,crit]}) | true \/ ({[a,wait] [b,wait] T}) | true .)
+(start-proof .)
+(on 1 use strat mutex#3 .)
+(on 2 use strat mutex#3 .)
+(on 3 use strat mutex#1 mutex#2 .)
+(step .)
+(step .)
+quit
+
