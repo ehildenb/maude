@@ -1,0 +1,11 @@
+load ../theories/numbers.maude
+
+mod COUNTER-EXAMPLE is pr FVP-NAT-PRED .
+  var N : Nat .
+
+  sort Counter .
+  op {_} : Nat -> Counter [ctor] .
+
+  rl [inc] : {N + 1} => {N + 1 + 1} .
+  rl [dec] : {N + 1} => {N} .
+endm

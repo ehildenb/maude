@@ -1,0 +1,22 @@
+load ../../systems/counter.maude
+load ../../rltool.maude
+
+set print conceal on .
+print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
+
+(select COUNTER-EXAMPLE .)
+(use tool varsat for validity on FVP-NAT-PRED .)
+(use tool varsat for unsatisfiability on FVP-NAT-PRED .)
+(def-term-set ({0}) | true .)
+(declare-vars (N:Nat) U (M:Nat) U (K:Nat) .)
+(add-goal counter-dec : ({N + 1}) | (M < N + 1) = (true) => ({M}) | true .)
+(start-proof .)
+(step .)
+(continue .)
+(subsume 14 by 13 .)
+(case 13 on &3:Nat by (0) U (K + 1) .)
+(replace 15 by (M&4:Nat) = (0) .)
+(split 16 by (M&4:Nat < K:Nat + 1) = (true) and (K:Nat + 1) = (M&4:Nat) .)
+(step .)
+(list-goals .)
+quit .

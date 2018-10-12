@@ -1,0 +1,17 @@
+load ../../systems/counter.maude
+load ../../rltool.maude
+
+(select COUNTER-EXAMPLE .)
+(use tool varsat for validity on FVP-NAT-PRED .)
+(use tool varsat for unsatisfiability on FVP-NAT-PRED .)
+(def-term-set ({0}) | true .)
+(declare-vars (N:Nat) .)
+--- NOTE: this goal is T-consistent because it's only
+---       intersection with the terminating state is
+---       clearly subsumed
+(add-goal weak-term : ({N}) | true => ({0}) | true .)
+(start-proof .)
+(step .)
+(subsume 14 by 13 .)
+(step .)
+quit .
