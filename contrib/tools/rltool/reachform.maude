@@ -354,11 +354,11 @@ fmod LABEL-TRANSITION-CONVERSIONS is
 
   --- ### New
   --- OUT: divides a LabelReachFormEx into a LabelLCCRuleSet
-  op divide : LabelReachFormEx -> LabelReachFormSet .
+  op divide : LabelReachFormEx -> LabelReachFormList .
   op divide : Nat LabelReachFormEx -> LabelReachFormSet .
   eq divide(T) = if T :: LabelReachForm then T else divide(1,T) fi .
-  eq divide(N,(Q : CT | CTS => CTS')) = (qid(string(Q) + "#" + string(N,10)) : CT => CTS') | divide(s(N),(Q : CTS => CTS')) .
-  eq divide(N,(Q : noterm   => CTS')) = empty .
+  eq divide(N,(Q : CT | CTS => CTS')) = (qid(string(Q) + "#" + string(N,10)) : CT => CTS') ; divide(s(N),(Q : CTS => CTS')) .
+  eq divide(N,(Q : noterm   => CTS')) = nil .
 
   op toset : LabelReachFormExList -> LabelReachFormExSet .
   eq toset(T ; TL) = T | toset(TL) .

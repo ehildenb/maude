@@ -425,7 +425,7 @@ fmod RLTL-PROC-CMD is
   op inv1    : ProofMetadata Qid QFCTermSet QidSet Qid              -> RLTLAction .
   op inv2    : ProofMetadata LabelReachFormEx                       -> RLTLAction .
   op decl1   : ProofMetadata Module QidSet                          -> RLTLAction .
-  op $padd   : ProofMetadata LabelReachFormEx Qid                   -> RLTLAction .
+  op $pall   : Module LabelReachFormExList                          -> QidList .
   op $addgls : Module ProofMetadata LabelReachFormList Bool         -> ProofMetadata .
   op $addgls : Module LabelReachFormList Nat                        -> ProofGoalSet .
   op $renrf  : Module ReachForm                                     ~> ReachForm .
@@ -436,23 +436,27 @@ fmod RLTL-PROC-CMD is
   var U : Module . var US : ModuleList .
   var QF QF' : QFForm? . var MF MF' : QFCTermSet .
   var F : ReachForm .
-  var LX : LabelReachFormEx . var LF : LabelReachForm . var LS : LabelReachFormList . var LK : [LabelReachFormEx] .
+  var LX : LabelReachFormEx . var LF LF' : LabelReachForm . var LS : LabelReachFormList . var LK : [LabelReachFormEx] .
   var G : ProofGoal . var GK : [ProofGoalSet] . var R : ProofMetadata .
 
   eq inv1(R,ID,MF,QS,Q) = inv2(R,(ID : wrap-term(get-mod(R),mk-inv(get-mod(R),QS,MF),Q))) .
   eq inv2(R,LX)         = proc(add-goal(LX,true),R) .
   eq inv2(R,LK)         = write('Internal 'Error: 'inv1) [owise] .
 
-  eq $addgls(U,R,LS,B)    = merge(R,lift-result(mt,R,if B then axs(LS) else none fi,$addgls(U,LS,0))) .
-  eq $addgls(U,LF ; LS,N) = mkGoals(none,N,default(LF),active,$renrf(U,trans(LF))) && $addgls(U,LS,s(N)) .
-  eq $addgls(U,nil,N)     = mt .
- ceq $renrf(U,F)          = downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm)
-                              if downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm) =/= mt .
-  eq $padd(R,LX,Q)        = write('Added Q '`( 's '`) ': '\n printSpaces(8) print(get-mod(R),divide(LX))) .
+  eq $addgls(U,R,LS,B)      = merge(R,lift-result(mt,R,if B then axs(LS) else none fi,$addgls(U,LS,0))) .
+  eq $addgls(U,LF ; LS,N)   = mkGoals(none,N,default(LF),active,$renrf(U,trans(LF))) && $addgls(U,LS,s(N)) .
+  eq $addgls(U,nil,N)       = mt .
+ ceq $renrf(U,F)            = downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm)
+                                if downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm) =/= mt .
+  eq $pall(U,LF)            = print(U,LF) .
+  eq $pall(U,LF ; LF' ; LS) = print(U,LF) '\n printSpaces(8) $pall(U,LF' ; LS) .
+  eq $pall(U,nil)           = &mt .
 
   --- commands to be typed BEFORE starting the proof
-  eq proc(add-goal(LX,B),    R) = $addgls(get-mod(R),R,divide(LX),B) & $padd(R,LX,'goal) .
-  eq proc(add-axiom(LX),     R) = update(merge(R,axs(tolist(divide(LX))))) ; $padd(R,LX,'axiom) .
+  eq proc(add-goal(LX,B),    R) = $addgls(get-mod(R),R,divide(LX),B) &
+                                    write('Added 'goal '`( 's '`) ': '\n printSpaces(8) $pall(get-mod(R),divide(LX))) .
+  eq proc(add-axiom(LX),     R) = merge(R,axs(tolist(divide(LX)))) &
+                                    write('Added 'axiom '`( 's '`) ': '\n printSpaces(8) $pall(get-mod(R),divide(LX))) .
   eq proc(inv(ID,Q,QS,MF),   R) = inv1(R,ID,MF,QS,Q) .
   eq proc(def-term-set(MF),  R) = merge(R,tst(MF)) & write('Added 'terminating 'state: '\n printSpaces(8) print(get-mod(R),MF)) .
   eq proc(select(U,Q),       R) = set(R,mod(U)) & write('Set 'module 'to Q) .
