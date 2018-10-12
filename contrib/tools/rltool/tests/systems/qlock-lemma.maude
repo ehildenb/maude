@@ -1,0 +1,30 @@
+load ../../systems/qlock.maude
+load ../../rltool.maude
+
+(select QLOCK .)
+(use tool varsat for validity on QLOCK-STATE .)
+(def-term-set ([C:Conf]) | true .)
+(declare-vars (I:Soup) U (I':Soup) U (W:Soup)  U (W':Soup)    U (N:Nat)   U (M:Nat) U
+              (N':Nat) U (M':Nat)  U (Q:Queue) U (Q':NeQueue) U (EQ:Queue)         .)
+(def-term-set ([C:Conf]) | true .)
+--- Prove Needed Lemma
+(add-goal mutex1 : (< I  | W  | mt | Q       >) | (dupl(I W)) =/= (true)                  =>
+                   ([ I' | W' | N' | M' @ Q' ]) | (N') = (M')                              \/
+                   ([ I' | W' | N' | M'      ]) | (N') = (M')                              \/
+                   ([ I' | W' | mt | EQ      ]) | true                                     .)
+(add-goal mutex2 : (< I  | W  | N  | M       >) | (dupl(I W N)) =/= (true) /\ (N) = (M)   =>
+                   ([ I' | W' | N' | M' @ Q' ]) | (N') = (M')                              \/
+                   ([ I' | W' | N' | M'      ]) | (N') = (M')                              \/
+                   ([ I' | W' | mt | EQ      ]) | true                                     .)
+(add-goal mutex3 : (< I  | W  | N  | M  @ Q  >) | ((dupl(I W N)) =/= (true) /\ (N) = (M)) =>
+                   ([ I' | W' | N' | M' @ Q' ]) | (N') = (M')                              \/
+                   ([ I' | W' | N' | M'      ]) | (N') = (M')                              \/
+                   ([ I' | W' | mt | EQ      ]) | true                                     .)
+(start-proof .)
+(on 1 use strat mutex1 mutex2 mutex3 .)
+(on 2 use strat mutex1 mutex2 mutex3 .)
+(on 3 use strat mutex1 mutex2 mutex3 .)
+(step .)
+(step .)
+(list-goals .)
+quit .

@@ -1,0 +1,29 @@
+load ../../systems/qlock.maude
+load ../../rltool.maude
+
+(select QLOCK .)
+(use tool varsat for validity on QLOCK-STATE .)
+(def-term-set ([C:Conf]) | true .)
+(declare-vars (I:Soup) U (I':Soup) U (W:Soup)  U (W':Soup)    U (N:Nat)   U (M:Nat) U
+              (N':Nat) U (M':Nat)  U (Q:Queue) U (Q':NeQueue) U (EQ:Queue)         .)
+---(
+(subsumed  (< I  | mt | mt | nil     >) | (dupl(I))       =/= (true)  =<
+           (< I' | W' | mt | EQ      >) | (dupl(I' W'))   =/= (true)  \/
+           (< I' | W' | N  | N       >) | (dupl(I' W' N)) =/= (true)  \/
+           (< I' | W' | N  | N @ Q'  >) | (dupl(I' W' N)) =/= (true)  .)
+---)
+--- Desired Property
+(add-goal mutex : (< I  | mt | mt | nil     >) | (dupl(I)) =/= (true) =>
+                  ([ I' | W' | N' | M' @ Q' ]) | (N') = (M')          \/
+                  ([ I' | W' | N' | M'      ]) | (N') = (M')          \/
+                  ([ I' | W' | mt | Q'      ]) | true                 .)
+--- Needed Lemma
+(add-axiom generalized-mutex : (< I  | W  | mt | Q       >) | (dupl(I W)) =/= (true) =>
+                               ([ I' | W' | N' | M' @ Q' ]) | (N') = (M')            \/
+                               ([ I' | W' | N' | M'      ]) | (N') = (M')            \/
+                               ([ I' | W' | mt | Q'      ]) | true                   .)
+(start-proof .)
+(on 1 use strat generalized-mutex .)
+(step .)
+(step .)
+quit .
