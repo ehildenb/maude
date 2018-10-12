@@ -443,26 +443,23 @@ fmod REACH-PROOF-STATE-PRINTER is
   var RF : ReachFormEx .
   var SN : Set{Nat} .
   var PRF : Proof .
+  var RK : [ReachFormEx] .
   var DK : [ProofMetadata] .
   var GK : [ProofGoal] .
   var MK : [Module] .
 
+  --- OUT: print out the a Parent data structure
   op printPar : Parent -> QidList .
   eq printPar(none) = 'none .
   eq printPar(N) = qid(string(N,10)) .
 
-  op printGoals : Module ProofGoalSet ~> QidList .
-  eq printGoals(M,G && NGS) = printGoals(M,G) '\n printSpaces(8) printGoals(M,NGS) .
-  eq printGoals(M,G) = '`[ printPad(printPar(getid(G)),5)
-                       '| &sp print(M,getbody(G)) '`] .
-  eq printGoals(M,(mt).ProofGoalSet) = &mt .
-  eq printGoals(MK:[Module],GK:[ProofGoal]) = 'Internal 'Error: 'printGoals [owise] .
-
+  --- OUT: print out the status of this goal
   op printStatus : ProofGoalStatus -> Qid .
   eq printStatus(active)   = 'active .
   eq printStatus(paused)   = 'paused .
   eq printStatus(inactive) = 'inactive .
 
+  --- OUT: print out the next action that this goal will take
   op printNext : ProofRuleAction -> Qid .
   eq printNext(subsume) = 'subsume .
   eq printNext(simplify) = 'simplify .
@@ -478,28 +475,48 @@ fmod REACH-PROOF-STATE-PRINTER is
     if PS:ProofStrat :: ProofRuleAction then 'Error: 'printnext 'ProofRuleAction
                                         else 'Error: 'printnext 'ProofStrat fi .
 
+  --- OUT: given the parent formula and the child, print out the differences
+  ---      between the two
+  op printDifferences : Module ReachFormEx ReachFormEx ~> QidList .
+  eq printDifferences(M,RK,RF) =
+    if RK == RF then 'id else if succ(RK) == succ(RF) then print(M,'\/,antc(RF)) &sp '=> &sp 'id else print(M,RF) fi fi .
+
+
+  --- OUT: given the set of all the goals in memory, print out the full history,
+  ---      sorted first by parent id and then by child id, but collapsing redundant goal
+  ---      pieces shared between parents and children
   op printStatusGoals : Module ProofGoalSet ~> QidList .
-  eq printStatusGoals(M,G && NGS) = printStatusGoals(M,G) '\n printSpaces(8) printStatusGoals(M,NGS) .
-  eq printStatusGoals(M,G) = '`[ printPad(printStatus(getstatus(G)),8)
-                             '| printPad(printPar(getparent(G)),5)
-                             '| printPad(printPar(getid(G)),5)
-                             '| printPad(printNext(nextaction(getstrat(G))),9)
-                             '| &sp print(M,getbody(G)) '`] .
-  eq printStatusGoals(M,(mt).ProofGoalSet) = &mt .
+  eq printStatusGoals(M,GS) = printStatusGoals(M,GS,GS) .
   eq printStatusGoals(MK:[Module],GK:[ProofGoal]) = 'Internal 'Error: 'printStatusGoals [owise] .
 
+  op printStatusGoals : Module ProofGoalSet ProofGoalSet ~> QidList .
+  eq printStatusGoals(M,G && NGS,GS) = printStatusGoals(M,G,GS) '\n printSpaces(8) printStatusGoals(M,NGS,GS) .
+  eq printStatusGoals(M,G,GS) = '`[ printPad(printStatus(getstatus(G)),8)
+                             '| printPad(printPar(getparent(G)),5)
+                             '| printPad(if getparent(G) :: Nat then if nextaction(getstrat(getgl!(GS,getparent(G)))) :: ProofRuleAction
+                                  then printNext(nextaction(getstrat(getgl!(GS,getparent(G)))))
+                                  else 'unknown
+                                fi else 'init fi,9)
+                             '| printPad(printPar(getid(G)),5)
+                             '| &sp printDifferences(M,getbody(getgl!(GS,getparent(G))),getbody(G)) '`] .
+  eq printStatusGoals(M,(mt).ProofGoalSet,GS) = &mt .
+
+  --- OUT: print out all goals without status information
+  op printGoals : Module ProofGoalSet ~> QidList .
+  eq printGoals(M,G && NGS) = printGoals(M,G) '\n printSpaces(8) printGoals(M,NGS) .
+  eq printGoals(M,G) = '`[ printPad(printPar(getid(G)),5)
+                       '| &sp print(M,getbody(G)) '`] .
+  eq printGoals(M,(mt).ProofGoalSet) = &mt .
+  eq printGoals(MK:[Module],GK:[ProofGoal]) = 'Internal 'Error: 'printGoals [owise] .
+
+  --- OUT: print out the set of all ids of all current goals
   op printGoalIds : ProofGoalSet ~> QidList .
   eq printGoalIds(G) = printPar(getid(G)) .
   eq printGoalIds(G && NGS) = printGoalIds(G) &sp ', &sp printGoalIds(NGS) .
   eq printGoalIds(mt) = &mt .
   eq printGoalIds(GK:[ProofGoal]) = 'Internal 'Error: 'printGoalIds [owise] .
 
-  op printOutData : ProofMetadata -> QidList .
-  op printOutData : Proof -> QidList .
-  eq printOutData(PRF) = printOutData(data(PRF)) .
-  eq printOutData((out(QL) ; DK)) = QL '\n printOutData(DK) .
-  eq printOutData(DK) = 'Internal 'Error: 'printOutData [owise] .
-
+  --- OUT: print out a set of natural numbers
   op printNatSet : Set{Nat} -> QidList .
   eq printNatSet((N,N',SN)) = printPar(N) '; printNatSet((N',SN)) .
   eq printNatSet(N) = printPar(N) .
