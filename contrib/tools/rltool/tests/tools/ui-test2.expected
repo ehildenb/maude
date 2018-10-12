@@ -11,34 +11,43 @@ Added goal(s):
        [test-invariant-1 : {M&1:MSet} |  true  => [M&2:MSet] |  true]
 Added goal(s):
        [test-invariant-2 : {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Added goal(s):
+       [test-invariant-3 : {N&1:Nat} |  true  => [N&2:Nat] |  true]
 Started proof:
        [1     | {M&1:MSet} |  true  => [M&2:MSet] |  true]
        [2     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+       [3     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Goal 2 subsumed by 1 via matching
+
 Split rule generated:
-       [3     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
-       [4     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] | 
+       [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
+       [5     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] | 
     true]
+For full verification, check formula equivalence manually
 Split rule generated:
-       [5     | {M&1:MSet} |  M&1:MSet =/= N':Nat  => [M&2:MSet] |  true]
+       [6     | {M&1:MSet} |  M&1:MSet =/= N':Nat  => [M&2:MSet] |  true]
+For full verification, check formula equivalence manually
 Split rule generated:
-       [6     | {M&1:MSet} |  M&1:MSet = N':Nat  => [M&2:MSet] |  true]
-       [7     | {M&1:MSet} |  N':Nat = N':Nat  => [M&2:MSet] |  true]
+       [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [M&2:MSet] |  true]
+       [8     | {M&1:MSet} |  N':Nat = N':Nat  => [M&2:MSet] |  true]
 Warning: split rule formulas have unsafe variable sharing
-Notice: proof branch failed: [2     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
+Notice: proof branch failed: [3     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
 Split rule generated:
         
 Warning: split rule formulas have unsafe variable sharing
-Notice: proof branch failed: [3     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true)
+Notice: proof branch failed: [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true)
     => [M&2:MSet] |  true]
+For full verification, check formula equivalence manually
 Split rule generated:
         
 Warning: split rule formulas have unsafe variable sharing
-Notice: proof branch failed: [6     | {M&1:MSet} |  M&1:MSet = N':Nat  => [
+Notice: proof branch failed: [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [
     M&2:MSet] |  true]
+For full verification, check formula equivalence manually
 Split rule generated:
         
 Step Results:
-       [15    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
+       [16    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
 Loaded function varsat for validty
 Loaded function varsat for validty
 Bye.

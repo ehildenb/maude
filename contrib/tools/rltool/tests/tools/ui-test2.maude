@@ -36,18 +36,19 @@ print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
 (def-term-set ([N]) | true .)
 (inv test-invariant-1 to '`[_`] on ({M}) | true .)
 (inv test-invariant-2 to '`[_`] on ({N}) | true .)
+(inv test-invariant-3 to '`[_`] on ({N}) | true .)
 (start-proof .)
+(subsume 2 by 1 .)
 --- these splits will succeed, since they do not change
 --- the sharing of any variable
----set break on .
-break select split-action .
 (split 1 by (M&1:MSet) = (N) .)
-(replace 4 by (M&1:MSet) =/= (N':Nat) .)
-(split 5 by (N':Nat) = (N':Nat) and (M&1:MSet) = (N':Nat) .)
+(replace 5 by (M&1:MSet) =/= (N':Nat) .)
+(split 6 by (N':Nat) = (N':Nat) and (M&1:MSet) = (N':Nat) .)
+
 --- these splits will fail due to to oversharing
-(split 2 by (M:MSet) = (N&2:Nat) .)
-(replace 3 by (M&2:MSet) =/= (N':Nat) .)
-(split 6 by (N':Nat) = (N':Nat) and (M&2:MSet) = (N':Nat) .)
+(split 3 by (M:MSet) = (N&2:Nat) .)
+(replace 4 by (M&2:MSet) =/= (N':Nat) .)
+(split 7 by (N':Nat) = (N':Nat) and (M&2:MSet) = (N':Nat) .)
 --- TOOD: add some splits that fail due to undersharing
 (step .)
 

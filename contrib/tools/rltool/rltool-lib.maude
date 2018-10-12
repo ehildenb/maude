@@ -471,7 +471,8 @@ fmod RLTL-PROC-CMD is
                                 fi .
   eq proc(split(N,B,QF,QF'), R) = if getgl!(R,N) :: ProofGoal
                                   then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),split(B,QF,QF')))) &
-                                    (write('Split 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
+                                    (write(if not B then 'For 'full 'verification '`, &sp 'check 'formula 'equivalence 'manually '\n else nil fi
+                                       'Split 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
                                   else write('Goal: qid(string(N,10)) 'not 'found)
                                 fi .
   eq proc(ls(B),           R) = if B then write('All 'Goals: '\n printSpaces(8) printStatusGoals(get-mod(R),get-prf(R)))
