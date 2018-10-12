@@ -259,12 +259,12 @@ fmod REACH-PROOF-RULES-AUX is
       (out('Warning: 'prevented 'attempted 'split 'on 'identical 'formulas))
     else if QF == ff then
       (st(err) ; out('Error: 'invalid 'split 'value))
-    else if safeVars(gather(getbody(G) & set-rhs-cond(getbody(G),QF) & if QF' =/= ff then set-rhs-cond(getbody(G),QF') else mt fi))
+    else if safeVars(gather(getbody(G) & set-lhs-cond(getbody(G),QF) & if QF' =/= ff then set-lhs-cond(getbody(G),QF') else mt fi))
       then (out(if B or-else checkVal(D,rhs-cond(getbody(G)) <==> QF \/ QF') == true
                   then nil
                   else 'For 'full 'verification '`, &sp 'check 'formula 'equivalence 'manually '\n
                 fi)
-            || newChildGoals(G,set-rhs-cond(getbody(G),QF) & if QF' == ff then mt else set-rhs-cond(getbody(G),QF') fi))
+            || newChildGoals(G,set-lhs-cond(getbody(G),QF) & if QF' == ff then mt else set-lhs-cond(getbody(G),QF') fi))
       else (out('Warning: 'split 'rule 'formulas 'have 'unsafe 'variable 'sharing '\n))
     fi fi fi .
 

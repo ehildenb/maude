@@ -27,7 +27,7 @@ red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Na
 red wellFormed(['CHOICE-DATA],ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Foo,'Z:Nat)) == false .
 
 --- check condition replacement/conjoining/negation/NNF works
-red set-rhs-cond(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
+red set-lhs-cond(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
 red conj-antc(ct('X:Nat,'Y:Nat,'Z:Nat) => ct('X:Nat,'Y:Nat,'Z:Nat),'_=C_['X:Nat,'N:Nat] ?= 'tt.Pred) .
 
 --- get all variables

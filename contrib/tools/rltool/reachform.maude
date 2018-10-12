@@ -54,8 +54,8 @@ fmod TRANSITION-PROJECTIONS is pr TRANSITION . pr CONSTRAINED-TERM-PROJECTIONS .
   ---
   eq lhs(CT => CTS')          = term(CT)    .
   eq rhs(CT => CT')           = term(CT')   .
-  eq lhs-cond(CT => CT')      = cond(CT)    .
-  eq rhs-cond(CT => CT')      = cond(CT)    .
+  eq lhs-cond(CT => CTS')     = cond(CT)    .
+  eq rhs-cond(CT => CT')      = cond(CT')   .
   eq antc(CT => CTS)          = CT          .
   eq succ(CT => CTS)          = CTS         .
   eq set-antc(CT => CTS,CT')  = CT' => CTS  .
@@ -139,14 +139,14 @@ fmod TRANSITION-OPERATIONS is
   eq sharedVars(CT => CTS') = sharedVars(CT,CTS') .
 
   --- OUT: set constraint for a reachform on the RHS
-  op set-rhs-cond : ReachForm QFForm -> ReachForm .
-  eq set-rhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
+  op set-lhs-cond : ReachForm QFForm -> ReachForm .
+  eq set-lhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
 
   --- OUT: extract conjoined substitutions from the LHS
   ---      condition and apply them everywhere
   op extract-conjoined-sub : Module ReachForm -> ReachForm .
   eq extract-conjoined-sub(M,R) =
-    extract-conjoined-sub(#extract-conjoined-sub(M,rhs-cond(R)),R) .
+    extract-conjoined-sub(#extract-conjoined-sub(M,lhs-cond(R)),R) .
 
   op extract-conjoined-sub : FOFormSubstPair ReachForm -> ReachForm .
   eq extract-conjoined-sub((C,S),(T | C') => CTS) = (T << S | C) => (CTS << S) .

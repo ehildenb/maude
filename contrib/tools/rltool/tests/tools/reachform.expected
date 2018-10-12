@@ -14,7 +14,7 @@ reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Nat, 'Z:Nat)
     => ct('X:Nat, 'Y:Foo, 'Z:Nat)) == false .
 result Bool: true
 ==========================================
-reduce in RLTOOL-TEST : set-rhs-cond(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat,
+reduce in RLTOOL-TEST : set-lhs-cond(ct('X:Nat, 'Y:Nat, 'Z:Nat) => ct('X:Nat,
     'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]) .
 result QFCRule: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat])
     => ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat])
