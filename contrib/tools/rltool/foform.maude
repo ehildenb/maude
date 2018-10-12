@@ -1152,7 +1152,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
 
   var U : Module . var B : Bool .
   var V : Variable . var T : Term . var S : Substitution .
-  var Q : QFForm? . var PC : PosConj .
+  var Q : QFForm? . var PC : PosEqConj .
   var FS : FOFormSubstPairSet .
   var TA : TruthAtom . var A : Atom . var AS AS' : AtomSet .
   var PD : PosEqDisj? . var ND : NegEqDisj? .
