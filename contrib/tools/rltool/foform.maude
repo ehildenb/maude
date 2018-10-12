@@ -1165,6 +1165,23 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
 
   --------------------------------------------------------------------------
 
+  --- OUT: given any QF formula, extract a subsitution which is conjoined to it
+  ---      on the top; this is always safe, since by the definition of conjunction
+  ---      we must find a solution to the substitution fragment
+  op extract-conjoined-sub : Module QFForm? -> Substitution .
+  eq extract-conjoined-sub(U,Q) = getSub(#extract-conjoined-sub(U,Q)) .
+
+  --- OUT: as above, but return substitution plus instantiated formula
+  op #extract-conjoined-sub : Module QFForm? -> FOFormSubstPairSet .
+ ceq #extract-conjoined-sub(U,PC /\ Q) =
+   #extract-conjoined-sub(U,#extract-sub(U,false,toPosEqAtoms(PC)),Q) if not Q :: PosEqConj .
+  eq #extract-conjoined-sub(U,Q) = (Q,none) [owise] .
+
+  op #extract-conjoined-sub : Module FOFormSetSubstPair QFForm? -> FOFormSubstPair .
+  eq #extract-conjoined-sub(U,(AS,S),Q) = (Q << S /\ conj-join(AS),S) .
+
+  --------------------------------------------------------------------------
+
   --- OUT: given a clause, extracts substitutions out of it and applies them
   ---  NB: a clause is a EqDisj
   op extract-clause-sub : Module Disj? -> Disj? .

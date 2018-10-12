@@ -72,10 +72,15 @@ fmod TRANSITIONSET-PROJECTIONS is pr TRANSITION-PROJECTIONS . pr TRANSITIONSET .
   eq set-conj-antc(CT => CTS,noterm)     = mt .
 endfm
 
-fmod TRANSITION-OPERATIONS is pr TRANSITION-PROJECTIONS . pr CONSTRAINED-TERMSET-OPERATIONS . pr CONSTRAINED-TERMSETPAIR .
+fmod TRANSITION-OPERATIONS is
+  pr TRANSITION-PROJECTIONS .
+  pr CONSTRAINED-TERMSET-OPERATIONS .
+  pr CONSTRAINED-TERMSETPAIR .
+  pr FOFORM-EXTRACT-SUBSTITUTION .
+  pr CONSTRAINED-TEMRSET-SUBSTITUTION .
 
   var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : QidSet .
-  var T : Term . var C C' : QFForm . var CT : QFCTerm . var CTS CTS' : QFCTermSet .
+  var T : Term . var C C' : QFForm . var CT : QFCTerm . var CTS CTS' : QFCTermSet . var S : Substitution .
 
   --- OUT: true iff this reachform is well-formed
   op wellFormed : Module ReachFormEx -> Bool .
@@ -134,6 +139,15 @@ fmod TRANSITION-OPERATIONS is pr TRANSITION-PROJECTIONS . pr CONSTRAINED-TERMSET
   --- OUT: set constraint for a reachform on the RHS
   op set-rhs-cond : ReachForm QFForm -> ReachForm .
   eq set-rhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
+
+  --- OUT: extract conjoined substitutions from the LHS
+  ---      condition and apply them everywhere
+  op extract-conjoined-sub : Module ReachForm -> ReachForm .
+  eq extract-conjoined-sub(M,R) =
+    extract-conjoined-sub(#extract-conjoined-sub(M,rhs-cond(R)),R) .
+
+  op extract-conjoined-sub : FOFormSubstPair ReachForm -> ReachForm .
+  eq extract-conjoined-sub((C,S),(T | C') => CTS) = (T << S | C) => (CTS << S) .
 endfm
 
 fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
