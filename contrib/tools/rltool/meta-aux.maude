@@ -2007,7 +2007,7 @@ fmod SUBSTITUTIONSET-AUX is
 
   var S S' S2 : Substitution . var SS : SubstitutionSet .
   var T : Term . var TS : TermSet .
-  var V : Variable . var QS : VariableSet .
+  var V V' : Variable . var QS : VariableSet . var VS : VarSubstitution .
   var SSK : [SubstitutionSet] . var U : Module .
 
   --- OUT: QidSet composed of domain() of each substitution
@@ -2050,6 +2050,11 @@ fmod SUBSTITUTIONSET-AUX is
   op wellFormedSet : Module SubstitutionSet -> Bool .
   eq wellFormedSet(U,S | SS) = wellFormed(U,S) and-then wellFormedSet(U,SS) .
   eq wellFormedSet(U,(empty).SubstitutionSet) = true .
+
+  --- OUT: invert a substitution mapping variables to variables
+  op invert : VarSubstitution -> VarSubstitution .
+  eq invert(V <- V' ; VS) = 'V <- V ; invert(VS) .
+  eq invert(none) = none .
 endfm
 
 --- operations like metaUnify, metaDisjointUnify, etc... generate fresh variable
