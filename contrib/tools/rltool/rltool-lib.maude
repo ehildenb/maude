@@ -317,6 +317,7 @@ mod RLTL-ACTION-IMPL is
   pr VARIABLES-TO-CONSTANTS .
   pr RLTL-ATTRIBUTES .
   pr BOUND-REFINEMENT .
+  pr RLTOOL-SWITCHES .
 
   var AS : AttributeSet .
   var B B' : Bool .
@@ -380,7 +381,7 @@ mod RLTL-ACTION-IMPL is
         else proof : [clear(PM)], mode : active(if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi),
          output : (L get-out(PM)
                   (if get-err(PM) then 'ERROR! else nil fi)
-                  (printSpaces(8) printStatusGoals(get-mod(PM),get-prf(PM)) '\n)
+                  (if printStatusOnContinue then printSpaces(8) printStatusGoals(get-mod(PM),get-prf(PM)) '\n else nil fi)
                   'CONTINUE> 'type &sp '`( 'continue '. '`) &sp 'to 'continue)
     fi fi .
 
