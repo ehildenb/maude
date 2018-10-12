@@ -396,14 +396,14 @@ endfm
 fmod VARSAFE-FOFORMSIMPLIFY-IMPL is
   pr FOFORM .
   var F G H K : FOForm . var K? : FOForm? .
-  var C : Conj . var D : Disj . var T T' : Term .
+  var T T' : Term .
 
   eq F /\ F = F .
   eq F \/ F = F .
   eq ~ tt = ff .
   eq ~ ff = tt .
-  eq tt /\ C = C  .
-  eq ff \/ D = D  .
+  eq tt /\ F = F  .
+  eq ff \/ F = F  .
 endfm
 
 fmod FOFORMSIMPLIFY-IMPL is
