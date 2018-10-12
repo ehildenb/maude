@@ -1,0 +1,14 @@
+load ../../systems/rw.maude
+load ../../rltool.maude
+
+(select R&W-stop .)
+(use tool varsat for validity on R&W .)
+(def-term-set ([R:Nat,W:Nat]) | true .)
+---(subsumed (< 0 , 0 >) | true =<  (< R:Nat,W:Nat >) | (W:Nat) = (0) \/ (W:Nat) = (s(0)) /\ (R:Nat) = (0) .)
+(add-goal mutex : (< R:Nat, W:Nat  >) | (W:Nat)  = (0) \/ (W:Nat)  = (s(0)) /\ (R:Nat)  = (0) =>
+          ([ R':Nat,W':Nat ]) | (W':Nat) = (0) \/ (W':Nat) = (s(0)) /\ (R':Nat) = (0)  .)
+(start-proof .)
+(step .)
+(step .)
+(list-goals .)
+quit
