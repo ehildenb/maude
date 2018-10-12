@@ -466,7 +466,7 @@ fmod RLTL-PROC-CMD is
 
   --- commands to be typed AFTER starting the proof
   eq proc(case(N,V,TS),    R) = if getgl!(R,N) :: ProofGoal
-                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),case(V,TS)))) &
+                                  then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),case(V,TS) ;; simplify ;; subsume ;; termcheck))) &
                                     (write('Case 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
                                   else write('Goal: qid(string(N,10)) 'not 'found)
                                 fi .
