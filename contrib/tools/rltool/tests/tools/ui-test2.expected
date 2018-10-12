@@ -23,10 +23,8 @@ Split rule generated:
        [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
        [5     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] | 
     true]
-For full verification, check formula equivalence manually
 Split rule generated:
        [6     | {M&1:MSet} |  M&1:MSet =/= N':Nat  => [M&2:MSet] |  true]
-For full verification, check formula equivalence manually
 Split rule generated:
        [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [M&2:MSet] |  true]
        [8     | {M&1:MSet} |  N':Nat = N':Nat  => [M&2:MSet] |  true]
@@ -37,17 +35,15 @@ Split rule generated:
 Warning: split rule formulas have unsafe variable sharing
 Notice: proof branch failed: [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true)
     => [M&2:MSet] |  true]
-For full verification, check formula equivalence manually
 Split rule generated:
         
 Warning: split rule formulas have unsafe variable sharing
 Notice: proof branch failed: [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [
     M&2:MSet] |  true]
-For full verification, check formula equivalence manually
 Split rule generated:
         
 Step Results:
-       [16    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
+       [25    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
 Loaded function varsat for validty
 Loaded function varsat for validty
 Bye.

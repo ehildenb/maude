@@ -249,18 +249,22 @@ fmod REACH-PROOF-RULES-AUX is
     fi .
 
   op split-action : ProofMetadata Module Bool QFForm QFForm ProofGoal -> ProofUpdate .
-  op split-action : ProofMetadata Module QFForm QFForm ProofGoal -> ProofUpdate .
+  op split-action2 : ProofMetadata Module Bool QFForm QFForm ProofGoal -> ProofUpdate .
 
-  eq split-action(D,U,true,QF,QF',G) = split-action(D,U,QF /\ rhs-cond(getbody(G)),QF' /\ rhs-cond(getbody(G)),G) .
-  eq split-action(D,U,false,QF,QF',G) = split-action(D,U,QF,QF',G) .
+  eq split-action(D,U,true,QF,QF',G) = split-action2(D,U,true,QF /\ rhs-cond(getbody(G)),QF' /\ rhs-cond(getbody(G)),G) .
+  eq split-action(D,U,false,QF,QF',G) = split-action2(D,U,true,QF,QF',G) .
 
-  eq split-action(D,U,QF,QF',G) =
+  eq split-action2(D,U,B,QF,QF',G) =
     if QF == QF' then
       (out('Warning: 'prevented 'attempted 'split 'on 'identical 'formulas))
     else if QF == ff then
       (st(err) ; out('Error: 'invalid 'split 'value))
-    else if safeVars(gather(getbody(G) & set-rhs-cond(getbody(G),QF) & if QF =/= ff then set-rhs-cond(getbody(G),QF') else mt fi))
-      then (none || newChildGoals(G,set-rhs-cond(getbody(G),QF) & if QF' == ff then mt else set-rhs-cond(getbody(G),QF') fi))
+    else if safeVars(gather(getbody(G) & set-rhs-cond(getbody(G),QF) & if QF' =/= ff then set-rhs-cond(getbody(G),QF') else mt fi))
+      then (out(if B or-else checkVal(D,rhs-cond(getbody(G)) <==> QF \/ QF') == true
+                  then nil
+                  else 'For 'full 'verification '`, &sp 'check 'formula 'equivalence 'manually '\n
+                fi)
+            || newChildGoals(G,set-rhs-cond(getbody(G),QF) & if QF' == ff then mt else set-rhs-cond(getbody(G),QF') fi))
       else (out('Warning: 'split 'rule 'formulas 'have 'unsafe 'variable 'sharing '\n))
     fi fi fi .
 
