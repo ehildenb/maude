@@ -78,9 +78,11 @@ fmod TRANSITION-OPERATIONS is
   pr CONSTRAINED-TERMSETPAIR .
   pr FOFORM-EXTRACT-SUBSTITUTION .
   pr CONSTRAINED-TEMRSET-SUBSTITUTION .
+  pr FOFORMSIMPLIFY .
 
   var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : QidSet .
   var T : Term . var C C' : QFForm . var CT : QFCTerm . var CTS CTS' : QFCTermSet . var S : Substitution .
+  var B : Bool .
 
   --- OUT: true iff this reachform is well-formed
   op wellFormed : Module ReachFormEx -> Bool .
@@ -148,6 +150,12 @@ fmod TRANSITION-OPERATIONS is
 
   op extract-conjoined-sub : FOFormSubstPair ReachForm -> ReachForm .
   eq extract-conjoined-sub((C,S),(T | C') => CTS) = (T << S | C) => (CTS << S) .
+
+  --- OUT: simplify a reachform's LHS condition by a formula simplification function
+  ---      if Bool is true, apply a (more) variable-safe simplification
+  op simplify-cond : Bool ReachForm -> ReachForm .
+  eq simplify-cond(B,(T | C) => CTS) =
+    (T | if B then varsafe-simplify(C) else simplify(C) fi) => CTS .
 endfm
 
 fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
@@ -593,6 +601,7 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
   pr FOFORMSIMPLIFY .
   pr MODULE-REACHFORM-PAIR .
   pr PATTERN-OPS .
+  pr TRANSITION-OPERATIONS .
 
   var U : Module .
   var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
@@ -607,7 +616,7 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
 
   op simplify-impl2 : Module ReachForm -> ReachForm .
   eq simplify-impl2(U,(T | C) => D) =
-    (T | varsafe-simplify(reduce(U,false,cond(overapproximateDiff(U,(T | C),D))))) => D .
+    simplify-cond(true,extract-conjoined-sub(U,(T | reduce(U,false,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
 endfm
 
 view goal-simplify-impl from FUN to REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
@@ -621,6 +630,7 @@ fmod REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
   pr FOFORMSIMPLIFY .
   pr MODULE-REACHFORM-PAIR .
   pr PATTERN-OPS .
+  pr TRANSITION-OPERATIONS .
 
   var U : Module .
   var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
@@ -630,7 +640,7 @@ fmod REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
 
   op full-simplify-impl2 : Module ReachForm -> ReachForm .
   eq full-simplify-impl2(U,(T | C) => D) =
-    (T | simplify(reduce(U,true,cond(overapproximateDiff(U,(T | C),D))))) => D .
+    simplify-cond(false,extract-conjoined-sub(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
 endfm
 
 view full-goal-simplify-impl from FUN to REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
