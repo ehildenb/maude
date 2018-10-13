@@ -19,8 +19,9 @@ fmod REACH-PROOF-STRATEGY is
   var PA : ProofRuleAction .
   var B : Bool .
 
-  sort ProofRuleAction ProofStrat .
+  sort ProofRuleAction ProofRuleActionList ProofStrat .
   subsort ProofRuleAction < ProofStrat .
+  subsort ProofRuleAction < ProofRuleActionList .
   --- basic proof rule actions
   op  subsume : -> ProofRuleAction [ctor] .
   op  simplify : -> ProofRuleAction [ctor] .
@@ -32,6 +33,9 @@ fmod REACH-PROOF-STRATEGY is
   op  pause : -> ProofRuleAction [ctor] .
   op  giveup : -> ProofRuleAction [ctor] .
   op  result : Bool -> ProofStrat [ctor] .
+
+  --- lists
+  op __ : ProofRuleActionList ProofRuleActionList -> ProofRuleActionList [ctor assoc] .
 
   --- sequencing
   op _;;_ : ProofStrat ProofStrat -> ProofStrat [ctor strat (1 0) gather (e E)] .
@@ -864,4 +868,139 @@ fmod REACH-PROOF-STATE-OPS is
 
   op flipPaused : ProofMetadata -> ProofMetadata? .
   eq flipPaused(D ; prf(GS)) = D ; prf(flipPaused(GS)) .
+endfm
+
+fmod VISUALIZE is
+  pr REACH-PROOF-STATE-OPS .
+  pr REACH-PROOF-STATE-PRINTER .
+
+  var GE : GoalEntry .
+  var GM GM' GM2 : GoalMap .
+  var U : Module .
+  var N I : Nat .
+  var NL NL' : NeNatList .
+  var L : NatList .
+  var P : Parent .
+  var G : ProofGoal .
+  var GS : ProofGoalSet .
+  var PA : ProofRuleAction .
+  var PS : ProofRuleActionList .
+  var RF RF' : ReachForm .
+  var RK : [ReachForm] .
+  var RL : ReachFormList .
+
+  sort GoalEntry GoalMap .
+  subsort GoalEntry < GoalMap .
+  op ((_,_,_,_)) : NeNatList ReachFormList ProofRuleActionList GoalMap -> GoalEntry [ctor] .
+  op __ : GoalMap GoalMap -> GoalMap [ctor assoc comm id: .GoalMap] .
+  op .GoalMap : -> GoalMap [ctor] .
+
+  --- OUT: depth of a GoalMap
+  op depth : GoalMap -> Nat .
+  eq depth((NL,RK,PS,GM2) GM) = max(s(depth(GM2)),depth(GM)) .
+  eq depth(.GoalMap) = 0 .
+
+  --- OUT: number of leaves
+  op leaves  : GoalMap -> Nat .
+  eq leaves((NL,RK,PS,GM2) GM) = if GM2 == .GoalMap then 1 else leaves(GM2) fi + leaves(GM) .
+  eq leaves(.GoalMap) = 0 .
+
+  --- OUT: a GoalMap that corresponds to the inheritance hierarchy
+  ---      for a given ProofGoalSet
+  op toGoalMap : ProofGoalSet -> GoalMap [memo] .
+  eq toGoalMap(GS) = toGoalMap(GS,.GoalMap) .
+
+  op toGoalMap : ProofGoalSet GoalMap -> GoalMap .
+  eq toGoalMap(G && GS,GM) =
+    if getparent(G) == none
+      then toGoalMap(GS,GM (getid(G),getbody(G),nextaction(getstrat(G)),.GoalMap))
+      else toGoalMap(GS,insert(G,GM,.GoalMap))
+    fi .
+  eq toGoalMap(mt,GM) = GM .
+
+  --- OUT: a new GoalMap with a ProofGoal inserted into it
+  op insert : ProofGoal GoalMap GoalMap -> GoalMap .
+  eq insert(G,(L N,RL ; RF,PS,GM2) GM,GM') =
+    if getparent(G) == N
+      then if doNotReprint(RF,getbody(G))
+        then (L N getid(G),RL ; RF,PS nextaction(getstrat(G)),GM2) GM GM'
+        else if stackOn(PS)
+          then (L N getid(G),RL ; RF ; getbody(G),PS nextaction(getstrat(G)),GM2) GM GM'
+          else (L N,RL ; RF,PS,GM2 (getid(G),getbody(G),nextaction(getstrat(G)),.GoalMap)) GM GM'
+      fi fi else insert(G,GM,GM' (L N,RL ; RF,PS,GM2))
+    fi .
+  eq insert(G,.GoalMap,GM') = insert2(G,GM') .
+
+  op insert2 : ProofGoal GoalMap -> GoalMap .
+  eq insert2(G,(NL,RL,PS,GM2) GM') = (NL,RL,PS,insert(G,GM2,.GoalMap)) insert2(G,GM') .
+  eq insert2(G,.GoalMap) = .GoalMap .
+
+  --- OUT: print a specific level of the GoalMap
+  op printLevel : Module Nat GoalMap -> QidList .
+  eq printLevel(U,N,GM) = printLevel(U,0,errReachForm(nil),giveup,N,GM) .
+
+  op printLevel : Module NatList [ReachForm] ProofRuleAction Nat GoalMap -> QidList .
+  eq printLevel(U,NL,RK,PS,0,GM) =
+    if GM =/= .GoalMap
+      then 'Group: printNatList(NL,nil) '-- 'Action: printStrat(PS) printGroup(U,RK,GM) '\n
+      else nil
+    fi .
+  eq printLevel(U,NL,RK,PS,s(I),GE GM) = printLevel2(U,NL,s(I),GE GM) .
+  eq printLevel(U,NL,RK,PS,s(I),.GoalMap) = nil .
+
+  op printLevel2 : Module Parent Nat GoalMap -> QidList .
+  eq printLevel2(U,NL,s(I),(NL',RL,PS,GM2) GM) = printLevel(U,NL',RL,PS,I,GM2) printLevel2(U,NL,s(I),GM) .
+  eq printLevel2(U,NL,s(I),.GoalMap) = nil .
+
+  op printGroup : Module [ReachForm] GoalMap -> QidList .
+  eq printGroup(U,RK,(NL,RL,PS,GM2) GM) =
+    '\n printSpaces(2) printNatList(NL,nil) '-- 'Action: printStrat(PS) printDifferencesList(U,RK,RL) printGroup(U,RK,GM) .
+  eq printGroup(U,RK,.GoalMap) = '\n .
+
+  --- OUT: print all levels in sequence
+  op printLevels : Module GoalMap -> QidList .
+  eq printLevels(U,GM) = printLevels(U,depth(GM),0,GM) .
+
+  op printLevels : Module Nat Nat GoalMap -> QidList .
+  eq printLevels(U,I,N,GM) = if N <= I
+                               then
+                               'Level: printPar(N)
+                               '\n printCopy(10,"========") '\n
+                               printLevel(U,N,GM) '\n printLevels(U,I,s(N),GM)
+                               else nil
+                             fi .
+
+  --- OUT: print a list of differences
+  op printDifferencesList : Module [ReachForm] ReachFormList -> QidList .
+  eq printDifferencesList(U,RK,RF ; RL) =
+    '\n printSpaces(4) printDifferences(U,RK,downTerm(renameAllVar(U,upTerm(RF)),(mt).ReachFormSet))
+    printDifferencesList(U,RF,RL) .
+  eq printDifferencesList(U,RK,nil) = nil .
+
+  --- OUT: print a proofstrat
+  op printStrat : ProofRuleActionList -> QidList .
+  eq printStrat(PA PS) = printNext(PA) '; printStrat(PS) .
+  eq printStrat(PA) = printNext(PA) .
+
+  --- OUT: true if ProofRuleActionList ends with item we wish to compress away
+  op stackOn : ProofRuleActionList -> Bool .
+  eq stackOn(simplify) = true .
+  eq stackOn(PS simplify) = true .
+  eq stackOn(PS) = false [owise] .
+
+  --- OUT: true iff the only difference between the two formulas is the condition is negated
+  op doNotReprint : ReachForm ReachForm -> Bool .
+  eq doNotReprint(RF,RF') =
+    RF == RF' or-else
+    lhs(RF)  == lhs(RF')  and-then
+    succ(RF) == succ(RF') and-then
+    toNNF(~ lhs-cond(RF)) == lhs-cond(RF') .
+
+  --- OUT: print a copy of the String many times
+  op printCopy : Nat String -> Qid .
+  eq printCopy(N,S:String) = qid(printCopy2(N,S:String)) .
+
+  op printCopy2 : Nat String -> String .
+  eq printCopy2(s(N),S:String) = S:String + printCopy2(N,S:String) .
+  eq printCopy2(0,S:String) = "" .
 endfm

@@ -184,6 +184,8 @@ fmod META-RLTL-COMMAND is
    op select_.               : @Token@ -> MetaRLTLCommand [ctor] .
    op continue`.             : -> MetaRLTLCommand [ctor] .
    op debug`command_on_.     : @Token@ Nat -> MetaRLTLCommand [ctor] .
+   op show`level_.           : Nat -> MetaRLTLCommand [ctor] .
+   op show`levels`.          : -> MetaRLTLCommand [ctor] .
 endfm
 
 fmod RLTL-COMMAND is
@@ -211,6 +213,7 @@ fmod RLTL-COMMAND is
    op select            : Module Qid -> RLTLCommand [ctor] .
    op continue          : -> RLTLCommand [ctor] .
    op debug             : Qid Nat -> RLTLCommand [ctor] .
+   op showlevel         : Bound -> RLTLCommand [ctor] .
 endfm
 
 fmod PARSE-RLTLCOMMAND is
@@ -266,6 +269,8 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'subsumed_=<_.[T1,T2])           = subsumed(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
    eq rltl-parse((M,S),'intersect_=_.[T1,T2])           = intersect(parse-matchform((M,S),true,T1),parse-matchform((M,S),true,T2)) .
    eq rltl-parse((M,S),'debug`command_on_.[T1,T2])      = debug(parse-token(T1),downNat(T2)) .
+   eq rltl-parse((M,S),'show`level_.[T1])               = showlevel(downNat(T1)) .
+   eq rltl-parse((M,S),'show`levels`..MetaRLTLCommand)  = showlevel(unbounded) .
 endfm
 
 --- Actions are the result of commands
@@ -411,6 +416,7 @@ fmod RLTL-PROC-CMD is
   pr REACH-PROOF-RULES-AUX .        --- proof rule actions
   pr TRANSITION-INVARIANT       .   --- mk-inv/wrap-term()
   pr LABEL-TRANSITION-CONVERSIONS . --- divide()
+  pr VISUALIZE .                    --- toGoalMap()/printLevel()
   --- frontend
   pr REACH-PROOF-INIT .             --- init()
   pr PARSE-FORM .                   --- custom parser for formulas
@@ -508,6 +514,8 @@ fmod RLTL-PROC-CMD is
                                 fi else write('Goal: qid(string(N,10)) 'not 'found)
                               fi .
   eq proc(debug(Q,N),    R) = write(print-command(R,Q,getbody(getgl!(get-prf(R),N)))) .
+  eq proc(showlevel(BD), R) = write(if BD == unbounded then printLevels(get-mod(R),toGoalMap(get-prf(R))) else printLevel(get-mod(R),BD,toGoalMap(get-prf(R))) fi
+                                    '\n printCopy(10,"========") '\n 'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R))))) .
 endfm
 
 mod RLTL-UI is
