@@ -1,0 +1,24 @@
+load ../../systems/sorting.maude
+load ../../rltool.maude
+
+(select SORTING-stop .)
+
+(use tool impsimp for validity on SORTING-DATA-PREDS with FOFORMSIMPLIFY .)
+
+(declare-vars (S:MSet) U (L:List) U (L':List) .)
+
+(def-term-set (< L >) | true .)
+
+(add-goal same-elem : ([L]) | (list2mset(L)) = (S) => (< L' >) | (list2mset(L')) = (S) .)
+
+--- TODO: fix this proof script
+(start-proof .)
+(step .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(step .)
+---(list-goals .)
+quit .

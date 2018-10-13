@@ -1,0 +1,65 @@
+set include BOOL off .
+
+fmod SORTING-DATA is
+  var l : List .
+
+  sort Nat NeList List .
+  subsort Nat < NeList < List .
+
+  op 1 : -> Nat [ctor] .
+  op 0 : -> Nat [ctor] .
+  op _+_ : Nat Nat -> Nat [ctor assoc comm id: 0] .
+
+  op nil : -> List [ctor] .
+  op _;_ : NeList NeList -> NeList [ctor assoc prec 60] .
+
+  op _;_ : List List -> List [assoc prec 60] .
+  eq l ; nil = l  [variant] .
+  eq nil ; l = l  [variant] .
+endfm
+
+fmod SORTING-DATA-PREDS is
+  pr SORTING-DATA .
+
+  vars n m : Nat . vars l1 l2 : NeList .
+
+  sort MSet Pred .
+  subsort Nat < MSet .
+
+
+  op mt : -> MSet [ctor] .
+  op _,_ : MSet MSet -> MSet [ctor assoc comm id: mt] .
+
+  op tt : -> Pred [ctor] .
+  
+  op list2mset : List -> MSet .
+  eq list2mset(nil)    = mt .
+  eq list2mset(n)      = n .
+  eq list2mset(n ; l1) = n , list2mset(l1) .
+  
+  op unsorted : List -> Pred [ctor] .
+  eq unsorted(n + m + 1 ; n                 ) = tt [variant] .
+  eq unsorted(l1        ; n + m + 1 ; n     ) = tt [variant] .
+  eq unsorted(n + m + 1 ; n         ;     l2) = tt [variant] .
+  eq unsorted(l1        ; n + m + 1 ; n ; l2) = tt [variant] .
+endfm
+
+mod SORTING is
+  pr SORTING-DATA-PREDS .
+  sort System .
+  op [_] : List -> System [ctor] .
+
+  vars n m : Nat . vars l1 l2 : NeList .
+  
+  rl [n + m + 1 ; n                  ] => [n  ; n + m + 1                 ] .
+  rl [l1        ; n + m + 1 ; n      ] => [l1 ; n         ; n + m + 1     ] .
+  rl [n + m + 1 ; n         ; l2     ] => [n  ; n + m + 1 ;             l2] .
+  rl [l1        ; n + m + 1 ; n  ; l2] => [l1 ; n         ; n + m + 1 ; l2] .
+endm
+
+mod SORTING-stop is
+  pr SORTING .
+  op <_> : List -> System [ctor] .
+
+  rl [l:List] => < l:List > .
+endm
