@@ -2235,7 +2235,6 @@ fmod GENERIC-PRINTER is
   eq printSub(M,none) = 'identity .
 
   op printNatList : NatList QidList -> QidList .
-  eq printNatList(NL,QL) = printNatList(NL,QL) .
   eq printNatList(N NL,QL) = printNatList(NL,QL qid(string(N,10))) .
   eq printNatList((nil).NatList,QL) = QL .
 
