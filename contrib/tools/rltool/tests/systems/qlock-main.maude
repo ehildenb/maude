@@ -23,7 +23,6 @@ load ../../rltool.maude
                                ([ I' | W' | N' | M'      ]) | (N') = (M')            \/
                                ([ I' | W' | mt | Q'      ]) | true                   .)
 (start-proof .)
-(on 1 use strat generalized-mutex .)
-(step .)
+(on 1 use strat generalized-mutex . generalized-mutex .)
 (step .)
 quit .
