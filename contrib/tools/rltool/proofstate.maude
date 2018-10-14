@@ -14,7 +14,7 @@ fmod REACH-PROOF-STRATEGY is
   pr TERMSET-FM .
 
   var AX : LabelReachForm .
-  var AXL : LabelReachFormList .
+  var AXL AXL' : LabelReachFormList .
   var CN CN' CN'' : ProofStrat .
   var PA : ProofRuleAction .
   var B : Bool .
@@ -85,6 +85,18 @@ fmod REACH-PROOF-STRATEGY is
                          termcheck ;;
                          pause ;;
                          default-loop(AXL) .
+  --- the default proof strategy with (assumed) axioms
+  op default : LabelReachFormList LabelReachFormList -> ProofStrat .
+  eq default(AXL,AX ; AXL') = simplify ;;
+                              subsume ;;
+                              termcheck ;;
+                              loop-axioms(AXL,step) ;;
+                              simplify ;;
+                              subsume ;;
+                              termcheck ;;
+                              pause ;;
+                              default-loop(AX ; AXL') .
+  eq default(AXL,nil) = default(AXL) .
 
   --- make a proof action come first
   eq (CN | CN') | CN'' = CN | (CN' | CN'') .

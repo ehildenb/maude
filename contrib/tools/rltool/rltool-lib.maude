@@ -167,7 +167,8 @@ fmod META-RLTL-COMMAND is
    op add-goal!_.            : @LabelReachFormEx@ -> MetaRLTLCommand [ctor] . --- add as goal
    op add-axiom_.            : @LabelReachFormEx@ -> MetaRLTLCommand [ctor] . --- add as axiom
    --- NB: currently, this just sets axiosm, later should be extended
-   op on_use`strat_.         : Nat @NeTokenList@ -> MetaRLTLCommand  [ctor] . --- modify goal to use strategy
+   op on_use`strat_.         : Nat @NeTokenList@ -> MetaRLTLCommand  [ctor] .               --- modify goal to use circularities
+   op on_use`strat_._.       : Nat @NeTokenList@ @NeTokenList@ -> MetaRLTLCommand  [ctor] . --- modify goal to use axioms/circularities
    op declare-vars_.         : @TermSet@ -> MetaRLTLCommand [ctor] .
    op inv_to_with_on_.       : @Token@ Qid @TermSet@ @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
    op inv_to_on_.            : @Token@ Qid @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
@@ -201,7 +202,7 @@ fmod RLTL-COMMAND is
    op intersect         : QFCTermSet QFCTermSet -> RLTLCommand [ctor] .
    op add-goal          : LabelReachFormEx Bool -> RLTLCommand [ctor] .
    op add-axiom         : LabelReachFormEx -> RLTLCommand  [ctor] .
-   op use-strat         : Nat NeQidList -> RLTLCommand [ctor] .
+   op use-strat         : Nat NeQidList QidList -> RLTLCommand [ctor] .
    op declare-vars      : QidSet -> RLTLCommand  [ctor] .
    op inv               : Qid Qid QidSet QFCTermSet -> RLTLCommand [ctor] .
    op def-term-set      : NeQFCTermSet   -> RLTLCommand [ctor] .
@@ -261,7 +262,8 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'continue`..MetaRLTLCommand)      = continue .
 
    --- can be run any time
-   eq rltl-parse((M,S),'on_use`strat_.[T1,T2])          = use-strat(downNat(T1),parse-tokenlist(T2)) .
+   eq rltl-parse((M,S),'on_use`strat_.[T1,T2])          = use-strat(downNat(T1),parse-tokenlist(T2),nil) .
+   eq rltl-parse((M,S),'on_use`strat_._.[T1,T2,T3])     = use-strat(downNat(T1),parse-tokenlist(T2),parse-tokenlist(T3)) .
    eq rltl-parse((M,S),'quit`..MetaRLTLCommand)         = quit .
    eq rltl-parse((M,S),'set`echo`on`..MetaRLTLCommand)  = set-echo(true) .
    eq rltl-parse((M,S),'set`echo`off`..MetaRLTLCommand) = set-echo(false) .
@@ -438,7 +440,7 @@ fmod RLTL-PROC-CMD is
 
   var BD : Bound . var NS : Set{Nat} . var N M : Nat . var B : Bool .
   var T : Term . var TS : TermSet .
-  var ID Q Q' : Qid . var QS : QidSet . var L : QidList . var V  : Variable . var QK : [Qid] .
+  var ID Q Q' : Qid . var QS : QidSet . var L L' : QidList . var V  : Variable . var QK : [Qid] .
   var U : Module . var US : ModuleList .
   var QF QF' : QFForm? . var MF MF' : QFCTermSet .
   var F : ReachForm .
@@ -496,26 +498,30 @@ fmod RLTL-PROC-CMD is
                                 fi .
 
   --- commands to be typed ANYTIME
-  eq proc(subsumeby(N,M),R) = if getgl!(get-prf(R),(N,M)) :: ProofGoalSet
-                                then delgl(R,getgl!(R,N)) & if
-                                    matches(get-mod(R),getbody(getgl!(get-prf(R),M)),
-                                      getbody(getgl!(get-prf(R),N))) :: NeSubstitutionSet
-                                  then write('Goal printPar(N) 'subsumed 'by printPar(M) 'via 'matching '\n)
-                                  else write('Goal printPar(N) 'could 'not 'be 'automatically 'subsumed;
-                                             'for 'full 'verification '`, &sp 'please 'check 'the 'subsumption 'manually '\n)
-                                fi else write('Goals 'not 'found)
-                              fi .
-  eq proc(use-strat(N,L),R) = if getgl!(get-prf(R),N) :: ProofGoalSet
-                                then if byName(toset(get-axs(R)),L) :: LabelReachFormList
-                                  then prf(setgl!(get-prf(R),
-                                   setstrat(getgl!(get-prf(R),N),default(byName(toset(get-axs(R)),L))))) &
-                                   write('Updated 'strategy 'for 'goal qid(string(N,10)))
-                                  else write('Strategy 'ill-formed)
-                                fi else write('Goal: qid(string(N,10)) 'not 'found)
-                              fi .
-  eq proc(debug(Q,N),    R) = write(print-command(R,Q,getbody(getgl!(get-prf(R),N)))) .
-  eq proc(showlevel(BD), R) = write(if BD == unbounded then printLevels(get-mod(R),toGoalMap(get-prf(R))) else printLevel(get-mod(R),BD,toGoalMap(get-prf(R))) fi
-                                    '\n printCopy(10,"========") '\n 'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R))))) .
+  eq proc(subsumeby(N,M),   R) = if getgl!(get-prf(R),(N,M)) :: ProofGoalSet
+                                    then delgl(R,getgl!(R,N)) & if
+                                        matches(get-mod(R),getbody(getgl!(get-prf(R),M)),
+                                          getbody(getgl!(get-prf(R),N))) :: NeSubstitutionSet
+                                      then write('Goal printPar(N) 'subsumed 'by printPar(M) 'via 'matching '\n)
+                                      else write('Goal printPar(N) 'could 'not 'be 'automatically 'subsumed;
+                                                 'for 'full 'verification '`, &sp 'please 'check 'the 'subsumption 'manually '\n)
+                                    fi else write('Goals 'not 'found)
+                                 fi .
+  eq proc(use-strat(N,L,L'),R) = if getgl!(get-prf(R),N) :: ProofGoalSet
+                                   then if byName(toset(get-axs(R)),L) ; byName(toset(get-axs(R)),L') :: LabelReachFormList
+                                     then prf(setgl!(get-prf(R),
+                                      setstrat(getgl!(get-prf(R),N),default(byName(toset(get-axs(R)),L),byName(toset(get-axs(R)),L'))))) &
+                                      write('Updated 'strategy 'for 'goal qid(string(N,10)))
+                                     else write('Strategy 'ill-formed)
+                                   fi else write('Goal: qid(string(N,10)) 'not 'found)
+                                 fi .
+  eq proc(debug(Q,N),       R) = write(print-command(R,Q,getbody(getgl!(get-prf(R),N)))) .
+  eq proc(showlevel(BD),    R) = write(
+                                   if BD == unbounded
+                                     then printLevels(get-mod(R),toGoalMap(get-prf(R)))
+                                     else printLevel(get-mod(R),BD,toGoalMap(get-prf(R)))
+                                   fi '\n printCopy(10,"========") '\n
+                                     'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R))))) .
 endfm
 
 mod RLTL-UI is
