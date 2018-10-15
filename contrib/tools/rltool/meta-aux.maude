@@ -2194,13 +2194,14 @@ fmod GENERIC-PRINTER is
   pr CONVERSION .
   pr TERMSET-FM .
   pr UNIT-FM    .
+  pr MAYBE-QID  .
 
   var A A' : Assignment .
   var B : Bool .
   var M : Module  .
   var N : Nat .
   var NL : NatList .
-  var Q : Qid .
+  var Q Q' : Qid .
   var QL : QidList .
   var RP RP' : ResultPair .
   var RP? : [ResultPair] .
@@ -2233,6 +2234,10 @@ fmod GENERIC-PRINTER is
   eq printSub(M,V <- T) = metaPrettyPrint(M,V) '<- metaPrettyPrint(M,T) .
   eq printSub(M,A ; A' ; SB) = printSub(M,A) '; printSub(M,A' ; SB) .
   eq printSub(M,none) = 'identity .
+
+  op printMaybeQid : MaybeQid Qid -> Qid .
+  eq printMaybeQid(noqid,Q') = Q' .
+  eq printMaybeQid(Q,Q') = Q .
 
   op printNatList : NatList QidList -> QidList .
   eq printNatList(N NL,QL) = printNatList(NL,QL qid(string(N,10))) .

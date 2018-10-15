@@ -254,7 +254,7 @@ fmod TRANSITION-PRINTER is pr TRANSITION . pr CONSTRAINED-TERMSET-PRINTER . pr T
   var M : Module . var CTS CTS' : CTermSet .
 
   op print : Module ReachFormEx -> QidList .
- ceq print(M,CTS => CTS') = print(M,'\/,CTS) &sp '=> &sp print(M,'\/,CTS')
+ ceq print(M,CTS => CTS') = print(M,'\/,CTS) &sp '\r '=> '\o &sp print(M,'\/,CTS')
   if wellFormed(M,CTS => CTS') .
   eq print(MK:[Module],RK:[ReachFormEx]) = 'print 'error: 'unable 'to 'print 'formula [owise] .
 
@@ -296,8 +296,10 @@ fmod LABEL-TRANSITION is
   op ((_:_)) : MaybeQid ReachFormEx -> LabelReachFormEx [ctor] .
   op trans : LabelLCCRule           -> LCCRule                 .
   op trans : LabelReachFormEx       -> ReachFormEx             .
+  op name  : LabelReachFormEx       -> MaybeQid                .
   var Q : MaybeQid . var T : ReachFormEx .
   eq trans((Q : T)) = T .
+  eq name((Q : T)) = Q .
 endfm
 
 fmod LABEL-TRANSITION-SET is
@@ -538,6 +540,32 @@ endfm
 --- TODO:
 --- Everything below this line show be moved out of this file
 
+fmod STEPRESULTSET is
+  pr TRANSITIONSET .
+  pr MAYBE-QID .
+
+  var SRS : StepResultSet . var SRSK : [StepResultSet] .
+  var QL : QidList . var S : Substitution . var F : ReachForm . var MQ : MaybeQid .
+
+  sort StepResult StepResultSet .
+  subsort StepResult < StepResultSet .
+  op (_,_,_) : MaybeQid Substitution ReachForm -> StepResult [ctor] .
+  op __ : StepResultSet StepResultSet -> StepResultSet [ctor assoc comm id: noSteps] .
+  op noSteps : -> StepResultSet [ctor] .
+  op errStepResultSet : QidList ~> StepResultSet [ctor] .
+
+  --- OUT: Extract error mesasge from an errorneous StepResultSet
+  op errStepResultSetMsg : [StepResultSet] -> QidList .
+  eq errStepResultSetMsg(SRSK errStepResultSet(QL)) = QL .
+  eq errStepResultSetMsg(SRSK) = nil [owise] .
+
+  --- OUT: Extract a ReachFormSet from a StepResultSet
+  op toReachFormSet : StepResultSet ~> ReachFormSet .
+  eq toReachFormSet((MQ,S,F) SRS) = F & toReachFormSet(SRS) .
+  eq toReachFormSet(noSteps) = mt .
+  eq toReachFormSet(SRSK) = errReachForm(errStepResultSetMsg(SRSK)) .
+endfm
+
 --- TODO: check that narrowing is doing the right thing (TM)
 fmod LCCRULE-NARROWING is
   pr LABEL-TRANSITION-SET .
@@ -546,32 +574,45 @@ fmod LCCRULE-NARROWING is
   pr UNIFIERS .
   pr TRANSITIONSET-PROJECTIONS .
   pr TRANSITION-SUBSTITUTION .
-
-  op top-narrow   : Module LabelLCCRuleSet ReachForm    ~> ReachFormSet             .
-  op top-narrow   : LabelLCCRuleSubstPairSet ReachForm  ~> ReachFormSet             .
-  op top-narrow   : Module LabelLCCRuleSet Term         ~> LabelLCCRuleSubstPairSet .
-  op $top-narrow1 : Module LabelLCCRule SubstitutionSet ~> LabelLCCRuleSubstPairSet .
+  pr STEPRESULTSET .
+  pr TRANSITION-PRINTER .
 
   var AR : LabelLCCRule . var ARS : LabelLCCRuleSet . var CT : QFCTerm . var U : Module . var F : ReachForm .
   var T : Term . var S : Substitution . var SS : SubstitutionSet . var ARPS : LabelLCCRuleSubstPairSet .
   var SK : [Substitution] . var ARPSK : [LabelLCCRuleSubstPairSet] .
+  var SRS : StepResultSet . var MQ : MaybeQid .
 
-  --- INP: Module LabelLCCRuleSet Term Form
+  --- OUT: Print out a StepResultSet
+  op print : Module StepResultSet -> QidList .
+  eq print(U,(MQ,S,F) SRS) = '`( '\g printMaybeQid(MQ,'<noname>) '\o '`, printSub(U,S) '`, '\n print(U,F) '`) '\n
+                             print(U,SRS) .
+  eq print(U,noSteps) = nil .
+
   --- PRE: Arguments are well-defined with respect to Module
   --- OUT: All unifiers between the term and any rule that also satisfies
   ---      the conditions on both the term and that rule
   --- NB:  Renaming here is unsafe/shared vars between form/unifier are lost
-  eq  top-narrow(U,AR | ARS,T)    = $top-narrow1(U,AR,safeUnify(U,lhs(trans(AR)),T)) | top-narrow(U,ARS,T) .
-  eq  top-narrow(U,empty,T)       = empty .
-  eq $top-narrow1(U,AR,S | SS)    = (AR,S) | $top-narrow1(U,AR,SS) .
-  eq $top-narrow1(U,AR,empty)     = empty .
-  eq $top-narrow1(U,AR,SK)        = errLabelRuleSubstPair(errsubMsg(SK)) .
+  op top-narrow : Module LabelLCCRuleSet Term ~> LabelLCCRuleSubstPairSet .
+  eq top-narrow(U,AR | ARS,T) = $top-narrow1(U,AR,safeUnify(U,lhs(trans(AR)),T)) | top-narrow(U,ARS,T) .
+  eq top-narrow(U,empty,T) = empty .
 
-  --- wrapper around top-narrow lifting it from Term to ReachForm
-  eq  top-narrow(U,ARS,F)         = top-narrow(top-narrow(U,ARS,lhs(F)),F) .
-  eq  top-narrow((AR,S) | ARPS,F) = set-conj-antc(F,succ(trans(AR))) << S & top-narrow(ARPS,F) .
-  eq  top-narrow(empty,F)         = mt .
-  eq  top-narrow(ARPSK,F)         = errReachForm(errLabelRuleSubstPairMsg(ARPSK)) .
+  op $top-narrow1 : Module LabelLCCRule SubstitutionSet ~> LabelLCCRuleSubstPairSet .
+  eq $top-narrow1(U,AR,S | SS) = (AR,S) | $top-narrow1(U,AR,SS) .
+  eq $top-narrow1(U,AR,empty) = empty .
+  eq $top-narrow1(U,AR,SK) = errLabelRuleSubstPair(errsubMsg(SK)) .
+
+  --- OUT: A wrapper, lifting the above functions to StepResultSets
+  op #top-narrow : Module LabelLCCRuleSet ReachForm ~> StepResultSet .
+  eq #top-narrow(U,ARS,F) = #top-narrow(top-narrow(U,ARS,lhs(F)),F) .
+
+  op #top-narrow : LabelLCCRuleSubstPairSet ReachForm ~> StepResultSet .
+  eq #top-narrow((AR,S) | ARPS,F) = (name(AR),S,set-conj-antc(F,succ(trans(AR))) << S) #top-narrow(ARPS,F) .
+  eq #top-narrow(empty,F) = noSteps .
+  eq #top-narrow(ARPSK,F) = errStepResultSet(errLabelRuleSubstPairMsg(ARPSK)) .
+
+  --- OUT: A wrapper, lifting the above functions to ReachFormSets
+  op top-narrow : Module LabelLCCRuleSet ReachForm ~> ReachFormSet .
+  eq top-narrow(U,ARS,F) = toReachFormSet(#top-narrow(U,ARS,F)) .
 endfm
 
 fmod TRANSITION-INVARIANT is
