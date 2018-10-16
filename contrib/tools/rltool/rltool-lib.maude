@@ -187,6 +187,7 @@ fmod META-RLTL-COMMAND is
    op debug`command_on_.     : @Token@ Nat -> MetaRLTLCommand [ctor] .
    op show`level_.           : Nat -> MetaRLTLCommand [ctor] .
    op show`levels`.          : -> MetaRLTLCommand [ctor] .
+   op do`step_.              : Nat -> MetaRLTLCommand [ctor] .
 endfm
 
 fmod RLTL-COMMAND is
@@ -215,6 +216,7 @@ fmod RLTL-COMMAND is
    op continue          : -> RLTLCommand [ctor] .
    op debug             : Qid Nat -> RLTLCommand [ctor] .
    op showlevel         : Bound -> RLTLCommand [ctor] .
+   op dostep            : Nat -> RLTLCommand [ctor] .
 endfm
 
 fmod PARSE-RLTLCOMMAND is
@@ -260,6 +262,7 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'list-goals`..MetaRLTLCommand)    = ls(true) .
    eq rltl-parse((M,S),'list-goal-ids`..MetaRLTLCommand) = ls(false) .
    eq rltl-parse((M,S),'continue`..MetaRLTLCommand)      = continue .
+   eq rltl-parse((M,S),'do`step_.[T1])                   = dostep(downNat(T1)) .
 
    --- can be run any time
    eq rltl-parse((M,S),'on_use`strat_.[T1,T2])          = use-strat(downNat(T1),parse-tokenlist(T2),nil) .
@@ -495,6 +498,10 @@ fmod RLTL-PROC-CMD is
   eq proc(focus(NS),       R) = if getgl!(get-prf(R),NS) :: ProofGoalSet
                                  then prf(getgl!(get-prf(R),NS)) & write('Successfully 'focused 'on 'target 'goal/goals)
                                  else write('Some 'target 'goal/goals 'not 'found: '\n printSpaces(8) printNatSet(NS))
+                                fi .
+  eq proc(dostep(N),       R) = if getgl!(get-prf(R),N) :: ProofGoalSet
+                                  then write(print(get-mod(R),#top-narrow(get-mod(R),get-rls(R),getbody(getgl!(get-prf(R),N)))))
+                                  else write('Target 'goal 'not 'found)
                                 fi .
 
   --- commands to be typed ANYTIME
