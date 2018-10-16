@@ -32,7 +32,7 @@ mod QLOCK is
   pr QLOCK-STATE .
 
   sort Conf State .
-  op _|_|_|_ : Soup Soup Soup Queue -> Conf  [ctor] .
+  op _|_|_|_ : Soup Soup Soup Queue -> Conf  [ctor format(d r o r o r o d)] .
   op <_>     : Conf                 -> State [ctor] .
   op [_]     : Conf                 -> State [ctor] .
 
@@ -47,19 +47,19 @@ mod QLOCK is
   --- Sc --- processes currently using the shared resource (this should satisfy | Sc | <= 1)
 
   --- inactive to waiting
-  rl [i2w]  : < Si N | Sw   | Sc   | Q      > => < Si   | Sw N | Sc   | Q @ N  > .
-  rl [i2w]  : < Si N | Sw   | Sc   | nil    > => < Si   | Sw N | Sc   | N      > .
+  rl [i2w-nq]  : < Si N | Sw   | Sc   | Q      > => < Si   | Sw N | Sc   | Q @ N  > .
+  rl [i2w-eq]  : < Si N | Sw   | Sc   | nil    > => < Si   | Sw N | Sc   | N      > .
 
   --- waiting  to critical
- crl [w2c]  : < Si   | Sw N | Sc   | N' @ Q > => < Si   | Sw   | Sc N | N' @ Q > if N = N' .
- crl [w2c]  : < Si   | Sw N | Sc   | N'     > => < Si   | Sw   | Sc N | N'     > if N = N' .
+ crl [w2c-mq]  : < Si   | Sw N | Sc   | N' @ Q > => < Si   | Sw   | Sc N | N' @ Q > if N = N' .
+ crl [w2c-sq]  : < Si   | Sw N | Sc   | N'     > => < Si   | Sw   | Sc N | N'     > if N = N' .
 
   --- critical to inactive
-  rl [c2i]  : < Si   | Sw   | Sc N | N' @ Q > => < Si N | Sw   | Sc   | Q      > .
-  rl [c2i]  : < Si   | Sw   | Sc N | N'     > => < Si N | Sw   | Sc   | nil    > .
+  rl [c2i-mq]  : < Si   | Sw   | Sc N | N' @ Q > => < Si N | Sw   | Sc   | Q      > .
+  rl [c2i-sq]  : < Si   | Sw   | Sc N | N'     > => < Si N | Sw   | Sc   | nil    > .
 
   --- join/leave
- crl [join] : < Si   | Sw   | Sc N | Q      > => < Si N | Sw   | Sc   | Q      > if dupl(Si N) =/= true = tt [nonexec] .
+ crl [join] : < Si   | Sw   | Sc   | Q      > => < Si N | Sw   | Sc   | Q      > if dupl(Si N) =/= true = tt [nonexec] .
   rl [exit] : < Si N | Sw   | Sc   | Q      > => < Si   | Sw   | Sc   | Q      > .
 
   --- terminate
