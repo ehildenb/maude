@@ -671,6 +671,23 @@ fmod SUBSTITUTIONSET is
      (S ...' SS') .
 endfm
 
+fmod SUBSTITUTIONSETPAIR is
+  pr SUBSTITUTIONSET .
+
+  var S S' : SubstitutionSet .
+
+  sort SubstitutionPair SubstitutionSetPair .
+  subsort SubstitutionPair < SubstitutionSetPair .
+  op ((_,_)) : Substitution Substitution -> SubstitutionPair [ctor] .
+  op ((_,_)) : SubstitutionSet SubstitutionSet -> SubstitutionSetPair [ctor] .
+
+  op p1 : SubstitutionSetPair -> SubstitutionSet .
+  eq p1((S,S')) = S .
+
+  op p2 : SubstitutionSetPair -> SubstitutionSet .
+  eq p2((S,S')) = S' .
+endfm
+
 fmod VARIANT is
   pr SUBSTITUTIONSET .
   pr META-LEVEL .
