@@ -33,9 +33,9 @@ fmod SORTING-DATA-PREDS is
   op tt : -> Pred [ctor] .
   
   op list2mset : List -> MSet .
-  eq list2mset(nil)    = mt .
-  eq list2mset(n)      = n .
-  eq list2mset(n ; l1) = n , list2mset(l1) .
+  eq list2mset(nil)     = mt .
+  eq list2mset(n)       = n .
+  eq list2mset(l1 ; l2) = list2mset(l1) , list2mset(l2) .
   
   op unsorted : List -> Pred [ctor] .
   eq unsorted(n + m + 1 ; n                 ) = tt [variant] .
@@ -47,19 +47,19 @@ endfm
 mod SORTING is
   pr SORTING-DATA-PREDS .
   sort System .
-  op [_] : List -> System [ctor] .
+  op [_,_] : List MSet -> System [ctor] .
 
-  vars n m : Nat . vars l1 l2 : NeList .
+  vars n m : Nat . vars l1 l2 : NeList . var s : MSet .
   
-  rl [n + m + 1 ; n                  ] => [n  ; n + m + 1                 ] .
-  rl [l1        ; n + m + 1 ; n      ] => [l1 ; n         ; n + m + 1     ] .
-  rl [n + m + 1 ; n         ; l2     ] => [n  ; n + m + 1 ;             l2] .
-  rl [l1        ; n + m + 1 ; n  ; l2] => [l1 ; n         ; n + m + 1 ; l2] .
+  rl [s1] : [n + m + 1 ; n                   , s ] => [n  ; n + m + 1                  , s ] .
+  rl [s2] : [l1        ; n + m + 1 ; n       , s ] => [l1 ; n         ; n + m + 1      , s ] .
+  rl [s3] : [n + m + 1 ; n         ; l2      , s ] => [n  ; n + m + 1 ;             l2 , s ] .
+  rl [s4] : [l1        ; n + m + 1 ; n  ; l2 , s ] => [l1 ; n         ; n + m + 1 ; l2 , s ] .
 endm
 
 mod SORTING-stop is
   pr SORTING .
-  op <_> : List -> System [ctor] .
+  op <_,_> : List MSet -> System [ctor] .
 
-  rl [l:List] => < l:List > .
+  rl [stop] : [l:List,s:MSet] => < l:List,s:MSet > .
 endm

@@ -7,18 +7,11 @@ load ../../rltool.maude
 
 (declare-vars (S:MSet) U (L:List) U (L':List) .)
 
-(def-term-set (< L >) | true .)
+(def-term-set (< L,S >) | true .)
 
-(add-goal same-elem : ([L]) | (list2mset(L)) = (S) => (< L' >) | (list2mset(L')) = (S) .)
+(add-goal same-elem : ([L,S]) | (list2mset(L)) = (S) => (< L',S >) | (list2mset(L')) = (S) .)
 
---- TODO: fix this proof script
 (start-proof .)
 (step .)
-(continue .)
-(continue .)
-(continue .)
-(continue .)
-(continue .)
 (step .)
----(list-goals .)
 quit .
