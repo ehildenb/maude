@@ -109,7 +109,7 @@ fmod TRANSITION-APPLICATION is
   --- NB:  This is a helper function that replaces the antecedent of the original ReachForm
   ---      by the succedent of the instantiated axiom ReachForm
   op apply-axiom : ReachForm LabelReachForm FOFormSubstPairSet -> AxiomResultList .
-  eq apply-axiom(F,AX,(QF,S) | FSPS) = axrule(AX,S,QF,divide((succ(trans(AX)) << S) => succ(F))) apply-axiom(F,AX,FSPS) .
+  eq apply-axiom(F,AX,(QF,S) | FSPS) = axrule(AX,S,QF,divide(conj(succ(trans(AX)) << S,lhs-cond(F)) => succ(F))) apply-axiom(F,AX,FSPS) .
   eq apply-axiom(F,AX,mtFSPS) = nilax .
   eq apply-axiom(F,AX,FK) = errAxiomResult(errFOFormSubstPairMsg(FK)) [owise] .
 endfm
