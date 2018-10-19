@@ -142,21 +142,33 @@ fmod TRANSITION-OPERATIONS is
   op set-lhs-cond : ReachForm QFForm -> ReachForm .
   eq set-lhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
 
-  --- OUT: extract conjoined substitutions from the LHS
-  ---      condition and apply them everywhere
-  op extract-conjoined-sub : Module ReachForm -> ReachForm .
-  eq extract-conjoined-sub(M,R) =
-    extract-conjoined-sub(#extract-conjoined-sub(M,lhs-cond(R)),R) .
-
-  op extract-conjoined-sub : FOFormSubstPair ReachForm -> ReachForm .
-  eq extract-conjoined-sub((C,S),(T | C') => CTS) = (T << S | C) => (CTS << S) .
-
   --- OUT: simplify a reachform's LHS condition by a formula simplification function
   ---      if Bool is true, apply a (more) variable-safe simplification
   op simplify-cond : Bool ReachForm -> ReachForm .
   eq simplify-cond(B,(T | C) => CTS) =
     (T | if B then varsafe-simplify(C) else simplify(C) fi) => CTS .
 endfm
+
+
+fmod TRANSITION-CTOR-SIMPLIFICATION is
+  pr TRANSITION-OPERATIONS .
+  pr MGCI .
+
+  var M : Module . var R : ReachForm .
+  var T : Term . var S : Substitution .
+  var C C' : QFForm . var CTS : QFCTermSet .
+
+  --- OUT: extract conjoined substitutions from the LHS
+  ---      condition and apply them everywhere
+  op extract-conjoined-sub-rf : Module ReachForm -> ReachForm .
+  eq extract-conjoined-sub-rf(M,R) =
+    extract-conjoined-sub-rf(M,#extract-conjoined-sub(M,lhs-cond(R)),R) .
+
+  op extract-conjoined-sub-rf : Module FOFormSubstPair ReachForm -> ReachForm .
+  eq extract-conjoined-sub-rf(M,(C,S),(T | C') => CTS) =
+    (T << ctor-sub(M,S) | C) => ((CTS <<Term ctor-sub(M,S)) <<Form S) .
+endfm
+
 
 fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
 
@@ -642,7 +654,7 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
   pr FOFORMSIMPLIFY .
   pr MODULE-REACHFORM-PAIR .
   pr PATTERN-OPS .
-  pr TRANSITION-OPERATIONS .
+  pr TRANSITION-CTOR-SIMPLIFICATION .
 
   var U : Module .
   var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
@@ -657,7 +669,7 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
 
   op simplify-impl2 : Module ReachForm -> ReachForm .
   eq simplify-impl2(U,(T | C) => D) =
-    simplify-cond(true,extract-conjoined-sub(U,(T | reduce(U,false,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
+    simplify-cond(true,extract-conjoined-sub-rf(U,(T | reduce(U,false,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
 endfm
 
 view goal-simplify-impl from FUN to REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
@@ -671,7 +683,7 @@ fmod REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
   pr FOFORMSIMPLIFY .
   pr MODULE-REACHFORM-PAIR .
   pr PATTERN-OPS .
-  pr TRANSITION-OPERATIONS .
+  pr TRANSITION-CTOR-SIMPLIFICATION .
 
   var U : Module .
   var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
@@ -681,7 +693,7 @@ fmod REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
 
   op full-simplify-impl2 : Module ReachForm -> ReachForm .
   eq full-simplify-impl2(U,(T | C) => D) =
-    simplify-cond(false,extract-conjoined-sub(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
+    simplify-cond(false,extract-conjoined-sub-rf(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
 endfm
 
 view full-goal-simplify-impl from FUN to REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
