@@ -114,8 +114,7 @@ fmod GRAPH-FOLDING-SEARCH is
     op _<=_ : NodeSet NodeSet -> [Bool] [ditto] .
     ---------------------------------------------
     eq NS             <  NS'        = NS =/= NS' and-then NS <= NS' .
-    eq NS             <= NS         = true .
-    eq .NodeSet       <= NeNS       = true .
+    eq .NodeSet       <= NS         = true .
     eq NeNS           <= .NodeSet   = false .
     eq (NeNS ; NeNS') <= NeNS''     = NeNS <= NeNS'' and-then NeNS' <= NeNS'' .
    ceq ND             <= (ND' ; NS) = true if fold(ND, ND') :: Fold .

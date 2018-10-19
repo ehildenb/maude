@@ -2269,12 +2269,12 @@ result NeNodeSet: state('<_`,_`,_`,_>['@1:Mode,'0.Nat,'crit.Mode,'@2:Nat]) ;
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(bfs(states(1 ; 2))) <= (
     nodes(bfs(states(1))) ; nodes(bfs(states(2)))) .
-rewrites: 2556
+rewrites: 2643
 result Bool: true
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : (nodes(bfs(states(1))) ; nodes(bfs(
     states(2)))) <= nodes(bfs(states(1 ; 2))) .
-rewrites: 2556
+rewrites: 2643
 result Bool: true
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(3) <= states(1 ; 2) .
@@ -2319,7 +2319,7 @@ result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat,'@1:Mode,'_+_[
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(extend(states(1 ; 2))) <=
     nodes(bfs(states(1 ; 2))) .
-rewrites: 1944
+rewrites: 2031
 result Bool: true
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : nodes(extend(states(5 ; 6 ; 7 ;

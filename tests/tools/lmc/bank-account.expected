@@ -397,17 +397,17 @@ rewrites: 13
 result Bool: false
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(0)) .
-rewrites: 146
+rewrites: 148
 result [Bool]: state('_st_['_#_['<`bal:_pend:_overdraft:_>['@4:Nat,'@1:Nat,
     'true.Bool],'@3:MsgConf],'@2:Form`{Bool`}]) <= state('_st_['_#_[
     '<`bal:_pend:_overdraft:_>['N:Nat,'X:Nat,'false.Bool],'MSGS:MsgConf],
     'C:Form`{Bool`}])
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(2)) .
-rewrites: 27
+rewrites: 29
 result Bool: true
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : invariant(states(0 ; 2)) .
-rewrites: 178
+rewrites: 193
 result Bool: true
 Bye.
