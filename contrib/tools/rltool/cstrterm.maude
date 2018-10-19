@@ -60,14 +60,20 @@ fmod CONSTRAINED-TERMSET-PROJECTIONS is
   pr CONSTRAINED-TERM-PROJECTIONS .
   pr CONSTRAINED-TERMSET .
   pr TERMSET-FM .
-  op term : CTermSet   -> TermSet .
+  var CT CT' : CTerm . var CTS : CTermSet . var F : FOForm? .
+
+  op term : CTermSet -> TermSet .
+  eq term(CT | CT' | CTS) = term(CT) | term(CT' | CTS) .
+  eq term(noterm)         = emptyTermSet .
+
   op cond : CTermSet   -> FOForm? .
   op cond : QFCTermSet -> QFForm? .
-  var CT CT' : CTerm . var CTS : CTermSet .
-  eq term(CT | CT' | CTS) = term(CT) | term(CT' | CTS) .
   eq cond(CT | CT' | CTS) = cond(CT) \/ cond(CT' | CTS) .
-  eq term(noterm)         = emptyTermSet .
   eq cond(noterm)         = mtForm .
+
+  op conj : CTermSet FOForm? -> CTermSet .
+  eq conj(CT | CT' | CTS,F) = conj(CT,F) | conj(CT' | CTS,F) .
+  eq conj(noterm,F)         = noterm .
 endfm
 
 fmod CONSTRAINED-TERMSETPAIR is
