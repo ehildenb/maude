@@ -10,9 +10,6 @@ fmod RENAMED-FVP-NARROWING-GRAPH is
               ) .
 
     vars ND ND' : Node .
-
-    eq intersect(ND, ND') = true [owise] .
-    --------------------------------------
 endfm
 
 --- ### Bakery Search Instantiation
@@ -89,11 +86,6 @@ fmod FVP-BAKERY-INIT is
     eq init(7) = '<_`,_`,_`,_>[ 'wait.NcMode  , 'Y1:Nat   , 'QC:Mode      , 'Y2:NzNat ] .
     eq init(8) = '<_`,_`,_`,_>[ 'QC:Mode      , 'Y1:NzNat , 'wait.NcMode  , 'Y2:Nat   ] .
     eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat   , 'crit.Mode    , 'X3:Nat   ] .
-
-    vars T T' : Term .
-
-    eq intersect(state(T), state(T')) = true [owise] .
-    --------------------------------------------------
 endfm
 
 --- FVP-CONDITIONAL-NARROWING-GRAPH
@@ -204,7 +196,7 @@ reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'V2:NcMode    , 'V3:Na
        ) .
 
 reduce intersect(state('V2:NzNat), state('V3:Nat)) .
-reduce intersect(state('V2:NzNat), state('V3:Nat)) .
+reduce intersect(state('V2:Nat), state('V3:Nat)) .
 reduce intersect( state('<_`,_`,_`,_>['V1:Mode,'0.Nat,'crit.Mode,'V2:Nat])
                 , state('<_`,_`,_`,_>['V1:Mode,'_+_['V2:Nat,'V3:NzNat],'crit.Mode,'V2:Nat])
                 ) .

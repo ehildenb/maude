@@ -22,8 +22,8 @@ fmod GRAPH-FOLDING-SEARCH-TEST is
 
     --- Add the following equation to reduce _<=_ to constructors
     vars NeNS NeNS' : NeNodeSet .
-    eq NeNS <= NeNS'          = false [owise] .
-    eq intersect(NeNS, NeNS') = false [owise] .
+    eq intersect(NeNS, NeNS') = .NodeSet [owise] .
+    eq NeNS <= NeNS' = false [owise] .
     eq isEmpty?(NeNS) = false .
 
     eq step(A) = < x , B > , < y , D > , < z , D > .
@@ -69,6 +69,9 @@ reduce (D ; B) <= E .
 
 reduce isEmpty?(.NodeSet) .
 reduce isEmpty?(A ; B) .
+
+reduce intersect(1 ; 3 ; 5 , 3    ; 5 ; 7) .
+reduce intersect(1 ; 3 ; 5 , 3[<] ; 5 ; 7) .
 
 reduce intersect(A, A) .
 reduce intersect(.NodeSet, A) .
