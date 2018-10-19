@@ -1173,16 +1173,17 @@ fmod TYPE-EXTRA is
   eq termListTypes(M,(T, TL))  = leastSort(M,T) termListTypes(M,TL) .
   eq termListTypes(M,empty) = nil .
 
-  op maxSortAbove : Module Sort ~> Sort .
-  op maxSortAbove : Module Sort SortSet ~> Sort .
-  eq maxSortAbove(M,S) = maxSortAbove(M,S,maximalSorts(M,getKind(M,S))) .
-  eq maxSortAbove(M,S,S' ; SS) =
-    if sortLeq(M,S,S') then
-      if maxSortAbove(M,S,SS) :: Sort then
-        maxSortAbove(M,S,none) else
-        S'
-      fi else
-      maxSortAbove(M,S,SS)
+  --- OUT: return a maximal sort above the given sort
+  ---  NB: output is not guaranteed to be stable across executions
+  op maximalSortAbove : Module Sort ~> Sort .
+  op maximalSortAbove : Module Sort SortSet ~> Sort .
+  eq maximalSortAbove(M,S) = maximalSortAbove(M,S,maximalSorts(M,getKind(M,S))) .
+  eq maximalSortAbove(M,S,S' ; SS) =
+    if sortLeq(M,S,S')
+      then ---if maximalSortAbove(M,S,SS) :: Sort
+        ---then maximalSortAbove(M,S,none)
+        S' ---else S' fi
+      else maximalSortAbove(M,S,SS)
     fi .
 endfm
 
@@ -1891,7 +1892,7 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
   pr META-LEVEL .
   pr UNIT-FM .
   pr UNIQUE-PREFIX . --- for opPrefix/sortPrefix
-  pr TYPE-EXTRA . --- for maxSortAbove
+  pr TYPE-EXTRA . --- for maximalSortAbove
 
   var M : Module .
   var S : Sort . var SS : SortSet .
@@ -1920,9 +1921,9 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
   --- Define Free Heterogenous List Fuctor over Terms in the Module
   op toHL : Module NeTermList -> Term .
   op $toHL : Module TermList -> TermList .
-  eq toHL(M,T) = 'singleton[hl-inj(M,maxSortAbove(M,leastSort(M,T)))[T]] .
+  eq toHL(M,T) = 'singleton[hl-inj(M,maximalSortAbove(M,leastSort(M,T)))[T]] .
   eq toHL(M,(T,NTL)) = '_|_[$toHL(M,(T,NTL))] .
-  eq $toHL(M,(T,TL)) = hl-inj(M,maxSortAbove(M,leastSort(M,T)))[T], $toHL(M,TL) .
+  eq $toHL(M,(T,TL)) = hl-inj(M,maximalSortAbove(M,leastSort(M,T)))[T], $toHL(M,TL) .
   eq $toHL(M,empty) = empty .
 
   --- Define Forgetful Functor over Heterogeneous Lists
