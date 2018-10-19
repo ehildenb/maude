@@ -18,7 +18,7 @@ mod 2TOKEN is
 endm
 
 mod 2TOKEN-stop is protecting 2TOKEN .
-  op [_] : Conf -> State .
+  op [_] : Conf -> State [ctor] .
   var C  : Conf .
   rl [done] : { C } => [ C ] .
 endm
