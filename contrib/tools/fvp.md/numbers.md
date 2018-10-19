@@ -65,9 +65,9 @@ fmod FVP-NAT is
     -------------------------------
     eq sd( N , N + M ) = M [variant] .
 
-    op min : Nat Nat -> Nat [comm] .
-    op max : Nat Nat -> Nat [comm] .
-    --------------------------------
+    op min : Nat Nat -> Nat [comm assoc] .
+    op max : Nat Nat -> Nat [comm assoc] .
+    --------------------------------------
     eq min( N , N + M ) = N     [variant] .
     eq max( N , N + M ) = N + M [variant] .
 endfm
