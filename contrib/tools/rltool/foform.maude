@@ -1210,7 +1210,7 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
   op #extract-sub : Module Bool AtomSet Substitution -> FOFormSetSubstPair .
  ceq #extract-sub(U,B,V ?= T | AS,S) = #extract-sub(U,B,AS << (V <- T),S .. (V <- T))
   if sortLeq(U,leastSort(U,T),getType(V)) /\ not V in vars(T) .
-  eq #extract-sub(U,B,AS,S) = (AS | if true then mtFormSet else toPosEqAtoms(S) fi,S) [owise] .
+  eq #extract-sub(U,B,AS,S) = (AS | if B then mtFormSet else toPosEqAtoms(S) fi,S) [owise] .
 endfm
 
 fmod FOFORM-PRINTER is pr FOFORM . pr GENERIC-PRINTER .
