@@ -1,0 +1,139 @@
+load ../../../contrib/tools/fvp/numbers.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+
+fmod RENAMED-FVP-NARROWING-GRAPH is
+   protecting ( FVP-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH )
+            * ( sort   Nat to   NatP
+              , sort NzNat to NzNatP
+              , op downTerm to downTermP
+              , op   upTerm to   upTermP
+              ) .
+endfm
+
+fmod FVP-NAT-LIST is
+   protecting FVP-NAT-PRED .
+
+    sorts NeListNat ListNat .
+    -------------------------
+    subsort Nat < NeListNat < ListNat .
+
+    var L : ListNat .
+
+    op .ListNat :                     ->   ListNat [ctor] .
+    op _;_      : NeListNat NeListNat -> NeListNat [ctor assoc] .
+    -------------------------------------------------------------
+
+    op _;_ : ListNat ListNat -> ListNat [assoc] .
+    ---------------------------------------------
+    eq L ; .ListNat = L [variant] .
+    eq .ListNat ; L = L [variant] .
+endfm
+
+mod FVP-NAT-LIST-SORTING is
+   protecting FVP-NAT-LIST .
+
+    sort System .
+    -------------
+
+    vars N M : Nat . vars NeL NeL' : NeListNat .
+
+    op [_] : ListNat -> System [ctor] .
+    -----------------------------------
+    rl [       N + M + 1 ; N        ] => [       N ; N + M + 1        ] .
+    rl [ NeL ; N + M + 1 ; N        ] => [ NeL ; N ; N + M + 1        ] .
+    rl [       N + M + 1 ; N ; NeL' ] => [       N ; N + M + 1 ; NeL' ] .
+    rl [ NeL ; N + M + 1 ; N ; NeL' ] => [ NeL ; N ; N + M + 1 ; NeL' ] .
+endm
+
+fmod FVP-NAT-LIST-SORTED-PRED is
+   protecting FVP-NAT-LIST .
+   protecting FVP-BOOL-EQFORM .
+
+    sorts MSetNat .
+    ---------------
+    subsort Nat < MSetNat .
+
+    vars N M : Nat . vars NeL NeL' : NeListNat . var L : ListNat .
+
+    op .MSetNat :                 -> MSetNat [ctor] .
+    op _,_      : MSetNat MSetNat -> MSetNat [assoc comm id: .MSetNat] .   ---- TODO: `ctor`?
+    --------------------------------------------------------------------
+
+    op list2mset : ListNat -> MSetNat .
+    -----------------------------------
+    eq list2mset(.ListNat)   = .MSetNat .
+    eq list2mset(N)          = N .
+    eq list2mset(NeL ; NeL') = list2mset(NeL) , list2mset(NeL') .
+
+    op unsorted : ListNat -> Form{Bool} [ctor] .
+    --------------------------------------------
+    eq unsorted(N)         = ff                                 [variant] .
+    eq unsorted(.ListNat)  = ff                                 [variant] .
+    eq unsorted(N ; M ; L) = (M < N ?= true) /\ unsorted(M ; L) [variant] .
+
+    --- eq unsorted(     n + m + 1 ; n     ) = tt [variant] .
+    --- eq unsorted(l1 ; n + m + 1 ; n     ) = tt [variant] .
+    --- eq unsorted(     n + m + 1 ; n ; l2) = tt [variant] .
+    --- eq unsorted(l1 ; n + m + 1 ; n ; l2) = tt [variant] .
+endfm
+
+fmod FVP-NAT-LIST-SORT-PERMUTATION is
+    including UNCONDITIONALIZE-FVP-BOOL
+            + RENAMED-FVP-NARROWING-GRAPH .
+
+    eq #M = upModule('FVP-NAT-LIST-SORTING, true) .
+    -------------------------------------------
+endfm
+
+---(The properties we want to prove are:
+ var S : MSet .
+
+1. the invariant:
+
+  l | list2mset(l) = S
+
+which is parametric on S,
+
+with itself as the set of initial states:
+
+    [l ] | list2mset(l) = S
+
+This shows that the multiset of elements in the list is always the same.
+
+We would need to prove:
+(i) subsumption, which is trivial, since it is the same set; and
+
+(ii) the formula:
+
+[l ] | list2mset(l) = S =>* < [l'] | list2mset(l') = S >
+
+where <_> is the "stopwatch" operator with rule
+
+ [l] => < [l] > .
+
+2. There is no need to use the "stopwatch" operator for
+the other property we want to prove, which is a
+weak termination condition.
+
+The set T of terminating states is:
+
+[l] | unsorted(l) =/= tt
+
+and the weak termination condition, saying that at the end the list
+is sorted is:
+
+[l] | \top =>* [l'] | unsorted(l') =/= tt
+
+Note that to prove this formula it will be quite useful to:
+
+a. use case analysis with the generating set for the sort List:
+
+{nil,n,m ; l1}
+
+b.  Note that  in the first two cases it will be quite easy to
+     prove that subsumption works, because:
+
+    b.1 the unsorted predicate is FVP
+    b.2. unsorted(nil) = true has no unifiers
+    b3. unsorted(n) = true has no unifiers.
+)---
