@@ -146,21 +146,37 @@ fmod MGCI is
   var T : Term .
   var UP : UnificationProblem .
 
-  op mgci       : Module Term -> SubstitutionSet .
-  op mgci       : Module Term Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat UnificationTriple SubstitutionSet -> SubstitutionSet .
-  op ctor-term? : Module Term -> Bool .
-  op ctrm       : Module Term Nat -> SubstitutionSet .
+  --- OUT: generate a set of most general constructor instances
+  ---      where there are no bad variables in the initial term
+  op mgci : Module Term -> SubstitutionSet .
+  eq mgci(M,T) = mgci(M,T,0) .
 
-  eq mgci(M,T)                     = mgci(M,T,0) .
-  eq mgci(M,T,I)                   = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
-  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),empty) .
+  --- OUT: generate a set of most general constructor instances
+  ---      where Nat is greater than the index of all bad variables
+  ---      inside of the term to be analyzed
+  op mgci : Module Term Nat -> SubstitutionSet .
+  eq mgci(M,T,I) = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
+
+  --- PRE: [1] CM is the constructor refinement of M
+  ---      [2] UP is a unification problem in the signature CM
+  --- OUT: the solutions of the unification problem in CM lifted up
+  ---      into corresponding substitutions in M
+  op $mgci : Module Module UnificationProblem Nat -> SubstitutionSet .
+  eq $mgci(M,CM,UP,I) = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),empty) .
+
+  ---  NB: this implements the function above, looping over each
+  ---      generated unifier in the signature in CM
+  op $mgci : Module Module UnificationProblem Nat UnificationTriple SubstitutionSet -> SubstitutionSet .
   eq $mgci(M,CM,UP,N,noUnifier,SS) = lift-sub(M,SS) .
   eq $mgci(M,CM,UP,N,{S,S',I},SS)  = $mgci(M,CM,UP,s(N),metaDisjointUnify(CM,UP,s(I),s(N)),SS | S) .
 
-  eq ctrm(M,T,N) = metaMatch(ctor-refine(M),join('X ': ctor-sort(M,leastSort(M,T))),ctor-term(M,T),nil,N) .
-  eq ctor-term?(M,T) = ctrm(M,T,0) :: Substitution .
+  --- OUT: return true iff the term is a constructor term
+  op ctor-term? : Module Term -> Bool .
+  eq ctor-term?(M,T) = metaMatch(ctor-refine(M),
+                         join('X ': ctor-sort(M,leastSort(M,T))),
+                         ctor-term(M,T),
+                         nil,
+                         0) :: Substitution .
 endfm
 
 --- this module uses functionality above to compute defined subterms of terms
