@@ -235,6 +235,12 @@ We can access a `FoldingLabeledGraph?` in various ways, including the `pred` and
     eq restrict(LG,                        NS) = .LabeledGraph [owise] .
    ceq restrict(ND -[ L ]-> ND' LG, ND'' ; NS) = ND -[ L ]-> ND' restrict(LG, ND ; ND' ; ND'' ; NS)
                                               if intersect(ND ; ND', ND'') =/= .NodeSet .
+
+    op restrictBackwards : LabeledGraph NodeSet -> [LabeledGraph] .
+    ---------------------------------------------------------------
+    eq restrictBackwards(LG,                        NS) = .LabeledGraph [owise] .
+   ceq restrictBackwards(ND -[ L ]-> ND' LG, ND'' ; NS) = ND -[ L ]-> ND' restrictBackwards(LG, ND ; ND'' ; NS)
+                                                       if intersect(ND', ND'') =/= .NodeSet .
 ```
 
 A `FoldedLabeledGraph` will use the `NodeMap` to store nodes, instead of directly storing them as nodes.
@@ -296,6 +302,12 @@ Function `restrict` is lifted to a `FoldedLabeledGraph?`:
    ceq restrict(LG | NM | N | NS, NS') = LG' | restrict(NM, NS'') | N | intersect(NS, NS'')
                                       if LG'  := restrict(LG, intersects-with(NM, NS'))
                                       /\ NS'' := nodes(LG') .
+
+    op restrictBackwards : FoldedLabeledGraph? NodeSet -> [FoldedLabeledGraph?] .
+    -----------------------------------------------------------------------------
+   ceq restrictBackwards(LG | NM | N | NS, NS') = LG' | restrict(NM, NS'') | N | intersect(NS, NS'')
+                                               if LG'  := restrictBackwards(LG, intersects-with(NM, NS'))
+                                               /\ NS'' := nodes(LG') .
 endfm
 ```
 
