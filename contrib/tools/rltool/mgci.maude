@@ -134,17 +134,20 @@ endfm
 --- analyzed should make any use of kinds!
 fmod MGCI is
   pr META-LEVEL .
-  pr SUBSTITUTIONSET .
   pr CTOR-REFINE .
   pr CTOR-LIFT .
   pr QID-JOIN .
+  pr TERMSET-FM .
+  pr SUBSTITUTIONSET .
+  pr SUBSTITUTIONSETPAIR .
 
   var M CM : Module .
   var I J N : Nat .
-  var S S' : Substitution .
+  var S S' S1 S2 : Substitution .
   var SS : SubstitutionSet .
   var T : Term .
   var UP : UnificationProblem .
+  var V : Variable .
 
   --- OUT: generate a set of most general constructor instances
   ---      where there are no bad variables in the initial term
@@ -177,6 +180,27 @@ fmod MGCI is
                          ctor-term(M,T),
                          nil,
                          0) :: Substitution .
+
+  --- OUT: a SubstitutionSetPair where the constructor assignments
+  ---      are in the first slot, and the non-constructors are in the
+  ---      second slot
+  op ctor-split-sub : Module Substitution ~> SubstitutionPair .
+  eq ctor-split-sub(M,S) = ctor-split-sub(M,S,none,none) .
+
+  op ctor-split-sub : Module Substitution Substitution Substitution -> SubstitutionPair .
+  eq ctor-split-sub(M,V <- T ; S,S1,S2) = if ctor-term?(M,T)
+                                            then ctor-split-sub(M,S,V <- T ; S1,S2)
+                                            else ctor-split-sub(M,S,S1,V <- T ; S2)
+                                          fi .
+  eq ctor-split-sub(M,none,S1,S2) = (S1,S2) .
+
+  --- OUT: return the subset of a substitution that is constructor terms
+  op ctor-sub : Module Substitution -> Substitution .
+  eq ctor-sub(M,S) = p1(ctor-split-sub(M,S)) .
+
+  --- OUT: return true iff a substitution is only constructor terms
+  op ctor-sub? : Module Substitution -> Bool .
+  eq ctor-sub?(M,S) = p2(ctor-split-sub(M,S)) == none .
 endfm
 
 --- this module uses functionality above to compute defined subterms of terms
