@@ -56,13 +56,6 @@ mod BANK-ACCOUNT-INIT-STATES is
     --------------------------------
     eq sub(0) = ('MSGS:MsgConf <- '@1:MsgConf ; 'N:Nat <- '_+_['@2:Nat,'@3:Nat,'debts['@1:MsgConf]] ; 'X:Nat <- 'debts['@1:MsgConf]) .
     eq sub(1) = ('MSGS:MsgConf <- '@3:MsgConf ; 'N:Nat <- '_+_['@1:Nat,'@4:Nat] ; 'X:Nat <- '@2:Nat) .
-
-    op states : NodeSet -> [NodeSet] .
-    ----------------------------------
-    eq states(.NodeSet)     = .NodeSet .
-    eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
-
-    eq states(N) = state(cinit(N)) .
 endm
 
 --- Module BANK-ACCOUNT-UNCONDITIONALIZED
@@ -125,19 +118,19 @@ reduce wellFormed(#M, cinit(7)) .
 reduce bfs(state(cinit(0))) .
 reduce bfs(state(cinit(1)), 1) .
 
-reduce state(pred(1)) <= state(pred(0)) .
-reduce states(1)      <= states(0) .
-reduce states(1)      <= states(2) .
+reduce state(pred(1))  <= state(pred(0)) .
+reduce state(cinit(1)) <= state(cinit(0)) .
+reduce state(cinit(1)) <= state(cinit(2)) .
 
-reduce intersect(states(0), states(2)) .
+reduce intersect(state(cinit(0)), state(cinit(2))) .
 
 reduce implies?(pred(0), pred(0)) .
 reduce implies?(pred(0), pred(1)) .
 reduce implies?(pred(1), pred(2)) .
 
-reduce invariant(states(0)) .
-reduce invariant(states(2)) .
-reduce invariant(states(0 ; 2)) .
+reduce invariant(state(cinit(0))) .
+reduce invariant(state(cinit(2))) .
+reduce invariant(state(cinit(0)) ; state(cinit(2))) .
 
 --- ; --- proving that `states(1)` is an invariant
 --- ; reduce invariant(states(1)) .

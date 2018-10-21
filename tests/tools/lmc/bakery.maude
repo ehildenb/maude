@@ -65,15 +65,6 @@ fmod FVP-BAKERY-INIT is
    protecting UNCONDITIONALIZE-FVP-BOOL .
     including CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
 
-    var N : Nat . vars NeNS NeNS' : NeNodeSet .
-
-    op states : NodeSet -> [NodeSet] .
-    ----------------------------------
-    eq states(N) = state(init(N)) .
-
-    eq states(.NodeSet)     = .NodeSet .
-    eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
-
     op init : Nat -> [Term] .
     -------------------------
     eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat,'1.NzNat,'1.NzNat],'wait.NcMode,'_+_['1.NzNat,'1.NzNat]] .
@@ -160,14 +151,14 @@ reduce wellFormed(#M, init(7)) .
 reduce wellFormed(#M, init(8)) .
 reduce wellFormed(#M, init(9)) .
 
-reduce step(states(0)) .
-reduce step(states(1)) .
-reduce step(states(2)) .
-reduce step(states(3)) .
+reduce step(state(init(0))) .
+reduce step(state(init(1))) .
+reduce step(state(init(2))) .
+reduce step(state(init(3))) .
 
-reduce states(3) <= states(1 ; 2) .
-reduce states(1) <= states(1 ; 2) .
-reduce states(2) <= states(1) .
+reduce state(init(3)) <= states(init(1) | init(2)) .
+reduce state(init(1)) <= states(init(1) | init(2)) .
+reduce state(init(2)) <= state(init(1)) .
 
 reduce state('wait.NcMode)           <= state('PC:Mode) .
 reduce state('_+_['1.NzNat,'V3:Nat]) <= state('Y1:NzNat) .
@@ -202,37 +193,37 @@ reduce intersect( state('<_`,_`,_`,_>['V1:Mode,'0.Nat,'crit.Mode,'V2:Nat])
                 ) .
 
 --- both initial states yield finite state-graphs
-reduce bfs(states(1)) .
-reduce bfs(states(2)) .
-reduce bfs(states(3)) .
-reduce bfs(states(1 ; 2)) .
+reduce bfs(state(init(1))) .
+reduce bfs(state(init(2))) .
+reduce bfs(state(init(3))) .
+reduce bfs(states(init(1) | init(2))) .
 
-reduce nodes(bfs(states(1))) .
-reduce nodes(bfs(states(2))) .
-reduce nodes(bfs(states(3))) .
-reduce nodes(bfs(states(1 ; 2))) .
+reduce nodes(bfs(state(init(1)))) .
+reduce nodes(bfs(state(init(2)))) .
+reduce nodes(bfs(state(init(3)))) .
+reduce nodes(bfs(states(init(1) | init(2)))) .
 
-reduce nodes(bfs(states(1 ; 2))) <= (nodes(bfs(states(1))) ; nodes(bfs(states(2)))) .
-reduce (nodes(bfs(states(1))) ; nodes(bfs(states(2)))) <= nodes(bfs(states(1 ; 2))) .
+reduce nodes(bfs(states(init(1) | init(2)))) <= (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) .
+reduce (nodes(bfs(state(init(1)))) ; nodes(bfs(state(init(2))))) <= nodes(bfs(states(init(1) | init(2)))) .
 
-reduce states(3)                            <= (states(1 ; 2)) .
-reduce states(3)                            <= nodes(bfs(states(1 ; 2))) .
-reduce (states(1 ; 2))                      <= nodes(extend(states(1 ; 2))) .
-reduce (states(1 ; 2))                      <= nodes(bfs(states(1 ; 2))) .
-reduce nodes(extend(states(1 ; 2)))         <= states(1 ; 2) .
-reduce nodes(extend(states(1 ; 2)))         <= nodes(bfs(states(1 ; 2))) .
-reduce nodes(extend(states(5 ; 6 ; 7 ; 8))) <= states(5 ; 6 ; 7 ; 8) .
+reduce state(init(3))                                               <= states(init(1) | init(2)) .
+reduce state(init(3))                                               <= nodes(bfs(states(init(1) | init(2)))) .
+reduce states(init(1) | init(2))                                    <= nodes(extend(states(init(1) | init(2)))) .
+reduce states(init(1) | init(2))                                    <= nodes(bfs(states(init(1) | init(2)))) .
+reduce nodes(extend(states(init(1) | init(2))))                     <= states(init(1) | init(2)) .
+reduce nodes(extend(states(init(1) | init(2))))                     <= nodes(bfs(states(init(1) | init(2)))) .
+reduce nodes(extend(states(init(5) | init(6) | init(7) | init(8)))) <= states(init(5) | init(6) | init(7) | init(8)) .
 
 --- state init(3) stays within init(1) ; init(2)
-reduce nodes(bfs(states(3))) <= (states(1 ; 2)) .
+reduce nodes(bfs(state(init(3)))) <= states(init(1) | init(2)) .
 
 --- even though in general init(1) ; init(2) is *not* an invariant
-reduce invariant(states(1 ; 2)) .
-reduce invariant(states(4 ; 5 ; 6)) .
-reduce invariant(states(5 ; 6 ; 7 ; 8)) .
-reduce nodes(bfs(states(1 ; 2))) <= (states(1 ; 2)) .
-reduce check states(3) stable in states(1 ; 2) .
+reduce invariant(states(init(1) | init(2))) .
+reduce invariant(states(init(4) | init(5) | init(6))) .
+reduce invariant(states(init(5) | init(6) | init(7) | init(8))) .
+reduce nodes(bfs(states(init(1) | init(2)))) <= states(init(1) | init(2)) .
+reduce check state(init(3)) stable in states(init(1) | init(2)) .
 
 --- state 3 never reaches the bad state 9, but states 1 ; 2 can
-reduce states(3)     =>* states(9) .
-reduce states(1 ; 2) =>* states(9) .
+reduce state(init(3))            =>* state(init(9)) .
+reduce states(init(1) | init(2)) =>* state(init(9)) .

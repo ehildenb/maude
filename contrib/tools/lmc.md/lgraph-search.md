@@ -288,8 +288,7 @@ fmod NARROWING-GRAPH-COMMON is
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
 
-    vars T T' : Term . var M : Module .
-    var SUB : Substitution . var SUBS : SubstitutionSet .
+    vars T T' : Term . var NeTS : NeTermSet . var M : Module . var SUB : Substitution .
     vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RL : Qid .
 
     op label : Qid Substitution -> Label .
@@ -301,11 +300,20 @@ fmod NARROWING-GRAPH-COMMON is
     eq transition(.NarrowStepResults)  = .TransitionSet .
     eq transition(NSR || NSR' || NSRS) = transition(NSR) , transition(NSR') , transition(NSRS) .
 
-    op state : Term         -> Node .
-    op fold  : Substitution -> Fold .
-    ---------------------------------
+    op fold : Substitution -> Fold .
+    --------------------------------
     eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
+
+    op state : Term -> Node .
+    -------------------------
+    eq step(state(T)) = transition(narrowSteps(#M, T)) .
+
+    op states : TermSet -> NodeSet .
+    --------------------------------
+    eq states(.TermSet) = .NodeSet .
+    eq states(T)        = state(T) .
+    eq states(T | NeTS) = state(T) ; states(NeTS) .
 endfm
 ```
 
