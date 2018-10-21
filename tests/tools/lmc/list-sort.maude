@@ -1,6 +1,9 @@
 load ../../../contrib/tools/fvp/numbers.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
+set include BOOL off .
+set include NAT  off .
+
 fmod RENAMED-FVP-NARROWING-GRAPH is
    protecting ( FVP-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH )
             * ( sort   Nat to   NatP
@@ -20,14 +23,17 @@ fmod FVP-NAT-LIST is
     var L : ListNat .
 
     op .ListNat :                     ->   ListNat [ctor] .
-    op _;_      : NeListNat NeListNat -> NeListNat [ctor assoc] .
-    -------------------------------------------------------------
+    op _;_      : NeListNat NeListNat -> NeListNat [ctor assoc prec 60] .
+    ---------------------------------------------------------------------
 
-    op _;_ : ListNat ListNat -> ListNat [assoc] .
-    ---------------------------------------------
+    op _;_ : ListNat ListNat -> ListNat [assoc prec 60] .
+    -----------------------------------------------------
     eq L ; .ListNat = L [variant] .
     eq .ListNat ; L = L [variant] .
 endfm
+
+reduce .ListNat ; 1 + 1 + 1 ; .ListNat .
+reduce 1 + 1 + 1 ; 1 + 1 ; 1 + 1 + 1 + 1 ; 1 .
 
 mod FVP-NAT-LIST-SORTING is
    protecting FVP-NAT-LIST .
@@ -39,11 +45,15 @@ mod FVP-NAT-LIST-SORTING is
 
     op [_] : ListNat -> System [ctor] .
     -----------------------------------
-    rl [       N + M + 1 ; N        ] => [       N ; N + M + 1        ] .
-    rl [ NeL ; N + M + 1 ; N        ] => [ NeL ; N ; N + M + 1        ] .
-    rl [       N + M + 1 ; N ; NeL' ] => [       N ; N + M + 1 ; NeL' ] .
-    rl [ NeL ; N + M + 1 ; N ; NeL' ] => [ NeL ; N ; N + M + 1 ; NeL' ] .
+    rl [       N + M + 1 ; N        ] => [       N ; N + M + 1        ] [narrowing] .
+    rl [ NeL ; N + M + 1 ; N        ] => [ NeL ; N ; N + M + 1        ] [narrowing] .
+    rl [       N + M + 1 ; N ; NeL' ] => [       N ; N + M + 1 ; NeL' ] [narrowing] .
+    rl [ NeL ; N + M + 1 ; N ; NeL' ] => [ NeL ; N ; N + M + 1 ; NeL' ] [narrowing] .
 endm
+
+rewrite [ 1 + 1 + 1  ;  1 + 1 ] .
+rewrite [ 1 + 1 + 1  ;  1 + 1  ;  1 + 1 + 1 + 1 ; 1 ] .
+rewrite [ 1 + 1 + 1 + 1  ;  1 + 1 + 1  ;  1 + 1 + 1 + 1 + 1 ] .
 
 fmod FVP-NAT-LIST-SORTED-PRED is
    protecting FVP-NAT-LIST .
@@ -81,9 +91,59 @@ fmod FVP-NAT-LIST-SORT-PERMUTATION is
     including UNCONDITIONALIZE-FVP-BOOL
             + RENAMED-FVP-NARROWING-GRAPH .
 
+    var N : NatP . var TL : TermList . var Q : Qid .
+
     eq #M = upModule('FVP-NAT-LIST-SORTING, true) .
-    -------------------------------------------
+    -----------------------------------------------
+
+    op nat : NatP -> Term .
+    -----------------------
+    eq nat(0) = '0.Nat .
+    eq nat(1) = '1.NzNat .
+    eq nat(2) = '_+_['1.NzNat, '1.NzNat] .
+    eq nat(3) = '_+_['1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(4) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(5) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(6) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(7) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(8) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+    eq nat(9) = '_+_['1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat, '1.NzNat] .
+
+    op init : NatP -> Term .
+    ------------------------
+    eq init(0) = '`[_`]['_;_[nat(3), nat(4), nat(5)]] .
+    eq init(1) = '`[_`]['_;_[nat(4), nat(3), nat(5)]] .
+    eq init(2) = '`[_`]['_;_[nat(3), nat(4)]] .
+    eq init(3) = '`[_`]['_;_[nat(4), nat(3)]] .
+    eq init(4) = '`[_`]['_;_[nat(3), nat(6), nat(4), nat(5)]] .
+    eq init(5) = '`[_`]['_;_[nat(3), nat(6), nat(9), nat(5)]] .
 endfm
+
+reduce nat(0) .
+reduce nat(1) .
+reduce nat(2) .
+reduce nat(3) .
+reduce nat(4) .
+
+reduce wellFormed(#M, nat(0)) .
+reduce wellFormed(#M, nat(1)) .
+reduce wellFormed(#M, nat(2)) .
+reduce wellFormed(#M, nat(3)) .
+reduce wellFormed(#M, nat(4)) .
+
+reduce wellFormed(#M, init(0)) .
+reduce wellFormed(#M, init(1)) .
+reduce wellFormed(#M, init(2)) .
+reduce wellFormed(#M, init(3)) .
+reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
+
+reduce step(state(init(0))) .
+reduce step(state(init(1))) .
+reduce step(state(init(2))) .
+reduce step(state(init(3))) .
+reduce step(state(init(4))) .
+reduce step(state(init(5))) .
 
 ---(The properties we want to prove are:
  var S : MSet .
