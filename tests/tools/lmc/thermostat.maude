@@ -101,3 +101,124 @@ reduce wellFormed(#M, badConf) .
 
 reduce bfs(state(goodConf), 2) .
 reduce state(goodConf) =>[5] state(badConf) .
+
+--- ### Thermostat Search modulo REAL
+
+view Boolean from TRIV to REAL is sort Elt to Boolean . endv
+
+fmod EQFORM-SMT-BOOLEAN is
+   protecting EQFORM-IMPL{Boolean} + REAL .
+   protecting META-LEVEL * ( sort Nat to NatP
+                           , op _+_             to _+P_
+                           , op _=/=_           to _=/=P_
+                           , op _==_            to _==P_
+                           , op if_then_else_fi to if_then_else_fiP
+                           , op min             to minP
+                           , op max             to maxP
+                           , op sd              to sdP
+                           ) .
+
+    vars NTFB NTFB' : NoTrueForm{Boolean} . vars NFFB NFFB' : NoFalseForm{Boolean} .
+    vars FB FB' : Form{Boolean} . vars B B' : Boolean .
+
+--- **TODO**: `git log` indicates that the behaviour of `metaCheck` is that { sat } => true { unsat unknown } => false.
+---           This could make this simplification unsound in the case of `{ unknown } => false`
+
+    op simplify : Form{Boolean} -> Form{Boolean} .
+    ----------------------------------------------
+    eq simplify(FB) = FB [owise] .
+   ceq simplify(FB) = tt if B := toBoolean(~ FB) /\ false = metaCheck(upModule('REAL, true), upTerm(B)) .
+   ceq simplify(FB) = ff if B := toBoolean(  FB) /\ false = metaCheck(upModule('REAL, true), upTerm(B)) .
+
+    op toBoolean : Form{Boolean} -> Boolean .
+    -----------------------------------------
+    eq toBoolean(B ?= B') = B  === B' .
+    eq toBoolean(B != B') = B =/== B' .
+    eq toBoolean(~ FB)    = not toBoolean(FB) .
+
+    eq toBoolean(NTFB /\ NTFB') = toBoolean(NTFB) and toBoolean(NTFB') .
+    eq toBoolean(NTFB /\ NTFB') = toBoolean(NTFB) and toBoolean(NTFB') .
+    eq toBoolean(NFFB \/ NFFB') = toBoolean(NFFB) or  toBoolean(NFFB') .
+    eq toBoolean(NFFB \/ NFFB') = toBoolean(NFFB) or  toBoolean(NFFB') .
+
+    eq toBoolean(FB => FB') = toBoolean(FB) implies toBoolean(FB') .
+endfm
+
+reduce simplify(false ?= 0/1 < 1/1) .
+reduce simplify(true  ?= 0/1 < 1/1) .
+
+reduce simplify((true ?= X:Real <= Y:Real) => (true ?= X:Real <  Y:Real)) .
+reduce simplify((true ?= X:Real <  Y:Real) => (true ?= X:Real <= Y:Real)) .
+
+reduce simplify((true ?= X:Real <= Y:Real) => (true ?= X:Real <= (Y:Real + 2/1))) .
+
+--- For the real-numbered thermostat, we instantiat the parameter theory `#cModule` to `EQFORM-SMT-BOOLEAN` instead.
+--- The top sort of the module remains the same (`Conf`), as it comes from the same parametric theory.
+
+fmod UNCONDITIONALIZE-REAL is
+   protecting DETERMINISTIC-VARIABLES .
+    including UNCONDITIONALIZE .
+
+    vars T T' : Term . var S : Sort . vars EqC EqC' : EqCondition .
+
+    eq #cModule   = 'EQFORM-SMT-BOOLEAN .
+    eq #cSort     = 'Form`{Boolean`} .
+    eq #cTrue     = 'tt.TrueLit`{Boolean`} .
+    eq #cFalse    = 'ff.FalseLit`{Boolean`} .
+    eq #cConjunct = '_/\_ .
+    -----------------------
+
+    eq #mkCondition(T  = T') = '_?=_[T, T'] .
+    eq #mkCondition(T := T') = '_?=_[T, T'] .
+    eq #mkCondition(T : S)   = '_?=_[T, #var(T, S)] .
+    -------------------------------------------------
+endfm
+
+mod THERMOSTAT-REAL-NARROWING-GRAPH is
+    including UNCONDITIONALIZE-REAL .
+    including THERMOSTAT-COMMON-INIT .
+
+    vars T T' : Term . var TYPE : Type .
+
+    eq #nSort = 'Real .
+    eq #nTrue = 'true.Boolean .
+    ---------------------------
+
+    eq #MO = upModule('THERMOSTAT-REAL-COMFORTABLE, true) .
+    -------------------------------------------------------
+
+--- For the real numbers, we check `isUnsat` via Maude's meta-level hookup to an SMT solver.
+
+   ceq isUnsat(T) = T' == #cFalse if { T' , TYPE } := metaReduce(upModule(#cModule, true), 'simplify[T]) .
+   -------------------------------------------------------------------------------------------------------
+
+   ceq implies?(T, T') = T' == #cTrue if { T' , TYPE } := metaReduce(upModule(#cModule, true), 'simplify['_=>_[T, T']]) .
+   ----------------------------------------------------------------------------------------------------------------------
+endm
+
+reduce wellFormed(#M) .
+reduce wellFormed(#M, goodConf) .
+reduce wellFormed(#M, badConf) .
+
+reduce isUnsat(lt('X:Real, 'Y:Real)) == false .
+reduce isUnsat(lt('X:Real, 'X:Real)) == true .
+reduce isUnsat(le('X:Real, 'Y:Real)) == false .
+reduce isUnsat(le('X:Real, 'X:Real)) == false .
+
+reduce isUnsat(#cConjunct[lt('X:Real, 'Y:Real), #cTrue]) == false .
+reduce isUnsat(#cConjunct[lt('X:Real, 'X:Real), #cTrue]) == true .
+reduce isUnsat(#cConjunct[le('X:Real, 'Y:Real), #cTrue]) == false .
+reduce isUnsat(#cConjunct[le('X:Real, 'X:Real), #cTrue]) == false .
+
+reduce isUnsat(#cConjunct[lt('X:Real, 'Y:Real), #cFalse]) == true .
+reduce isUnsat(#cConjunct[lt('X:Real, 'X:Real), #cFalse]) == true .
+reduce isUnsat(#cConjunct[le('X:Real, 'Y:Real), #cFalse]) == true .
+reduce isUnsat(#cConjunct[le('X:Real, 'X:Real), #cFalse]) == true .
+
+reduce isUnsat(#cConjunct[lt('X:Real, 'Y:Real), lt('Y:Real, 'X:Real)]) == true .
+reduce isUnsat(#cConjunct[le('X:Real, 'Y:Real), le('Y:Real, 'X:Real)]) == false .
+
+reduce implies?(lt('X:Real, 'Y:Real), le('X:Real, 'Y:Real)) .
+
+reduce bfs(state(goodConf), 12) .
+reduce state(goodConf) =>[5] state(badConf) .
