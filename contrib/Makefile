@@ -27,6 +27,10 @@ export LUA_PATH
 .PHONY: all tools systems clean
 
 all: \
+	tangle \
+	media
+
+tangle: \
 	tools \
 	systems
 

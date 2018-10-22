@@ -97,7 +97,7 @@ build_maude_yices2() {
 build_tangle() {
     progress "Tangling"
     (   cd "$contrib_dir"
-        make all
+        make tangle -j2
     )
 }
 
