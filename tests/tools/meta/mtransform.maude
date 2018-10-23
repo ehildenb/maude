@@ -3,6 +3,7 @@ load ../../../contrib/systems/bakery.maude
 load ../../../contrib/systems/qlock.maude
 load ../../../contrib/systems/oc.maude
 load ../../../contrib/systems/thermostat.maude
+load ../../../contrib/tools/meta/narrowing.maude
 load ../../../contrib/tools/meta/mtransform.maude
 
 fmod META-LEVEL-NAT-RENAMED is
@@ -64,13 +65,20 @@ reduce wellFormed(M) .
 
 fmod THERMOSTAT-UNCONDITIONALIZED-TEST is
    protecting UNCONDITIONALIZE-FVP-BOOL .
+   protecting NARROWING .
 
     eq #tSort = 'Conf .
 
     op M : -> Module [memo] .
     -------------------------
     eq M = unconditionalize(upModule('THERMOSTAT, false)) .
+
+    op init : -> Term .
+    -------------------
+    eq init = '_st_['`{_`,_`,_`}['TIME:Nat, 'TMP:Nat, 'IM:InMode], '_?=_['true.Bool, '_<_['TIME:Nat, 'TMP:Nat]]] .
 endfm
 
 reduce M .
 reduce wellFormed(M) .
+reduce wellFormed(M, init) .
+reduce narrowSteps(M, init) .
