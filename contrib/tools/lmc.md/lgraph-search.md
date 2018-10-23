@@ -286,6 +286,16 @@ In the data structure `FoldedLabeledGraph?`, we additionally maintain a `frontie
     op flgraph : NodeSet -> FoldedLabeledGraph? .
     ---------------------------------------------
     eq flgraph(NS) = insert(NS, .FoldedLabeledGraph) .
+```
+
+Function `restrict` is lifted to a `FoldedLabeledGraph?`:
+
+```maude
+    op restrict : FoldedLabeledGraph? NodeSet -> [FoldedLabeledGraph?] .
+    --------------------------------------------------------------------
+   ceq restrict(LG | NM | N | NS, NS') = LG' | restrict(NM, NS'') | N | intersect(NS, NS'')
+                                      if LG'  := restrict(LG, intersects-with(NM, NS'))
+                                      /\ NS'' := nodes(LG') .
 endfm
 ```
 

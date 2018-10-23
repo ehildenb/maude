@@ -109,6 +109,12 @@ reduce restrict(         1 |-> B 2 |-> E , 1 [ < ] ) .
 reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , A ; C ) .
 reduce intersects-with(         1 |-> B 2 |-> E , D     ) .
 
+reduce restrict((0 -[x]-> 2 0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12), 0) .
+reduce restrict((0 -[x]-> 2 0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12), 2) .
+
+reduce restrict((0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12), 0) .
+reduce restrict((0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12), 2) .
+
 reduce insert( .NodeSet  ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ; D ; E ; F ; G, .FoldedLabeledGraph) .
@@ -155,6 +161,53 @@ reduce frontier(extend(E)) .
 reduce frontier(extend(A ; B ; C)) .
 reduce frontier(extend(A ; B ; C ; D ; E ; F ; G)) .
 
+reduce restrict( ( (0 -[x]-> 2 0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , A
+               ) .
+
+reduce restrict( ( (0 -[x]-> 2 0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , B
+               ) .
+
+reduce restrict( ( (0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , B
+               ) .
+
+reduce restrict( ( (0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[y]-> 10 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , A
+               ) .
+
+reduce restrict( ( (0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , B
+               ) .
+
+reduce restrict( ( (0 -[y]-> 4 0 -[z]-> 4 2 -[y]-> 2 4 -[z]-> 12)
+                 | 0 |-> A 2 |-> B 4 |-> D 10 |-> C 12 |-> G
+                 | 13
+                 | 10 ; 12 ; 2
+                 )
+               , A
+               ) .
 
 --- Test Module FOLDING-LABELED-GRAPH-SEARCH
 --- ----------------------------------------
