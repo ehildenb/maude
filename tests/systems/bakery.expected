@@ -1,23 +1,23 @@
 ==========================================
-get variants in BAKERY-FVP : X > Y .
+get variants in BAKERY-FVP : X < Y .
 
 Variant #1
 rewrites: 0
-Bool>: #1:Nat> > #2:Nat>
-X --> #1:Nat>
-Y --> #2:Nat>
+Bool: #1:Nat < #2:Nat
+X --> #1:Nat
+Y --> #2:Nat
 
 Variant #2
 rewrites: 2
-Bool>: tt
-X --> %1:Nat> + %2:NzNat>
-Y --> %1:Nat>
+Bool: true
+X --> %1:Nat
+Y --> %1:Nat + %2:NzNat
 
 Variant #3
 rewrites: 2
-Bool>: ff
-X --> %1:Nat>
-Y --> %1:Nat> + %2:Nat>
+Bool: false
+X --> %1:Nat + %2:Nat
+Y --> %1:Nat
 
 No more variants.
 rewrites: 2

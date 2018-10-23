@@ -1,18 +1,18 @@
 load ../../contrib/systems/bank-account.maude
 
 get variants in BANK-ACCOUNT :
-    [ < bal: n + m + x pend: x     overdraft: ff > #               msgs
-    , < bal: n + m + x pend: x + m overdraft: ff > # withdraw(m) , msgs
+    [ < bal: n + m + x pend: x     overdraft: false > #               msgs
+    , < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs
     ] .
 
 get variants in BANK-ACCOUNT :
-    [ < bal: n pend: x overdraft: ff > # withdraw(m) , msgs
-    , [ m > n , < bal: n       pend: x       overdraft: tt > # msgs
-              , < bal: (n - m) pend: (x - m) overdraft: ff > # msgs
+    [ < bal: n pend: x overdraft: false > # withdraw(m) , msgs
+    , [ n < m , < bal: n           pend: x           overdraft: true  > # msgs
+              , < bal: (n monus m) pend: (x monus m) overdraft: false > # msgs
       ]
     ] .
 
 get variants in BANK-ACCOUNT :
-    [ < bal: n     pend: x overdraft: ff > # msgs
-    , < bal: n + m pend: x overdraft: ff > # msgs
+    [ < bal: n     pend: x overdraft: false > # msgs
+    , < bal: n + m pend: x overdraft: false > # msgs
     ] .

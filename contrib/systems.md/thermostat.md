@@ -34,9 +34,17 @@ mod THERMOSTAT is
                     => < time-until(off) , TMP , delay(off) >
                     if max < TMP + bound = true .
 
+   crl [inmode-on] : { TIME , TMP , on }
+                  => < TIME , TMP , on >
+                  if max < TMP + bound = false .
+
    crl [turning-on] : { TIME           , TMP , off       }
                    => < time-until(on) , TMP , delay(on) >
                    if TMP < min + bound = true .
+
+   crl [inmode-off] : { TIME , TMP , off }
+                   => < TIME , TMP , off >
+                   if TMP < min + bound = false .
 
     rl [delaying] : { TIME + 1 , TMP , DM }
                  => < TIME     , TMP , DM > .

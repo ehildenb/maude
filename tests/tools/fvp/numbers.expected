@@ -41,25 +41,31 @@ M --> #1:Nat
 NzN:NzNat --> #2:NzNat
 
 Variant #2
-rewrites: 3
+rewrites: 4
+Nat: min(%1:Nat, %2:NzNat)
+M --> min(%1:Nat, %3:Nat + min(%1:Nat, %2:NzNat))
+NzN:NzNat --> %2:NzNat
+
+Variant #3
+rewrites: 4
 NzNat: %1:NzNat
 M --> %1:NzNat
 NzN:NzNat --> %2:Nat + %1:NzNat
 
-Variant #3
-rewrites: 3
+Variant #4
+rewrites: 4
 Nat: %1:Nat
 M --> %1:Nat
 NzN:NzNat --> %1:Nat + %2:NzNat
 
-Variant #4
-rewrites: 3
+Variant #5
+rewrites: 4
 NzNat: %1:NzNat
 M --> %2:Nat + %1:NzNat
 NzN:NzNat --> %1:NzNat
 
 No more variants.
-rewrites: 3
+rewrites: 4
 ==========================================
 get variants in FVP-NAT : max(NzN:NzNat, 1 + NzN:NzNat) .
 
@@ -80,19 +86,47 @@ N --> #1:Nat
 M --> #2:Nat
 
 Variant #2
-rewrites: 4
+rewrites: 8
+Nat: min(%1:Nat, %2:Nat) + max(%2:Nat, min(%1:Nat, %3:Nat + min(%1:Nat,
+    %2:Nat)))
+N --> min(%1:Nat, %3:Nat + min(%1:Nat, %2:Nat))
+M --> %2:Nat
+
+Variant #3
+rewrites: 8
+Nat: min(%1:Nat, %2:Nat) + max(%1:Nat, min(%2:Nat, %3:Nat + min(%1:Nat,
+    %2:Nat)))
+N --> %1:Nat
+M --> min(%2:Nat, %3:Nat + min(%1:Nat, %2:Nat))
+
+Variant #4
+rewrites: 8
 Nat: %1:Nat + %1:Nat + %2:Nat
 N --> %1:Nat
 M --> %1:Nat + %2:Nat
 
-Variant #3
-rewrites: 4
+Variant #5
+rewrites: 8
 Nat: %1:Nat + %1:Nat + %2:Nat
 N --> %1:Nat + %2:Nat
 M --> %1:Nat
 
+Variant #6
+rewrites: 8
+Nat: %3:Nat + min(%2:Nat, max(%1:Nat, %3:Nat + max(%1:Nat, %2:Nat))) + max(
+    %1:Nat, %2:Nat)
+N --> max(%1:Nat, %3:Nat + max(%1:Nat, %2:Nat))
+M --> %2:Nat
+
+Variant #7
+rewrites: 8
+Nat: %3:Nat + min(%1:Nat, max(%2:Nat, %3:Nat + max(%1:Nat, %2:Nat))) + max(
+    %1:Nat, %2:Nat)
+N --> %1:Nat
+M --> max(%2:Nat, %3:Nat + max(%1:Nat, %2:Nat))
+
 No more variants.
-rewrites: 4
+rewrites: 8
 ==========================================
 get variants in FVP-NAT-MULT : N * M:Nat .
 
@@ -211,73 +245,101 @@ N:Int --> #1:Int
 M:Int --> #2:Int
 
 Variant #2
-rewrites: 10
+rewrites: 14
 Int: %2:Nat + - %1:NzNat
 N:Int --> %2:Nat
 M:Int --> - %1:NzNat
 
 Variant #3
-rewrites: 10
+rewrites: 14
 Int: %2:Nat + - %1:NzNat
 N:Int --> - %1:NzNat
 M:Int --> %2:Nat
 
 Variant #4
-rewrites: 10
+rewrites: 14
 Int: - min(%1:NzNat, %2:NzNat) + - max(%1:NzNat, %2:NzNat)
 N:Int --> - %1:NzNat
 M:Int --> - %2:NzNat
 
 Variant #5
-rewrites: 10
+rewrites: 14
+Nat: min(%1:Nat, %2:Nat) + max(%2:Nat, min(%1:Nat, %3:Nat + min(%1:Nat,
+    %2:Nat)))
+N:Int --> min(%1:Nat, %3:Nat + min(%1:Nat, %2:Nat))
+M:Int --> %2:Nat
+
+Variant #6
+rewrites: 14
+Nat: min(%1:Nat, %2:Nat) + max(%1:Nat, min(%2:Nat, %3:Nat + min(%1:Nat,
+    %2:Nat)))
+N:Int --> %1:Nat
+M:Int --> min(%2:Nat, %3:Nat + min(%1:Nat, %2:Nat))
+
+Variant #7
+rewrites: 14
 Nat: %1:Nat + %1:Nat + %2:Nat
 N:Int --> %1:Nat
 M:Int --> %1:Nat + %2:Nat
 
-Variant #6
-rewrites: 10
+Variant #8
+rewrites: 14
 Nat: %1:Nat + %1:Nat + %2:Nat
 N:Int --> %1:Nat + %2:Nat
 M:Int --> %1:Nat
 
-Variant #7
-rewrites: 18
+Variant #9
+rewrites: 14
+Nat: %3:Nat + min(%2:Nat, max(%1:Nat, %3:Nat + max(%1:Nat, %2:Nat))) + max(
+    %1:Nat, %2:Nat)
+N:Int --> max(%1:Nat, %3:Nat + max(%1:Nat, %2:Nat))
+M:Int --> %2:Nat
+
+Variant #10
+rewrites: 14
+Nat: %3:Nat + min(%1:Nat, max(%2:Nat, %3:Nat + max(%1:Nat, %2:Nat))) + max(
+    %1:Nat, %2:Nat)
+N:Int --> %1:Nat
+M:Int --> max(%2:Nat, %3:Nat + max(%1:Nat, %2:Nat))
+
+Variant #11
+rewrites: 22
 Int: - #2:Nat
 N:Int --> #1:NzNat
 M:Int --> - (#1:NzNat + #2:Nat)
 
-Variant #8
-rewrites: 18
+Variant #12
+rewrites: 22
 Int: - #2:Nat
 N:Int --> - (#1:NzNat + #2:Nat)
 M:Int --> #1:NzNat
 
-Variant #9
-rewrites: 18
+Variant #13
+rewrites: 22
 NzNeg: - (#1:NzNat + #1:NzNat + #2:Nat)
 N:Int --> - #1:NzNat
 M:Int --> - (#1:NzNat + #2:Nat)
 
-Variant #10
-rewrites: 18
+Variant #14
+rewrites: 22
 NzNeg: - (#1:NzNat + #1:NzNat + #2:Nat)
 N:Int --> - (#1:NzNat + #2:Nat)
 M:Int --> - #1:NzNat
 
-Variant #11
-rewrites: 20
+Variant #15
+rewrites: 24
 Nat: 0
 N:Int --> %1:NzNat
 M:Int --> - %1:NzNat
 
-Variant #12
-rewrites: 20
+Variant #16
+rewrites: 24
 Nat: 0
 N:Int --> - %1:NzNat
 M:Int --> %1:NzNat
 
 No more variants.
-rewrites: 20
+rewrites: 24
 ==========================================
 get variants in FVP-INT-MULT : NzI * NzN:NzNat .
 

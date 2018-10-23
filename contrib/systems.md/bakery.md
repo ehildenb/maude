@@ -104,55 +104,30 @@ This version specifically has the Finite Variant Property.
 ```maude
 set include BOOL off .
 
-fmod NAT> is
-
-    sorts Zero> NzNat> Nat> Bool> .
-    -------------------------------
-    subsorts Zero> NzNat> < Nat> .
-
-    vars n m : Nat> . vars n' m' : NzNat> .
-
-   ops tt ff : -> Bool>  [ctor] .
-    op 0     : -> Zero>  [ctor] .
-    op 1     : -> NzNat> [ctor] .
-    -----------------------------
-
-    op _+_ : Nat>   Nat>   -> Nat>   [ctor assoc comm id: 0] .
-    op _+_ : NzNat> Nat>   -> NzNat> [ctor assoc comm id: 0] .
-    op _+_ : Nat>   NzNat> -> NzNat> [ctor assoc comm id: 0] .
-    op _+_ : NzNat> NzNat> -> NzNat> [ctor assoc comm id: 0] .
-    ----------------------------------------------------------
-
-    op _>_ : Nat> Nat> -> Bool> .
-    -----------------------------
-    eq n + n' > n     = tt [variant] .
-    eq n      > n + m = ff [variant] .
-endfm
-
 mod BAKERY-FVP is
-   protecting NAT> .
+   protecting FVP-NAT-PRED .
 
     sorts Mode NcMode BState .
     --------------------------
     subsort NcMode < Mode .
 
-    vars P Q : Mode . vars X Y : Nat> .
+    vars P Q : Mode . vars X Y : Nat .
 
     op sleep : -> NcMode [ctor] .
     op wait  : -> NcMode [ctor] .
     op crit  : -> Mode   [ctor] .
     -----------------------------
 
-    op <_,_,_,_> : Mode Nat> Mode Nat> -> BState [ctor] .
-    -----------------------------------------------------
+    op <_,_,_,_> : Mode Nat Mode Nat -> BState [ctor] .
+    ---------------------------------------------------
     rl [p1_sleep] : < sleep, X, Q, Y > => <  wait, Y + 1, Q, Y > .
-    rl [p1_wait]  : <  wait, X, Q, 0 > => <  crit, X,     Q, 0 > .
-   crl [p1_wait]  : <  wait, X, Q, Y > => <  crit, X,     Q, Y > if  X > Y = ff .
+    rl [p1_wait1] : <  wait, X, Q, 0 > => <  crit, X,     Q, 0 > .
+   crl [p1_wait2] : <  wait, X, Q, Y > => <  crit, X,     Q, Y > if X <= Y = true .
     rl [p1_crit]  : <  crit, X, Q, Y > => < sleep, 0,     Q, Y > .
 
     rl [p2_sleep] : < P, X, sleep, Y > => < P, X,  wait, X + 1  > .
-    rl [p2_wait]  : < P, 0,  wait, Y > => < P, 0,  crit, Y      > .
-   crl [p2_wait]  : < P, X,  wait, Y > => < P, X,  crit, Y      > if X > Y = tt .
+    rl [p2_wait1] : < P, 0,  wait, Y > => < P, 0,  crit, Y      > .
+   crl [p2_wait2] : < P, X,  wait, Y > => < P, X,  crit, Y      > if Y < X = true .
     rl [p2_crit]  : < P, X,  crit, Y > => < P, X, sleep, 0      > .
 endm
 ```
@@ -163,29 +138,29 @@ After constructor-decomposition of `BAKERY-FVP`, you should get the following th
 
 ```maude
 mod BAKERY-FVP-CTOR is
-   protecting NAT> .
+   protecting FVP-NAT-PRED .
 
     sorts Mode NcMode BState .
     --------------------------
     subsort NcMode < Mode .
 
-    vars P Q : Mode . vars X Y : Nat> .
+    vars P Q : Mode . vars X Y : Nat .
 
     op sleep : -> NcMode [ctor] .
     op wait  : -> NcMode [ctor] .
     op crit  : -> Mode   [ctor] .
     -----------------------------
 
-    op <_,_,_,_> : Mode Nat> Mode Nat> -> BState [ctor] .
-    -----------------------------------------------------
-    rl [p1_sleep] : < sleep, X,       Q, Y                 > => <  wait, Y + 1,   Q, Y                 > [narrowing] .
-    rl [p1_wait]  : <  wait, X,       Q, 0                 > => <  crit, X,       Q, 0                 > [narrowing] .
-    rl [p1_wait]  : <  wait, V1:Nat>, Q, V1:Nat> + V2:Nat> > => <  crit, V1:Nat>, Q, V1:Nat> + V2:Nat> > [narrowing] .
-    rl [p1_crit]  : <  crit, X,       Q, Y                 > => < sleep, 0,       Q, Y                 > [narrowing] .
+    op <_,_,_,_> : Mode Nat Mode Nat -> BState [ctor] .
+    ---------------------------------------------------
+    rl [p1_sleep] : < sleep, X,      Q, Y               > => <  wait, Y + 1,  Q, Y               > [narrowing] .
+    rl [p1_wait1] : <  wait, X,      Q, 0               > => <  crit, X,      Q, 0               > [narrowing] .
+    rl [p1_wait2] : <  wait, V1:Nat, Q, V1:Nat + V2:Nat > => <  crit, V1:Nat, Q, V1:Nat + V2:Nat > [narrowing] .
+    rl [p1_crit]  : <  crit, X,      Q, Y               > => < sleep, 0,      Q, Y               > [narrowing] .
 
-    rl [p2_sleep] : < P, X,                   sleep, Y       > => < P, X,                    wait, X + 1   > [narrowing] .
-    rl [p2_wait]  : < P, 0,                    wait, Y       > => < P, 0,                    crit, Y       > [narrowing] .
-    rl [p2_wait]  : < P, V1:Nat> + V2:NzNat>,  wait, V1:Nat> > => < P, V1:Nat> + V2:NzNat>,  crit, V1:Nat> > [narrowing] .
-    rl [p2_crit]  : < P, X,                    crit, Y       > => < P, X,                   sleep, 0       > [narrowing] .
+    rl [p2_sleep] : < P, X,                 sleep, Y      > => < P, X,                  wait, X + 1  > [narrowing] .
+    rl [p2_wait1] : < P, 0,                  wait, Y      > => < P, 0,                  crit, Y      > [narrowing] .
+    rl [p2_wait2] : < P, V1:Nat + V2:NzNat,  wait, V1:Nat > => < P, V1:Nat + V2:NzNat,  crit, V1:Nat > [narrowing] .
+    rl [p2_crit]  : < P, X,                  crit, Y      > => < P, X,                 sleep, 0      > [narrowing] .
 endm
 ```
