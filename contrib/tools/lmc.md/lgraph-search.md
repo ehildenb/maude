@@ -530,18 +530,17 @@ fmod FOLDING-LABELED-GRAPH-SEARCH is
     op check_stable in_ : NodeSet NodeSet -> [Bool] .
     -------------------------------------------------
     eq check NS stable in NS' = NS <= NS' and-then invariant(NS') .
+```
 
-    --- TODO: produce a `ReachPath` instead of a `Bool`
-    op _=>*_   : NodeSet                  NodeSet -> Bool .
-    op _=>[_]_ : NodeSet            Bound NodeSet -> Bool .
-    op _=>[_]_ : FoldedLabeledGraph Bound NodeSet -> Bool .
-    -------------------------------------------------------
+The search operators `_=>[_]_` will produce the reach-graph from the given initial states to the final states (up to a specified bound).
+Before presenting the reach-graph to the user, it's pruned to only include paths which end at the final state.
+
+```maude
+    op _=>*_   : NodeSet       NodeSet -> [FoldedLabeledGraph?] .
+    op _=>[_]_ : NodeSet Bound NodeSet -> [FoldedLabeledGraph?] .
+    -------------------------------------------------------------
     eq NS =>*     NS' = NS =>[ unbounded ] NS' .
-    eq NS =>[ B ] NS' = (not isEmpty?(intersect(NS, NS'))) or-else extend(NS) =>[ decrement(B) ] NS' .
-
-    eq  FLG?        =>[ B ] .NodeSet = false .
-    eq  FLG         =>[ B ] NeNS'    = false .
-    eq (FLG | NeNS) =>[ B ] NeNS'    = (not isEmpty?(intersect(NeNS', frontier(FLG | NeNS)))) or-else extend(FLG | NeNS) =>[ decrement(B) ] NeNS' .
+    eq NS =>[ B ] NS' = restrictBackwards(bfs(NS, B), NS') .
 endfm
 ```
 
