@@ -439,6 +439,6 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : check state(init(0)) stable in state(init(1))
     ; state(init(2)) ; state(init(3)) .
-rewrites: 263
+rewrites: 269
 result Bool: true
 Bye.

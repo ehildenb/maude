@@ -120,8 +120,7 @@ The insert operation is aware of `Fold`s, and will not create new entries for ne
     op nodes : NodeMap -> [NodeSet] .
     ---------------------------------
     eq nodes(.NodeMap)   = .NodeSet .
-    eq nodes(N |-> NID)  = .NodeSet .
-    eq nodes(N |-> ND)   = ND .
+    eq nodes(N |-> ND)   = if ND :: NodeId then .NodeSet else ND fi .
     eq nodes(NeNM NeNM') = nodes(NeNM) ; nodes(NeNM') .
 
     op _[_] : NodeMap NodeSet -> [NodeSet] .
