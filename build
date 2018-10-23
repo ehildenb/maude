@@ -80,6 +80,8 @@ build_maude() {
         || ( git checkout -- src/Mixfix/surface.cc
              make -s -j4
            )
+
+    git checkout -- src/Mixfix/surface.cc
 }
 
 build_maude_cvc4() {
@@ -136,8 +138,6 @@ build_test_smt() {
     build_maude_yices2
     build_tangle
     build_test tests/Misc/smtTest
-
-    git checkout -- src/Mixfix/tokenizer.cc
 }
 
 build_test_all() {
