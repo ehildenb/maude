@@ -9,13 +9,12 @@ load ../../rltool.maude
 
 (def-term-set (< nil , R , N >) | true .)
 
---- NOTE: this should work but it doesn't because the shared variable induces a match failure;
----       this problem could and should be automatically resolved with a formula transformation
----       that extracts all shared variables out of the terms on the RHS
---- (add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) /\ (len(NS NR)) = (N)  => (< nil , NS NR , N >) | true .)
-
-(add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) /\ (len(NS NR)) = (N')  => (< nil , NS NR , N >) | (N) = (N') .)
+(add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) => (< nil , NS NR , N >) | (N) = (len(NS NR)) .)
 
 (start-proof .)
 (step .)
+(continue .)
+(continue .)
 (step .)
+(list-goals .)
+quit
