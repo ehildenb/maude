@@ -146,6 +146,17 @@ The insert operation is aware of `Fold`s, and will not create new entries for ne
                                                                  else #insert(N |-> ND, NM N' |-> ND', NM')
                                                  fi
                                               if F? := fold(ND, ND') .
+```
+
+We can also ask for all nodes which intersect with a given `NodeSet`.
+
+```maude
+    op intersects-with : NodeMap NodeSet -> [NodeSet] .
+    ---------------------------------------------------
+    eq intersects-with(.NodeMap, NS) = .NodeSet .
+    eq intersects-with(NM, .NodeSet) = .NodeSet .
+
+    eq intersects-with(N |-> ND NM , NeNS) = if intersect(ND, NeNS) =/= .NodeSet then N else .NodeSet fi ; intersects-with(NM, NeNS) .
 endfm
 ```
 

@@ -188,6 +188,33 @@ result NodeMap?: {4 |-> A
 1 |-> D
 5 |-> E,5,5}
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(0 |-> A
+1 |-> B
+2 |-> E, C ; D) .
+rewrites: 101
+result NeNodeSet: 1 ; 2
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(1 |-> B
+2 |-> E, C) .
+rewrites: 34
+result NzNat: 1
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(0 |-> A
+2 |-> E, C) .
+rewrites: 41
+result NodeSet: .NodeSet
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(0 |-> A
+1 |-> B
+2 |-> E, A ; C) .
+rewrites: 101
+result NeNodeSet: 0 ; 1
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(1 |-> B
+2 |-> E, D) .
+rewrites: 34
+result NzNat: 2
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : insert(.NodeSet, .FoldedLabeledGraph) .
 rewrites: 2
 result FoldedLabeledGraph: .LabeledGraph

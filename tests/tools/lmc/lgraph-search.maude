@@ -92,6 +92,13 @@ reduce insert( 3 |-> D , 2 |-> E  ) .
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
 reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
+reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , C ; D ) .
+reduce intersects-with(         1 |-> B 2 |-> E , C     ) .
+reduce intersects-with( 0 |-> A         2 |-> E , C     ) .
+
+reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , A ; C ) .
+reduce intersects-with(         1 |-> B 2 |-> E , D     ) .
+
 reduce insert( .NodeSet  ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ; D ; E ; F ; G, .FoldedLabeledGraph) .
