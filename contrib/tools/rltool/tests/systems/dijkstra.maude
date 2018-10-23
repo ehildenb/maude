@@ -1,0 +1,17 @@
+load ../../systems/dijkstra.maude
+load ../../rltool.maude
+
+(select DIJKSTRA-stop .)
+(use tool varsat for validity on DIJKSTRA-DATA .)
+(declare-vars (P:Proc) U (P':Proc) U (PS:ProcSet) U (N:NCProc) U (N':NCProc) U (NS:NCProcSet) U (NS':NCProcSet) .)
+(def-term-set ([P | PS]) | true .)
+(add-goal mutex : (< P  | NS  >) | true \/ (< N  | P  NS  >) | true \/ (< N  | N  >) | true =>
+                  ([ P' | NS' ]) | true \/ ([ N' | P' NS' ]) | true \/ ([ N' | N' ]) | true .)
+(start-proof .)
+(on 1 use strat mutex#1 mutex#2 mutex#3 .)
+(on 2 use strat mutex#1 mutex#2 mutex#3 .)
+(on 3 use strat mutex#1 mutex#2 mutex#3 .)
+(step .)
+(step .)
+(show levels .)
+quit .
