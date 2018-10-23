@@ -158,9 +158,16 @@ The insert operation is aware of the user defined `Fold`s, and will not create n
                                               if F? := fold(ND, ND') .
 ```
 
-We can also ask for all nodes which intersect with a given `NodeSet`.
+We can `restrict` a given `NodeMap` to a set of keys, and get the set of `NodeId` which `intersect` with a given nodeset.
 
 ```maude
+    op restrict : NodeMap NodeSet -> [NodeMap] .
+    --------------------------------------------
+    eq restrict(NM, .NodeSet)     = .NodeMap .
+   ceq restrict(NM, N [ F ] ; NS) = restrict(NM, N ; NS)      if F =/= .Fold .
+   ceq restrict(NM, N       ; NS) = N |-> ND restrict(NM, NS) if ND       := NM [ N ] .
+   ceq restrict(NM, N       ; NS) =          restrict(NM, NS) if .NodeSet := NM [ N ] .
+
     op intersects-with : NodeMap NodeSet -> [NodeSet] .
     ---------------------------------------------------
     eq intersects-with(.NodeMap, NS) = .NodeSet .

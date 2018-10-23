@@ -102,6 +102,10 @@ reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , C ; D ) .
 reduce intersects-with(         1 |-> B 2 |-> E , C     ) .
 reduce intersects-with( 0 |-> A         2 |-> E , C     ) .
 
+reduce restrict( 0 |-> A 1 |-> B 2 |-> E , 0 ; 3   ) .
+reduce restrict(         1 |-> B 2 |-> E , 2       ) .
+reduce restrict(         1 |-> B 2 |-> E , 1 [ < ] ) .
+
 reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , A ; C ) .
 reduce intersects-with(         1 |-> B 2 |-> E , D     ) .
 

@@ -224,6 +224,22 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(0 |-> A
 rewrites: 41
 result NodeSet: .NodeSet
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : restrict(0 |-> A
+1 |-> B
+2 |-> E, 0 ; 3) .
+rewrites: 29
+result NodeAlias: 0 |-> A
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : restrict(1 |-> B
+2 |-> E, 2) .
+rewrites: 9
+result NodeAlias: 2 |-> E
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : restrict(1 |-> B
+2 |-> E, 1[<]) .
+rewrites: 8
+result NodeAlias: 1 |-> B
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersects-with(0 |-> A
 1 |-> B
 2 |-> E, A ; C) .
