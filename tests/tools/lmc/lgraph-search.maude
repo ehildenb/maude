@@ -95,6 +95,9 @@ reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 reduce nodes(.NodeMap) .
 reduce nodes(0 |-> A 1 |-> B 2 |-> F) .
 
+reduce keys(.NodeMap) .
+reduce keys(0 |-> A 1 |-> B 2 |-> F) .
+
 reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , C ; D ) .
 reduce intersects-with(         1 |-> B 2 |-> E , C     ) .
 reduce intersects-with( 0 |-> A         2 |-> E , C     ) .
@@ -137,6 +140,10 @@ reduce nodes(extend(        .LabeledGraph | 0 |-> A                 | 1 | 0     
 reduce nodes(extend(extend( .LabeledGraph | 0 |-> A                 | 1 | 0         ))) .
 reduce nodes(extend(        .LabeledGraph | 0 |-> A 1 |-> B 2 |-> C | 3 | 0 ; 1 ; 2 )) .
 reduce nodes(extend(insert(A ; B ; C, .FoldedLabeledGraph))) .
+
+reduce keys(.FoldedLabeledGraph) .
+reduce keys(.LabeledGraph | 0 |-> A | 1 | 0) .
+reduce keys((0 -[x]-> 2 0 -[y]-> 4 0 -[z]-> 4) | 0 |-> A 2 |-> B 4 |-> D | 7 | 2 ; 4) .
 
 reduce frontier( .FoldedLabeledGraph | .NodeSet ) .
 reduce frontier(extend(A)) .

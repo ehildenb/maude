@@ -128,6 +128,12 @@ The insert operation is aware of the user defined `Fold`s, and will not create n
     eq nodes(N |-> ND)   = if ND :: NodeId then .NodeSet else ND fi .
     eq nodes(NeNM NeNM') = nodes(NeNM) ; nodes(NeNM') .
 
+    op keys : NodeMap -> [NodeSet] .
+    -------------------------------
+    eq keys(.NodeMap)   = .NodeSet .
+    eq keys(N |-> ND)   = N .
+    eq keys(NeNM NeNM') = keys(NeNM) ; keys(NeNM') .
+
     op _[_] : NodeMap NodeSet -> [NodeSet] .
     ----------------------------------------
     eq (NID |-> ND NM) [ NID' ] = if NID == NID' then ND else NM [ NID' ] fi .
@@ -234,9 +240,11 @@ In the data structure `FoldedLabeledGraph?`, we additionally maintain a `frontie
     eq FLG | NeNS | NeNS' = FLG | NeNS ; NeNS' .
 
     op nodes    : FoldedLabeledGraph? -> [NodeSet] .
+    op keys     : FoldedLabeledGraph? -> [NodeSet] .
     op frontier : FoldedLabeledGraph? -> [NodeSet] .
     ------------------------------------------------
     eq nodes   (LG | NM | N | NS) = nodes(NM) .
+    eq keys    (LG | NM | N | NS) = keys(NM) .
     eq frontier(LG | NM | N | NS) = NM [ NS ] .
 
     op insert : NodeSet      FoldedLabeledGraph? -> FoldedLabeledGraph? .
