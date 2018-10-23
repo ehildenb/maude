@@ -1,0 +1,46 @@
+load ../../systems/reverse-bakery.maude
+load ../../rltool.maude
+
+(select REVERSE-BAKERY-stop .)
+(use tool varsat for validity on BAKERY-STATE .)
+
+(def-term-set ([C:Conf]) | true .)
+(declare-vars (A:Nat ) U (B:Nat ) U (C:Nat ) U (D:Nat ) U (E:Nat ) U (F:Nat ) U (PS:ProcSet ) U
+              (A':Nat) U (B':Nat) U (C':Nat) U (D':Nat) U (E':Nat) U (F':Nat) U (PS':ProcSet).)
+
+(inv mutex to '`[_`] on
+(< A ; B ; [C,crit(D)]             PS >) | (B)      =/= (D)    \/
+(< A ; B ; [C,crit(E)] [D,crit(F)] PS >) | (E)       =  (F)    \/
+(< A ; B ; [C,crit(E)] [D,wait(F)] PS >) | (F <= E)  =  (true) \/
+(< A ; B ; [C,wait(E)] [D,wait(F)] PS >) | (E)       =  (F)    \/
+(< A ; B ; [C,wait(B)] [D,wait(E)] PS >) | (E <= B)  =  (true) \/
+(< A ; B ; [C,wait(D)]             PS >) | (A <= D)  =  (true) \/
+(< A ; A ; [B,wait(C)]             PS >) | (A <= C)  =  (true) \/
+(< A ; A ; [B,wait(C)]             PS >) | (C <  A)  =  (true) \/
+(< A ; A ; [B,crit(C)]             PS >) | true                \/
+(< A ; B ;                         PS >) | (A <  B)  =  (true) \/
+(< A ; B ; [C,crit(D)]             PS >) | (A <= D)  =  (true)
+.)
+(start-proof .)
+(step .)
+(step .)
+(continue .)
+(continue .)
+set break on .
+break select debug .
+set print conceal on .
+print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
+(debug)
+step .
+---(
+(split 6  5 by (@123:Nat) = (@124:Nat) .)
+(split 6  6 by (@128:Nat) = (@129:Nat) .)
+(split 7  5 by (@124:Nat) = (@125:Nat) .)
+(split 7  6 by (@130:Nat) = (@131:Nat) .)
+(split 11 3 by (@125:Nat <=Nat @126:Nat) = (tt) .)
+(split 11 4 by (@132:Nat <=Nat @133:Nat) = (tt) .)
+(split 11 8 by (@136:Nat) =   (@139:Nat)        .)
+(split 11 9 by (@141:Nat) =   (@144:Nat)        .)
+(step .)
+---)
+quit
