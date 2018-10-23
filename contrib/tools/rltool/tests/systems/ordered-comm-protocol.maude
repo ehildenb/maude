@@ -1,0 +1,38 @@
+load ../../systems/ordered-comm-protocol.maude
+load ../../rltool.maude
+
+(select FT-COMM .)
+(use tool varsat for validity on FT-COMM-DATA .)
+(declare-vars (l:NeListNat) U (l':NeListNat) U (l1:ListNat) U (l2:ListNat)  U
+              (k:Nat)       U (q:Nat)        U (r:Nat)      U (n?:MaybeNat) .)
+(def-term-set ([q :: nil | null | nullp | l1 :: k]) | true .)
+--- NOTE: originals had to be split in two to account for list concatenation
+--- send case, in response to successful ack
+(add-goal send-ne : ([q :: r   | q    | nullp | l    :: q]) | (true) =>
+                    ([k :: nil | null | nullp | l    :: k]) | (true) .)
+(add-goal send-mt : ([q :: r l | q    | nullp | l'   :: q]) | (true) =>
+                    ([k :: nil | null | nullp | l' l :: k]) | (true) .)
+--- resend case --- with non-empty recv queue
+(add-goal resend : ([q + 1 :: l   | null | nullp | l'   :: q]) | (true) =>
+                   ([k     :: nil | null | nullp | l' l :: k]) | (true) .)
+--- cover dropped ack, which means we don't need to send again
+(add-goal ack-single : ([q :: r   | null | nullp | l'   :: q]) | (true) =>
+                       ([k :: nil | null | nullp | l'   :: k]) | (true) .)
+(add-goal ack-multi  : ([q :: r l | null | nullp | l'   :: q]) | (true) =>
+                       ([k :: nil | null | nullp | l' l :: k]) | (true) .)
+--- property we want to prove
+(add-goal main : ([1 :: l1  | null | nullp | nil :: 0]) | (true) =>
+                 ([k :: nil | null | nullp | l1  :: k]) | (true) .)
+
+(on 1 use strat ack-single .)
+(on 2 use strat send-ne send-mt resend ack-multi .)
+(on 3 use strat send-ne send-mt resend .)
+(on 4 use strat send-ne ack-single .)
+(on 5 use strat send-mt ack-multi .)
+(on 6 use strat send-ne send-mt main .)
+(start-proof .)
+(step .)
+(continue .)
+(step .)
+(step .)
+quit
