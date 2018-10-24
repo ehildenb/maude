@@ -219,8 +219,8 @@ fmod REACH-PROOF-RULES-AUX is
 
   eq ax-action(D,U,D',BK,AR ARL,ARL',G) =
      if BK == true
-       then (his(insert(getid(G),usedAxRec(ARL',AR ARL),empty)) || newChildGoals(G,arRes(ARL)))
-       else ax-action(D,U,printAxFailure(D',U,BK,arAx(ARL'),G), checkVal(D,arCond(ARL)), ARL,AR ARL', G)
+       then (his(insert(getid(G),usedAxRec(ARL',AR ARL),empty)) || newChildGoals(G,arRes(ARL')))
+       else ax-action(D,U,printAxFailure(D',U,BK,arAx(ARL'),G), checkVal(D,arCond(AR)), ARL,AR ARL', G)
      fi .
   eq ax-action(D,U,D',BK,nilax,ARL',G) =
      if BK == true
