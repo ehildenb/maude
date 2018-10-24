@@ -77,11 +77,11 @@ build_maude() {
 
     ./configure CXXFLAGS="-std=c++11 -I$include_dir -L$lib_dir" "$@"
     make -s -j4 \
-        || ( git checkout -- src/Mixfix/surface.cc
+        || ( git checkout -- src/Mixfix/{surface.cc,tokenizer.cc}
              make -s -j4
            )
 
-    git checkout -- src/Mixfix/surface.cc
+    git checkout -- src/Mixfix/{surface.cc,tokenizer.cc}
 }
 
 build_maude_cvc4() {
