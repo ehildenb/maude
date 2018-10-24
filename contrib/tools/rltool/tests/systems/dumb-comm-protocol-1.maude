@@ -19,3 +19,4 @@ load ../../rltool.maude
 (start-proof .)
 (step .)
 (step .)
+quit
