@@ -26,12 +26,7 @@ load ../../rltool.maude
 (step .)
 (continue .)
 (continue .)
-set break on .
-break select debug .
-set print conceal on .
-print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
-(debug)
-step .
+(show levels .)
 ---(
 (split 6  5 by (@123:Nat) = (@124:Nat) .)
 (split 6  6 by (@128:Nat) = (@129:Nat) .)
