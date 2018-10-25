@@ -81,7 +81,7 @@ test-load: $(load_maude:=.load)
 # Papers and write-ups
 # --------------------
 
-media:
+media: media/narrowing-modulo-t.pdf
 media/%.pdf: media/%.md media/citations.bib
 	cd media \
 	    && cat $(notdir $^) \
