@@ -15,11 +15,14 @@ mod THERMOSTAT-COMFORTABLE is
     eq time-until(on)  = 4 .
     eq time-until(off) = 2 .
 
-    --- temperature deltas in each state
-    eq heat-rate(on,         TMP)             = TMP + 2 [variant] .
-    eq heat-rate(off,        TMP + 1 + 1 + 1) = TMP     [variant] .
-    eq heat-rate(delay(on),  TMP + 1)         = TMP     [variant] .
-    eq heat-rate(delay(off), TMP + 1)         = TMP     [variant] .
+    --- heat from the furnace
+    eq source(on)         = 5 [variant] .
+    eq source(off)        = 0 [variant] .
+    eq source(delay(on))  = 2 [variant] .
+    eq source(delay(off)) = 2 [variant] .
+
+    --- constant loss to the outside
+    eq drain(TMP) = 3 [variant] .
 endm
 
 get variants heat-rate(MODE, TMP) .

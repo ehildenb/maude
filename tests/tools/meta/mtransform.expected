@@ -426,14 +426,17 @@ result SModule: mod 'THERMOSTAT is
   op '`{_`,_`,_`} : 'Nat 'Nat 'Mode -> 'Conf [ctor] .
   op 'bound : nil -> 'Nat [none] .
   op 'delay : 'InMode -> 'DelayMode [ctor] .
+  op 'drain : 'Nat -> 'Nat [none] .
   op 'heat-rate : 'Mode 'Nat -> 'Nat [none] .
   op 'max : nil -> 'Nat [none] .
   op 'min : nil -> 'Nat [none] .
   op 'off : nil -> 'InMode [ctor] .
   op 'on : nil -> 'InMode [ctor] .
+  op 'source : 'Mode -> 'Nat [none] .
   op 'time-until : 'InMode -> 'Nat [none] .
   none
-  none
+  eq 'heat-rate['MODE:Mode,'TMP:Nat] = '_monus_['_+_['TMP:Nat,'source[
+    'MODE:Mode]],'drain['TMP:Nat]] [none] .
   rl '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,'MODE:Mode],'###COND###:Form`{Bool`}]
     => '_st_['`{_`,_`,_`}['TIME:Nat,'heat-rate['MODE:Mode,'TMP:Nat],
     'MODE:Mode],'###COND###:Form`{Bool`}] [narrowing label('tick)] .

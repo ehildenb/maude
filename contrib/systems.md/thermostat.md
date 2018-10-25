@@ -53,16 +53,27 @@ mod THERMOSTAT is
                    => < 0 , TMP , IM        > .
 ```
 
+The thermostat `heat-rate` is determined as a function of the thermostat parameters.
+
+```maude
+    op heat-rate : Mode Nat -> Nat .
+    --------------------------------
+    eq heat-rate(MODE, TMP) = (TMP + source(MODE)) monus drain(TMP) .
+```
+
 The following are parameters which must be filled in for your particular thermostat.
 
 ```maude
    ops min max bound : -> Nat .
    ----------------------------
 
-   ops time-until : InMode -> Nat .
-   --------------------------------
+    op time-until : InMode -> Nat .
+    -------------------------------
 
-    op heat-rate : Mode Nat -> Nat .
-    --------------------------------
+    op source : Mode -> Nat .
+    -------------------------
+
+    op drain : Nat -> Nat .
+    -----------------------
 endm
 ```
