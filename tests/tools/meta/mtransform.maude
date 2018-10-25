@@ -71,11 +71,11 @@ fmod THERMOSTAT-UNCONDITIONALIZED-TEST is
 
     op M : -> Module [memo] .
     -------------------------
-    eq M = unconditionalize(upModule('THERMOSTAT, false)) .
+    eq M = unconditionalize(upModule('THERMOSTAT-INT, false)) .
 
     op init : -> Term .
     -------------------
-    eq init = '_st_['`{_`,_`,_`}['TIME:Nat, 'TMP:Nat, 'IM:InMode], '_?=_['true.Bool, '_<_['TIME:Nat, 'TMP:Nat]]] .
+    eq init = '_st_['`{_`,_`,_`}['TIME:Int, 'TMP:Int, 'IM:InMode], '_?=_['true.Bool, '_<_['TIME:Int, 'TMP:Int]]] .
 endfm
 
 reduce M .

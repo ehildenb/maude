@@ -4,12 +4,15 @@ Thermostat
 A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
 The state components of the thermostate are the current time, the temperature, and the mode (on, off, turning on, turning off).
 
+FVP-INT Thermostat
+------------------
+
 ```maude
 load ../tools/fvp/numbers.maude
 
-mod THERMOSTAT is
+mod THERMOSTAT-INT is
    protecting FVP-NUMBERS .
-   protecting FVP-NAT-PRED .
+   protecting FVP-INT-PRED .
 
     sorts DelayMode InMode Mode .
     -----------------------------
@@ -17,15 +20,15 @@ mod THERMOSTAT is
 
     sort Conf .
     -----------
-    vars TIME TIME' TMP TMP' : Nat .
+    vars TIME TIME' TMP TMP' : Int .
     var MODE : Mode . var IM : InMode . var DM : DelayMode .
 
    ops on off :        -> InMode    [ctor] .
     op delay  : InMode -> DelayMode [ctor] .
     ----------------------------------------
 
-    op <_,_,_> : Nat Nat Mode -> Conf [ctor] .
-    op {_,_,_} : Nat Nat Mode -> Conf [ctor] .
+    op <_,_,_> : Int Int Mode -> Conf [ctor] .
+    op {_,_,_} : Int Int Mode -> Conf [ctor] .
     ------------------------------------------
     rl [tick] : < TIME , TMP                  , MODE >
              => { TIME , heat-rate(MODE, TMP) , MODE } .
@@ -46,8 +49,8 @@ mod THERMOSTAT is
                    => < TIME , TMP , off >
                    if TMP < min + bound = false .
 
-   crl [delaying] : { TIME         , TMP , DM }
-                 => < TIME monus 1 , TMP , DM >
+   crl [delaying] : { TIME     , TMP , DM }
+                 => < TIME - 1 , TMP , DM >
                  if 0 < TIME = true .
 
     rl [delay-over] : { 0 , TMP , delay(IM) }
@@ -57,24 +60,24 @@ mod THERMOSTAT is
 The thermostat `heat-rate` is determined as a function of the thermostat parameters.
 
 ```maude
-    op heat-rate : Mode Nat -> Nat .
+    op heat-rate : Mode Int -> Int .
     --------------------------------
-    eq heat-rate(MODE, TMP) = (TMP + source(MODE)) monus drain(TMP) .
+    eq heat-rate(MODE, TMP) = (TMP + source(MODE)) - drain(TMP) .
 ```
 
 The following are parameters which must be filled in for your particular thermostat.
 
 ```maude
-   ops min max bound : -> Nat .
+   ops min max bound : -> Int .
    ----------------------------
 
-    op time-until : InMode -> Nat .
+    op time-until : InMode -> Int .
     -------------------------------
 
-    op source : Mode -> Nat .
+    op source : Mode -> Int .
     -------------------------
 
-    op drain : Nat -> Nat .
+    op drain : Int -> Int .
     -----------------------
 endm
 ```
@@ -85,9 +88,9 @@ Thermostat Instantiation
 The following is an example thermostat over the naturals.
 
 ```maude
-mod THERMOSTAT-COMFORTABLE is
-    extending THERMOSTAT + FVP-NUMBERS .
-    var TMP : Nat .
+mod THERMOSTAT-INT-COMFORTABLE is
+    extending THERMOSTAT-INT + FVP-NUMBERS .
+    var TMP : Int .
 ```
 
 Here we setup a thermostat which tries to stay between `18` and `26`, and will switch states when `3` away from a boundary temperature.
