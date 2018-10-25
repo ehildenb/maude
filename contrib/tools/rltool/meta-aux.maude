@@ -2047,7 +2047,7 @@ fmod SUBSTITUTIONSET-AUX is
 
   --- OUT: A SubstitutionSet identical to input but where each assignment in Substitution is removed
   op remove : SubstitutionSet Substitution -> SubstitutionSet .
-  eq remove(S | S' | SS,S2) = remove(S,S2) | remove(S | S' | SS,S2) .
+  eq remove(S | S' | SS,S2) = remove(S,S2) | remove(S' | SS,S2) .
   eq remove(empty,S2)       = empty .
 
   --- OUT: A SubstitutionSet of Assignments built by blowing this Substitution apart
