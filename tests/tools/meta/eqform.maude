@@ -16,7 +16,7 @@ fmod EQFORM-TEST is
   eq e = 'U:Stu ?= 'W:Roc .
 
   op f1 : -> Form .
-  eq f1 = ~ (a /\ b) \/ ~ ((c \/ d) /\ t1 ?= t2 \/ (a /\ ff)) .
+  eq f1 = ~ (a /\ b) \/ ~ ((c \/ d) /\ 'K:Foo ?= 'L:Bar \/ (a /\ ff)) .
 
   op f2 : -> Form .
   eq f2 = (f1 /\ ~ e) /\ (d \/ tt) .
@@ -28,6 +28,9 @@ reduce ('_+_['1.Nat, 'X:Nat] ?= '_*_['Y:Nat, 'X:Nat] /\ '_<_['Y:Nat, 'Z:Nat] != 
 
 reduce ('_+_['1.Nat, 'X:Nat] != '_*_['Y:Nat, 'X:Nat] \/ '_<_['Y:Nat, 'Z:Nat] != 'true.Bool) << ('X:Nat <- '7.Nat)
     == ('_+_['1.Nat, '7.Nat] != '_*_['Y:Nat, '7.Nat] \/ '_<_['Y:Nat, 'Z:Nat] != 'true.Bool) .
+
+reduce f1 << ('F:Foo <- 'F2:Foo ; 'I:Wop <- 'I2:Wop ; 'U:Stu <- 'U2:Stu) .
+reduce f2 << ('F:Foo <- 'F2:Foo ; 'I:Wop <- 'I2:Wop ; 'U:Stu <- 'U2:Stu) .
 
 --- sort check
 reduce f1 :: Form .
