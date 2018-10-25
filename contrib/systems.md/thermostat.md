@@ -4,15 +4,47 @@ Thermostat
 A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
 The state components of the thermostate are the current time, the temperature, and the mode (on, off, turning on, turning off).
 
-FVP-INT Thermostat
-------------------
+Parametric Thermostat
+---------------------
+
+### Unital Ordered Rings
+
+The thermostat is parametric in an ordered ring with unit (which will be the data for the temperature).
 
 ```maude
-load ../tools/fvp/numbers.maude
+fth UNITAL-ORDERED-RING is
 
-mod THERMOSTAT-INT is
-   protecting FVP-NUMBERS .
-   protecting FVP-INT-PRED .
+    sorts RingBool Ring .
+    ---------------------
+    vars R R' : Ring .
+
+    ops 0 1 : -> Ring [ctor] .
+    --------------------------
+
+    op _+_ : Ring Ring -> Ring [ctor assoc comm id: 0] .
+    ----------------------------------------------------
+
+    op -_ : Ring -> Ring [ctor] .
+    -----------------------------
+    eq - 0       = 0 [nonexec] .
+    eq R + (- R) = 0 [nonexec] .
+
+    op _-_ : Ring Ring -> Ring .
+    ----------------------------
+    eq R - R' = R + (- R') [nonexec] .
+
+    ops true false : -> RingBool [ctor] .
+    -------------------------------------
+
+    op _<_ : Ring Ring -> RingBool .
+    --------------------------------
+endfth
+```
+
+### Thermostat Definition
+
+```maude
+mod THERMOSTAT{TIME :: UNITAL-ORDERED-RING, TMP :: UNITAL-ORDERED-RING} is
 
     sorts DelayMode InMode Mode .
     -----------------------------
@@ -20,16 +52,16 @@ mod THERMOSTAT-INT is
 
     sort Conf .
     -----------
-    vars TIME TIME' TMP TMP' : Int .
+    vars TIME TIME' : TIME$Ring . vars TMP TMP' : TMP$Ring .
     var MODE : Mode . var IM : InMode . var DM : DelayMode .
 
    ops on off :        -> InMode    [ctor] .
     op delay  : InMode -> DelayMode [ctor] .
     ----------------------------------------
 
-    op <_,_,_> : Int Int Mode -> Conf [ctor] .
-    op {_,_,_} : Int Int Mode -> Conf [ctor] .
-    ------------------------------------------
+    op <_,_,_> : TIME$Ring TMP$Ring Mode -> Conf [ctor] .
+    op {_,_,_} : TIME$Ring TMP$Ring Mode -> Conf [ctor] .
+    -----------------------------------------------------
     rl [tick] : < TIME , TMP                  , MODE >
              => { TIME , heat-rate(MODE, TMP) , MODE } .
 
@@ -60,32 +92,45 @@ mod THERMOSTAT-INT is
 The thermostat `heat-rate` is determined as a function of the thermostat parameters.
 
 ```maude
-    op heat-rate : Mode Int -> Int .
-    --------------------------------
+    op heat-rate : Mode TMP$Ring -> TMP$Ring .
+    ------------------------------------------
     eq heat-rate(MODE, TMP) = (TMP + source(MODE)) - drain(TMP) .
 ```
 
 The following are parameters which must be filled in for your particular thermostat.
 
 ```maude
-   ops min max bound : -> Int .
-   ----------------------------
+    ops min max bound : -> TMP$Ring .
+    ---------------------------------
 
-    op time-until : InMode -> Int .
-    -------------------------------
+    op time-until : InMode -> TIME$Ring .
+    -------------------------------------
 
-    op source : Mode -> Int .
-    -------------------------
+    op source : Mode -> TMP$Ring .
+    ------------------------------
 
-    op drain : Int -> Int .
-    -----------------------
+    op drain : TMP$Ring -> TMP$Ring .
+    ---------------------------------
 endm
 ```
 
 Thermostat Instantiation
 ------------------------
 
-The following is an example thermostat over the naturals.
+### Instantiation to FVP-INT
+
+ ```maude
+load ../tools/fvp/numbers.maude
+
+view RingInt from UNITAL-ORDERED-RING to FVP-INT-PRED is
+    sort RingBool to Bool .
+    sort Ring     to Int  .
+endv
+
+mod THERMOSTAT-INT is protecting THERMOSTAT{RingInt, RingInt} . endm
+```
+
+The following is an example thermostat over the integers.
 
 ```maude
 mod THERMOSTAT-INT-COMFORTABLE is
