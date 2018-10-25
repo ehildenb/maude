@@ -81,5 +81,13 @@ test-load: $(load_maude:=.load)
 # Papers and write-ups
 # --------------------
 
+media:
+media/%.pdf: media/%.md media/citations.bib
+	cd media \
+	    && cat $(notdir $^) \
+	     | pandoc --from markdown --to latex \
+	              --table-of-contents --filter pandoc-citeproc \
+	              --output $(notdir $@) -
+
 systems.md/bitswap.pdf: systems.md/bitswap.md systems/bitswap.maude Makefile
 	PATH=$$(pwd)/../src/Main:$$PATH pandoc --filter panpipe -t latex $< -o $@ --filter pandoc-citeproc
