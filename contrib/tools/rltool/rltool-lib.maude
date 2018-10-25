@@ -528,7 +528,8 @@ fmod RLTL-PROC-CMD is
                                      then printLevels(get-mod(R),toGoalMap(get-prf(R)))
                                      else printLevel(get-mod(R),BD,toGoalMap(get-prf(R)))
                                    fi '\n printCopy(10,"========") '\n
-                                     'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R))))) .
+                                     'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R)))) '\n
+                                     'Unsubsumed 'Leaves: '\n printGoals(get-mod(R),getgl!(get-prf(R),nonSubsumedLeaves(toGoalMap(get-prf(R)))))) .
 endfm
 
 mod RLTL-UI is

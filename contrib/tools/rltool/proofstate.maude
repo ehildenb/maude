@@ -107,6 +107,11 @@ fmod REACH-PROOF-STRATEGY is
   eq nextaction(CN ;; CN') = nextaction(CN) .
   eq nextaction(CN | CN') = nextaction(CN) .
   eq nextaction(PA) = PA .
+
+  --- OUT: get tail of list
+  op tail : ProofRuleActionList -> ProofRuleAction .
+  eq tail(PRL:ProofRuleActionList PA) = PA .
+  eq tail(PA) = PA .
 endfm
 
 fmod REACH-PROOF-GOAL is
@@ -917,6 +922,13 @@ fmod VISUALIZE is
   eq leaves((NL,RK,PS,GM2) GM) = if GM2 == .GoalMap then 1 else leaves(GM2) fi + leaves(GM) .
   eq leaves(.GoalMap) = 0 .
 
+  --- OUT: set of leaves that did not end with subsumption
+  op nonSubsumedLeaves  : GoalMap -> Set{Nat} .
+  eq nonSubsumedLeaves((NL N,RK,PS,GM2) GM) =
+    if GM2 == .GoalMap and-then tail(PS) =/= subsume
+      then N else nonSubsumedLeaves(GM2) fi , nonSubsumedLeaves(GM) .
+  eq nonSubsumedLeaves(.GoalMap) = empty .
+
   --- OUT: a GoalMap that corresponds to the inheritance hierarchy
   ---      for a given ProofGoalSet
   op toGoalMap : ProofGoalSet -> GoalMap [memo] .
@@ -943,6 +955,7 @@ fmod VISUALIZE is
     fi .
   eq insert(G,.GoalMap,GM') = insert2(G,GM') .
 
+  ---  NB: mutually recursive implementation of insert()
   op insert2 : ProofGoal GoalMap -> GoalMap .
   eq insert2(G,(NL,RL,PS,GM2) GM') = (NL,RL,PS,insert(G,GM2,.GoalMap)) insert2(G,GM') .
   eq insert2(G,.GoalMap) = .GoalMap .
