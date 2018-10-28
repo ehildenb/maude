@@ -203,20 +203,20 @@ fmod PURIFICATION is
    protecting BREAK-EQATOMS .
    protecting CTERM-SET .
 
-    vars Q Q' : Qid . vars F F' : Form .
+    vars Q Q' : Qid . var F : Form . vars CF CF' : NoTrueForm . vars DF DF' : NoFalseForm .
     vars ME ME' : ModuleExpression . vars M M' : Module . var MDS : ModuleDeclSet .
     vars FV : Variable . vars T T' T1 T2 : Term . var T? : [Term] . var CT : CTerm .
     vars NeTL NeTL' : NeTermList . vars TL TL' : TermList . vars TL? TL?' : [TermList] .
 
     op _in_ : Form Module -> Bool .
     -------------------------------
-    eq tt        in M = true .
-    eq ff        in M = true .
-    eq (~ F)     in M = F in M .
-   ceq (F /\ F') in M = (F in M) and (F' in M) if F =/= tt /\ F' =/= tt .
-   ceq (F \/ F') in M = (F in M) and (F' in M) if F =/= ff /\ F' =/= ff .
-    eq (T ?= T') in M = wellFormed(M, T) and wellFormed(M, T') .
-    eq (T != T') in M = wellFormed(M, T) and wellFormed(M, T') .
+    eq tt          in M = true .
+    eq ff          in M = true .
+    eq (~ F)       in M = F in M .
+    eq (CF /\ CF') in M = (CF in M) and (CF' in M) .
+    eq (DF \/ DF') in M = (DF in M) and (DF' in M) .
+    eq (T ?= T')   in M = wellFormed(M, T) and wellFormed(M, T') .
+    eq (T != T')   in M = wellFormed(M, T) and wellFormed(M, T') .
 ```
 
 Purifying Equational Conjunctions
@@ -241,12 +241,10 @@ If so, then it leaves it alone, otherwise more work is required on the equationa
 
     op purify : ModulePair Form -> [Form] .
     ---------------------------------------
-   ceq purify(modulePair(M, M'), F)       = F if (F in M) .
-    eq purify(modulePair(M, M'), ~ F)     = ~ purify(modulePair(M, M'), F) .
-   ceq purify(modulePair(M, M'), F /\ F') = purify(modulePair(M, M'), F) /\ purify(modulePair(M, M'), F')
-                                         if F =/= tt /\ F' =/= tt .
-   ceq purify(modulePair(M, M'), F \/ F') = purify(modulePair(M, M'), F) \/ purify(modulePair(M, M'), F')
-                                         if F =/= ff /\ F' =/= ff .
+   ceq purify(modulePair(M, M'), F)         = F if (F in M) .
+    eq purify(modulePair(M, M'), ~ F)       = ~ purify(modulePair(M, M'), F) .
+    eq purify(modulePair(M, M'), CF /\ CF') = purify(modulePair(M, M'), CF) /\ purify(modulePair(M, M'), CF') .
+    eq purify(modulePair(M, M'), DF \/ DF') = purify(modulePair(M, M'), DF) \/ purify(modulePair(M, M'), DF') .
 ```
 
 If a term in a (dis)equality is not `wellFormed` in either `Module`, then we purify it.
