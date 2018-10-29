@@ -83,7 +83,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
     SortDeclSet).
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
 rewrites: 110
 result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
@@ -171,7 +171,7 @@ op 'safe? : 'ProcSet -> 'Bool [none] .
 op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
 rewrites: 78
 result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
@@ -224,42 +224,22 @@ op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
 op 'wait : nil -> 'NcMode [ctor] .
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('QLOCK-STATE,
-    true))) .
-rewrites: 4
-result NeModuleDeclSet: (sorts 'Bool* ; 'Nat* ; 'NeQueue ; 'Pred ; 'Queue ;
-    'Soup .)
-subsort 'Nat* < 'NeQueue .
-subsort 'Nat* < 'Soup .
-subsort 'NeQueue < 'Queue .
-eq '_in_['N:Nat*,'N:Nat*] = 'true.Pred [variant] .
-eq '_in_['N:Nat*,'__['N:Nat*,'S:Soup]] = 'true.Pred [variant] .
-eq 'dupl['__['N:Nat*,'N:Nat*]] = 'true.Pred [variant] .
-eq 'dupl['__['N:Nat*,'N:Nat*,'S:Soup]] = 'true.Pred [variant] .
-op '0 : nil -> 'Nat* [ctor] .
-op '1 : nil -> 'Nat* [ctor] .
-op '_:+_ : 'Nat* 'Nat* -> 'Nat* [assoc comm ctor id('0.Nat*)] .
-op '_=/=_ : 'Pred 'Pred -> 'Bool* [ctor] .
-op '_@_ : 'NeQueue 'NeQueue -> 'NeQueue [assoc ctor] .
-op '__ : 'Soup 'Soup -> 'Soup [assoc comm ctor id('mt.Soup)] .
-op '_in_ : 'Nat* 'Soup -> 'Pred [ctor] .
-op 'dupl : 'Soup -> 'Pred [ctor] .
-op 'mt : nil -> 'Soup [ctor] .
-op 'nil : nil -> 'Queue [ctor] .
-op 'true : nil -> 'Pred [ctor] .
-op 'tt : nil -> 'Bool* [ctor] .
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('QLOCK-STATE,
+    true))) == asTemplate(upModule('QLOCK-STATE, true)) .
+rewrites: 5
+result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('DIJKSTRA,
     stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
 rewrites: 114
 result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('BAKERY-FVP,
     stripConditions(asTemplate(upModule('BAKERY-FVP, true))))) .
 rewrites: 82
 result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('QLOCK-STATE,
     stripConditions(asTemplate(upModule('QLOCK-STATE, true))))) .
 rewrites: 8
 result Bool: true

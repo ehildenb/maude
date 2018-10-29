@@ -5,14 +5,6 @@ load ../../../contrib/systems/oc.maude
 load ../../../contrib/systems/thermostat.maude
 load ../../../contrib/tools/meta/mtransform.maude
 
---- Module SUBTHEORY-ABSTRACTION
---- ============================
-
-select SUBTHEORY-ABSTRACTION .
-
---- Module UNCONDITIONALIZE
---- =======================
-
 fmod META-LEVEL-NAT-RENAMED is
    protecting META-LEVEL * ( op _+_  to _+ML_
                            , op sd   to sdML
@@ -34,11 +26,11 @@ reduce reverseRules(asTemplate(upModule('QLOCK-STATE, true))) == asTemplate(upMo
 reduce reverseRules(reverseRules(asTemplate(upModule('DIJKSTRA   , true)))) == asTemplate(upModule('DIJKSTRA    , true)) .
 reduce reverseRules(reverseRules(asTemplate(upModule('BAKERY-FVP , true)))) == asTemplate(upModule('BAKERY-FVP  , true)) .
 
-select UNCONDITIONALIZE .
+select STRIP-CONDITIONS .
 
 reduce stripConditions(asTemplate(upModule('DIJKSTRA    , true))) .
 reduce stripConditions(asTemplate(upModule('BAKERY-FVP  , true))) .
-reduce stripConditions(asTemplate(upModule('QLOCK-STATE , true))) .
+reduce stripConditions(asTemplate(upModule('QLOCK-STATE , true))) == asTemplate(upModule('QLOCK-STATE, true)) .
 
 reduce wellFormed(fromTemplate('DIJKSTRA    , stripConditions(asTemplate(upModule('DIJKSTRA    , true))))) .
 reduce wellFormed(fromTemplate('BAKERY-FVP  , stripConditions(asTemplate(upModule('BAKERY-FVP  , true))))) .
