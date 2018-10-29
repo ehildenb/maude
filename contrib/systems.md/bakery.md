@@ -3,7 +3,8 @@ Bakery Protocol
 
 The Bakery protocol is a simple scheduling protocol for multiple processes.
 The details differ among implementations, but the same basic ingredients are the same.
-Processes wait to receive some token, and upon receiving the token are scheduled until they give up the token.
+Processes wait for their turn to enter the critical section, synchronizing using some token or external state.
+An implementation which allows multiple processes into the critical section simultaneously is buggy.
 
 ```maude
 load ../tools/fvp/numbers.maude
@@ -12,105 +13,10 @@ set include BOOL off .
 set include NAT  off .
 ```
 
-Version 1 - RL
---------------
+Two Process Bakery
+------------------
 
-```maude
-fmod BAKERY-STATE is
-  pr FVP-NAT .
-  sort Conf .
-  sort Mode ModeWait ModeIdle .
-  subsort ModeIdle ModeWait < Mode .
-  sort ProcIdle ProcWait Proc ProcSet .
-  subsort ProcIdle ProcWait < Proc < ProcSet .
-
-  op idle  :                 -> ModeIdle [ctor] .
-  op wait  : Nat             -> ModeWait [ctor] .
-  op crit  : Nat             -> Mode     [ctor] .
-  op [_,_] : Nat ModeIdle    -> ProcIdle [ctor] .
-  op [_,_] : Nat ModeWait    -> ProcWait [ctor] .
-  op [_,_] : Nat Mode        -> Proc     [ctor] .
-  op none  :                 -> ProcSet  [ctor] .
-  op __    : ProcSet ProcSet -> ProcSet  [ctor assoc comm id: none] .
-
-  op _;_;_ : Nat Nat ProcSet -> Conf  [ctor] .
-endfm
-
-mod REVERSE-BAKERY is
-  pr BAKERY-STATE .
-  sort State .
-
-  op <_> : Conf -> State [ctor] .
-  op [_] : Conf -> State [ctor] .
-
-  var N M I : Nat .
-  var S : ProcSet .
-
-  rl [wake]: < N + 1 ; M     ; [I,wait(N)] S > => < N ; M ; [I,idle   ] S > .
-  rl [crit]: < N     ; M     ; [I,crit(M)] S > => < N ; M ; [I,wait(M)] S > .
-  rl [exit]: < N     ; M + 1 ; [I,idle   ] S > => < N ; M ; [I,crit(M)] S > .
-  rl [term]: < C:Conf > => [ C:Conf ] .
-endm
-```
-
-Version 2 - LMC
----------------
-
-This version comes from the book *All About Maude - A High-Performance Logical Framework*.
-
-```maude
-fmod BAKERY-SYNTAX is
-    protecting FVP-NAT-CTOR * ( sort Nat to Name
-                              , op 1 to s
-                              , op _+_ to __
-                              ) .
-
-    sorts ModeIdle ModeWait ModeCrit Mode .
-    ---------------------------------------
-    subsorts ModeIdle ModeWait ModeCrit < Mode .
-
-    sorts Proc ProcIdle ProcWait .
-    ------------------------------
-    subsorts ProcIdle < ProcWait < Proc .
-
-    sorts ProcIdleSet ProcWaitSet ProcSet .
-    ---------------------------------------
-    subsort ProcIdle < ProcIdleSet .
-    subsort ProcWait < ProcWaitSet .
-    subsort Proc     < ProcSet .
-    subsorts ProcIdleSet < ProcWaitSet < ProcSet .
-
-    op idle : -> ModeIdle .
-    op wait : Name -> ModeWait .
-    op crit : Name -> ModeCrit .
-    op `[_`] : ModeIdle -> ProcIdle .
-    op `[_`] : ModeWait -> ProcWait .
-    op `[_`] : Mode -> Proc .
-    op none : -> ProcIdleSet .
-    op __ : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none] .
-    op __ : ProcWaitSet ProcWaitSet -> ProcWaitSet [assoc comm id: none] .
-    op __ : ProcSet ProcSet -> ProcSet [assoc comm id: none] .
-endfm
-
-mod BAKERY is
-    protecting BAKERY-SYNTAX .
-
-    var PS : ProcSet . vars N M : Name .
-
-    sort Conf .
-    -----------
-    op _;_;_ : Name Name ProcSet -> Conf .
-
-    rl [wake] : N ; M ; [idle]    PS => (s N) ; M     ; [wait(N)] PS [narrowing] .
-    rl [crit] : N ; M ; [wait(M)] PS => N     ; M     ; [crit(M)] PS [narrowing] .
-    rl [exit] : N ; M ; [crit(M)] PS => N     ; (s M) ; [idle]    PS [narrowing] .
-endm
-```
-
-Version 3 - FVP
----------------
-
-This version specifically has the Finite Variant Property.
+This bakery protocol has only two processes which keep track of one counter each.
 
 ```maude
 mod BAKERY-FVP is
@@ -171,5 +77,65 @@ mod BAKERY-FVP-CTOR is
     rl [p2_wait1] : < P, 0,                  wait, Y      > => < P, 0,                  crit, Y      > [narrowing] .
     rl [p2_wait2] : < P, V1:Nat + V2:NzNat,  wait, V1:Nat > => < P, V1:Nat + V2:NzNat,  crit, V1:Nat > [narrowing] .
     rl [p2_crit]  : < P, X,                  crit, Y      > => < P, X,                 sleep, 0      > [narrowing] .
+endm
+```
+
+Arbitrary Processes Bakery
+--------------------------
+
+This version comes from the book *All About Maude* [@all-about-maude].
+
+```maude
+fmod BAKERY-SYNTAX is
+    protecting FVP-NAT-PRED * ( sort Nat to Name
+                              , op 1 to s
+                              , op _+_ to __
+                              ) .
+
+    sorts ModeIdle ModeWait ModeCrit Mode .
+    ---------------------------------------
+    subsorts ModeIdle ModeWait ModeCrit < Mode .
+
+    sorts Proc ProcIdle ProcWait .
+    ------------------------------
+    subsorts ProcIdle < ProcWait < Proc .
+
+    sorts ProcIdleSet ProcWaitSet ProcSet .
+    ---------------------------------------
+    subsort ProcIdle < ProcIdleSet .
+    subsort ProcWait < ProcWaitSet .
+    subsort Proc     < ProcSet .
+    subsorts ProcIdleSet < ProcWaitSet < ProcSet .
+
+    op idle :      -> ModeIdle .
+    op wait : Name -> ModeWait .
+    op crit : Name -> ModeCrit .
+    ----------------------------
+
+    op `[_`] : ModeIdle -> ProcIdle .
+    op `[_`] : ModeWait -> ProcWait .
+    op `[_`] : Mode     -> Proc .
+    -----------------------------
+
+    op none :                         -> ProcIdleSet .
+    op __   : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none] .
+    op __   : ProcWaitSet ProcWaitSet -> ProcWaitSet [assoc comm id: none] .
+    op __   :     ProcSet     ProcSet ->     ProcSet [assoc comm id: none] .
+    ------------------------------------------------------------------------
+endfm
+
+mod BAKERY is
+    protecting BAKERY-SYNTAX .
+
+    var PS : ProcSet . vars N M : Name .
+
+    sort Conf .
+    -----------
+
+    op _;_;_ : Name Name ProcSet -> Conf .
+    --------------------------------------
+    rl [wake] : N ; M ; [idle]    PS => (s N) ; M     ; [wait(N)] PS [narrowing] .
+    rl [crit] : N ; M ; [wait(M)] PS => N     ; M     ; [crit(M)] PS [narrowing] .
+    rl [exit] : N ; M ; [crit(M)] PS => N     ; (s M) ; [idle]    PS [narrowing] .
 endm
 ```
