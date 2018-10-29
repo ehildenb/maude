@@ -10,7 +10,6 @@ get variants in BAKERY-FVP : X:Nat < Y:Nat .
 
 mod BAKERY-META-LEVEL is
    protecting BAKERY .
-   protecting META-LEVEL .
 endm
 
 search [,2] s 0 ; s 0 ; [idle] [idle] =>* C:Conf .

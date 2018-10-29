@@ -7,6 +7,9 @@ Processes wait to receive some token, and upon receiving the token are scheduled
 
 ```maude
 load ../tools/fvp/numbers.maude
+
+set include BOOL off .
+set include NAT  off .
 ```
 
 Version 1 - RL
@@ -57,42 +60,50 @@ This version comes from the book *All About Maude - A High-Performance Logical F
 
 ```maude
 fmod BAKERY-SYNTAX is
-  sort Name .
-  op 0 : -> Name [ctor] .
-  op s : -> Name [ctor] .
-  op __ : Name Name -> Name [ctor comm assoc id: 0] .
+    protecting FVP-NAT-CTOR * ( sort Nat to Name
+                              , op 1 to s
+                              , op _+_ to __
+                              ) .
 
-  sorts ModeIdle ModeWait ModeCrit Mode .
-  subsorts ModeIdle ModeWait ModeCrit < Mode .
-  sorts ProcIdle ProcWait Proc ProcIdleSet ProcWaitSet ProcSet .
-  subsorts ProcIdle < ProcIdleSet .
-  subsorts ProcWait < ProcWaitSet .
-  subsorts ProcIdle ProcWait < Proc < ProcSet .
-  subsorts ProcIdleSet < ProcWaitSet < ProcSet .
+    sorts ModeIdle ModeWait ModeCrit Mode .
+    ---------------------------------------
+    subsorts ModeIdle ModeWait ModeCrit < Mode .
 
-  op idle : -> ModeIdle .
-  op wait : Name -> ModeWait .
-  op crit : Name -> ModeCrit .
-  op `[_`] : ModeIdle -> ProcIdle .
-  op `[_`] : ModeWait -> ProcWait .
-  op `[_`] : Mode -> Proc .
-  op none : -> ProcIdleSet .
-  op __ : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none] .
-  op __ : ProcWaitSet ProcWaitSet -> ProcWaitSet [assoc comm id: none] .
-  op __ : ProcSet ProcSet -> ProcSet [assoc comm id: none] .
+    sorts Proc ProcIdle ProcWait .
+    ------------------------------
+    subsorts ProcIdle < ProcWait < Proc .
 
-  sort Conf .
-  op _;_;_ : Name Name ProcSet -> Conf .
+    sorts ProcIdleSet ProcWaitSet ProcSet .
+    ---------------------------------------
+    subsort ProcIdle < ProcIdleSet .
+    subsort ProcWait < ProcWaitSet .
+    subsort Proc     < ProcSet .
+    subsorts ProcIdleSet < ProcWaitSet < ProcSet .
+
+    op idle : -> ModeIdle .
+    op wait : Name -> ModeWait .
+    op crit : Name -> ModeCrit .
+    op `[_`] : ModeIdle -> ProcIdle .
+    op `[_`] : ModeWait -> ProcWait .
+    op `[_`] : Mode -> Proc .
+    op none : -> ProcIdleSet .
+    op __ : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none] .
+    op __ : ProcWaitSet ProcWaitSet -> ProcWaitSet [assoc comm id: none] .
+    op __ : ProcSet ProcSet -> ProcSet [assoc comm id: none] .
 endfm
 
 mod BAKERY is
-  protecting BAKERY-SYNTAX .
+    protecting BAKERY-SYNTAX .
 
-  var PS : ProcSet .  vars N M : Name .
+    var PS : ProcSet . vars N M : Name .
 
-  rl [wake] : N ; M ; [idle]    PS => s N ; M   ; [wait(N)] PS [narrowing] .
-  rl [crit] : N ; M ; [wait(M)] PS => N   ; M   ; [crit(M)] PS [narrowing] .
-  rl [exit] : N ; M ; [crit(M)] PS => N   ; s M ; [idle]    PS [narrowing] .
+    sort Conf .
+    -----------
+    op _;_;_ : Name Name ProcSet -> Conf .
+
+    rl [wake] : N ; M ; [idle]    PS => (s N) ; M     ; [wait(N)] PS [narrowing] .
+    rl [crit] : N ; M ; [wait(M)] PS => N     ; M     ; [crit(M)] PS [narrowing] .
+    rl [exit] : N ; M ; [crit(M)] PS => N     ; (s M) ; [idle]    PS [narrowing] .
 endm
 ```
 
@@ -102,8 +113,6 @@ Version 3 - FVP
 This version specifically has the Finite Variant Property.
 
 ```maude
-set include BOOL off .
-
 mod BAKERY-FVP is
    protecting FVP-NAT-PRED .
 
