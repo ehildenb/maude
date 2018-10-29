@@ -118,6 +118,12 @@ build_test() {
     )
 }
 
+build_test_load() {
+    (   cd "$contrib_dir"
+        make test-load "$@"
+    )
+}
+
 build_test_base() {
     build_clean
     build_deps
@@ -168,9 +174,10 @@ case "$build_command" in
     maude-yices2)   build_maude_yices2  "$@" ;;
     tangle)         build_tangle        "$@" ;;
     test)           build_test          "$@" ;;
-    test-base)      build_test_base     "$@" ;;
     test-all)       build_test_all      "$@" ;;
+    test-base)      build_test_base     "$@" ;;
     test-smt)       build_test_smt      "$@" ;;
+    test-load)      build_test_load     "$@" ;;
     test-approve)   build_test_approve  "$@" ;;
     *)      echo "
     usage: $0 [clean|deps|tangle]
@@ -185,12 +192,14 @@ case "$build_command" in
     $0 tangle:           generate '*.maude' files from '*.md' files in '$contrib_dir'.
 
     developers: $0 test <test-path>
+                $0 test-load
                 $0 test-all
                 $0 test-base
                 $0 test-smt
                 $0 test-approve [<test-prefix>]
 
     $0 test:         Run test at <test-path> (eg. tests/tools/fvp/numbers).
+    $0 test-load:    Test that each tangled maude file loads correctly.
     $0 test-all:     Clean build and run all tests.
     $0 test-base:    Clean build and run non-smt tests.
     $0 test-smt:     Clean build and run smt tests.
