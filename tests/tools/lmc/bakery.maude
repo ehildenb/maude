@@ -4,14 +4,13 @@ load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
 fmod RENAMED-FVP-NARROWING-GRAPH is
-   protecting ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
+    including ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
             * ( sort   Nat to   NatP
               , sort NzNat to NzNatP
               ) .
 endfm
 
---- Module BAKERY-NARROWING-GRAPH
---- =============================
+--- ### Bakery Search Instantiation
 
 mod BAKERY-NARROWING-GRAPH is
    protecting BAKERY .
@@ -29,63 +28,32 @@ mod BAKERY-NARROWING-GRAPH is
     ----------------------------
     eq upCrit(T) = '`[_`]['crit[T]] .
 
-    op init : NatP -> [Term] .
-    --------------------------
-    eq init((0).NatP) = upTerm(0 ; 0 ; [idle] [idle]) .
-    eq init((1).NatP) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
-    eq init((2).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
-    eq init((3).NatP) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__[upCrit('__['s.Name,'X:Name]), upIdle, upIdle, 'PWS:ProcWaitSet]] .
-    eq init((4).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,upIdle]] .
-    eq init((5).NatP) = '_;_;_['X:Name,'Y:Name,'__[upCrit('X:Name), upCrit('Y:Name),'PS:ProcSet]] .
+    op conf2Idle    : -> [Term] .
+    op confManyWait : -> [Term] .
+    op confBad      : -> [Term] .
+    -----------------------------
+    eq conf2Idle    = '_;_;_['0.Name, '0.Name, '__[upIdle, upIdle]]                                .
+    eq confManyWait = '_;_;_['0.Name, '0.Name, 'PWS:ProcWaitSet]                                   .
+    eq confBad      = '_;_;_['X:Name, 'Y:Name, '__[upCrit('N:Name), upCrit('M:Name), 'PS:ProcSet]] .
 endm
 
---- Low-level functions
---- -------------------
+reduce wellFormed(#M, conf2Idle) .
+reduce wellFormed(#M, confManyWait) .
+reduce wellFormed(#M, confBad) .
 
---- ### ensure that init(0..4) are well formed
-
-reduce wellFormed(#M, init(0)) .
-reduce wellFormed(#M, init(1)) .
-reduce wellFormed(#M, init(2)) .
-reduce wellFormed(#M, init(3)) .
-reduce wellFormed(#M, init(4)) .
-reduce wellFormed(#M, init(5)) .
-
---- ### Function `step`
-
-reduce step(state(init(0))) .
-reduce step(state(init(1))) .
-reduce step(state(init(2))) .
-reduce step(state(init(3))) .
-
---- ### Function `fold`
+reduce step(state(conf2Idle)) .
+reduce step(state(confManyWait)) .
+reduce step(state(confBad)) .
 
 reduce fold ( state('_;_;_['__['s.Name,'V1:Name],'__['s.Name,'V1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             , state('_;_;_['X:Name,              'Y:Name,              '__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             ) .
-reduce fold(state(init(1)), state(init(2))) .
-reduce fold(state(init(1)), state(init(4))) .
 
-reduce not (fold(state(init(4)), state(init(3))) :: Fold) .
+reduce bfs(state(conf2Idle), 2) .
+reduce bfs(state(confManyWait), 2) .
 
---- ### Function `bfs`
-
-reduce bfs(state(init(0)), 0) .
-reduce bfs(state(init(1)), 0) .
-reduce bfs(state(init(2)), 0) .
-reduce bfs(state(init(3)), 0) .
-
-reduce bfs(state(init(0)), 2) .
-reduce bfs(state(init(1)), 2) .
-reduce bfs(state(init(2)), 2) .
-reduce bfs(state(init(3)), 2) .
-
---- achieves finite state graph
-reduce bfs(state(init(1))) .
-
-reduce bfs(state(init(4)), 10) .
-
-reduce state(init(1)) =>* state(init(5)) .
+reduce state(conf2Idle)    =>[10] state(confBad) .
+reduce state(confManyWait) =>[10] state(confBad) .
 
 --- Module FVP-BAKERY
 --- =================

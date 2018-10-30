@@ -1,69 +1,68 @@
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(0)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, conf2Idle) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(1)) .
-rewrites: 4
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, confManyWait) .
+rewrites: 3
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(2)) .
-rewrites: 4
-result Bool: true
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(3)) .
+reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, confBad) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(4)) .
-rewrites: 4
-result Bool: true
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : wellFormed(#M, init(5)) .
-rewrites: 5
-result Bool: true
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : step(state(init(0))) .
+reduce in BAKERY-NARROWING-GRAPH : step(state(conf2Idle)) .
 rewrites: 12
 result Transition: < label('wake, none),state('_;_;_['s.NzNat,'0.Name,'__[
     '`[_`]['idle.ModeIdle],'`[_`]['wait['0.Name]]]]) >
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : step(state(init(1))) .
-rewrites: 12
-result Transition: < label('wake, 
-  'X:Name <- '@1:Name),state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['wait['@1:Name]]]]) >
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : step(state(init(2))) .
-rewrites: 19
+reduce in BAKERY-NARROWING-GRAPH : step(state(confManyWait)) .
+rewrites: 18
 result NeTransitionSet: < label('crit, 
-  'PWS:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]] ; 
+  'PWS:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['wait['0.Name]]]),state(
+    '_;_;_['0.Name,'0.Name,'__['@1:ProcWaitSet,'`[_`]['crit['0.Name]]]]) >,<
+    label('wake, 
+  'PWS:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle]]),state(
+    '_;_;_['s.NzNat,'0.Name,'__['@1:ProcWaitSet,'`[_`]['wait['0.Name]]]]) >
+==========================================
+reduce in BAKERY-NARROWING-GRAPH : step(state(confBad)) .
+rewrites: 35
+result NeTransitionSet: < label('crit, 
+  'M:Name <- '@4:Name ; 
+  'N:Name <- '@3:Name ; 
+  'PS:ProcSet <- '__['@5:ProcSet,'`[_`]['wait['@2:Name]]] ; 
   'X:Name <- '@1:Name ; 
-  'Y:Name <- '@2:Name),state('_;_;_['@1:Name,'@2:Name,'__['@3:ProcWaitSet,
-    '`[_`]['idle.ModeIdle],'`[_`]['crit['@2:Name]]]]) >,< label('wake, 
-  'PWS:ProcWaitSet <- '@3:ProcWaitSet ; 
+  'Y:Name <- '@2:Name),state('_;_;_['@1:Name,'@2:Name,'__['@5:ProcSet,'`[_`][
+    'crit['@2:Name]],'`[_`]['crit['@3:Name]],'`[_`]['crit['@4:Name]]]]) >,<
+    label('exit, 
+  'M:Name <- '@3:Name ; 
+  'N:Name <- '@2:Name ; 
+  'PS:ProcSet <- '@4:ProcSet ; 
+  'X:Name <- '@1:Name ; 
+  'Y:Name <- '@2:Name),state('_;_;_['@1:Name,'__['s.NzNat,'@2:Name],'__[
+    '@4:ProcSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['@3:Name]]]]) >,< label(
+    'exit, 
+  'M:Name <- '@3:Name ; 
+  'N:Name <- '@2:Name ; 
+  'PS:ProcSet <- '@4:ProcSet ; 
+  'X:Name <- '@1:Name ; 
+  'Y:Name <- '@3:Name),state('_;_;_['@1:Name,'__['s.NzNat,'@3:Name],'__[
+    '@4:ProcSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['@2:Name]]]]) >,< label(
+    'exit, 
+  'M:Name <- '@4:Name ; 
+  'N:Name <- '@3:Name ; 
+  'PS:ProcSet <- '__['@5:ProcSet,'`[_`]['crit['@2:Name]]] ; 
+  'X:Name <- '@1:Name ; 
+  'Y:Name <- '@2:Name),state('_;_;_['@1:Name,'__['s.NzNat,'@2:Name],'__[
+    '@5:ProcSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['@3:Name]],'`[_`]['crit[
+    '@4:Name]]]]) >,< label('wake, 
+  'M:Name <- '@4:Name ; 
+  'N:Name <- '@3:Name ; 
+  'PS:ProcSet <- '__['@5:ProcSet,'`[_`]['idle.ModeIdle]] ; 
   'X:Name <- '@1:Name ; 
   'Y:Name <- '@2:Name),state('_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__[
-    '@3:ProcWaitSet,'`[_`]['wait['@1:Name]]]]) >
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : step(state(init(3))) .
-rewrites: 24
-result NeTransitionSet: < label('crit, 
-  'PWS:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['@1:Name]]] ; 
-  'X:Name <- '@3:Name ; 
-  'Y:Name <- '@1:Name),state('_;_;_['__['s.NzNat,'@3:Name],'@1:Name,'__[
-    '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit[
-    '@1:Name]],'`[_`]['crit['__['s.NzNat,'@3:Name]]]]]) >,< label('exit, 
-  'PWS:ProcWaitSet <- '@1:ProcWaitSet ; 
-  'X:Name <- '@2:Name ; 
-  'Y:Name <- '__['s.NzNat,'@2:Name]),state('_;_;_['__['s.NzNat,'@2:Name],'__[
-    's.NzNat,'s.NzNat,'@2:Name],'__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle],
-    '`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]) >,< label('wake, 
-  'PWS:ProcWaitSet <- '@2:ProcWaitSet ; 
-  'X:Name <- '@3:Name ; 
-  'Y:Name <- '@1:Name),state('_;_;_['__['s.NzNat,'s.NzNat,'@3:Name],'@1:Name,
-    '__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.NzNat,
-    '@3:Name]]],'`[_`]['wait['__['s.NzNat,'@3:Name]]]]]) >
+    '@5:ProcSet,'`[_`]['crit['@3:Name]],'`[_`]['crit['@4:Name]],'`[_`]['wait[
+    '@1:Name]]]]) >
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : fold(state('_;_;_['__['s.Name,'V1:Name],'__[
     's.Name,'V1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]),
@@ -74,58 +73,7 @@ result Fold: fold(
   'X:Name <- '__['s.NzNat,'V1:Name] ; 
   'Y:Name <- '__['s.NzNat,'V1:Name])
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : fold(state(init(1)), state(init(2))) .
-rewrites: 7
-result Fold: fold(
-  'PWS:ProcWaitSet <- '`[_`]['idle.ModeIdle] ; 
-  'X:Name <- 'X:Name ; 
-  'Y:Name <- 'X:Name)
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : fold(state(init(1)), state(init(4))) .
-rewrites: 7
-result Fold: fold(
-  'X:Name <- 'X:Name ; 
-  'Y:Name <- 'X:Name)
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : not fold(state(init(4)), state(init(3))) ::
-    Fold .
-rewrites: 10
-result Bool: true
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(0)), 0) .
-rewrites: 9
-result FoldedLabeledGraph?: .LabeledGraph
-| 0 |-> state('_;_;_['0.Name,'0.Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]])
-| 1
-| (0).Zero
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1)), 0) .
-rewrites: 9
-result FoldedLabeledGraph?: .LabeledGraph
-| 0 |-> state('_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]])
-| 1
-| (0).Zero
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(2)), 0) .
-rewrites: 9
-result FoldedLabeledGraph?: .LabeledGraph
-| 0 |-> state('_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],
-    'PWS:ProcWaitSet]])
-| 1
-| (0).Zero
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(3)), 0) .
-rewrites: 10
-result FoldedLabeledGraph?: .LabeledGraph
-| 0 |-> state('_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,
-    'X:Name]]],'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],
-    'PWS:ProcWaitSet]])
-| 1
-| (0).Zero
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(0)), 2) .
+reduce in BAKERY-NARROWING-GRAPH : bfs(state(conf2Idle), 2) .
 rewrites: 124
 result FoldedLabeledGraph?: (0 -[label('wake, none)]-> 2
 2 -[label('crit, none)]-> 4
@@ -141,279 +89,116 @@ result FoldedLabeledGraph?: (0 -[label('wake, none)]-> 2
 | 7
 | 4 ; 6
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1)), 2) .
-rewrites: 124
-result FoldedLabeledGraph?: (0 -[label('wake, 
-  'X:Name <- '@1:Name)]-> 2
-2 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 4
-2 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 6)
-| 0 |-> state('_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]])
-2 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['wait['@1:Name]]]])
-4 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['crit['@1:Name]]]])
-6 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['wait[
-    '@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]])
-| 7
-| 4 ; 6
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(2)), 2) .
-rewrites: 354
+reduce in BAKERY-NARROWING-GRAPH : bfs(state(confManyWait), 2) .
+rewrites: 349
 result FoldedLabeledGraph?: (0 -[label('crit, 
-  'PWS:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]] ; 
-  'X:Name <- '@1:Name ; 
-  'Y:Name <- '@2:Name)]-> 2
+  'PWS:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['wait['0.Name]]])]-> 2
 0 -[label('wake, 
-  'PWS:ProcWaitSet <- '@3:ProcWaitSet ; 
-  'X:Name <- '@1:Name ; 
-  'Y:Name <- '@2:Name)]-> 4
+  'PWS:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 4
 2 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]])]-> 6
+  '@1:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['wait['0.Name]]])]-> 6
 2 -[label('exit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@3:ProcWaitSet)]-> (0).Zero[fold(
-  'PWS:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle]] ; 
-  'X:Name <- '@1:Name ; 
-  'Y:Name <- '__['s.NzNat,'@2:Name])]
+  '@1:ProcWaitSet <- '@1:ProcWaitSet)]-> 8
 2 -[label('wake, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@2:Name ; 
-  '@3:ProcWaitSet <- '@3:ProcWaitSet)]-> 10
+  '@1:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 10
 4 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '@2:ProcWaitSet)]-> 12
-4 -[label('crit, 
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@1:Name]]])]-> 10[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '@3:ProcWaitSet)]
+  '@1:ProcWaitSet <- '@1:ProcWaitSet)]-> 12
 4 -[label('wake, 
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 4[fold(
-  '@1:Name <- '__['s.NzNat,'@2:Name] ; 
-  '@2:Name <- '@1:Name ; 
-  '@3:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]])])
-| 0 |-> state('_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],
-    'PWS:ProcWaitSet]])
-2 |-> state('_;_;_['@1:Name,'@2:Name,'__['@3:ProcWaitSet,'`[_`][
-    'idle.ModeIdle],'`[_`]['crit['@2:Name]]]])
-4 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__['@3:ProcWaitSet,'`[_`][
-    'wait['@1:Name]]]])
-6 |-> state('_;_;_['@1:Name,'@2:Name,'__['@3:ProcWaitSet,'`[_`][
-    'idle.ModeIdle],'`[_`]['crit['@2:Name]],'`[_`]['crit['@2:Name]]]])
-10 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__['@3:ProcWaitSet,'`[_`][
-    'crit['@2:Name]],'`[_`]['wait['@1:Name]]]])
-12 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
-    'crit['@1:Name]]]])
-| 17
-| 6 ; 10 ; 12
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(3)), 2) .
-rewrites: 677
-result FoldedLabeledGraph?: (0 -[label('crit, 
-  'PWS:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['@1:Name]]] ; 
-  'X:Name <- '@3:Name ; 
-  'Y:Name <- '@1:Name)]-> 2
-0 -[label('exit, 
-  'PWS:ProcWaitSet <- '@1:ProcWaitSet ; 
-  'X:Name <- '@2:Name ; 
-  'Y:Name <- '__['s.NzNat,'@2:Name])]-> 4
-0 -[label('wake, 
-  'PWS:ProcWaitSet <- '@2:ProcWaitSet ; 
-  'X:Name <- '@3:Name ; 
-  'Y:Name <- '@1:Name)]-> 6
-2 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['@1:Name]]] ; 
-  '@3:Name <- '@3:Name)]-> 12
-2 -[label('exit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcWaitSet <- '@2:ProcWaitSet ; 
-  '@3:Name <- '@3:Name)]-> (0).Zero[fold(
-  'PWS:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle]] ; 
-  'X:Name <- '@3:Name ; 
-  'Y:Name <- '__['s.NzNat,'@1:Name])]
-2 -[label('wake, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcWaitSet <- '@2:ProcWaitSet ; 
-  '@3:Name <- '@3:Name)]-> 16
-4 -[label('crit, 
-  '@1:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['__['s.NzNat,'s.NzNat,
-    '@1:Name]]]] ; 
-  '@2:Name <- '@1:Name)]-> 8
-4 -[label('wake, 
-  '@1:ProcWaitSet <- '@2:ProcWaitSet ; 
-  '@2:Name <- '@1:Name)]-> 10
-6 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcWaitSet <- '__['@2:ProcWaitSet,'`[_`]['wait['@1:Name]]] ; 
-  '@3:Name <- '@3:Name)]-> 16
-6 -[label('crit, 
-  '@1:Name <- '__['s.NzNat,'@2:Name] ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet ; 
-  '@3:Name <- '@2:Name)]-> 20
-6 -[label('exit, 
-  '@1:Name <- '__['s.NzNat,'@2:Name] ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet ; 
-  '@3:Name <- '@2:Name)]-> 10[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcWaitSet <- '@1:ProcWaitSet)]
-6 -[label('wake, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcWaitSet <- '@2:ProcWaitSet ; 
-  '@3:Name <- '@3:Name)]-> 24)
-| 0 |-> state('_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,
-    'X:Name]]],'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],
-    'PWS:ProcWaitSet]])
-2 |-> state('_;_;_['__['s.NzNat,'@3:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
-    'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit['@1:Name]],'`[_`][
-    'crit['__['s.NzNat,'@3:Name]]]]])
-4 |-> state('_;_;_['__['s.NzNat,'@2:Name],'__['s.NzNat,'s.NzNat,'@2:Name],'__[
-    '@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`][
+  '@1:ProcWaitSet <- '__['@1:ProcWaitSet,'`[_`]['idle.ModeIdle]])]-> 14)
+| 0 |-> state('_;_;_['0.Name,'0.Name,'PWS:ProcWaitSet])
+2 |-> state('_;_;_['0.Name,'0.Name,'__['@1:ProcWaitSet,'`[_`]['crit[
+    '0.Name]]]])
+4 |-> state('_;_;_['s.NzNat,'0.Name,'__['@1:ProcWaitSet,'`[_`]['wait[
+    '0.Name]]]])
+6 |-> state('_;_;_['0.Name,'0.Name,'__['@1:ProcWaitSet,'`[_`]['crit['0.Name]],
+    '`[_`]['crit['0.Name]]]])
+8 |-> state('_;_;_['0.Name,'s.NzNat,'__['@1:ProcWaitSet,'`[_`][
     'idle.ModeIdle]]])
-6 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@3:Name],'@1:Name,'__[
-    '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.NzNat,
-    '@3:Name]]],'`[_`]['wait['__['s.NzNat,'@3:Name]]]]])
-8 |-> state('_;_;_['__['s.NzNat,'@1:Name],'__['s.NzNat,'s.NzNat,'@1:Name],'__[
-    '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['crit['__['s.NzNat,'s.NzNat,'@1:Name]]]]])
-10 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,'s.NzNat,
-    '@1:Name],'__['@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]])
-12 |-> state('_;_;_['__['s.NzNat,'@3:Name],'@1:Name,'__['@2:ProcWaitSet,'`[_`][
-    'idle.ModeIdle],'`[_`]['idle.ModeIdle],'`[_`]['crit['@1:Name]],'`[_`][
-    'crit['@1:Name]],'`[_`]['crit['__['s.NzNat,'@3:Name]]]]])
-16 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@3:Name],'@1:Name,'__[
-    '@2:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['@1:Name]],'`[_`][
-    'crit['__['s.NzNat,'@3:Name]]],'`[_`]['wait['__['s.NzNat,'@3:Name]]]]])
-20 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@2:Name],'__['s.NzNat,'@2:Name],'__[
-    '@1:ProcWaitSet,'`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.NzNat,
-    '@2:Name]]],'`[_`]['crit['__['s.NzNat,'@2:Name]]]]])
-24 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'@3:Name],'@1:Name,'__[
-    '@2:ProcWaitSet,'`[_`]['crit['__['s.NzNat,'@3:Name]]],'`[_`]['wait['__[
-    's.NzNat,'@3:Name]]],'`[_`]['wait['__['s.NzNat,'s.NzNat,'@3:Name]]]]])
-| 25
-| 8 ; 10 ; 12 ; 16 ; 20 ; 24
-==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(1))) .
-rewrites: 362
-result FoldedLabeledGraph: (0 -[label('wake, 
-  'X:Name <- '@1:Name)]-> 2
-2 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 4
-2 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 6
-4 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> (0).Zero[fold(
-  'X:Name <- '__['s.NzNat,'@1:Name])]
-4 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 10
-6 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 10
-10 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 2[fold(
-  '@1:Name <- '__['s.NzNat,'@1:Name])])
-| 0 |-> state('_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]])
-2 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['wait['@1:Name]]]])
-4 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['crit['@1:Name]]]])
-6 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['wait[
-    '@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]])
-10 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['crit[
-    '@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]])
+10 |-> state('_;_;_['s.NzNat,'0.Name,'__['@1:ProcWaitSet,'`[_`]['crit[
+    '0.Name]],'`[_`]['wait['0.Name]]]])
+12 |-> state('_;_;_['s.NzNat,'0.Name,'__['@1:ProcWaitSet,'`[_`]['crit[
+    '0.Name]]]])
+14 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'0.Name,'__['@1:ProcWaitSet,'`[_`][
+    'wait['0.Name]],'`[_`]['wait['s.NzNat]]]])
 | 15
+| 6 ; 8 ; 10 ; 12 ; 14
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : bfs(state(init(4)), 10) .
-rewrites: 1366
-result FoldedLabeledGraph?: (0 -[label('wake, 
-  'X:Name <- '@1:Name ; 
-  'Y:Name <- '@2:Name)]-> 2
-2 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@1:Name)]-> 4
-2 -[label('wake, 
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@1:Name)]-> 6
-4 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> (0).Zero[fold(
-  'X:Name <- '__['s.NzNat,'@1:Name] ; 
-  'Y:Name <- '__['s.NzNat,'@1:Name])]
-4 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 10
-6 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:Name <- '@1:Name)]-> 10
-6 -[label('crit, 
-  '@1:Name <- '__['s.NzNat,'@1:Name] ; 
-  '@2:Name <- '@1:Name)]-> 14
-10 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 2[fold(
-  '@1:Name <- '__['s.NzNat,'@1:Name] ; 
-  '@2:Name <- '__['s.NzNat,'@1:Name])]
-14 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 18
-18 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 20
-20 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 22
-22 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 24
-24 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 26
-26 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 28
-28 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 30)
-| 0 |-> state('_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
+reduce in BAKERY-NARROWING-GRAPH : state(conf2Idle) =>[10]state(confBad) .
+rewrites: 6253
+result [Bool]: (0 -[label('wake, none)]-> 2
+2 -[label('crit, none)]-> 4
+2 -[label('wake, none)]-> 6
+4 -[label('exit, none)]-> 8
+4 -[label('wake, none)]-> 10
+6 -[label('crit, none)]-> 10
+8 -[label('wake, none)]-> 14
+10 -[label('exit, none)]-> 14
+14 -[label('crit, none)]-> 18
+14 -[label('wake, none)]-> 20
+18 -[label('exit, none)]-> 22
+18 -[label('wake, none)]-> 24
+20 -[label('crit, none)]-> 24
+22 -[label('wake, none)]-> 28
+24 -[label('exit, none)]-> 28
+28 -[label('crit, none)]-> 32
+28 -[label('wake, none)]-> 34
+32 -[label('exit, none)]-> 36
+32 -[label('wake, none)]-> 38
+34 -[label('crit, none)]-> 38
+36 -[label('wake, none)]-> 42
+38 -[label('exit, none)]-> 42
+42 -[label('crit, none)]-> 46
+42 -[label('wake, none)]-> 48)
+| 0 |-> state('_;_;_['0.Name,'0.Name,'__['`[_`]['idle.ModeIdle],'`[_`][
     'idle.ModeIdle]]])
-2 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['wait['@1:Name]]]])
-4 |-> state('_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['idle.ModeIdle],
-    '`[_`]['crit['@1:Name]]]])
-6 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@2:Name],'@1:Name,'__['`[_`]['wait[
-    '@2:Name]],'`[_`]['wait['__['s.NzNat,'@2:Name]]]]])
-10 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`]['crit[
-    '@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]])
-14 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,'@1:Name],'__[
-    '`[_`]['crit['__['s.NzNat,'@1:Name]]],'`[_`]['wait['@1:Name]]]])
-18 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,'s.NzNat,
-    '@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['wait['@1:Name]]]])
-20 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,
-    's.NzNat,'@1:Name],'__['`[_`]['wait['@1:Name]],'`[_`]['wait['__['s.NzNat,
-    's.NzNat,'@1:Name]]]]])
-22 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,
-    's.NzNat,'@1:Name],'__['`[_`]['crit['__['s.NzNat,'s.NzNat,'@1:Name]]],
-    '`[_`]['wait['@1:Name]]]])
-24 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['s.NzNat,
-    's.NzNat,'s.NzNat,'@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['wait[
-    '@1:Name]]]])
-26 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__[
-    's.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['`[_`]['wait['@1:Name]],'`[_`][
-    'wait['__['s.NzNat,'s.NzNat,'s.NzNat,'@1:Name]]]]])
-28 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__[
-    's.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['`[_`]['crit['__['s.NzNat,
-    's.NzNat,'s.NzNat,'@1:Name]]],'`[_`]['wait['@1:Name]]]])
-30 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__[
-    's.NzNat,'s.NzNat,'s.NzNat,'s.NzNat,'@1:Name],'__['`[_`]['idle.ModeIdle],
-    '`[_`]['wait['@1:Name]]]])
-| 31
-| 30
+2 |-> state('_;_;_['s.NzNat,'0.Name,'__['`[_`]['idle.ModeIdle],'`[_`]['wait[
+    '0.Name]]]])
+4 |-> state('_;_;_['s.NzNat,'0.Name,'__['`[_`]['idle.ModeIdle],'`[_`]['crit[
+    '0.Name]]]])
+6 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'0.Name,'__['`[_`]['wait['0.Name]],
+    '`[_`]['wait['s.NzNat]]]])
+8 |-> state('_;_;_['s.NzNat,'s.NzNat,'__['`[_`]['idle.ModeIdle],'`[_`][
+    'idle.ModeIdle]]])
+10 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'0.Name,'__['`[_`]['crit['0.Name]],
+    '`[_`]['wait['s.NzNat]]]])
+14 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'s.NzNat,'__['`[_`]['idle.ModeIdle],
+    '`[_`]['wait['s.NzNat]]]])
+18 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'s.NzNat,'__['`[_`]['idle.ModeIdle],
+    '`[_`]['crit['s.NzNat]]]])
+20 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat],'s.NzNat,'__['`[_`]['wait[
+    's.NzNat]],'`[_`]['wait['__['s.NzNat,'s.NzNat]]]]])
+22 |-> state('_;_;_['__['s.NzNat,'s.NzNat],'__['s.NzNat,'s.NzNat],'__['`[_`][
+    'idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+24 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat],'s.NzNat,'__['`[_`]['crit[
+    's.NzNat]],'`[_`]['wait['__['s.NzNat,'s.NzNat]]]]])
+28 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,'s.NzNat],'__[
+    '`[_`]['idle.ModeIdle],'`[_`]['wait['__['s.NzNat,'s.NzNat]]]]])
+32 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,'s.NzNat],'__[
+    '`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.NzNat,'s.NzNat]]]]])
+34 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,
+    's.NzNat],'__['`[_`]['wait['__['s.NzNat,'s.NzNat]]],'`[_`]['wait['__[
+    's.NzNat,'s.NzNat,'s.NzNat]]]]])
+36 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,'s.NzNat,
+    's.NzNat],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+38 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,
+    's.NzNat],'__['`[_`]['crit['__['s.NzNat,'s.NzNat]]],'`[_`]['wait['__[
+    's.NzNat,'s.NzNat,'s.NzNat]]]]])
+42 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,
+    's.NzNat,'s.NzNat],'__['`[_`]['idle.ModeIdle],'`[_`]['wait['__['s.NzNat,
+    's.NzNat,'s.NzNat]]]]])
+46 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat],'__['s.NzNat,
+    's.NzNat,'s.NzNat],'__['`[_`]['idle.ModeIdle],'`[_`]['crit['__['s.NzNat,
+    's.NzNat,'s.NzNat]]]]])
+48 |-> state('_;_;_['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat],'__[
+    's.NzNat,'s.NzNat,'s.NzNat],'__['`[_`]['wait['__['s.NzNat,'s.NzNat,
+    's.NzNat]]],'`[_`]['wait['__['s.NzNat,'s.NzNat,'s.NzNat,'s.NzNat]]]]])
+| 49
+| 46 ; 48 =>[decrement(0)]state('_;_;_['X:Name,'Y:Name,'__['`[_`]['crit[
+    'N:Name]],'`[_`]['crit['M:Name]],'PS:ProcSet]])
 ==========================================
-reduce in BAKERY-NARROWING-GRAPH : state(init(1)) =>* state(init(5)) .
-rewrites: 1473
-result Bool: false
+reduce in BAKERY-NARROWING-GRAPH : state(confManyWait) =>[10]state(confBad) .
+rewrites: 1617
+result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
