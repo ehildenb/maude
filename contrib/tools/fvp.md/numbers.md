@@ -147,12 +147,15 @@ fmod FVP-NAT-PRED is
    protecting FVP-NAT .
    protecting FVP-BOOL-CTOR .
 
-    vars   N N' :   Nat .
-    var  NzN    : NzNat .
+    vars   N   N' :   Nat .
+    vars NzN NzN' : NzNat .
 
     op _<_  : Nat Nat -> Bool .
     op _<=_ : Nat Nat -> Bool .
     ---------------------------
+    eq 1 + NzN <  1 + NzN' = NzN <  NzN' .
+    eq 1 + NzN <= 1 + NzN' = NzN <= NzN' .
+
     eq N <  N + NzN  = true [variant] .
     eq N <= N +   N' = true [variant] .
 

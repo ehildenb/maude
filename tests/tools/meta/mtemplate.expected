@@ -185,8 +185,12 @@ result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
 subsort 'NcMode < 'Mode .
 subsort 'NzNat < 'Nat .
 eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+eq '_<=_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<=_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
 eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
 eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+eq '_<_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
 eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
 eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
 eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
@@ -382,8 +386,12 @@ result SModule: mod 'BAKERY-FVP is
   op 'wait : nil -> 'NcMode [ctor] .
   none
   eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+  eq '_<=_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<=_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
   eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
   eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+  eq '_<_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
   eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
   eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
   eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .

@@ -96,14 +96,18 @@ op 'true : nil -> 'Bool [ctor special(
 ==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
-rewrites: 78
+rewrites: 82
 result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
     'NzNat .)
 subsort 'NcMode < 'Mode .
 subsort 'NzNat < 'Nat .
 eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+eq '_<=_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<=_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
 eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
 eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+eq '_<_['_+_['1.NzNat,'NzN:NzNat],'_+_['1.NzNat,'NzN':NzNat]] = '_<_[
+    'NzN:NzNat,'NzN':NzNat] [none] .
 eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
 eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
 eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
@@ -179,7 +183,7 @@ result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
     stripConditions(asTemplate(upModule('BAKERY-FVP, true))))) .
-rewrites: 82
+rewrites: 86
 result Bool: true
 ==========================================
 reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
