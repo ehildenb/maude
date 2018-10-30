@@ -59,7 +59,7 @@ endfm
 reduce N:Nat ?= N:Nat + N':Nat .
 reduce tt /\ N:Nat ?= NzN:Nat .
 
-fmod TEST-FVP-BOOL-EQFORM is
+fmod TEST-FVP-BOOL-NAT-EQFORM is
     protecting FVP-BOOL-EQFORM + FVP-NAT-PRED .
 endfm
 
@@ -67,3 +67,11 @@ reduce true ?= N:Nat < N':Nat .
 reduce true ?= N:Nat < (N':Nat + NzN':Nat) .
 reduce true ?= N:Nat <= N':Nat /\ false ?= N:Nat < N':Nat .
 reduce N:Nat <= N':Nat ?= N':Nat < N:Nat .
+
+--- TODO: Why does the first query generate the variant which is the second query, but the second queries variants are fully simplified `tt` and `ff`.
+get variants true ?= (1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 <= V1:Nat)
+          /\ true ?= (V1:Nat <= 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1)
+          /\ true ?= (V1:Nat <  1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1) .
+
+get variants true ?= (1 + V1:Nat <  1 + 1 + 1 + 1)
+          /\ true ?= (1 + V1:Nat <= 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1) .
