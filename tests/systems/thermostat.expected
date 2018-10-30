@@ -42,337 +42,337 @@ C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1,off}
 
 Solution 2 (state 1)
-states: 2  rewrites: 65
+states: 2  rewrites: 85
 C:Conf --> < 1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on) >
 
 Solution 3 (state 2)
-states: 3  rewrites: 106
+states: 3  rewrites: 146
 C:Conf --> {1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1,delay(on)}
 
 Solution 4 (state 3)
-states: 4  rewrites: 107
+states: 4  rewrites: 147
 C:Conf --> < 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1,delay(on) >
 
 Solution 5 (state 4)
-states: 5  rewrites: 109
+states: 5  rewrites: 149
 C:Conf --> {1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1,delay(on)}
 
 Solution 6 (state 5)
-states: 6  rewrites: 110
+states: 6  rewrites: 150
 C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1,delay(on) >
 
 Solution 7 (state 6)
-states: 7  rewrites: 112
+states: 7  rewrites: 152
 C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1,delay(on)}
 
 Solution 8 (state 7)
-states: 8  rewrites: 113
+states: 8  rewrites: 153
 C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1,delay(on) >
 
 Solution 9 (state 8)
-states: 9  rewrites: 115
+states: 9  rewrites: 155
 C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
     delay(on)}
 
 Solution 10 (state 9)
-states: 10  rewrites: 116
+states: 10  rewrites: 156
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
     delay(on) >
 
 Solution 11 (state 10)
-states: 11  rewrites: 118
+states: 11  rewrites: 158
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(
     on)}
 
 Solution 12 (state 11)
-states: 12  rewrites: 119
+states: 12  rewrites: 159
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on >
 
 Solution 13 (state 12)
-states: 13  rewrites: 123
+states: 13  rewrites: 163
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1,on}
 
 Solution 14 (state 13)
-states: 14  rewrites: 194
+states: 14  rewrites: 274
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1,on >
 
 Solution 15 (state 14)
-states: 15  rewrites: 198
+states: 15  rewrites: 278
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1,on}
 
 Solution 16 (state 15)
-states: 16  rewrites: 269
+states: 16  rewrites: 393
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1,on >
 
 Solution 17 (state 16)
-states: 17  rewrites: 273
+states: 17  rewrites: 397
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1,on}
 
 Solution 18 (state 17)
-states: 18  rewrites: 344
+states: 18  rewrites: 516
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1,on >
 
 Solution 19 (state 18)
-states: 19  rewrites: 348
+states: 19  rewrites: 520
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1,on}
 
 Solution 20 (state 19)
-states: 20  rewrites: 419
+states: 20  rewrites: 643
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1,on >
 
 Solution 21 (state 20)
-states: 21  rewrites: 423
+states: 21  rewrites: 647
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on}
 
 Solution 22 (state 21)
-states: 22  rewrites: 462
+states: 22  rewrites: 712
 C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 23 (state 22)
-states: 23  rewrites: 499
+states: 23  rewrites: 775
 C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 24 (state 23)
-states: 24  rewrites: 500
+states: 24  rewrites: 776
 C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 25 (state 24)
-states: 25  rewrites: 502
+states: 25  rewrites: 778
 C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 26 (state 25)
-states: 26  rewrites: 503
+states: 26  rewrites: 779
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 27 (state 26)
-states: 27  rewrites: 505
+states: 27  rewrites: 781
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 28 (state 27)
-states: 28  rewrites: 506
+states: 28  rewrites: 782
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1,off >
 
 Solution 29 (state 28)
-states: 29  rewrites: 508
+states: 29  rewrites: 784
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1,off}
 
 Solution 30 (state 29)
-states: 30  rewrites: 555
+states: 30  rewrites: 850
 C:Conf --> < 1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1,delay(on) >
 
 Solution 31 (state 30)
-states: 31  rewrites: 596
+states: 31  rewrites: 910
 C:Conf --> {1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1,delay(on)}
 
 Solution 32 (state 31)
-states: 32  rewrites: 597
+states: 32  rewrites: 911
 C:Conf --> < 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1,delay(on) >
 
 Solution 33 (state 32)
-states: 33  rewrites: 599
+states: 33  rewrites: 913
 C:Conf --> {1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1,delay(on)}
 
 Solution 34 (state 33)
-states: 34  rewrites: 600
+states: 34  rewrites: 914
 C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1,delay(on) >
 
 Solution 35 (state 34)
-states: 35  rewrites: 602
+states: 35  rewrites: 916
 C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1,delay(on)}
 
 Solution 36 (state 35)
-states: 36  rewrites: 603
+states: 36  rewrites: 917
 C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
     delay(on) >
 
 Solution 37 (state 36)
-states: 37  rewrites: 605
+states: 37  rewrites: 919
 C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(
     on)}
 
 Solution 38 (state 37)
-states: 38  rewrites: 606
+states: 38  rewrites: 920
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(
     on) >
 
 Solution 39 (state 38)
-states: 39  rewrites: 608
+states: 39  rewrites: 922
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on)}
 
 Solution 40 (state 39)
-states: 40  rewrites: 609
+states: 40  rewrites: 923
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on >
 
 Solution 41 (state 40)
-states: 41  rewrites: 613
+states: 41  rewrites: 927
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on}
 
 Solution 42 (state 41)
-states: 42  rewrites: 684
+states: 42  rewrites: 1036
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on
     >
 
 Solution 43 (state 42)
-states: 43  rewrites: 688
+states: 43  rewrites: 1040
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1,on}
 
 Solution 44 (state 43)
-states: 44  rewrites: 759
+states: 44  rewrites: 1153
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1,on >
 
 Solution 45 (state 44)
-states: 45  rewrites: 763
+states: 45  rewrites: 1157
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1,on}
 
 Solution 46 (state 45)
-states: 46  rewrites: 834
+states: 46  rewrites: 1274
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1,on >
 
 Solution 47 (state 46)
-states: 47  rewrites: 838
+states: 47  rewrites: 1278
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1,on}
 
 Solution 48 (state 47)
-states: 48  rewrites: 909
+states: 48  rewrites: 1399
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1,on >
 
 Solution 49 (state 48)
-states: 49  rewrites: 913
+states: 49  rewrites: 1403
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1 + 1,on}
 
 Solution 50 (state 49)
-states: 50  rewrites: 952
+states: 50  rewrites: 1468
 C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 51 (state 50)
-states: 51  rewrites: 989
+states: 51  rewrites: 1531
 C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 52 (state 51)
-states: 52  rewrites: 990
+states: 52  rewrites: 1532
 C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 53 (state 52)
-states: 53  rewrites: 992
+states: 53  rewrites: 1534
 C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 54 (state 53)
-states: 54  rewrites: 993
+states: 54  rewrites: 1535
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1 + 1,delay(off) >
 
 Solution 55 (state 54)
-states: 55  rewrites: 995
+states: 55  rewrites: 1537
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1 + 1,delay(off)}
 
 Solution 56 (state 55)
-states: 56  rewrites: 996
+states: 56  rewrites: 1538
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1,off >
 
 Solution 57 (state 56)
-states: 57  rewrites: 998
+states: 57  rewrites: 1540
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1,off}
 
 Solution 58 (state 57)
-states: 58  rewrites: 1045
+states: 58  rewrites: 1605
 C:Conf --> < 1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1 + 1 + 1,delay(on) >
 
 Solution 59 (state 58)
-states: 59  rewrites: 1086
+states: 59  rewrites: 1664
 C:Conf --> {1 + 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1 + 1 + 1,delay(on)}
 
 Solution 60 (state 59)
-states: 60  rewrites: 1087
+states: 60  rewrites: 1665
 C:Conf --> < 1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1 + 1 + 1,delay(on) >
 
 Solution 61 (state 60)
-states: 61  rewrites: 1089
+states: 61  rewrites: 1667
 C:Conf --> {1 + 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
     + 1,delay(on)}
 
 Solution 62 (state 61)
-states: 62  rewrites: 1090
+states: 62  rewrites: 1668
 C:Conf --> < 1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
     1,delay(on) >
 
 Solution 63 (state 62)
-states: 63  rewrites: 1092
+states: 63  rewrites: 1670
 C:Conf --> {1 + 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,
     delay(on)}
 
 Solution 64 (state 63)
-states: 64  rewrites: 1093
+states: 64  rewrites: 1671
 C:Conf --> < 1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(
     on) >
 
 Solution 65 (state 64)
-states: 65  rewrites: 1095
+states: 65  rewrites: 1673
 C:Conf --> {1,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on)}
 
 Solution 66 (state 65)
-states: 66  rewrites: 1096
+states: 66  rewrites: 1674
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on)
     >
 
 Solution 67 (state 66)
-states: 67  rewrites: 1098
+states: 67  rewrites: 1676
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,delay(on)}
 
 Solution 68 (state 67)
-states: 68  rewrites: 1099
+states: 68  rewrites: 1677
 C:Conf --> < 0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on >
 
 Solution 69 (state 68)
-states: 69  rewrites: 1103
+states: 69  rewrites: 1681
 C:Conf --> {0,1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1,on}
 
 No more solutions.
-states: 69  rewrites: 1174
+states: 69  rewrites: 1788
 Bye.

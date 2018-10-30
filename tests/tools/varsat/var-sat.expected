@@ -1,6 +1,6 @@
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool ?= upTerm(X < Y)) == true .
-rewrites: 2019
+rewrites: 2197
 result Bool: true
 ==========================================
 reduce in TEST-NAT : var-sat(nat, 'true.Bool != upTerm(X < Y)) == true .
