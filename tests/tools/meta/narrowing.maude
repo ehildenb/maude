@@ -7,7 +7,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 --- =================
 
 fmod NAT-HARNESS is
-   protecting NARROWING .
+   protecting NARROWING + UNIFICATION .
 
     op ##m## : ~> SModule [memo] .
     ------------------------------
@@ -54,6 +54,12 @@ reduce getTerms(variants(##m##, init(4))) .
 reduce getTerms(variants(##m##, init(5))) .
 reduce getTerms(variants(##m##, init(6))) .
 reduce getTerms(variants(##m##, init(7))) .
+
+--- Module `UNIFICATION`
+--- ====================
+
+reduce unifiers(##m##, init(0), init(1)) .
+reduce unifiers(##m##, init(6), init(7)) .
 
 --- Module `NARROWNG`
 --- =================

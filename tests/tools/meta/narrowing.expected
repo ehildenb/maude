@@ -125,6 +125,16 @@ reduce in NAT-HARNESS : getTerms(variants(##m##, init(7))) .
 rewrites: 13
 result Constant: 'true.Bool
 ==========================================
+reduce in NAT-HARNESS : unifiers(##m##, init(0), init(1)) .
+rewrites: 10
+result Substitution: 
+  'X:Nat <- '_+_['1.NzNat,'#1:Nat] ; 
+  'Y:Nat <- '#1:Nat
+==========================================
+reduce in NAT-HARNESS : unifiers(##m##, init(6), init(7)) .
+rewrites: 9
+result SubstitutionSet: .SubstitutionSet
+==========================================
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
     'a.PreState], 0) .
 rewrites: 12

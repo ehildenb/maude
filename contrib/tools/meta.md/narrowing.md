@@ -45,6 +45,28 @@ fmod VARIANT-SET is
 endfm
 ```
 
+Unification Sets
+----------------
+
+```maude
+fmod UNIFICATION is
+    protecting META-LEVEL .
+    protecting SUBSTITUTION-SET .
+
+    vars T T' : Term . vars N N' : Nat .
+    var M : Module . var SUB : Substitution .
+
+    op unifiers : Module Term Term -> [SubstitutionSet] .
+    -----------------------------------------------------
+    eq unifiers(M, T, T') = allUnifiers(M, T, T', 0) .
+
+    op allUnifiers : Module Term Term Nat -> [SubstitutionSet] .
+    ------------------------------------------------------------
+   ceq allUnifiers(M, T, T', N) = .SubstitutionSet                   if noUnifier    := metaUnify(M, T =? T', 0, N) .
+   ceq allUnifiers(M, T, T', N) = SUB | allUnifiers(M, T, T', N + 1) if { SUB , N' } := metaUnify(M, T =? T', 0, N) .
+endfm
+```
+
 Narrowing using Core Maude
 --------------------------
 
