@@ -533,7 +533,7 @@ fmod REACH-PROOF-STATE-PRINTER is
   --- OUT: print out the set of all ids of all current goals
   op printGoalIds : ProofGoalSet ~> QidList .
   eq printGoalIds(G) = printPar(getid(G)) .
-  eq printGoalIds(G && NGS) = printGoalIds(G) &sp ', &sp printGoalIds(NGS) .
+  eq printGoalIds(G && NGS) = printGoalIds(G) &sp '`, &sp printGoalIds(NGS) .
   eq printGoalIds(mt) = &mt .
   eq printGoalIds(GK:[ProofGoal]) = 'Internal 'Error: 'printGoalIds [owise] .
 
