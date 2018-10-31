@@ -501,8 +501,8 @@ fmod FOLDING-LABELED-GRAPH-SEARCH is
    protecting BOUND .
 
     var N : Nat . var B : Bound .
-    vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet .
-    var FLG : FoldedLabeledGraph . var FLG? : FoldedLabeledGraph? .
+    vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet . var NM : NodeMap .
+    var LG : LabeledGraph . var FLG : FoldedLabeledGraph . var FLG? : FoldedLabeledGraph? .
 ```
 
 `bfs` allows doing a (possible bounded) breadth-first search from a specified set of nodes.
@@ -536,11 +536,17 @@ The search operators `_=>[_]_` will produce the reach-graph from the given initi
 Before presenting the reach-graph to the user, it's pruned to only include paths which end at the final state.
 
 ```maude
-    op _=>*_   : NodeSet       NodeSet -> [FoldedLabeledGraph?] .
-    op _=>[_]_ : NodeSet Bound NodeSet -> [FoldedLabeledGraph?] .
-    -------------------------------------------------------------
+    op _=>*_   : NodeSet                   NodeSet -> [FoldedLabeledGraph?] .
+    op _=>[_]_ : NodeSet             Bound NodeSet -> [FoldedLabeledGraph?] .
+    op _=>[_]_ : FoldedLabeledGraph? Bound NodeSet -> [FoldedLabeledGraph?] .
+    -------------------------------------------------------------------------
     eq NS =>*     NS' = NS =>[ unbounded ] NS' .
-    eq NS =>[ B ] NS' = restrictBackwards(bfs(NS, B), NS') .
+    eq NS =>[ B ] NS' = flgraph(NS) =>[ B ] NS' .
+
+    eq LG | NM | N | NeNS =>[ B ] NS' = if intersect(NM [ NeNS ], NS') == .NodeSet
+                                            then restrictBackwards(LG | NM | N | NeNS, NS')
+                                            else extend(LG | NM | N | NeNS) =>[ decrement(B) ] NS'
+                                        fi .
 endfm
 ```
 
