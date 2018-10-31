@@ -251,7 +251,7 @@ fmod REACH-PROOF-RULES-AUX is
   op split-action : ProofMetadata Module Bool QFForm QFForm ProofGoal -> ProofUpdate .
   op split-action2 : ProofMetadata Module Bool QFForm QFForm ProofGoal -> ProofUpdate .
 
-  eq split-action(D,U,true,QF,QF',G) = split-action2(D,U,true,QF /\ rhs-cond(getbody(G)),QF' /\ rhs-cond(getbody(G)),G) .
+  eq split-action(D,U,true,QF,QF',G) = split-action2(D,U,true,QF /\ lhs-cond(getbody(G)),QF' /\ lhs-cond(getbody(G)),G) .
   eq split-action(D,U,false,QF,QF',G) = split-action2(D,U,true,QF,QF',G) .
 
   eq split-action2(D,U,B,QF,QF',G) =
@@ -260,7 +260,7 @@ fmod REACH-PROOF-RULES-AUX is
     else if QF == ff then
       (st(err) ; out('Error: 'invalid 'split 'value))
     else if safeVars(gather(getbody(G) & set-lhs-cond(getbody(G),QF) & if QF' =/= ff then set-lhs-cond(getbody(G),QF') else mt fi))
-      then (out(if B or-else checkVal(D,rhs-cond(getbody(G)) <==> QF \/ QF') == true
+      then (out(if B or-else checkVal(D,lhs-cond(getbody(G)) <==> QF \/ QF') == true
                   then nil
                   else 'For 'full 'verification '`, &sp 'check 'formula 'equivalence 'manually '\n
                 fi)
