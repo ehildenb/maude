@@ -355,6 +355,11 @@ fmod REACH-PROOF-GOALSET is
   eq renumberGoals(N,mt) = mt .
 endfm
 
+fmod REACH-PROOF-GOAL-SUBSTSET is
+  pr REACH-PROOF-GOALSET .
+  sort ProofGoalSubstPair ProofGoalSubstPairSet .
+endfm
+
 fmod AXIOM-RESULT is
   pr FOFORM .
   pr TRANSITIONSET .
