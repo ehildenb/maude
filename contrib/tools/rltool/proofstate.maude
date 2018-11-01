@@ -209,6 +209,23 @@ fmod REACH-PROOF-GOALSET is
                            fi , getparents(GS) .
   eq getparents(mt) = empty .
 
+  op getparentsOrSelf : ProofGoalSet -> Set{Nat} .
+  eq getparentsOrSelf(G && GS) = if getparent(G) :: Nat
+                                   then getparent(G)
+                                   else getid(G)
+                                 fi , getparentsOrSelf(GS) .
+  eq getparentsOrSelf(mt) = empty .
+
+  --- OUT: applies getparents recursively
+  op getparentsR : ProofGoalSet Set{Nat} Bound -> Set{Nat} .
+  eq getparentsR(GS,NS,s(N)) = getparentsR(GS,getparentsOrSelf(getgl!(GS,NS)),N) .
+  eq getparentsR(GS,NS,0) = NS .
+  eq getparentsR(GS,NS,unbounded) =
+    if NS == getparentsOrSelf(getgl!(GS,NS))
+      then NS
+      else getparentsR(GS,getparentsOrSelf(getgl!(GS,NS)),unbounded)
+    fi .
+
   op getdescendants : Set{Nat} ProofGoalSet -> ProofGoalSet .
   eq getdescendants(NS,GS) = getdescendants(NS,GS,mt) .
 

@@ -87,6 +87,7 @@ fmod PARSE-FORM is
   op parse-tokenlist  : Term -> [QidList] .
   op downQid          : Term -> [Qid] .
   op downNat          : Term -> [Nat] .
+  op downBound        : Term -> [Bound] .
   op downNeNatSet     : Term -> [NeSet{Nat}] .
 
   var T T' : Term . var QL : QidList . var Q : Qid . var M : Module . var B : Bool . var TS : TermSet . var V : Variable .
@@ -128,6 +129,7 @@ fmod PARSE-FORM is
   eq parse-tokenlist('neTokenList[NTL]) = downTerm(NTL,(nil).QidList) .
  ceq downQid(T) = downTerm(T,(nil).QidList) if downTerm(T,(nil).QidList) :: Qid .
  ceq downNat(T) = downTerm(T,(none).Parent) if downTerm(T,(none).Parent) :: Nat .
+ ceq downBound(T) = downTerm(T,(none).Parent) if downTerm(T,(none).Parent) :: Bound .
  ceq downNeNatSet(T) = downTerm(T,(empty).Set{Nat}) if downTerm(T,(empty).Set{Nat}) :: NeSet{Nat} .
 endfm
 
@@ -135,6 +137,7 @@ fmod META-RLTL-COMMAND is
    pr SET{Nat} .
    pr NAT-RANGE .
    pr BUBBLES .
+   pr META-LEVEL .
 
    sort @QFForm@ @QFCTerm@ @NeQFCTermSet@ @Term@ @TermSet@ @ReachFormEx@ @LabelReachFormEx@ .
    subsort @QFCTerm@ < @NeQFCTermSet@ .
@@ -188,6 +191,7 @@ fmod META-RLTL-COMMAND is
    op show`level_.           : Nat -> MetaRLTLCommand [ctor] .
    op show`levels`.          : -> MetaRLTLCommand [ctor] .
    op do`step_.              : Nat -> MetaRLTLCommand [ctor] .
+   op get_parents_.          : Bound NeSet{Nat} -> MetaRLTLCommand [ctor] .
 endfm
 
 fmod RLTL-COMMAND is
@@ -217,6 +221,7 @@ fmod RLTL-COMMAND is
    op debug             : Qid Nat -> RLTLCommand [ctor] .
    op showlevel         : Bound -> RLTLCommand [ctor] .
    op dostep            : Nat -> RLTLCommand [ctor] .
+   op getparents        : Bound Set{Nat} -> RLTLCommand [ctor] .
 endfm
 
 fmod PARSE-RLTLCOMMAND is
@@ -276,6 +281,7 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'debug`command_on_.[T1,T2])      = debug(parse-token(T1),downNat(T2)) .
    eq rltl-parse((M,S),'show`level_.[T1])               = showlevel(downNat(T1)) .
    eq rltl-parse((M,S),'show`levels`..MetaRLTLCommand)  = showlevel(unbounded) .
+   eq rltl-parse((M,S),'get_parents_.[T1,T2])           = getparents(downBound(T1),downNeNatSet(T2)) .
 endfm
 
 --- Actions are the result of commands
@@ -530,6 +536,11 @@ fmod RLTL-PROC-CMD is
                                    fi '\n printCopy(10,"========") '\n
                                      'Total 'Leaves: printPar(leaves(toGoalMap(get-prf(R)))) '\n
                                      'Unsubsumed 'Leaves: '\n printGoals(get-mod(R),getgl!(get-prf(R),nonSubsumedLeaves(toGoalMap(get-prf(R)))))) .
+  eq proc(getparents(BD,NS),R) = write(
+                                   if getgl!(get-prf(R),NS) :: ProofGoalSet
+                                     then 'Parents: printNatSet(getparentsR(get-prf(R),NS,BD))
+				     else 'One 'or 'more 'goals 'not 'found
+				   fi) .
 endfm
 
 mod RLTL-UI is
