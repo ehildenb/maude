@@ -203,10 +203,10 @@ fmod REACH-PROOF-GOALSET is
 
   ---# Parents
   op getparents : ProofGoalSet -> Set{Nat} .
-  eq getparents(G && G' && GS) = if getparent(G) :: Nat
-                                  then getparent(G)
-                                  else empty
-                                fi , getparents(G' && GS) .
+  eq getparents(G && GS) = if getparent(G) :: Nat
+                              then getparent(G)
+                              else empty
+                           fi , getparents(GS) .
   eq getparents(mt) = empty .
 
   op getdescendants : Set{Nat} ProofGoalSet -> ProofGoalSet .
