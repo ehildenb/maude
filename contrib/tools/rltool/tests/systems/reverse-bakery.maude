@@ -15,27 +15,45 @@ load ../../rltool.maude
 (< A ; B ; [C,wait(E)] [D,wait(F)] PS >) | (E)       =  (F)    \/
 (< A ; B ; [C,wait(B)] [D,wait(E)] PS >) | (E <= B)  =  (true) \/
 (< A ; B ; [C,wait(D)]             PS >) | (A <= D)  =  (true) \/
-(< A ; A ; [B,wait(C)]             PS >) | (A <= C)  =  (true) \/
 (< A ; A ; [B,wait(C)]             PS >) | (C <  A)  =  (true) \/
 (< A ; A ; [B,crit(C)]             PS >) | true                \/
 (< A ; B ;                         PS >) | (A <  B)  =  (true) \/
 (< A ; B ; [C,crit(D)]             PS >) | (A <= D)  =  (true)
 .)
 (start-proof .)
+(on 1  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 2  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 3  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 4  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 4  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 5  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 6  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 7  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 8  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 9  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
+(on 10 use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
 (step .)
+--- TODO: add symbolic auto-split command that can be added to the default strategy
+---       language so that these problems can be handled just by providing patterns
+---       and so that the proof becomes totally agnostic towards the goal numbering
+--- < A ; B ; [D,crit(E)] [F,wait(B)] > | B =/= E
+--- split on B <= E
+(subsume 396 by 400 .)
+(split 400 by (&220:Nat <= &223:Nat) = (true) .)
+--- < A ; B ; [D,crit(E)][F,crit(B)] > | E =/= 1 + B
+--- split on E = B
+(subsume 397 by 399 .)
+(split 399 by (&220:Nat) = (&223:Nat) .)
+--- <(1 + A) ; A ; [B,crit(C)][D,crit(A)]> | true
+(subsume 407 by 408 .)
+(split 408 by (&219:Nat) = (&222:Nat) .)
+--- < A ; A ; [B,wait(C)] > | true = C <= A
+--- split on A <= C
+(subsume 432 by 433 .)
+(split 433 by (&219:Nat <= &222:Nat) = (true) .)
+--- < A ; B ; [C,wait(D)] [E,wait(1 + B)] [F,crit(B)] > | true = D <= 1 + B
+--- split on D <= B
+(subsume 435 by 440 .)
+(split 440 by (&224:Nat <= &220:Nat) = (true) .)
 (step .)
-(continue .)
-(continue .)
-(show levels .)
----(
-(split 6  5 by (@123:Nat) = (@124:Nat) .)
-(split 6  6 by (@128:Nat) = (@129:Nat) .)
-(split 7  5 by (@124:Nat) = (@125:Nat) .)
-(split 7  6 by (@130:Nat) = (@131:Nat) .)
-(split 11 3 by (@125:Nat <=Nat @126:Nat) = (tt) .)
-(split 11 4 by (@132:Nat <=Nat @133:Nat) = (tt) .)
-(split 11 8 by (@136:Nat) =   (@139:Nat)        .)
-(split 11 9 by (@141:Nat) =   (@144:Nat)        .)
-(step .)
----)
 quit
