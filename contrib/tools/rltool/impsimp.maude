@@ -6,7 +6,8 @@
 fmod VAR-UNIF-CLAUSE-SIMPLIFIER is
   pr FOFORMSET .              --- provides FOFormSets
   pr FOFORM-TUPLES .          --- provides FOFormPairs
-  pr FOFORM-OPERATIONS .      --- provides wellFormed() for FOForm?
+  pr FOFORMSET-OPERATIONS .   --- provides wellFormed() for FOForm? and disj-join for FOForm?Set
+  pr FOFORMSIMPLIFY .         --- provides simplify for FOForm?
   pr NNF .                    --- provides toNNF()
   pr EQ-VARIANT .             --- provides var-unifiers()
   pr FOFORM-SUBSTITUTIONSET . --- provides _<<_ operator for SubstitutionSets
@@ -17,13 +18,13 @@ fmod VAR-UNIF-CLAUSE-SIMPLIFIER is
   op filter-disj     : Module Disj? Disj? Disj? ~> FOFormPair .
   ---
   var EA : EqAtom . var D1 D2 D3 : Disj?  . var ND : NegDisj . var N1 N2 : NegDisj? .
-  var U  : Module . var PD : PosDisj .
+  var U  : Module . var PD : PosDisj . var DS : Disj?Set .
   --- INP: Module DisjSet (ClauseSet)
   --- PRE: Module has FVP
   --- OUT: DisjSet' where any FVP part of any clause has been solved
   eq vu-clause-simp(U,ND \/ PD)    = if U == noModule then ND \/ PD else vu-clause-simp2(U,filter-disj(U,ND,mtForm,mtForm),PD) fi .
   eq vu-clause-simp(U,D1)          = D1 [owise] .
-  eq vu-clause-simp2(U,(N1,N2),PD) = if N1 =/= mtForm then vu-clause-simp(U,(N2 \/ PD) << var-unifiers(U,toUnifProb(toNNF(~ N1)))) else N1 \/ N2 \/ PD fi .
+  eq vu-clause-simp2(U,(N1,N2),PD) = if N1 =/= mtForm then vu-clause-simp(U,simplify(disj-join((N2 \/ PD) << var-unifiers(U,toUnifProb(toNNF(~ N1)))))) else N1 \/ N2 \/ PD fi .
   --- INP: Module NegDisj? NegDisj? NegDisj?
   --- PRE: None
   --- OUT: Filters atoms in D1 into D2 iff they are wellFormed() in U and into D3 otherwise
