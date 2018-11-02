@@ -510,16 +510,18 @@ endm
 
 ### Example Output
 
+### Thermostat Search Instantiation
+
+In all cases, the top-sort of the Thermostat parameterized module will be `Conf`, which we instantiate here.
+
 ```
---- ### Thermostat Search Instantiation
-
---- In all cases, the top-sort of the Thermostat parameterized module will be `Conf`, which we instantiate here.
-
     eq #tSort = 'Conf .
     -------------------
+```
 
---- Operators `lt`, `le`, `min`, `max`, and `inRange` are macros for specifying meta-level side-conditions compactly/easily for this theory.
+Operators `lt`, `le`, `min`, `max`, and `inRange` are macros for specifying meta-level side-conditions compactly/easily for this theory.
 
+```
    ops lt le : Term Term -> [Term] .
    ---------------------------------
     eq lt(TMP, TMP') = '_?=_[ '_<_[TMP, TMP'], #nTrue] .
@@ -533,36 +535,44 @@ endm
     op inRange : Term Term Term -> [Term] .
     ---------------------------------------
     eq inRange(TMP, TMP', TMP'') = #cConjunct[le(TMP', TMP), le(TMP, TMP'')] .
+```
 
---- These states capture "good" and "bad" states for the thermostat; `goodConf` has the temperature within bounds, while `badConf` has the temperature out of bounds.
+These states capture "good" and "bad" states for the thermostat; `goodConf` has the temperature within bounds, while `badConf` has the temperature out of bounds.
 
+```
     op goodConf : -> [Term] .
     op  badConf : -> [Term] .
     -------------------------
     eq goodConf = #cTerm['`{_`,_`,_`}[qid("T:" + string(#nSort)) , qid("TMP:" + string(#nSort)) , 'off.Mode ],     inRange(qid("TMP:" + string(#nSort)), min, max)] .
     eq badConf  = #cTerm['`{_`,_`,_`}[qid("T:" + string(#nSort)) , qid("TMP:" + string(#nSort)) , 'M:Mode   ], '~_[inRange(qid("TMP:" + string(#nSort)), min, max)]] .
+```
 
---- **TODO**: Move this equation to somewhere more generic.
---- In order to take advantage of our ability to prune infeasible states, we extend the definition of `prune` to check if the side-condition is unsatisfiable.
---- For a specific theory, one can specify `isUnsat` so that it simplifies to `true` if you can prove infeasibility.
+**TODO**: Move this equation to somewhere more generic.
+In order to take advantage of our ability to prune infeasible states, we extend the definition of `prune` to check if the side-condition is unsatisfiable.
+For a specific theory, one can specify `isUnsat` so that it simplifies to `true` if you can prove infeasibility.
 
+```
    ceq prune(< label(RL, SUB) , state(Q[T, C]) >) = .TransitionSet if Q = #cTerm /\ isUnsat(C) .
    ---------------------------------------------------------------------------------------------
 
     op isUnsat : Term -> [Bool] .
     -----------------------------
+```
 
---- ### Thermostat Search modulo FVP-INT
+### Thermostat Search modulo FVP-INT
 
---- By importing `UNCONDITIONALIZE-FVP-BOOL`, we already have the relevant instantiation for the `FVP-BOOL` side-condition theory.
---- In addition, we tell the tool that the top sort in the original theory `#MO` is `Conf`.
+By importing `UNCONDITIONALIZE-FVP-BOOL`, we already have the relevant instantiation for the `FVP-BOOL` side-condition theory.
+In addition, we tell the tool that the top sort in the original theory `#MO` is `Conf`.
 
+```
     eq #MO = upModule('THERMOSTAT-INT-COMFORTABLE, true) .
     ------------------------------------------------------
+```
 
---- Here we check that a given constraint `isUnsat` by generating variants and checking whether they are all false or exactly a renaming.
---- **TODO**: Invoke varsat.
+Here we check that a given constraint `isUnsat` by generating variants and checking whether they are all false or exactly a renaming.
+**TODO**: Invoke varsat.
 
+```
    ceq isUnsat(T) = false                       if T == #cTrue .
    ceq isUnsat(T) = true                        if T == #cFalse .
    ceq isUnsat(T) = filterFalse(TS) == .TermSet if not T == #cTrue /\ not T == #cFalse
@@ -571,19 +581,23 @@ endm
 
 reduce bfs(state(goodConf), 2) .
 reduce state(goodConf) =>[5] state(badConf) .
+```
 
---- ### Thermostat Search modulo REAL
+### Thermostat Search modulo REAL
 
---- For the real-numbered thermostat, we instantiat the parameter theory `#cModule` to `EQFORM-SMT-BOOLEAN` instead.
---- The top sort of the module remains the same (`Conf`), as it comes from the same parametric theory.
+For the real-numbered thermostat, we instantiat the parameter theory `#cModule` to `EQFORM-SMT-BOOLEAN` instead.
+The top sort of the module remains the same (`Conf`), as it comes from the same parametric theory.
 
+```
     eq #cModule   = 'EQFORM-SMT-BOOLEAN .
 
     eq #MO = upModule('THERMOSTAT-REAL-COMFORTABLE, true) .
     -------------------------------------------------------
+```
 
---- For the real numbers, we check `isUnsat` via Maude's meta-level hookup to an SMT solver.
+For the real numbers, we check `isUnsat` via Maude's meta-level hookup to an SMT solver.
 
+```
    ceq isUnsat(T) = T' == #cFalse if { T' , TYPE } := metaReduce(upModule(#cModule, true), 'simplify[T]) .
    -------------------------------------------------------------------------------------------------------
 
