@@ -191,15 +191,11 @@ fmod REACH-PROOF-RULES-AUX is
        (if SRS == noSteps then out('Warning: 'narrowing 'on 'goal &sp printGoals(U,G) &sp 'generated 'zero 'successors '\n) else none fi ;
         if not wellFormed(U,toReachFormSet(SRS)) then out('Warning: 'narrowing 'on 'goal printGoalIds(G) 'generated 'ill-formed 'successors '\n) else none fi)
      else
-       (none || deleteDuplGoals(renameNormalizeGoal(U,get-cnt(D),stepGoals(G,SRS))))
+       (none || deleteDuplGoals(renameNormalizeGoal(U,get-cnt(D),newChildGoals(G,toReachFormSubstPairSet(SRS)))))
      fi .
   eq [handle-error] :
      step-action(D,U,SRSK,G) =
      (if SRSK :: StepResultSet then none else out('Warning: 'narrowing 'on 'goal &sp printGoals(U,G) &sp 'encountered 'an 'error errStepResultSetMsg(SRSK) '\n) fi) [owise] .
-
-  op stepGoals : ProofGoal StepResultSet -> ProofGoalSet .
-  eq stepGoals(G,(MQ,S,F) SRS) = newChildGoals(G,(F,S)) && stepGoals(G,SRS) .
-  eq stepGoals(G,noSteps) = mt .
 
   op sub-action : ProofMetadata Module ProofGoal -> ProofUpdate .
   op sub-action1 : ProofMetadata Module Bool   ProofGoal -> ProofUpdate .

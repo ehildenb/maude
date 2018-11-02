@@ -604,6 +604,11 @@ fmod STEPRESULTSET is
   eq toReachFormSet((MQ,S,F) SRS) = F & toReachFormSet(SRS) .
   eq toReachFormSet(noSteps) = mt .
   eq toReachFormSet(SRSK) = errReachForm(errStepResultSetMsg(SRSK)) .
+
+  --- OUT: Extract a ReachFormSubstPairSet
+  op toReachFormSubstPairSet : StepResultSet ~> ReachFormSubstPairSet .
+  eq toReachFormSubstPairSet((MQ,S,F) SRS) = (F,S) & toReachFormSubstPairSet(SRS) .
+  eq toReachFormSubstPairSet(noSteps) = mtRFSS .
 endfm
 
 --- TODO: check that narrowing is doing the right thing (TM)
