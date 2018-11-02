@@ -677,9 +677,9 @@ endm
 
 ### Example Output
 
-```
---- ### Bakery System Instatiation
+### Bakery System Instatiation
 
+```
     eq #tSort = 'Conf .
     -------------------
 
@@ -698,18 +698,21 @@ endm
    ---------------------------------
     eq lt(T, T') = '_?=_[ '_<_[T, T'], 'true.Bool] .
     eq le(T, T') = '_?=_['_<=_[T, T'], 'true.Bool] .
+```
 
+```
     op conf : Term Term Term -> [Term] .
     ------------------------------------
     eq conf(T, T', T'') = '_;_;_[T, T', T''] .
+```
 
---- The following initial terms characterize our initialization and bad states.
----
---- -   `conf2Idle` has two idle processes.
---- -   `confManyIdle` has an arbitrary set of `idle` processes.
---- -   `confManyWait` has an arbitrary set of `wait` processes.
---- -   `confManyProc` has an arbitrary set of any processes.
+The following initial terms characterize our initialization and bad states.
+-   `conf2Idle` has two idle processes.
+-   `confManyIdle` has an arbitrary set of `idle` processes.
+-   `confManyWait` has an arbitrary set of `wait` processes.
+-   `confManyProc` has an arbitrary set of any processes.
 
+```
     op conf2Idle    : Term Term -> [Term] .
     op confManyIdle : Term Term -> [Term] .
     op confManyWait : Term Term -> [Term] .
@@ -719,179 +722,193 @@ endm
     eq confManyIdle(T, T') = conf(T, T', 'PIS:ProcIdleSet)    .
     eq confManyWait(T, T') = conf(T, T', 'PWS:ProcWaitSet)    .
     eq confManyProc(T, T') = conf(T, T', 'PS:ProcSet)         .
+```
 
---- -   `conf2Crit` is any constrained configuration which contains two `crit` processes.
+-   `conf2Crit` is any constrained configuration which contains two `crit` processes.
 
+```
     op conf2Crit : -> [Term] .
     --------------------------
     eq conf2Crit = #cTerm['_;_;_['N:Name, 'M:Name, '__['`[_`]['MC1:ModeCrit], '`[_`]['MC2:ModeCrit], 'PS:ProcSet]], #cTrue] .
+```
 
---- ### Two Process Bakery
+### Two Process Bakery
 
---- #### With Equational Abstraction
+#### With Equational Abstraction
 
---- As a sanity check, results of section 3.1 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
---- This required an equational abstraction which reduced all the names in the configuration uniformly when they are all non-`0`.
+As a sanity check, results of section 3.1 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
+This required an equational abstraction which reduced all the names in the configuration uniformly when they are all non-`0`.
 
---- **TODO**: Why is this system converging without the equational abstraction?
+**TODO**: Why is this system converging without the equational abstraction?
 
-
-
+```
 ---    eq s N ; s M ; [idle]      [idle]      = N ; M ; [idle]    [idle] .
 ---    eq s N ; s M ; [wait(s K)] [idle]      = N ; M ; [wait(K)] [idle] .
 ---    eq s N ; s M ; [crit(s K)] [idle]      = N ; M ; [crit(K)] [idle] .
 ---    eq s N ; s M ; [wait(s K)] [wait(s L)] = N ; M ; [wait(K)] [wait(L)] .
 ---    eq s N ; s M ; [wait(s K)] [crit(s L)] = N ; M ; [wait(K)] [crit(L)] .
 ---    eq s N ; s M ; [crit(s K)] [crit(s L)] = N ; M ; [crit(K)] [crit(L)] .
+```
 
---- Here we instantiate to the abstracted theory:
+Here we instantiate to the abstracted theory:
 
+```
     eq #MO = upModule('BAKERY-2PROC-EQUATIONAL-ABSTRACTION, true) .
+```
 
---- The initial state has two `idle` processes and both counters `N`:
+The initial state has two `idle` processes and both counters `N`:
 
+```
     op conf2IdleEq : -> [Term] .
     ----------------------------
     eq conf2IdleEq = #cTerm[conf2Idle('X:Name, 'X:Name), #cTrue] .
+```
 
---- Under this assumption, a finite state graph is achieved.
---- The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
---- In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
+Under this assumption, a finite state graph is achieved.
+The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
+In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
 
-reduce renderTikZGraph(0, bfs(state(conf2IdleEq)))
-    == "\tikzset{elliptic state/.style={draw,ellipse}}"
-       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-       "\footnotesize"
-       "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; [idle] [idle]}$};"
-       "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; [idle] [wait(X)]}$};"
-       "    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};"
-       "    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; [wait(X)] [wait(s X)]}$};"
-       "    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
-       "    \\path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {exit} (s_2);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);"
-       "    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
-       "\\end{tikzpicture}" .
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; [idle] [idle]}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; [idle] [wait(X)]}$};
+    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};
+    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; [wait(X)] [wait(s X)]}$};
+    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};
+    \path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {exit} (s_2);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);
+    \path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);
+\end{tikzpicture}
 
---- We can also search for a reach-path to a "bad" state in `conf2Crit`, and see that there is none:
+We can also search for a reach-path to a "bad" state in `conf2Crit`, and see that there is none:
 
---- **TODO**: Fix bug in this query.
+**TODO**: Fix bug in this query.
 
+```
 reduce state(conf2IdleEq) =>* state(conf2Crit) .
+```
 
---- #### With Constrained Bakery
+#### With Constrained Bakery
 
---- Here the equational abstraction is avoided by taking advantage of constrained states.
+Here the equational abstraction is avoided by taking advantage of constrained states.
 
---- Instead we instantiate to the original theory:
+Instead we instantiate to the original theory:
 
+```
     eq #MO = upModule('BAKERY, true) .
+```
 
---- From an initial state with arbitrary counters, we are on course to have an infinite representation of the state space.
+From an initial state with arbitrary counters, we are on course to have an infinite representation of the state space.
 
-reduce renderTikZGraph(0, bfs(state(#cTerm[conf2Idle('X:Name, 'Y:Name), #cTrue]), 4))
-    == "\tikzset{elliptic state/.style={draw,ellipse}}"
-       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-       "\footnotesize"
-       "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}$};"
-       "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}$};"
-       "    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};"
-       "    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}$};"
-       "    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
-       "    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s X ; s X ; [crit(s X)] [wait(X)]}$};"
-       "    \node[elliptic state] (s_18) at (0,-26) {$\texttt{s s X ; s s X ; [idle] [wait(X)]}$};"
-       "    \\path[->] (s_14) edge [bend left=10] node [pos=0.3,right] {exit} (s_18);"
-       "    \\path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);"
-       "    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
-       "\\end{tikzpicture}" .
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}$};
+    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};
+    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}$};
+    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};
+    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s X ; s X ; [crit(s X)] [wait(X)]}$};
+    \node[elliptic state] (s_18) at (0,-26) {$\texttt{s s X ; s s X ; [idle] [wait(X)]}$};
+    \path[->] (s_14) edge [bend left=10] node [pos=0.3,right] {exit} (s_18);
+    \path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);
+    \path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);
+\end{tikzpicture}
 
---- Instead, we can refine the state-description by starting in states such that `Y <= X`, where `Y` is the critical counter and `X` is the next available number.
---- Here we see that a finite state graph is achieved, where some of the states have additional constraints:
+Instead, we can refine the state-description by starting in states such that `Y <= X`, where `Y` is the critical counter and `X` is the next available number.
+Here we see that a finite state graph is achieved, where some of the states have additional constraints:
 
-reduce renderTikZGraph(0, bfs(state(#cTerm[conf2Idle('X:Name, 'Y:Name), le('Y:Name, 'X:Name)])))
-    == "\tikzset{elliptic state/.style={draw,ellipse}}"
-       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-       "\footnotesize"
-       "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}\\ st \\ \texttt{Y} \\le \texttt{X}$};"
-       "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}\\ st \\ \texttt{Y} \\le \texttt{X}$};"
-       "    \node[elliptic state] (s_4) at (2,-13) {$\texttt{s N M ; N ; [idle] [wait(N M)]}$};"
-       "    \node[elliptic state] (s_6) at (0,-18) {$\texttt{s N ; N ; [idle] [crit(N)]}$};"
-       "    \node[elliptic state] (s_8) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}\\ st \\ \texttt{X} \\le \texttt{Y}$};"
-       "    \node[elliptic state] (s_10) at (4,-16) {$\texttt{s s N M ; N ; [wait(N M)] [wait(s N M)]}$};"
-       "    \node[elliptic state] (s_16) at (0,-22) {$\texttt{s X ; s X ; [idle] [idle]}$};"
-       "    \node[elliptic state] (s_18) at (2,-21) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
-       "    \\path[->>] (s_18) edge [bend left=10] node [pos=0.3,left] {exit} (s_4);"
-       "    \\path[->>] (s_16) edge [bend left=10] node [pos=0.3,left] {wake} (s_4);"
-       "    \\path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {crit} (s_18);"
-       "    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {crit} (s_18);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_18);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {exit} (s_16);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {wake} (s_10);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {crit} (s_6);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_6);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_4);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
-       "\\end{tikzpicture}" .
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}\ st \ \texttt{Y} \le \texttt{X}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}\ st \ \texttt{Y} \le \texttt{X}$};
+    \node[elliptic state] (s_4) at (2,-13) {$\texttt{s N M ; N ; [idle] [wait(N M)]}$};
+    \node[elliptic state] (s_6) at (0,-18) {$\texttt{s N ; N ; [idle] [crit(N)]}$};
+    \node[elliptic state] (s_8) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}\ st \ \texttt{X} \le \texttt{Y}$};
+    \node[elliptic state] (s_10) at (4,-16) {$\texttt{s s N M ; N ; [wait(N M)] [wait(s N M)]}$};
+    \node[elliptic state] (s_16) at (0,-22) {$\texttt{s X ; s X ; [idle] [idle]}$};
+    \node[elliptic state] (s_18) at (2,-21) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};
+    \path[->>] (s_18) edge [bend left=10] node [pos=0.3,left] {exit} (s_4);
+    \path[->>] (s_16) edge [bend left=10] node [pos=0.3,left] {wake} (s_4);
+    \path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {crit} (s_18);
+    \path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {crit} (s_18);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_18);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {exit} (s_16);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {wake} (s_10);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {crit} (s_6);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_6);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_4);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);
+\end{tikzpicture}
 
---- ### Arbitrary Process Bakery
+### Arbitrary Process Bakery
 
---- #### With Equational Abstraction
+#### With Equational Abstraction
 
---- As a sanity check, results of section 3.3 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
---- This required an equational abstraction which removed "extra" waiting processes, which was shown to be sound.
+As a sanity check, results of section 3.3 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
+This required an equational abstraction which removed "extra" waiting processes, which was shown to be sound.
 
+```
     eq s s s L M ; M ; PS [wait(s L M)] [wait(s s L M)]
      =   s s L M ; M ; PS [wait(s L M)] .
+```
 
---- Here we instantiate to the abstracted theory:
+Here we instantiate to the abstracted theory:
 
+```
     eq #MO = upModule('BAKERY-NPROC-EQUATIONAL-ABSTRACTION, true) .
+```
 
---- The initial state has all `idle` processes and equal counters.
+The initial state has all `idle` processes and equal counters.
 
+```
     op confManyIdleEq : -> [Term] .
     -------------------------------
     eq confManyIdleEq = #cTerm[confManyIdle('X:Name, 'X:Name), #cTrue] .
+```
 
---- Under this assumption, a finite state graph is achieved.
---- The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
---- In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
+Under this assumption, a finite state graph is achieved.
+The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
+In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
 
-reduce renderTikZGraph(0, bfs(state(confManyIdleEq)))
-    == "\tikzset{elliptic state/.style={draw,ellipse}}"
-       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-       "\footnotesize"
-       "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; PIS}$};"
-       "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; PIS [wait(X)]}$};"
-       "    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};"
-       "    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; PIS [wait(X)] [wait(s X)]}$};"
-       "    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};"
-       "    \\path[->>] (s_10) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_10);"
-       "    \\path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);"
-       "    \\path[->>] (s_6) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_6);"
-       "    \\path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);"
-       "    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
-       "\\end{tikzpicture}" .
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; PIS}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; PIS [wait(X)]}$};
+    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};
+    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; PIS [wait(X)] [wait(s X)]}$};
+    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};
+    \path[->>] (s_10) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_10);
+    \path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);
+    \path[->>] (s_6) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_6);
+    \path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);
+    \path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);
+\end{tikzpicture}
 
---- #### With Constrained States and Lemmas
+#### With Constrained States and Lemmas
 
---- Similar to the two process case, an equational abstraction of the system can be avoided searching in a constraint system.
+Similar to the two process case, an equational abstraction of the system can be avoided searching in a constraint system.
 
+```{.maude}
 mod BAKERY-NPROC-RECFUNC is
    protecting BAKERY .
    protecting FVP-BOOL-EQFORM * ( sort Nat to Name
@@ -901,18 +918,22 @@ mod BAKERY-NPROC-RECFUNC is
 
     vars N N' M : Name . vars NzN NzN' : NzNat . vars EqF EqF' : EqForm{Bool} .
     var P : Proc . var PWS : ProcWaitSet . vars PS : ProcSet .
+```
 
---- The predicate `ill-formed` encodes the cases when a queue at the bakery is not well formed.
---- The first name corresponds to the current customer being served, and the second to the next number someone will pull if they walk in.
+The predicate `ill-formed` encodes the cases when a queue at the bakery is not well formed.
+The first name corresponds to the current customer being served, and the second to the next number someone will pull if they walk in.
 
+```{.maude}
     op ill-formed : Name ProcSet Name -> Bool .
     -------------------------------------------
+```
 
---- Bakerys can be ill-formed because the pool of waiting processes has numbers which
----
---- -   should have already been called, or
---- -   remain to be called.
+Bakerys can be ill-formed because the pool of waiting processes has numbers which
 
+-   should have already been called, or
+-   remain to be called.
+
+```{.maude}
     eq ill-formed(N NzN, PS, N) = true .
 
     eq ill-formed(N NzN, [wait(N)] PS, M) = true .
@@ -920,14 +941,16 @@ mod BAKERY-NPROC-RECFUNC is
 
     eq ill-formed(N, [wait(M N')] PS, M) = true .
     eq ill-formed(N, [crit(M N')] PS, M) = true .
+```
 
---- Stating some recursive properties of ill-formed states assists when proving the implication in $T$ for state subsumption in $\R$.
---- Read right-to-left as implications, these are inductive properties about `ill-formed` states, that is:
----
---- -   adding `[idle]` processes does not change whether a state is `ill-formed`,
---- -   if a pool of processes `PS` has numbers amongst them down to `s N`, then adding a process with number `N` does not affect `ill-formed`, and
---- -   if a pool of processes `PS` has numbers amongst them less than `M`, adding a process wth number `s M` does not affect `ill-formed`.
+Stating some recursive properties of ill-formed states assists when proving the implication in $T$ for state subsumption in $\R$.
+Read right-to-left as implications, these are inductive properties about `ill-formed` states, that is:
 
+-   adding `[idle]` processes does not change whether a state is `ill-formed`,
+-   if a pool of processes `PS` has numbers amongst them down to `s N`, then adding a process with number `N` does not affect `ill-formed`, and
+-   if a pool of processes `PS` has numbers amongst them less than `M`, adding a process wth number `s M` does not affect `ill-formed`.
+
+```{.maude}
     eq ill-formed(N, [idle] PS, M) = ill-formed(N, PS, M) .
 
     eq ill-formed(N, [crit(N)] PS, M) = ill-formed(s N, PS, M) .
@@ -935,56 +958,58 @@ mod BAKERY-NPROC-RECFUNC is
 
     eq ill-formed(N, [wait(M)] PS, s M) = ill-formed(N, PS, M) .
     eq ill-formed(N, [crit(M)] PS, s M) = ill-formed(N, PS, M) .
-
---- Note that `ill-formed` does not imply our overall property we wish to show for the system, as it does not bar states with two critical processes.
---- For instance, the following does not simplify to `true`:
-
-reduce ill-formed(N, [crit(N)] [crit(s N)], s s N) .
-
---- but this does:
-
-reduce ill-formed(N, [wait(N)] [wait(N)], s N) .
-
---- From an arbitrary state with idle processes, we see the ever-increasing state graph which was previously curbed with an equational abstraction of the system.
-
-reduce renderTikZGraph(0, bfs(states(#cTerm[conf('X:Name, 'Y:Name, 'PIS:ProcIdleSet), #cTrue]), 3))
-    == "\tikzset{elliptic state/.style={draw,ellipse}}"
-       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-       "\footnotesize"
-       "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PIS}$};"
-       "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; @3 [wait(X)]}$};"
-       "    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};"
-       "    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; @3 [wait(Y)] [wait(s Y)]}$};"
-       "    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};"
-       "    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s Y ; s Y ; @1 [crit(s Y)] [wait(Y)]}$};"
-       "    \node[elliptic state] (s_16) at (4,-20) {$\texttt{s s s Z ; X ; PIS [wait(Z)] [wait(s Z)] [wait(s s Z)]}$};"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_16);"
-       "    \\path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);"
-       "    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);"
-       "    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
-       "    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
-       "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
-       "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
-       "\\end{tikzpicture}" .
-
---- Equipped with our recursive predicate barring ill-formed bakeries, we are able to find an invariant set of three states which never has greater than one critical process.
-
-reduce renderTikZGraph(0, bfs(states(#cTerm[conf('X:Name, 'Y:Name, 'PWS:ProcWaitSet), ep('Y:Name, 'PWS:ProcWaitSet, 'X:Name)]), 3))
-    ==  "\tikzset{elliptic state/.style={draw,ellipse}}"
-        "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
-        "\footnotesize"
-        "    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PWS}\\ st \\ \texttt{every-position(Y, PWS, X)}$};"
-        "    \node[elliptic state] (s_2) at (0,-14) {$\texttt{X ; Y ; PWS3 [crit(Y)]}\\ st \\ \texttt{every-position(s Y, PWS3, X)}$};"
-        "    \node[elliptic state] (s_8) at (0,-18) {$\texttt{s X ; Z ; PWS2 [crit(Z)] [wait(X)]}\\ st \\ \texttt{every-position(s Z, PWS2, X)}$};"
-        "    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {wake} (s_2);"
-        "    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-        "    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);"
-        "    \\path[->>] (s_2) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
-        "    \\path[->>] (s_0) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_0);"
-        "    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {crit} (s_2);"
-        "\\end{tikzpicture}" .
 ```
+
+Note that `ill-formed` does not imply our overall property we wish to show for the system, as it does not bar states with two critical processes.
+For instance, the following does not simplify to `true`:
+
+```{.maude}
+reduce ill-formed(N, [crit(N)] [crit(s N)], s s N) .
+```
+
+but this does:
+
+```{.maude}
+reduce ill-formed(N, [wait(N)] [wait(N)], s N) .
+```
+
+From an arbitrary state with idle processes, we see the ever-increasing state graph which was previously curbed with an equational abstraction of the system.
+
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PIS}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; @3 [wait(X)]}$};
+    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};
+    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; @3 [wait(Y)] [wait(s Y)]}$};
+    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};
+    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s Y ; s Y ; @1 [crit(s Y)] [wait(Y)]}$};
+    \node[elliptic state] (s_16) at (4,-20) {$\texttt{s s s Z ; X ; PIS [wait(Z)] [wait(s Z)] [wait(s s Z)]}$};
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_16);
+    \path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);
+    \path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);
+    \path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);
+    \path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);
+\end{tikzpicture}
+
+Equipped with our recursive predicate barring ill-formed bakeries, we are able to find an invariant set of three states which never has greater than one critical process.
+
+\tikzset{elliptic state/.style={draw,ellipse}}
+\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]
+\footnotesize
+    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PWS}\ st \ \texttt{every-position(Y, PWS, X)}$};
+    \node[elliptic state] (s_2) at (0,-14) {$\texttt{X ; Y ; PWS3 [crit(Y)]}\ st \ \texttt{every-position(s Y, PWS3, X)}$};
+    \node[elliptic state] (s_8) at (0,-18) {$\texttt{s X ; Z ; PWS2 [crit(Z)] [wait(X)]}\ st \ \texttt{every-position(s Z, PWS2, X)}$};
+    \path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {wake} (s_2);
+    \path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);
+    \path[->>] (s_2) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);
+    \path[->>] (s_0) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_0);
+    \path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {crit} (s_2);
+\end{tikzpicture}
 
 Conclusion
 ==========
