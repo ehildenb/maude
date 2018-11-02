@@ -195,9 +195,12 @@ fmod REACH-PROOF-RULES-AUX is
      (if FSK :: ReachFormSet then none else out('Warning: 'narrowing 'on 'goal &sp printGoals(U,G) &sp 'encountered 'an 'error errReachFormMsg(FSK) '\n) fi) [owise] .
 
   op sub-action : ProofMetadata Module ProofGoal -> ProofUpdate .
-  op sub-action : Module [Bool] ProofGoal -> ProofUpdate .
-  eq sub-action(D,U,G) = sub-action(U,subsume?(D,true,full-goal-simplify(U,getbody(G))),G) .
-  eq sub-action(U,MB,G) =
+  op sub-action1 : ProofMetadata Module Bool   ProofGoal -> ProofUpdate .
+  op sub-action2 : ProofMetadata Module [Bool] ProofGoal -> ProofUpdate .
+  eq sub-action(D,U,G) = sub-action1(D,U,coerceBool(checkUnsat(D,lhs-cond(getbody(G))),false),G) .
+  eq sub-action1(D,U,true,G)  = (none || mt) .
+  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,true,full-goal-simplify(U,getbody(G))),G) .
+  eq sub-action2(D,U,MB,G) =
     if MB == true
       then (none || mt)
       else if MB == nobool
@@ -206,7 +209,7 @@ fmod REACH-PROOF-RULES-AUX is
       fi
     fi .
   eq [handle-error] :
-     sub-action(U,BK,G) = (out('Warning: 'checking 'goal &sp printGoals(U,G) &sp 'satisfaction 'encountered 'an 'error boolErrMsg(BK) '\n)) [owise] .
+     sub-action2(D,U,BK,G) = (out('Warning: 'checking 'goal &sp printGoals(U,G) &sp 'satisfaction 'encountered 'an 'error boolErrMsg(BK) '\n)) [owise] .
 
   op ax-action : ProofMetadata Module LabelReachForm ProofGoal -> ProofUpdate .
   op ax-action : ProofMetadata Module LabelReachForm [AxiomResultList] ProofGoal -> ProofUpdate .

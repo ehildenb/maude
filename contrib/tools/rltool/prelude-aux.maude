@@ -20,7 +20,7 @@ fmod MAYBE-BOOL is
   op _and-then_ : MaybeBool MaybeBool -> MaybeBool [strat (1 0) gather (e E) prec 55] .
   op _or-else_  : MaybeBool MaybeBool -> MaybeBool [strat (1 0) gather (e E) prec 59] .
 
-  var A : MaybeBool . var QL : QidList .
+  var A : MaybeBool . var QL : QidList . var B : Bool . var BK : [Bool] .
 
   eq nobool and A = nobool .
   eq nobool xor A = nobool .
@@ -46,6 +46,9 @@ fmod MAYBE-BOOL is
   op boolErrMsg : [Bool] -> QidList .
   eq boolErrMsg(errb(QL)) = QL .
   eq boolErrMsg(B:[Bool]) = nil [owise] .
+
+  op coerceBool : [Bool] Bool -> Bool .
+  eq coerceBool(BK,B) = if BK :: Bool then BK else B fi .
 endfm
 
 fmod MAYBE-QID is
