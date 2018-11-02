@@ -127,6 +127,7 @@ fmod REACH-PROOF-GOAL is
   var P : Parent .
   var PS PS' : ProofGoalStatus .
   var CN CN' : ProofStrat .
+  var VS VS' : VariableSet .
   var F : ReachForm .
 
   sort ProofGoalStatus .
@@ -135,56 +136,66 @@ fmod REACH-PROOF-GOAL is
   op inactive : -> ProofGoalStatus [ctor] .
 
   sort ProofGoal .
-  op [_,_,_,_,_]  : Parent Nat ProofStrat ProofGoalStatus ReachForm -> ProofGoal
-     [ctor format (g! o d d d d d d d d g! o)] .
+  op [_,_,_,_,_,_]  : Parent Nat ProofStrat ProofGoalStatus VariableSet ReachForm -> ProofGoal
+     [ctor format (g! o d d d d d d d d d d g! o)] .
 
   ---# Parents
   op getparent : ProofGoal -> Parent .
-  eq getparent([P,N,CN,PS,F]) = P .
+  eq getparent([P,N,CN,PS,VS,F]) = P .
 
   ---# Id
   op getid : ProofGoal -> Nat .
-  eq getid([P,N,CN,PS,F]) = N .
+  eq getid([P,N,CN,PS,VS,F]) = N .
 
   op addid : ProofGoal Nat -> ProofGoal .
-  eq addid([P,N,CN,PS,F],N') = [P,N + N',CN,PS,F] .
+  eq addid([P,N,CN,PS,VS,F],N') = [P,N + N',CN,PS,VS,F] .
 
   ---# Strategies
   op getstrat : ProofGoal -> ProofStrat .
-  eq getstrat([P,N,CN,PS,F]) = CN .
+  eq getstrat([P,N,CN,PS,VS,F]) = CN .
 
   op setstrat : ProofGoal ProofStrat -> ProofGoal .
-  eq setstrat ([P,N,CN,PS,F],CN') = [P,N,CN',PS,F] .
+  eq setstrat ([P,N,CN,PS,VS,F],CN') = [P,N,CN',PS,VS,F] .
 
   op prestrat : ProofGoal ProofStrat -> ProofGoal .
-  eq prestrat([P,N,CN,PS,F],CN') = [P,N,CN' ;; CN,PS,F] .
+  eq prestrat([P,N,CN,PS,VS,F],CN') = [P,N,CN' ;; CN,PS,VS,F] .
 
   ---# Status
   op getstatus : ProofGoal -> ProofGoalStatus .
-  eq getstatus([P,N,CN,PS,F]) = PS .
+  eq getstatus([P,N,CN,PS,VS,F]) = PS .
 
   op setstatus : ProofGoalStatus ProofGoal -> ProofGoal .
-  eq setstatus(PS',[P,N,CN,PS,F]) = [P,N,CN,PS',F] .
+  eq setstatus(PS',[P,N,CN,PS,VS,F]) = [P,N,CN,PS',VS,F] .
 
   op flipPaused : ProofGoal -> ProofGoal .
-  eq flipPaused([P,N,CN,PS,F]) = [P,N,CN,if PS == paused then active else PS fi,F] .
+  eq flipPaused([P,N,CN,PS,VS,F]) = [P,N,CN,if PS == paused then active else PS fi,VS,F] .
+
+  ---# Variables
+  op getvars : ProofGoal -> QidSet .
+  eq getvars([P,N,CN,PS,VS,F]) = VS .
+
+  op getpvars : ProofGoal -> QidSet .
+  eq getpvars([P,N,CN,PS,VS,F]) = vars(antc(F)) .
+
+  op setvars : ProofGoal VariableSet -> ProofGoal .
+  eq setvars([P,N,CN,PS,VS,F],VS') = [P,N,CN,PS,VS',F] .
 
   ---# Body
-  op getpvars : ProofGoal -> QidSet .
-  eq getpvars([P,N,CN,PS,F]) = vars(antc(F)) .
-
   op getbody : ProofGoal -> ReachForm .
-  eq getbody([P,N,CN,PS,F]) = F .
+  eq getbody([P,N,CN,PS,VS,F]) = F .
 endfm
 
 fmod REACH-PROOF-GOALSET is
   pr REACH-PROOF-GOAL .
   pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-AUX .
+  pr TRANSITIONSUBSTPAIRSET .
 
   var P P' : Parent .
   var N N' M : Nat .
   var CN CN' : ProofStrat .
   var PS PS' : ProofGoalStatus .
+  var VS VS' : VariableSet .
   var F F' : ReachForm .
   var G G' : ProofGoal .
   var GS GS' : ProofGoalSet .
@@ -192,8 +203,10 @@ fmod REACH-PROOF-GOALSET is
   var Idx : FindResult .
   var NS : Set{Nat} .
   var FS : ReachFormSet .
+  var RSS : ReachFormSubstPairSet .
   var T : Term .
   var D : NeQFCTermSet .
+  var S : Substitution .
 
   sort NeProofGoalSet MaybeProofGoal ProofGoalSet .
   subsort ProofGoal < MaybeProofGoal NeProofGoalSet < ProofGoalSet .
@@ -230,8 +243,8 @@ fmod REACH-PROOF-GOALSET is
   eq getdescendants(NS,GS) = getdescendants(NS,GS,mt) .
 
   op getdescendants : Set{Nat} ProofGoalSet ProofGoalSet -> ProofGoalSet .
-  eq getdescendants((N,NS),[N,M,CN,PS,F] && GS,GS') =
-    getdescendants((N,M,NS),GS,[N,M,CN,PS,F] && GS') .
+  eq getdescendants((N,NS),[N,M,CN,PS,VS,F] && GS,GS') =
+    getdescendants((N,M,NS),GS,[N,M,CN,PS,VS,F] && GS') .
   eq getdescendants(NS,GS,GS') = GS' [owise] .
 
   ---# Proof Strategy
@@ -267,24 +280,24 @@ fmod REACH-PROOF-GOALSET is
 
   --- OUT: true iff the one set/two sets have have a shared duplicate
   op duplIdGoal? : ProofGoalSet -> Bool .
-  eq duplIdGoal?([P,N,CN,PS,F] && [P',N,CN',PS',F'] && GS') = true .
+  eq duplIdGoal?([P,N,CN,PS,VS,F] && [P',N,CN',PS',VS',F'] && GS') = true .
   eq duplIdGoal?(GS) = false [owise] .
 
   op duplIdGoal? : ProofGoalSet ProofGoalSet -> Bool .
-  eq duplIdGoal?([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = true .
+  eq duplIdGoal?([P,N,CN,PS,VS,F] && GS,[P',N,CN',PS',VS',F'] && GS') = true .
   eq duplIdGoal?(GS,GS') = false [owise] .
 
   --- PRE: Goals are well-formed in module
   --- OUT: Consistently renamed and ACU-normalized goals
   op renameNormalizeGoal : Module FindResult ProofGoalSet -> ProofGoalSet .
-  eq renameNormalizeGoal(U,Idx,[P,N,CN,PS,F] && GS) =
-    [P,N,CN,PS,normalize(U,renameAllVar(U,Idx,F))] && renameNormalizeGoal(U,Idx,GS) .
+  eq renameNormalizeGoal(U,Idx,[P,N,CN,PS,VS,F] && GS) =
+    [P,N,CN,PS,VS,normalize(U,renameAllVar(U,Idx,F))] && renameNormalizeGoal(U,Idx,GS) .
   eq renameNormalizeGoal(U,Idx,mt) = (mt).ProofGoalSet .
 
   --- OUT: deletes duplicate goals in a set
   op deleteDuplGoals : ProofGoalSet -> ProofGoalSet .
-  eq deleteDuplGoals([P,N,CN,PS,F] && [P',N',CN',PS',F] && GS) =
-    deleteDuplGoals(if N < N' then [P,N,CN,PS,F] else [P',N',CN',PS',F] fi && GS) .
+  eq deleteDuplGoals([P,N,CN,PS,VS,F] && [P',N',CN',PS',VS',F] && GS) =
+    deleteDuplGoals(if N < N' then [P,N,CN,PS,VS,F] else [P',N',CN',PS',VS',F] fi && GS) .
   eq deleteDuplGoals(GS) = GS [owise] .
 
   --- OUT: Extracts a subset of ProofGoals whose IDs match those in the NatListSet
@@ -292,62 +305,70 @@ fmod REACH-PROOF-GOALSET is
   ---      all specified ProofGoals where getgl() will return a subset of those
   ---      matched without error
   op getgl! : ProofGoalSet Set{Nat} -> [ProofGoalSet] .
-  eq getgl!([P,N,CN,PS,F] && GS,(N,NS)) = [P,N,CN,PS,F] && getgl!(GS,NS) .
+  eq getgl!([P,N,CN,PS,VS,F] && GS,(N,NS)) = [P,N,CN,PS,VS,F] && getgl!(GS,NS) .
   eq getgl!(GS,empty) = mt .
 
   op getgl : ProofGoalSet Set{Nat} -> ProofGoalSet .
-  eq getgl([P,N,CN,PS,F] && GS,(N,NS)) = [P,N,CN,PS,F] && getgl(GS,NS) .
+  eq getgl([P,N,CN,PS,VS,F] && GS,(N,NS)) = [P,N,CN,PS,VS,F] && getgl(GS,NS) .
   eq getgl(mt,NS) = mt .
   eq getgl(GS,NS) = mt [owise] .
 
   --- OUT: Finds the goals with the same id in the set;
   ---      sets its state to match this goal
   op setgl! : ProofGoalSet ProofGoalSet ~> ProofGoalSet .
-  eq setgl!([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = [P',N,CN',PS',F'] && setgl!(GS,GS') .
+  eq setgl!([P,N,CN,PS,VS,F] && GS,[P',N,CN',PS',VS',F'] && GS') = [P',N,CN',PS',VS',F'] && setgl!(GS,GS') .
   eq setgl!(GS,mt) = GS .
 
   op setgl : ProofGoalSet ProofGoalSet -> ProofGoalSet .
-  eq setgl([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = [P',N,CN',PS',F'] && setgl(GS,GS') .
+  eq setgl([P,N,CN,PS,VS,F] && GS,[P',N,CN',PS',VS',F'] && GS') = [P',N,CN',PS',VS',F'] && setgl(GS,GS') .
   eq setgl(GS,GS') = GS [owise] .
 
   --- OUT: Finds the goals with the same id in the set and deletes them
   op delgl : ProofGoalSet ProofGoalSet -> ProofGoalSet .
-  eq delgl([P,N,CN,PS,F] && GS,[P',N,CN',PS',F'] && GS') = delgl(GS,[P',N,CN',PS',F'] && GS') .
+  eq delgl([P,N,CN,PS,VS,F] && GS,[P',N,CN',PS',VS',F'] && GS') = delgl(GS,[P',N,CN',PS',VS',F'] && GS') .
   eq delgl(GS,GS') = GS [owise] .
 
   --- OUT: Get the set of active goals
   op goalsByStatus : ProofGoalStatus ProofGoalSet -> ProofGoalSet .
-  eq goalsByStatus(PS,[P,N,CN,PS',F] && GS) =
-    if PS == PS' then [P,N,CN,active,F] else mt fi && goalsByStatus(PS,GS) .
+  eq goalsByStatus(PS,[P,N,CN,PS',VS,F] && GS) =
+    if PS == PS' then [P,N,CN,active,VS,F] else mt fi && goalsByStatus(PS,GS) .
   eq goalsByStatus(PS,GS) = mt .
 
   --- OUT: Get an active goal if it exists
   op getActiveGoal : ProofGoalSet ~> ProofGoal .
-  eq getActiveGoal([P,N,CN,active,F] && GS) = [P,N,CN,active,F] .
+  eq getActiveGoal([P,N,CN,active,VS,F] && GS) = [P,N,CN,active,VS,F] .
 
   ---# Goal set creation
 
   --- OUT: build a set of goals using the supplied set of sequents;
   ---      increment the goal number starting from Nat and with the
   ---      Parent as first argument
-  op mkGoals : Parent Nat ProofStrat ProofGoalStatus ReachFormSet -> ProofGoalSet .
-  eq mkGoals(P,N,CN,PS,F & FS) = [P,N,CN,PS,F] && mkGoals(P,s(N),CN,PS,FS) .
-  eq mkGoals(P,N,CN,PS,mt)     = mt .
+  op mkGoals : Parent Nat ProofStrat ProofGoalStatus VariableSet ReachFormSubstPairSet -> ProofGoalSet .
+  eq mkGoals(P,N,CN,PS,VS,(F,S) & RSS) = [P,N,CN,PS,captureNewVars(VS,S),F] && mkGoals(P,s(N),CN,PS,VS,RSS) .
+  eq mkGoals(P,N,CN,PS,VS,mtRFSS)  = mt .
+
+  --- OUT: build a set of goals as above but add vars from ReachFormSet
+  ---      to marked variable set of ProofGoal instead of applying a mapping
+  op mkGoalsAddVars : Parent Nat ProofStrat ProofGoalStatus VariableSet ReachFormSet -> ProofGoalSet .
+  eq mkGoalsAddVars(P,N,CN,PS,VS,F & FS) = [P,N,CN,PS,VS ; vars(antc(F)),F] && mkGoalsAddVars(P,s(N),CN,PS,VS,FS) .
+  eq mkGoalsAddVars(P,N,CN,PS,VS,mt) = mt .
 
   --- OUT: build child goals based on a parent goal
-  op newChildGoals : ProofGoal ProofStrat ProofGoalStatus ReachFormSet -> ProofGoalSet .
-  eq newChildGoals(G,CN,PS,FS) = mkGoals(getid(G),0,CN,PS,FS) .
-
-  --- OUT: build child goals based on a parent goal
-  op newChildGoals : ProofGoal ProofGoalStatus ReachFormSet -> ProofGoalSet .
-  eq newChildGoals(G,PS,FS) = mkGoals(getid(G),0,giveup,PS,FS) .
-
-  op newChildGoals : ProofGoal ReachFormSet -> ProofGoalSet .
-  eq newChildGoals(G,FS) = mkGoals(getid(G),0,giveup,active,FS) .
+  op newChildGoalWithStrat : ProofGoal ProofStrat ProofGoalStatus ReachForm -> ProofGoalSet .
+  eq newChildGoalWithStrat(G,CN,PS,F) = mkGoals(getid(G),0,CN,PS,getvars(G),liftRFSS(F)) .
 
   --- OUT: copy a goal to become a child of itself
   op copyGoalToChild : ProofGoal -> ProofGoal .
-  eq copyGoalToChild(G) = mkGoals(getid(G),0,getstrat(G),active,getbody(G)) .
+  eq copyGoalToChild(G) = mkGoals(getid(G),0,getstrat(G),active,getvars(G),liftRFSS(getbody(G))) .
+
+  --- OUT: creates new child goals with ReachFormSubstPairSet
+  op newChildGoals : ProofGoal ReachFormSubstPairSet -> ProofGoalSet .
+  eq newChildGoals([P,N,CN,PS,VS,F'],RSS) = mkGoals(N,0,CN,PS,VS,RSS) .
+
+  --- OUT: creates new child goals and takes as their marked variables
+  ---      the union of the parent goal and the children
+  op newChildGoalsAddVars : ProofGoal ReachFormSet -> ProofGoalSet .
+  eq newChildGoalsAddVars([P,N,CN,PS,VS,F'],FS) = mkGoalsAddVars(N,0,CN,PS,VS,FS) .
 
   --- OUT: add Nat to each goal number
   op renumberGoals : Nat ProofGoalSet -> ProofGoalSet .

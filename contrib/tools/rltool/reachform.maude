@@ -549,11 +549,39 @@ fmod TRANSITION-RENAME is
  ceq $renameForm(FS,FS')           = FS' if FS =/= mt and-then FS' =/= mt .
 endfm
 
+fmod TRANSITIONSUBSTPAIRSET is
+  pr TRANSITIONSET .
+  pr SUBSTITUTIONSET-AUX .
+  pr TRANSITION-SUBSTITUTION .
+
+  var F : ReachForm . var FS : ReachFormSet .
+  var S : Substitution . var SS : SubstitutionSet .
+
+  sort ReachFormSubstPair ReachFormSubstPairSet .
+  subsort ReachFormSubstPair < ReachFormSubstPairSet .
+  op ((_,_)) : ReachForm Substitution -> ReachFormSubstPair [ctor] .
+  op _&_ : ReachFormSubstPairSet ReachFormSubstPairSet -> ReachFormSubstPairSet [ctor assoc comm id: mtRFSS] .
+  op mtRFSS : -> ReachFormSubstPairSet [ctor] .
+
+  op liftRFSS : ReachFormSet -> ReachFormSubstPairSet .
+  eq liftRFSS(F & FS) = (F,none) & liftRFSS(FS) .
+  eq liftRFSS(mt) = mtRFSS .
+
+  op liftRFSS : ReachForm SubstitutionSet -> ReachFormSubstPairSet .
+  eq liftRFSS(F,S | SS) = (F,S) & liftRFSS(F,SS) .
+  eq liftRFSS(F,empty) = mtRFSS .
+
+  op _RFSS<<_ : ReachForm SubstitutionSet -> ReachFormSubstPairSet .
+  eq F RFSS<< (S | SS) = (F << S,S) & (F RFSS<< SS) .
+  eq F RFSS<< empty = mtRFSS .
+endfm
+
 --- TODO:
 --- Everything below this line show be moved out of this file
 
 fmod STEPRESULTSET is
   pr TRANSITIONSET .
+  pr TRANSITIONSUBSTPAIRSET .
   pr MAYBE-QID .
 
   var SRS : StepResultSet . var SRSK : [StepResultSet] .

@@ -461,7 +461,7 @@ fmod RLTL-PROC-CMD is
   eq inv2(R,LK)         = write('Internal 'Error: 'inv1) [owise] .
 
   eq $addgls(U,R,LS,B)      = merge(R,lift-result(mt,R,if B then axs(LS) else none fi,$addgls(U,LS,0))) .
-  eq $addgls(U,LF ; LS,N)   = mkGoals(none,N,default(LF),active,$renrf(U,trans(LF))) && $addgls(U,LS,s(N)) .
+  eq $addgls(U,LF ; LS,N)   = mkGoalsAddVars(none,N,default(LF),active,none,$renrf(U,trans(LF))) && $addgls(U,LS,s(N)) .
   eq $addgls(U,nil,N)       = mt .
  ceq $renrf(U,F)            = downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm)
                                 if downTerm(renameTmpVar(U,upTerm(F)),(mt).MaybeReachForm) =/= mt .
