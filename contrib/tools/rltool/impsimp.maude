@@ -93,7 +93,7 @@ fmod IMP-SIMP is
   var TA : TruthAtom .
   var P : PosDisj . var N : NegDisj .
 
-  eq imp-simp(RewMod,VSMod,SimpMod,F) = imp-simp-conj(RewMod,VSMod,SimpMod,simplify(toCNF(F))) .
+  eq imp-simp(RewMod,VSMod,SimpMod,F) = simplify(imp-simp-conj(RewMod,VSMod,SimpMod,simplify(toCNF(F)))) .
 
   eq imp-simp-conj(RewMod,VSMod,SimpMod,TA) = TA .
   eq imp-simp-conj(RewMod,VSMod,SimpMod,D /\ F) = imp-simp-disj(RewMod,VSMod,SimpMod,D) /\ imp-simp-conj(RewMod,VSMod,SimpMod,F) .
