@@ -613,7 +613,7 @@ result FoldedLabeledGraph: (0 -[x]-> 2
 | 17
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(A, unbounded) == bfs(A) .
-rewrites: 508
+rewrites: 16
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : bfs(C, 1) .

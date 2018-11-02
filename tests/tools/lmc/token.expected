@@ -377,7 +377,7 @@ result FoldedLabeledGraph: (0 -[label('a-enter,
 | 31
 ==========================================
 reduce in NARROW-SEARCH-2TOKEN : bfs(state(init(7))) .
-rewrites: 942
+rewrites: 9
 result FoldedLabeledGraph: (0 -[label('a-enter, 
   'P:Proc <- '@1:Proc ; 
   'T:Token <- '$.Token)]-> 2

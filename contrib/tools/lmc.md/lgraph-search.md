@@ -333,8 +333,8 @@ fmod FOLDING-LABELED-GRAPH-SEARCH is
 
     op  bfs : NodeSet                  -> [FoldedLabeledGraph] .
     op  bfs : NodeSet Bound            -> [FoldedLabeledGraph] .
-    op #bfs : Bound FoldedLabeledGraph -> [FoldedLabeledGraph] .
-    ------------------------------------------------------------
+    op #bfs : Bound FoldedLabeledGraph -> [FoldedLabeledGraph] [memo] .
+    -------------------------------------------------------------------
     eq bfs(NS)    = bfs(NS, unbounded) .
     eq bfs(NS, B) = #bfs(B, flgraph(NS)) .
 
