@@ -1,0 +1,76 @@
+load ../theories/numbers.maude
+
+mod BANK-ACCOUNT is
+  protecting FVP-NAT-PRED .
+
+  sorts Msg MsgConf .
+  subsort Msg < MsgConf .
+
+  op withdraw : Nat -> Msg [ctor] .
+  op mt       : -> MsgConf [ctor] .
+  op _,_ : MsgConf MsgConf -> MsgConf [ctor assoc comm id: mt] .
+  --------------------------------------------------------------
+
+  sort Account .
+
+  op < bal:_pend:_overdraft:_> : Nat Nat Bool -> Account [ctor] .
+  ----------------------------------------------------------------
+
+  sorts State .
+
+  op _#_ : Account MsgConf -> State [ctor] .
+  ------------------------------------------
+
+  vars n m x : Nat . var p : NzNat . var msgs : MsgConf .
+
+  *** requesting to draw money having sufficient funds; the amount requested is
+  *** added to the amount of pending withdraw requests
+  rl [mark-withdrawal] :
+     < bal: n + m + x pend: x     overdraft: false > #               msgs
+  => < bal: n + m + x pend: x + m overdraft: false > # withdraw(m) , msgs .
+
+  rl [overdraft] :
+     < bal: n pend: x              overdraft: false > # withdraw(n + p) , msgs
+  => < bal: 0 pend: x monus n + p  overdraft: true  > # msgs .
+
+  rl [withdraw] :
+     < bal: n + m pend: x          overdraft: false > # withdraw(m) , msgs
+  => < bal: n     pend: x monus m  overdraft: false > # msgs .
+
+  *** more money can at any time be deposited in the account if it is not in overdraft
+  rl [deposit] :
+     < bal: n     pend: x overdraft: false > # msgs
+  => < bal: n + m pend: x overdraft: false > # msgs [nonexec] .
+endm
+
+mod BANK-ACCOUNT-DEFINEDOPS is
+  protecting BANK-ACCOUNT .
+
+  vars X Y : Bool . var N : Nat . var MSGS : MsgConf .
+
+  op ~_ : Bool -> Bool .
+  eq ~ true  = false [variant] .
+  eq ~ false = true  [variant] .
+
+  op _\/_ : Bool Bool -> Bool .
+  eq true \/ X = X [variant] .
+  eq false \/ X = X [variant] .
+
+  op _->_ : Bool Bool -> Bool .
+  --------------------------------
+  eq X  -> X  = true      [variant] .
+  eq false -> X  = true   [variant] .
+  eq X  -> true = true    [variant] .
+  eq X  -> Y  = ~(X) \/ Y [variant] .
+
+  op debts : MsgConf -> Nat .
+  ---------------------------
+  eq debts(mt)                 = 0 .
+  eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
+endm
+
+mod BANK-ACCOUNT-stop is
+  pr BANK-ACCOUNT-DEFINEDOPS .
+  op [_,_] : Account MsgConf -> State [ctor] .
+  rl [stop] : A:Account # M:MsgConf => [A:Account,M:MsgConf] .
+endm
