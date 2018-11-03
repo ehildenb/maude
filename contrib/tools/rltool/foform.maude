@@ -393,10 +393,10 @@ fmod FOFORMSIMPLIFY-IMP-IMPL is
   eq (~ (F /\ (G \/ H)) ) \/ K = ((~ (F /\ G)) \/ K) /\ ((~ (F /\ H)) \/ K) .
 endfm
 
-fmod VARSAFE-FOFORMSIMPLIFY-IMPL is
+fmod FOFORMSIMPLIFY-IMPL is
   pr FOFORM .
   var F G H K : FOForm . var K? : FOForm? .
-  var T T' : Term .
+  var C : Conj . var D : Disj . var T T' : Term .
 
   eq F /\ F = F .
   eq F \/ F = F .
@@ -404,13 +404,6 @@ fmod VARSAFE-FOFORMSIMPLIFY-IMPL is
   eq ~ ff = tt .
   eq tt /\ F = F  .
   eq ff \/ F = F  .
-endfm
-
-fmod FOFORMSIMPLIFY-IMPL is
-  pr VARSAFE-FOFORMSIMPLIFY-IMPL .
-  pr FOFORM .
-  var F G H K : FOForm . var K? : FOForm? .
-  var C : Conj . var D : Disj . var T T' : Term .
 
   eq ff /\ C = ff .
   eq tt \/ D = tt .
@@ -428,10 +421,8 @@ endfm
 fmod FOFORMSIMPLIFY is
   pr FOFORM .
   pr REFLECT .
-  op varsafe-simplify : FOForm ~> FOForm .
   op simplify : FOForm ~> FOForm .
   var F : FOForm .
-  eq varsafe-simplify(F) = downTerm(redReflect('VARSAFE-FOFORMSIMPLIFY-IMPL,upTerm(F)),error("FOForm Simplify Failed")) .
   eq simplify(F) = downTerm(redReflect('FOFORMSIMPLIFY-IMPL,upTerm(F)),error("FOForm Simplify Failed")) .
 endfm
 

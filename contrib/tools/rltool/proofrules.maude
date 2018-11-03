@@ -16,7 +16,7 @@ fmod INTERSECT-REACHFORM is
     renameTmpVar(U,notFound,conj-antc(R << S,C')) & intersectReachform(U,FSS,R) .
 
   op simplifyIntersectReachform : Module QFCTermSet ReachForm -> ReachFormSet .
-  eq simplifyIntersectReachform(U,TST,R) = full-goal-simplify(U,intersectReachform(U,TST,R)) .
+  eq simplifyIntersectReachform(U,TST,R) = goal-simplify(U,intersectReachform(U,TST,R)) .
 endfm
 
 fmod REACH-PROOF-GOAL-SUBSUMPTION is
@@ -203,7 +203,7 @@ fmod REACH-PROOF-RULES-AUX is
   op sub-action2 : ProofMetadata Module [Bool] ProofGoal -> ProofUpdate .
   eq sub-action(D,U,G) = sub-action1(D,U,coerceBool(checkUnsat(D,lhs-cond(getbody(G))),false),G) .
   eq sub-action1(D,U,true,G)  = (none || mt) .
-  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),full-goal-simplify(U,getbody(G))),G) .
+  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),goal-simplify(U,getbody(G))),G) .
   eq sub-action2(D,U,MB,G) =
     if MB == true
       then (none || mt)

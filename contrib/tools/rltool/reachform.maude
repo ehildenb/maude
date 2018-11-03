@@ -143,10 +143,8 @@ fmod TRANSITION-OPERATIONS is
   eq set-lhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
 
   --- OUT: simplify a reachform's LHS condition by a formula simplification function
-  ---      if Bool is true, apply a (more) variable-safe simplification
-  op simplify-cond : Bool ReachForm -> ReachForm .
-  eq simplify-cond(B,(T | C) => CTS) =
-    (T | if B then varsafe-simplify(C) else simplify(C) fi) => CTS .
+  op simplify-cond : ReachForm -> ReachForm .
+  eq simplify-cond((T | C) => CTS) = (T | simplify(C)) => CTS .
 endfm
 
 
@@ -702,7 +700,7 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
 
   op simplify-impl2 : Module ReachForm -> ReachForm .
   eq simplify-impl2(U,(T | C) => D) =
-    simplify-cond(true,extract-conjoined-sub-rf(U,(T | reduce(U,false,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
+    simplify-cond(extract-conjoined-sub-rf(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
 endfm
 
 view goal-simplify-impl from FUN to REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
@@ -710,43 +708,14 @@ view goal-simplify-impl from FUN to REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
   op F to simplify-impl1 .
 endv
 
-fmod REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
-  pr TRANSITIONSET .
-  pr FOFORMREDUCE .
-  pr FOFORMSIMPLIFY .
-  pr MODULE-REACHFORM-PAIR .
-  pr PATTERN-OPS .
-  pr TRANSITION-CTOR-SIMPLIFICATION .
-
-  var U : Module .
-  var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
-
-  op full-simplify-impl1 : ModuleReachFormPair -> ModuleReachFormPair .
-  eq full-simplify-impl1((U,R)) = (U,full-simplify-impl2(U,R)) .
-
-  op full-simplify-impl2 : Module ReachForm -> ReachForm .
-  eq full-simplify-impl2(U,(T | C) => D) =
-    simplify-cond(false,extract-conjoined-sub-rf(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
-endfm
-
-view full-goal-simplify-impl from FUN to REACH-PROOF-GOAL-FULL-SIMPLIFICATION-IMPL is
-  sort Elt to ModuleReachFormPair .
-  op F to full-simplify-impl1 .
-endv
-
 fmod REACH-PROOF-GOAL-SIMPLIFICATION is
   pr FIXF{goal-simplify-impl} * (op FixF to goal-simplify-impl) .
-  pr FIXF{full-goal-simplify-impl} * (op FixF to full-goal-simplify-impl) .
 
   var U : Module . var R : ReachForm . var RS : ReachFormSet .
 
   op goal-simplify : Module ReachFormSet -> ReachFormSet .
   eq goal-simplify(U,R & RS) = getrf(goal-simplify-impl((U,R))) & goal-simplify(U,RS) .
   eq goal-simplify(U,mt) = mt .
-
-  op full-goal-simplify : Module ReachFormSet -> ReachFormSet .
-  eq full-goal-simplify(U,R & RS) = getrf(full-goal-simplify-impl((U,R))) & full-goal-simplify(U,RS) .
-  eq full-goal-simplify(U,mt) = mt .
 endfm
 
 fmod TRANSITION-FUNCTOR is
