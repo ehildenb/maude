@@ -600,6 +600,7 @@ fmod REACH-PROOF-STATE-VALIDATION is
 
   var AX : LabelReachFormList .
   var CT : QFCTermSet .
+  var G : ProofGoal .
   var GS : ProofGoalSet .
   var D : ProofMetadata .
   var QL : QidList .
@@ -665,10 +666,9 @@ fmod REACH-PROOF-STATE-VALIDATION is
   eq validate(U,D ; prf(GS)) =
     if form-check(U,'goal,getbody(GS)) == nil
       then if duplIdGoal?(GS) == false
-        then if skipQuantifierCheck or-else unsafeVarSet(getbody(GS)) == mt
-          then prf(GS)
+        then if skipQuantifierCheck or-else unsafeVarGoalSet(GS) == mt then prf(GS)
           else st(err) ; out('Error: 'some 'goals 'have 'free 'variables 'in 'rhs
-                             'condition: print(U,unsafeVarSet(getbody(GS))))
+                             'condition: printGoals(U,unsafeVarGoalSet(GS)))
         fi else st(err) ; out('Internal 'Error: 'some 'goals 'have 'duplicate 'ids '\n)
       fi else st(err) ; out(form-check(U,'goal,getbody(GS)))
     fi ; validate(U,D) .
@@ -678,6 +678,13 @@ fmod REACH-PROOF-STATE-VALIDATION is
     validate(U,D) .
 
   eq validate(U,D) = D [owise] .
+
+  --- OUT: return the set of goals that have unsafe variables
+  op unsafeVarGoalSet : ProofGoalSet -> ProofGoalSet .
+  eq unsafeVarGoalSet(G && GS) =
+    if safeVars(getvars(G),getbody(G)) then mt else G fi &&
+      unsafeVarGoalSet(GS) .
+  eq unsafeVarGoalSet(mt) = mt .
 
   --- OUT: return nil iff formulas are well-formed
   ---      otherwise, return an error list
@@ -691,7 +698,7 @@ fmod REACH-PROOF-STATE-VALIDATION is
       else if wellFormed(U,getRuleType(U),RFS)
 	then nil
 	else 'Error: QL '`(s`) 'are 'not 'well-formed:
-	      print(U,illFormedSet(U,RFS))
+	      print(U,illFormedGoalSet(U,RFS))
     fi fi .
 
   op form-check : Module QidList QFCTermSet -> QidList .

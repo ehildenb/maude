@@ -80,8 +80,8 @@ fmod TRANSITION-OPERATIONS is
   pr CONSTRAINED-TEMRSET-SUBSTITUTION .
   pr FOFORMSIMPLIFY .
 
-  var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : QidSet .
-  var T : Term . var C C' : QFForm . var CT : QFCTerm . var CTS CTS' : QFCTermSet . var S : Substitution .
+  var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : VariableSet .
+  var T : Term . var C C' : QFForm . var CT CT' : QFCTerm . var CTS CTS' : QFCTermSet . var S : Substitution .
   var B : Bool .
 
   --- OUT: true iff this reachform is well-formed
@@ -109,13 +109,23 @@ fmod TRANSITION-OPERATIONS is
   op safeVars : ReachFormEx -> Bool .
   eq safeVars(RX) = noDanglingVars(RX) and-then consistentParams(RX) .
 
+  --- OUT: variant of safeVars that accepts a set of LHS parameter
+  ---      variables directly
+  op safeVars : VariableSet ReachFormEx -> Bool .
+  eq safeVars(VS,RX) = noDanglingVars(VS,succ(RX)) and-then consistentParams(RX) .
+
   --- OUT: return true iff this formula has no dangling variables, i.e.
-  ---      a variable in a LHS successor constriant that does not occur in
-  ---      either the LHS successor's term or *each* RHS
+  ---      a variable in a RHS constriant that does not occur in
+  ---      either that RHS's term or in all LHS's
+  ---  NB: this function may give false negatives when a simplification
+  ---      function transforms a condition in the LHS so that variables
+  ---      are deleted --- thus, we use the variant below and pass in
+  ---      directly the set of variables "in" the LHS
   op noDanglingVars : ReachFormEx -> Bool .
-  op noDanglingVars : QidSet CTermSet -> Bool .
   eq noDanglingVars(CTS => CTS') = noDanglingVars(sharedVars(CTS),CTS') .
-  eq noDanglingVars(VS,CT | CTS) = formVars(CT) subset (termVars(CT) ; VS) and-then noDanglingVars(VS,CTS) .
+
+  op noDanglingVars : VariableSet CTermSet -> Bool .
+  eq noDanglingVars(VS,CT' | CTS') = formVars(CT') subset (termVars(CT') ; VS) and-then noDanglingVars(VS,CTS') .
   eq noDanglingVars(VS,noterm) = true .
 
   --- OUT: return true iff this formula has consistent parameters, i.e.
@@ -125,17 +135,17 @@ fmod TRANSITION-OPERATIONS is
   eq consistentParams(CT | CTS => CTS') = consistentParams(vars(CTS'),sharedVars(CT,CTS'),CTS) .
   eq consistentParams(noterm => CTS') = true .
 
-  op consistentParams : QidSet QidSet QFCTermSet -> Bool .
+  op consistentParams : VariableSet VariableSet QFCTermSet -> Bool .
   eq consistentParams(VS,VS',CT | CTS) =
     intersection(vars(CT),VS) == VS' and-then consistentParams(VS,VS',CTS) .
   eq consistentParams(VS,VS',noterm) = true .
 
   --- OUT: return all variables that occur in this reachform
-  op vars : ReachFormEx -> QidSet .
+  op vars : ReachFormEx -> VariableSet .
   eq vars(CTS => CTS') = vars(CTS | CTS') .
 
   --- OUT: return variables shared between LHS and RHS
-  op sharedVars : ReachForm -> QidSet .
+  op sharedVars : ReachForm -> VariableSet .
   eq sharedVars(CT => CTS') = sharedVars(CT,CTS') .
 
   --- OUT: set constraint for a reachform on the RHS
@@ -187,14 +197,9 @@ fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
   eq normalize(M,mt) = mt .
 
   --- OUT: return a set of ill-formed reachforms
-  op illFormedSet : Module ReachFormExSet -> ReachFormExSet .
-  eq illFormedSet(M,F & FS) = if not wellFormed(M,F) then F else mt fi & illFormedSet(M,FS) .
-  eq illFormedSet(M,mt) = mt .
-
-  --- OUT: return a set of reachforms with unsafe variables
-  op unsafeVarSet : ReachFormExSet -> ReachFormExSet .
-  eq unsafeVarSet(F & FS) = if not safeVars(F) then F else mt fi & unsafeVarSet(FS) .
-  eq unsafeVarSet(mt) = mt .
+  op illFormedGoalSet : Module ReachFormExSet -> ReachFormExSet .
+  eq illFormedGoalSet(M,F & FS) = if not wellFormed(M,F) then F else mt fi & illFormedGoalSet(M,FS) .
+  eq illFormedGoalSet(M,mt) = mt .
 
   --- OUT: compute the size of a reach formula set
   op size : ReachFormExSet -> Nat .
