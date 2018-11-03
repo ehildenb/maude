@@ -458,14 +458,6 @@ fmod PATTERN-OPS is
   ---      If this formula is valid, then (T | F) is an instance of CS;
   ---      i.e. this computes (~ F) \/ T(CS) where T() computes all of
   ---      CS's T-instances
-  op subsumeIfValid : Module Bool QFCTermSet QFCTermSet ~> QFForm? .
-  eq subsumeIfValid(U,B,C | C' | CS,CS') = subsumeIfValid(U,B,C,CS') /\ subsumeIfValid(U,B,C' | CS,CS') .
-  eq subsumeIfValid(U,B,noterm,CS') = tt .
-
-  op subsumeIfValid : Module Bool QFCTerm QFCTermSet ~> QFForm? .
-  eq subsumeIfValid(U,B,C,CS) = trueId(cond(C)) ==> disj-join(getForm(applyMatchToCond(U,if B then sharedVars(C,CS) else none fi,C,CS))) .
-
-  --- OUT: As above, but with parameters defined by VariableSet
   op subsumeIfValid : Module VariableSet QFCTermSet QFCTermSet ~> QFForm? .
   eq subsumeIfValid(U,VS,C | C' | CS,CS') = subsumeIfValid(U,VS,C,CS') /\ subsumeIfValid(U,VS,C' | CS,CS') .
   eq subsumeIfValid(U,VS,noterm,CS') = tt .

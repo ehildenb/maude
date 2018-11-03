@@ -25,32 +25,41 @@ fmod RLTOOL-BACKEND is
   pr REACH-PROOF-STATE .
   pr TRANSITION-OPERATIONS . --- wellFormed
 
-  op checkVal : ProofMetadata QFForm? -> MaybeBool .
-  op checkUnsat : ProofMetadata QFForm? -> MaybeBool .
-  op checkValInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-  op checkUnsatInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-  op checkValFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-  op checkUnsatFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-  op checkVal : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-  op checkUnsat : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
-
   var SR : ScopedRegistry .
   var D : ProofMetadata .
   var F : QFForm? .
   var SM : ScopedMap .
   var MQL : ScopedMapList .
 
+  op checkVal : ProofMetadata QFForm? -> MaybeBool .
+  op checkValInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkValFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkVal : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
   eq checkVal((reg(SR) ; D),F)  = checkValInit(SR['validity,(nil).ScopedMapList],(reg(SR) ; D),F) .
   eq checkValInit(nil,D,F) = errb('No 'validity 'checkers 'loaded; 'did 'you 'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive?) .
   eq checkValInit(MQL,D,F) = checkValFindTool(MQL,D,F) [owise] .
   eq checkValFindTool(SM MQL,D,F) = if wellFormed(getmodules(SM),F) then checkVal(SM,MQL,D,F) else checkValFindTool(MQL,D,F) fi .
   eq checkValFindTool(nil,D,F) = errb('No 'acceptable 'validity 'checker 'loaded) .
 
+  op checkUnsat : ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsatInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsatFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op checkUnsat : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
   eq checkUnsat((reg(SR) ; D),F)  = checkUnsatInit(SR['unsatisfiability,(nil).ScopedMapList],(reg(SR) ; D),F) .
   eq checkUnsatInit(nil,D,F) = errb('No 'unsatisfiability 'checkers 'loaded; 'did 'you 'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive?) .
   eq checkUnsatInit(MQL,D,F) = checkUnsatFindTool(MQL,D,F) [owise] .
   eq checkUnsatFindTool(SM MQL,D,F) = if wellFormed(getmodules(SM),F) then checkUnsat(SM,MQL,D,F) else checkUnsatFindTool(MQL,D,F) fi .
   eq checkUnsatFindTool(nil,D,F) = errb('No 'acceptable 'unsatisfiability 'checker 'loaded) .
+
+  op performSimp : ProofMetadata QFForm? -> MaybeBool .
+  op performSimpInit : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op performSimpFindTool : ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  op performSimp : ScopedMap ScopedMapList ProofMetadata QFForm? -> MaybeBool .
+  eq performSimp((reg(SR) ; D),F)  = performSimpInit(SR['simplification,(nil).ScopedMapList],(reg(SR) ; D),F) .
+  eq performSimpInit(nil,D,F) = errb('No 'simplifiers 'loaded; 'did 'you 'forget 'to 'load 'one 'and/or 'mistype 'the 'loading 'directive?) .
+  eq performSimpInit(MQL,D,F) = performSimpFindTool(MQL,D,F) [owise] .
+  eq performSimpFindTool(SM MQL,D,F) = if wellFormed(getmodules(SM),F) then performSimp(SM,MQL,D,F) else performSimpFindTool(MQL,D,F) fi .
+  eq performSimpFindTool(nil,D,F) = errb('No 'acceptable 'simplifier 'loaded) .
 endfm
 
 --- a backend implementation for testing purposes
