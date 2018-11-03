@@ -440,7 +440,7 @@ fmod PATTERN-OPS is
   pr CONSTRAINED-TERM-SUBSTITUTIONSET .
 
   var U : Module . var MS : [ModuleSubstPair] . var S S' : Substitution .
-  var VS : QidSet . var B : Bool .
+  var VS : VariableSet . var B : Bool .
   var C C' C'' : QFCTerm . var CS CS' CS1 CS2 : QFCTermSet .
   var N N' : Nat . var T T' : Term . var F F' : QFForm? .
 
@@ -465,13 +465,21 @@ fmod PATTERN-OPS is
   op subsumeIfValid : Module Bool QFCTerm QFCTermSet ~> QFForm? .
   eq subsumeIfValid(U,B,C,CS) = trueId(cond(C)) ==> disj-join(getForm(applyMatchToCond(U,if B then sharedVars(C,CS) else none fi,C,CS))) .
 
-  --- INP: Module QidSet Term QFCTermSet
-  --- PRE: QFCTerm/Set well-defined in Module; QidSet contains shared variables between QFCTerm/Form
+  --- OUT: As above, but with parameters defined by VariableSet
+  op subsumeIfValid : Module VariableSet QFCTermSet QFCTermSet ~> QFForm? .
+  eq subsumeIfValid(U,VS,C | C' | CS,CS') = subsumeIfValid(U,VS,C,CS') /\ subsumeIfValid(U,VS,C' | CS,CS') .
+  eq subsumeIfValid(U,VS,noterm,CS') = tt .
+
+  op subsumeIfValid : Module VariableSet QFCTerm QFCTermSet ~> QFForm? .
+  eq subsumeIfValid(U,VS,C,CS) = trueId(cond(C)) ==> disj-join(getForm(applyMatchToCond(U,intersection(VS,sharedVars(C,CS)),C,CS))) .
+
+  --- INP: Module VariableSet Term QFCTermSet
+  --- PRE: QFCTerm/Set well-defined in Module; VariableSet contains shared variables between QFCTerm/Form
   --- OUT: A set of formulas/substitutions where:
   ---  [1] each formula is obtaining by applying the substitution to a condition in the QFCTermSet
   ---  [2] each substitution is obtained by matching a term in the QFCTermSet to the Term in all possible ways
-  ---  [3] substitutions are identity on each variable in QidSet
-  op applyMatchToCond : Module QidSet QFCTerm QFCTermSet ~> FOFormSubstPairSet .
+  ---  [3] substitutions are identity on each variable in VariableSet
+  op applyMatchToCond : Module VariableSet QFCTerm QFCTermSet ~> FOFormSubstPairSet .
   op applyMatchToCond : ModuleSubstPair QFCTerm QFCTermSet ~> FOFormSubstPairSet .
   eq applyMatchToCond(U,VS,C,CS)       = applyMatchToCond(varsToConsts#(U,full,VS),C,CS) .
   eq applyMatchToCond((U,S),C,C' | CS) =
@@ -486,13 +494,13 @@ fmod PATTERN-OPS is
   op overapproximateDiff : Module QFCTerm QFCTermSet ~> QFCTerm .
   eq overapproximateDiff(U,C,CS) = overapproximateDiff(U,intersection(vars(C),vars(CS)),C,CS) .
 
-  op overapproximateDiff : Module QidSet QFCTerm QFCTermSet ~> QFCTerm .
+  op overapproximateDiff : Module VariableSet QFCTerm QFCTermSet ~> QFCTerm .
   eq overapproximateDiff(U,VS,C,CS) = conj(C,conj-join(getForm(applyMatchToCond(U,VS,C,toNNF(negateCond(CS)))))) .
 
   --- PRE: Constrained term sets are well-defined with respect to Module
   --- OUT: The intersection between the two constrained termsets; all variables except
   ---      those specified in optional VariableSet are renamed BEFORE unification
-  op sharedIntersect : Module QidSet QFCTermSet QFCTermSet -> QFCTermSet .
+  op sharedIntersect : Module VariableSet QFCTermSet QFCTermSet -> QFCTermSet .
  ceq sharedIntersect(U,VS,CS,CS') = intersect(U,CS1,CS2)
   if (S, T ,N ) := #renameAllVar(U,none,upTerm(CS))
   /\ (S',T',N') := #renameAllVar(U,S |>* varsToTermList(VS),N,upTerm(CS'))
