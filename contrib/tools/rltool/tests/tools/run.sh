@@ -7,7 +7,7 @@ pushd "$PWD"
 cd "$DIR"
 
 run-test() {
-  maude -no-banner $1.maude &> $1.out
+  maude -no-banner -no-wrap $1.maude &> $1.out
   if [ $? -ne 0 ]; then
      echo "maude died!"
      return 1

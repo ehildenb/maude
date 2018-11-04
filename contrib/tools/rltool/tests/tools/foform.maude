@@ -94,17 +94,6 @@ red toDNF(f2) .
 red toDNF(f3) .
 red toDNF(f4) .
 
---- check varsafe/standard simplification
-red varsafe-simplify(f1) .
-red varsafe-simplify(f2) .
-red varsafe-simplify(f3) .
-red varsafe-simplify(f4) .
-
-red varsafe-simplify(toNNF(f1)) .
-red varsafe-simplify(toNNF(f2)) .
-red varsafe-simplify(toNNF(f3)) .
-red varsafe-simplify(toNNF(f4)) .
-
 red simplify(f1) .
 red simplify(f2) .
 red simplify(f3) .
@@ -122,25 +111,6 @@ red simplify(toNNF(f1')) .
 red simplify(toNNF(f2')) .
 red simplify(toNNF(f3')) .
 red simplify(toNNF(f4')) .
-
---- check second series of formulas against simplification
-red varsafe-simplify(fA) .
-red varsafe-simplify(fB) .
-red varsafe-simplify(fC) .
-red varsafe-simplify(fD) .
-red varsafe-simplify(fE) .
-red varsafe-simplify(fH) .
-red varsafe-simplify(fI) .
-red varsafe-simplify(fJ) .
-
-red varsafe-simplify(toNNF(fA)) .
-red varsafe-simplify(toNNF(fB)) .
-red varsafe-simplify(toNNF(fC)) .
-red varsafe-simplify(toNNF(fD)) .
-red varsafe-simplify(toNNF(fE)) .
-red varsafe-simplify(toNNF(fH)) .
-red varsafe-simplify(toNNF(fI)) .
-red varsafe-simplify(toNNF(fJ)) .
 
 red simplify(fA) .
 red simplify(fB) .

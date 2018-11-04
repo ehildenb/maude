@@ -21,8 +21,7 @@ Goal 2 subsumed by 1 via matching
 
 Split rule generated:
        [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
-       [5     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] | 
-    true]
+       [5     | {M&1:MSet} | (M&1:MSet =/= N:Nat /\ true) => [M&2:MSet] |  true]
 Split rule generated:
        [6     | {M&1:MSet} |  M&1:MSet =/= N':Nat  => [M&2:MSet] |  true]
 Split rule generated:
@@ -33,17 +32,15 @@ Notice: proof branch failed: [3     | {N&1:Nat} |  true  => [N&2:Nat] |  true]
 Split rule generated:
         
 Warning: split rule formulas have unsafe variable sharing
-Notice: proof branch failed: [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true)
-    => [M&2:MSet] |  true]
+Notice: proof branch failed: [4     | {M&1:MSet} | (M&1:MSet = N:Nat /\ true) => [M&2:MSet] |  true]
 Split rule generated:
         
 Warning: split rule formulas have unsafe variable sharing
-Notice: proof branch failed: [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [
-    M&2:MSet] |  true]
+Notice: proof branch failed: [7     | {M&1:MSet} |  M&1:MSet = N':Nat  => [M&2:MSet] |  true]
 Split rule generated:
         
 Step Results:
-       [25    | {&10:MSet} |  N'&11:Nat = N'&11:Nat  => [M&12:MSet] |  true]
+       [25    | {&10:MSet} |  true  => [M&11:MSet] |  true]
 Loaded function varsat for validty
 Loaded function varsat for validty
 Bye.

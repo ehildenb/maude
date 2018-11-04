@@ -9,73 +9,41 @@ Declared variable(s):
 Added terminating state:
        {N:Nat} |  true
 Added goal(s):
-       [ends-with-singleton : {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C
-    M:MSet]
+       [ends-with-singleton : {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M:MSet]
 Started proof:
        [1     | {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M:MSet]
 Case rule generated:
        [2     | {N':Nat} |  true  => {N:Nat} |  tt = N:Nat =C N':Nat]
-       [3     | {M1:MSet M2:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M1:MSet
-    M2:MSet]
+       [3     | {M1:MSet M2:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
 Step Results:
-       [23    | {&5:MSet} |  true  => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet
-    &7:MSet]
-       [24    | {&5:MSet &6:MSet} |  true  => {N&7:Nat} |  tt = N&7:Nat =C
-    &5:MSet &6:MSet &8:MSet &9:MSet]
+       [23    | {&5:MSet} |  true  => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [24    | {&5:MSet &6:MSet} |  true  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
 Proof Completed.
 All Goals:
-       [inactive | none  | 1     | case      | {M:MSet} |  true  => {N:Nat} | 
-    tt = N:Nat =C M:MSet]
-       [inactive | 1     | 2     | simplify  | {N':Nat} |  true  => {N:Nat} | 
-    tt = N:Nat =C N':Nat]
-       [inactive | 1     | 3     | simplify  | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 2     | 4     | subsume   | {N':Nat} |  tt =/= tt  => {
-    N:Nat} |  tt = N:Nat =C N':Nat]
-       [inactive | 3     | 5     | subsume   | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 5     | 6     | termcheck | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 6     | 7     | simplify  | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 7     | 8     | subsume   | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 8     | 9     | termcheck | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 9     | 10    | step      | {M1:MSet M2:MSet} |  true  => {
-    N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
-       [inactive | 10    | 11    | simplify  | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &8:MSet &7:MSet]
-       [inactive | 10    | 12    | simplify  | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 10    | 15    | simplify  | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet]
-       [inactive | 10    | 17    | simplify  | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 12    | 16    | subsume   | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 16    | 19    | termcheck | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 17    | 18    | subsume   | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 18    | 21    | termcheck | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 19    | 20    | pause     | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 20    | 23    | axiom     | {&5:MSet} |  true  => {N&6:Nat}
-    |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 21    | 22    | pause     | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 22    | 24    | axiom     | {&5:MSet &6:MSet} |  true  => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 23    | 25    | simplify  | {N:Nat} |  tt = N:Nat =C &5:MSet
-     => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &7:MSet]
-       [inactive | 24    | 26    | simplify  | {N:Nat} |  tt = N:Nat =C &5:MSet
-    &6:MSet  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
-       [inactive | 25    | 27    | subsume   | {N:Nat} | (tt =/= N:Nat =C
-    &5:MSet &7:MSet /\ tt = N:Nat =C &5:MSet) => {N&6:Nat} |  tt = N&6:Nat =C
-    &5:MSet &7:MSet]
-       [inactive | 26    | 28    | subsume   | {N:Nat} | (tt =/= N:Nat =C
-    &5:MSet &6:MSet &8:MSet &9:MSet /\ tt = N:Nat =C &5:MSet &6:MSet) => {
-    N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | none  | init      | 1     | {M:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M:MSet]
+       [inactive | 1     | case      | 2     | {N':Nat} |  true  => {N:Nat} |  tt = N:Nat =C N':Nat]
+       [inactive | 1     | case      | 3     | {M1:MSet M2:MSet} |  true  => {N:Nat} |  tt = N:Nat =C M1:MSet M2:MSet]
+       [inactive | 2     | simplify  | 4     | {N':Nat} |  false  =>  id]
+       [inactive | 3     | simplify  | 5     |  id]
+       [inactive | 5     | subsume   | 6     |  id]
+       [inactive | 6     | termcheck | 7     |  id]
+       [inactive | 7     | simplify  | 8     |  id]
+       [inactive | 8     | subsume   | 9     |  id]
+       [inactive | 9     | termcheck | 10    |  id]
+       [inactive | 10    | step      | 11    | {&5:MSet} |  true  => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &8:MSet &7:MSet]
+       [inactive | 10    | step      | 12    | {&5:MSet} |  true  => {N&6:Nat} |  tt = N&6:Nat =C &5:MSet &7:MSet]
+       [inactive | 10    | step      | 15    | {&5:MSet &6:MSet} |  true  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet]
+       [inactive | 10    | step      | 17    | {&5:MSet &6:MSet} |  true  => {N&7:Nat} |  tt = N&7:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet]
+       [inactive | 12    | simplify  | 16    |  id]
+       [inactive | 16    | subsume   | 19    |  id]
+       [inactive | 17    | simplify  | 18    |  id]
+       [inactive | 18    | subsume   | 21    |  id]
+       [inactive | 19    | termcheck | 20    |  id]
+       [inactive | 20    | pause     | 23    |  id]
+       [inactive | 21    | termcheck | 22    |  id]
+       [inactive | 22    | pause     | 24    |  id]
+       [inactive | 23    | axiom     | 25    | {N:Nat} | (tt = N:Nat =C &5:MSet /\ true) =>  id]
+       [inactive | 24    | axiom     | 26    | {N:Nat} | (tt = N:Nat =C &5:MSet &6:MSet /\ true) =>  id]
+       [inactive | 25    | simplify  | 27    | {N:Nat} | (tt =/= N:Nat =C &5:MSet &7:MSet /\ tt = N:Nat =C &5:MSet) =>  id]
+       [inactive | 26    | simplify  | 28    | {N:Nat} | (tt =/= N:Nat =C &5:MSet &6:MSet &8:MSet &9:MSet /\ tt = N:Nat =C &5:MSet &6:MSet) =>  id]
 Bye.

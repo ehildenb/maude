@@ -5,32 +5,23 @@
 reduce in RLTOOL-TEST : ct('X:Nat, 'Y:Nat, 'Z:Nat) :: CTerm .
 result Bool: true
 ==========================================
-reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Nat, 'Z:Nat))
-    == true .
+reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Nat, 'Z:Nat)) == true .
 result Bool: true
 ==========================================
-reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Foo, 'Z:Nat))
-    == false .
+reduce in RLTOOL-TEST : wellFormed(['CHOICE-DATA], ct('X:Nat, 'Y:Foo, 'Z:Nat)) == false .
 result Bool: true
 ==========================================
-reduce in RLTOOL-TEST : setCond(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_[
-    'X:Nat,'N:Nat]) .
+reduce in RLTOOL-TEST : setCond(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]) .
 result CCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat])
 ==========================================
-reduce in RLTOOL-TEST : conj(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_[
-    'X:Nat,'N:Nat]) .
-result CCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]
-    /\ 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat])
+reduce in RLTOOL-TEST : conj(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]) .
+result CCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred ?= '_=C_['X:Nat,'N:Nat] /\ 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat])
 ==========================================
-reduce in RLTOOL-TEST : negateCond(conj(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?=
-    '_=C_['X:Nat,'N:Nat])) .
-result QFCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | ~ ('tt.Pred ?= '_=C_['X:Nat,
-    'N:Nat] /\ 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat]))
+reduce in RLTOOL-TEST : negateCond(conj(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat])) .
+result QFCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | ~ ('tt.Pred ?= '_=C_['X:Nat,'N:Nat] /\ 'tt.Pred ?= '_=C_['X:Nat,'Z:Nat]))
 ==========================================
-reduce in RLTOOL-TEST : toNNF(negateCond(conj(ct('X:Nat, 'Y:Nat, 'Z:Nat),
-    'tt.Pred ?= '_=C_['X:Nat,'N:Nat]))) .
-result QFCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred != '_=C_['X:Nat,'N:Nat]
-    \/ 'tt.Pred != '_=C_['X:Nat,'Z:Nat])
+reduce in RLTOOL-TEST : toNNF(negateCond(conj(ct('X:Nat, 'Y:Nat, 'Z:Nat), 'tt.Pred ?= '_=C_['X:Nat,'N:Nat]))) .
+result QFCTerm: ('`{_`}['__['X:Nat,'Y:Nat]] | 'tt.Pred != '_=C_['X:Nat,'N:Nat] \/ 'tt.Pred != '_=C_['X:Nat,'Z:Nat])
 ==========================================
 reduce in RLTOOL-TEST : vars(noterm) .
 result EmptyTypeSet: (none).EmptyTypeSet
@@ -50,30 +41,24 @@ result NeVariableSet: 'X:Nat ; 'Y:Nat
 reduce in RLTOOL-TEST : formVars(ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result NeVariableSet: 'X:Nat ; 'Z:Nat
 ==========================================
-reduce in RLTOOL-TEST : vars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat, 'Y:Nat,
-    'Z:Nat)) .
+reduce in RLTOOL-TEST : vars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result NeVariableSet: 'N:Nat ; 'Q:Nat ; 'V:Nat ; 'X:Nat ; 'Y:Nat ; 'Z:Nat
 ==========================================
-reduce in RLTOOL-TEST : termVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat,
-    'Y:Nat, 'Z:Nat)) .
+reduce in RLTOOL-TEST : termVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result NeVariableSet: 'N:Nat ; 'V:Nat ; 'X:Nat ; 'Y:Nat
 ==========================================
-reduce in RLTOOL-TEST : formVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat,
-    'Y:Nat, 'Z:Nat)) .
+reduce in RLTOOL-TEST : formVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result NeVariableSet: 'N:Nat ; 'Q:Nat ; 'X:Nat ; 'Z:Nat
 ==========================================
 reduce in RLTOOL-TEST : sharedVars(noterm) .
 result EmptyTypeSet: (none).EmptyTypeSet
 ==========================================
-reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat,
-    'Y:Nat, 'Z:Nat)) .
+reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Q:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result EmptyTypeSet: (none).EmptyTypeSet
 ==========================================
-reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Y:Nat) | ct('X:Nat,
-    'Y:Nat, 'Z:Nat)) .
+reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Y:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat)) .
 result Variable: 'Y:Nat
 ==========================================
-reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Y:Nat) | ct('X:Nat,
-    'Y:Nat, 'Z:Nat), ct('W:Nat, 'Y:Nat, 'Q:Nat) | ct('X:Nat, 'V:Nat, 'Y:Nat)) .
+reduce in RLTOOL-TEST : sharedVars(ct('N:Nat, 'V:Nat, 'Y:Nat) | ct('X:Nat, 'Y:Nat, 'Z:Nat), ct('W:Nat, 'Y:Nat, 'Q:Nat) | ct('X:Nat, 'V:Nat, 'Y:Nat)) .
 result NeVariableSet: 'V:Nat ; 'X:Nat ; 'Y:Nat
 Bye.
