@@ -159,7 +159,8 @@ fmod FOFORM is
   op  _\/_   : AEQForm? AEQForm?         -> AEQForm?     [ctor ditto] .
   op  _\/_   : FOForm? FOForm?           -> FOForm?      [ctor ditto] .
   --- Negations and Quantifiers
-  op  ~_     : QFForm           -> QFForm  [ctor prec 49] .
+  op  ~_     : Atom             -> Atom    [ctor prec 49] .
+  op  ~_     : QFForm           -> QFForm  [ctor ditto] .
   op  ~_     : AEQForm          -> AEQForm [ctor ditto] .
   op  ~_     : FOForm           -> FOForm  [ctor ditto] .
   op  A[_]_  : NeQidSet QFForm  -> AEQForm [ctor prec 52] .
@@ -1202,6 +1203,37 @@ fmod FOFORM-EXTRACT-SUBSTITUTION is
  ceq #extract-sub(U,B,V ?= T | AS,S) = #extract-sub(U,B,AS << (V <- T),S .. (V <- T))
   if sortLeq(U,leastSort(U,T),getType(V)) /\ not V in vars(T) .
   eq #extract-sub(U,B,AS,S) = (AS | if B then mtFormSet else toPosEqAtoms(S) fi,S) [owise] .
+endfm
+
+fmod FOFORM-FILTER is
+  pr FOFORM-TUPLES . --- provides FOFormPairs
+  pr FOFORM-OPERATIONS .
+
+  var U : Module . var B : Bool .
+  var EA : EqAtom . var A : Atom .
+  var D1 D2 D3 : Disj? . var C1 C2 C3 : Conj? .
+
+  --- OUT: filters atoms in D1 into D2 iff they are wellFormed() EqAtoms in Module and into D3 otherwise
+  op filter-disj : Module Disj? Disj? Disj? ~> FOFormPair .
+  eq filter-disj(U,D1,D2,D3) = filter-disj(U,true,D1,D2,D3) .
+
+  --- OUT: filters atoms in D1 into D2 iff they are wellFormed() EqAtoms in Module and into D3 otherwise
+  ---      if Bool is true, non-EqAtoms are put into D3; otherwise, they are put into D2
+  op filter-disj : Module Bool Disj? Disj? Disj? ~> FOFormPair .
+  eq filter-disj(U,B,EA \/ D1,D2,D3) = if wellFormed(U,EA) then filter-disj(U,B,D1,D2 \/ EA,D3) else filter-disj(U,B,D1,D2,D3 \/ EA) fi .
+  eq filter-disj(U,B,A \/ D1,D2,D3) = if B then filter-disj(U,B,D1,D2,D3 \/ A) else filter-disj(U,B,D1,D2 \/ A,D3) fi [owise] .
+  eq filter-disj(U,B,mtForm,D2,D3)   = (D2,D3) .
+
+  --- OUT: filters atoms in C1 into C2 iff they are wellFormed() EqAtoms in Module and into C3 otherwise
+  op filter-conj : Module Conj? Conj? Conj? ~> FOFormPair .
+  eq filter-conj(U,C1,C2,C3) = filter-conj(U,true,C1,C2,C3) .
+
+  --- OUT: filters atoms in C1 into C2 iff they are wellFormed() EqAtoms in Module and into C3 otherwise
+  ---      if Bool is true, non-EqAtoms are put into C3; otherwise, they are put into C2
+  op filter-conj : Module Bool Conj? Conj? Conj? ~> FOFormPair .
+  eq filter-conj(U,B,EA \/ C1,C2,C3) = if wellFormed(U,EA) then filter-conj(U,B,C1,C2 \/ EA,C3) else filter-conj(U,B,C1,C2,C3 \/ EA) fi .
+  eq filter-conj(U,B,A \/ C1,C2,C3) = if B then filter-conj(U,B,C1,C2,C3 \/ A) else filter-conj(U,B,C1,C2 \/ A,C3) fi [owise] .
+  eq filter-conj(U,B,mtForm,C2,C3)   = (C2,C3) .
 endfm
 
 fmod FOFORM-PRINTER is pr FOFORM . pr GENERIC-PRINTER .
