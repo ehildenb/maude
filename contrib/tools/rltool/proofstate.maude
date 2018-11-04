@@ -128,7 +128,7 @@ fmod REACH-PROOF-GOAL is
   var PS PS' : ProofGoalStatus .
   var CN CN' : ProofStrat .
   var VS VS' : VariableSet .
-  var F : ReachForm .
+  var F F' : ReachForm .
 
   sort ProofGoalStatus .
   op active : -> ProofGoalStatus [ctor] .
@@ -183,6 +183,9 @@ fmod REACH-PROOF-GOAL is
   ---# Body
   op getbody : ProofGoal -> ReachForm .
   eq getbody([P,N,CN,PS,VS,F]) = F .
+
+  op setbody : ProofGoal ReachForm -> ProofGoal .
+  eq setbody([P,N,CN,PS,VS,F],F') = [P,N,CN,PS,VS,F'] .
 endfm
 
 fmod REACH-PROOF-GOALSET is
@@ -200,7 +203,7 @@ fmod REACH-PROOF-GOALSET is
   var G G' : ProofGoal .
   var GS GS' : ProofGoalSet .
   var U : Module .
-  var Idx : FindResult .
+  var Idx Idx2 : FindResult .
   var NS : Set{Nat} .
   var FS : ReachFormSet .
   var RSS : ReachFormSubstPairSet .
@@ -290,9 +293,16 @@ fmod REACH-PROOF-GOALSET is
   --- PRE: Goals are well-formed in module
   --- OUT: Consistently renamed and ACU-normalized goals
   op renameNormalizeGoal : Module FindResult ProofGoalSet -> ProofGoalSet .
-  eq renameNormalizeGoal(U,Idx,[P,N,CN,PS,VS,F] && GS) =
-    [P,N,CN,PS,VS,normalize(U,renameAllVar(U,Idx,F))] && renameNormalizeGoal(U,Idx,GS) .
+  eq renameNormalizeGoal(U,Idx,G && GS) =
+     renameNormalizeGoal2(U,Idx,#renameAllVar(U,none,Idx,upTerm(getbody(G))),G) &&
+     renameNormalizeGoal(U,Idx,GS) .
   eq renameNormalizeGoal(U,Idx,mt) = (mt).ProofGoalSet .
+
+  op renameNormalizeGoal2 : Module FindResult RenameData ProofGoal -> ProofGoal .
+  eq renameNormalizeGoal2(U,Idx,(S,T,Idx2),G) =
+    setvars(
+      setbody(G,normalize(U,downTerm(T,(mt).ReachFormSet))),
+      captureNewVars(getvars(G),S)) .
 
   --- OUT: deletes duplicate goals in a set
   op deleteDuplGoals : ProofGoalSet -> ProofGoalSet .
