@@ -437,6 +437,7 @@ fmod PATTERN-OPS is
   pr FOFORMSIMPLIFY                  . --- basic simplification operations
   pr VARIABLES-TO-CONSTANTS          . --- convert variables in a module to constants
   pr UNIFIERS                        . --- operations to generate all unifiers/matches
+  pr RENAME-METAVARS                 . --- #renameAllVars
   pr CONSTRAINED-TERM-SUBSTITUTIONSET .
 
   var U : Module . var MS : [ModuleSubstPair] . var S S' : Substitution .

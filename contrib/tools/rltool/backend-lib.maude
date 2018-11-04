@@ -8,7 +8,6 @@ load unsortify.maude      --- code to send ordersorted terms to unsorted and bac
 load renaming.maude       --- next-gen renaming library
 load sort-ops.maude       --- empty and finite sort constructions
 
-load var-unif.maude       --- computing variants/unifiers
 load mgci.maude           --- most general constructor instance operation
 load ctor-var-unif.maude  --- computing constructor variants and unifiers
 
