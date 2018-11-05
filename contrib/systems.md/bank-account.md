@@ -71,7 +71,8 @@ mod BANK-ACCOUNT is
     *** more money can at any time be deposited in the account if it is not in overdraft
 
     rl [overdraft] : < bal: n     pend: x overdraft: false > # msgs
-                  => < bal: n + m pend: x overdraft: false > # msgs .
+                  => < bal: n + m pend: x overdraft: false > # msgs
+       [narrowing nonexec] .
 endm
 ```
 
@@ -141,6 +142,6 @@ mod BANK-ACCOUNT-CTOR is
 
     rl [deposit] : < bal: n     pend: x overdraft: false > # msgs
                 => < bal: n + m pend: x overdraft: false > # msgs
-       [narrowing] .
+       [narrowing nonexec] .
 endm
 ```
