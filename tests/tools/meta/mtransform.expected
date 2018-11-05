@@ -195,7 +195,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in DIJKSTRA-UNCONDITIONALIZED : M .
-rewrites: 141
+rewrites: 205
 result SModule: mod 'DIJKSTRA is
   protecting 'DIJKSTRA-DATA .
   protecting 'FVP-BOOL-EQFORM .
@@ -272,7 +272,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in FT-COMM-UNCONDITIONALIZED : M .
-rewrites: 99
+rewrites: 139
 result SModule: mod 'FT-COMM is
   protecting 'FT-COMM-DATA .
   protecting 'FVP-BOOL-EQFORM .
@@ -348,7 +348,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : M .
-rewrites: 93
+rewrites: 121
 result SModule: mod 'THERMOSTAT is
   protecting 'FVP-BOOL-EQFORM .
   protecting 'FVP-NAT-PRED .

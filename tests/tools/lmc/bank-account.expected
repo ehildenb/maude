@@ -7,7 +7,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : #M .
-rewrites: 60
+rewrites: 98
 result SModule: mod 'BANK-ACCOUNT-CTOR is
   protecting 'FVP-BOOL-EQFORM .
   protecting 'FVP-NAT-PRED .
@@ -36,8 +36,7 @@ result SModule: mod 'BANK-ACCOUNT-CTOR is
   rl '_st_['_#_['<`bal:_pend:_overdraft:_>['n:Nat,'x:Nat,'false.Bool],
     'msgs:MsgConf],'###COND###:Form`{Bool`}] => '_st_['_#_[
     '<`bal:_pend:_overdraft:_>['_+_['n:Nat,'m:Nat],'x:Nat,'false.Bool],
-    'msgs:MsgConf],'###COND###:Form`{Bool`}] [nonexec narrowing label(
-    'deposit)] .
+    'msgs:MsgConf],'###COND###:Form`{Bool`}] [narrowing label('deposit)] .
   rl '_st_['_#_['<`bal:_pend:_overdraft:_>['_+_['N1:Nat,'N3:Nat],'_+_['N3:Nat,
     'N4:Nat],'false.Bool],'_`,_['M2:MsgConf,'withdraw['N3:Nat]]],
     '###COND###:Form`{Bool`}] => '_st_['_#_['<`bal:_pend:_overdraft:_>['N1:Nat,
@@ -113,6 +112,10 @@ result SModule: mod 'BANK-ACCOUNT-CTOR is
 endm
 ==========================================
 reduce in BANK-ACCOUNT-CTOR-UNCONDITIONALIZED : wellFormed(#M) .
+Warning: <automatic>: variable m:Nat is used before it is bound in rule:
+rl < bal: n:Nat pend: x:Nat overdraft: false > # msgs:MsgConf st
+    ###COND###:Form{Bool} => < bal: n:Nat + m:Nat pend: x:Nat overdraft: false
+    > # msgs:MsgConf st ###COND###:Form{Bool} [narrowing label deposit] .
 rewrites: 2
 result Bool: true
 ==========================================

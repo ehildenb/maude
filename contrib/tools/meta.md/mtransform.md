@@ -151,12 +151,17 @@ It's parametric in several operators and sorts (prefixed below with `#`) about t
     eq unconditionalizeRules(none)         = none .
     eq unconditionalizeRules(NeRLS NeRLS') = unconditionalizeRules(NeRLS) unconditionalizeRules(NeRLS') .
 
-   ceq unconditionalizeRules(rl T => T' [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', V] [narrowing AS] . )
+   ceq unconditionalizeRules(rl T => T' [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', V] [narrowing #noNonExec(AS)] . )
     if V := qid("###COND###:" + string(#cSort)) .
 
-   ceq unconditionalizeRules(crl T => T' if EqC [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', C'] [narrowing AS] . )
+   ceq unconditionalizeRules(crl T => T' if EqC [AS] .) = ( rl #cTerm[T, V] => #cTerm[T', C'] [narrowing #noNonExec(AS)] . )
     if V  := qid("###COND###:" + string(#cSort))
     /\ C' := #cConjunct[V, #mkCondition(EqC)] .
+
+    op #noNonExec : AttrSet -> [AttrSet] .
+    --------------------------------------
+    eq #noNonExec(none) = none .
+    eq #noNonExec(A AS) = if A == nonexec then none else A fi #noNonExec(AS) .
 ```
 
 The parameters of the transformation are as follows:
