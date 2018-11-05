@@ -1,11 +1,3 @@
-Warning: "bank-account.maude", line 66 (mod BANK-ACCOUNT): variable m is used
-    before it is bound in rule:
-rl < bal: n pend: x overdraft: false > # msgs => < bal: n + m pend: x
-    overdraft: false > # msgs [label overdraft] .
-Warning: "bank-account.maude", line 128 (mod BANK-ACCOUNT-CTOR): variable m is
-    used before it is bound in rule:
-rl < bal: n pend: x overdraft: false > # msgs => < bal: n + m pend: x
-    overdraft: false > # msgs [narrowing label deposit] .
 ==========================================
 get variants in BANK-ACCOUNT : [< bal: n + m + x pend: x overdraft: false > #
     msgs,< bal: n + m + x pend: m + x overdraft: false > # msgs,withdraw(m)] .

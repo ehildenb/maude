@@ -2,10 +2,9 @@ Narrowing
 =========
 
 Several narrowing utilities/wrappers are provided here.
-Much of this code is extracted from Santiago Escobar's [unification.md].
 
 ```maude
-load cterms.maude
+load terms.maude
 ```
 
 Variant Sets
@@ -14,6 +13,7 @@ Variant Sets
 ```maude
 fmod VARIANT-SET is
    protecting META-LEVEL .
+   protecting TERM-SET .
 
     var N N' : Nat . var P : Parent . var B : Bool .
     var M : Module . var T : Term . var SUB : Substitution .
@@ -38,10 +38,10 @@ fmod VARIANT-SET is
    ceq allVariants(M, T, N) = V # allVariants(M, T, N + 1)
     if V := metaGetIrredundantVariant(M, T, empty, 0, N) .
 
-    op getTerms : VariantSet -> TermList .
-    --------------------------------------
-    eq getTerms(.VariantSet)            = empty .
-    eq getTerms({T, SUB, N, P, B} # VS) = T , getTerms(VS) .
+    op getTerms : VariantSet -> TermSet .
+    -------------------------------------
+    eq getTerms(.VariantSet)            = .TermSet .
+    eq getTerms({T, SUB, N, P, B} # VS) = T | getTerms(VS) .
 endfm
 ```
 

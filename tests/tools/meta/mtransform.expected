@@ -186,4 +186,219 @@ reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
     stripConditions(asTemplate(upModule('QLOCK-STATE, true))))) .
 rewrites: 8
 result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 40 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in DIJKSTRA-UNCONDITIONALIZED : M .
+rewrites: 205
+result SModule: mod 'DIJKSTRA is
+  protecting 'DIJKSTRA-DATA .
+  protecting 'FVP-BOOL-EQFORM .
+  sorts 'CState ; 'Conf ; 'State .
+  none
+  op '<_> : 'Conf -> 'State [ctor] .
+  op '_st_ : 'State 'Form`{Bool`} -> 'CState [ctor prec(57)] .
+  op '_|_ : 'Proc 'ProcSet -> 'Conf [ctor] .
+  op '`[_`] : 'Conf -> 'State [ctor] .
+  none
+  none
+  rl '_st_['<_>['_|_['P:Proc,'PS:ProcSet]],'###COND###:Form`{Bool`}] => '_st_[
+    '`[_`]['_|_['P:Proc,'PS:ProcSet]],'###COND###:Form`{Bool`}] [narrowing
+    label('stop)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{1`,try`}.WProc,
+    'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing label('start1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{1`,upf`}.WProc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,
+    'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing label('set-flag1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{1`,upt`}.WProc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['`{1`,upf`}.WProc,'__['P:Proc,
+    'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing label('set-turn1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,
+    'PS:ProcSet]]],'_/\_['###COND###:Form`{Bool`},'_?=_['safe?['__['P:Proc,
+    'PS:ProcSet]],'true.Bool]]] [narrowing label('go-crit1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{2`,chf`}.2Proc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,
+    'PS:ProcSet]]],'_/\_['###COND###:Form`{Bool`},'_?=_['safe?['__['P:Proc,
+    'PS:ProcSet]],'false.Bool]]] [narrowing label('fail-crit1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{2`,crt`}.CProc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,
+    'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing label('done-crit1)] .
+  rl '_st_['<_>['_|_['P:Proc,'__['`{2`,ext`}.2Proc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['P:Proc,'__['`{0`,try`}.WProc,
+    'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing label('exit-crit1)] .
+  rl '_st_['<_>['_|_['`{0`,try`}.WProc,'PS:ProcSet]],'###COND###:Form`{Bool`}]
+    => '_st_['<_>['_|_['`{1`,try`}.WProc,'PS:ProcSet]],
+    '###COND###:Form`{Bool`}] [narrowing label('start2)] .
+  rl '_st_['<_>['_|_['`{0`,try`}.WProc,'__['`{1`,try`}.WProc,'PS:ProcSet]]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['`{0`,try`}.WProc,'__[
+    '`{1`,upt`}.WProc,'PS:ProcSet]]],'###COND###:Form`{Bool`}] [narrowing
+    label('chk-turn1)] .
+  rl '_st_['<_>['_|_['`{1`,try`}.WProc,'PS:ProcSet]],'###COND###:Form`{Bool`}]
+    => '_st_['<_>['_|_['`{1`,upf`}.WProc,'PS:ProcSet]],
+    '###COND###:Form`{Bool`}] [narrowing label('chk-turn2)] .
+  rl '_st_['<_>['_|_['`{1`,upf`}.WProc,'PS:ProcSet]],'###COND###:Form`{Bool`}]
+    => '_st_['<_>['_|_['`{2`,chf`}.2Proc,'PS:ProcSet]],
+    '###COND###:Form`{Bool`}] [narrowing label('set-flag2)] .
+  rl '_st_['<_>['_|_['`{2`,chf`}.2Proc,'2PS:2ProcSet]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['`{2`,ext`}.2Proc,
+    '2PS:2ProcSet]],'###COND###:Form`{Bool`}] [narrowing label('fail-crit2)] .
+  rl '_st_['<_>['_|_['`{2`,chf`}.2Proc,'WPS:WProcSet]],
+    '###COND###:Form`{Bool`}] => '_st_['<_>['_|_['`{2`,crt`}.CProc,
+    'WPS:WProcSet]],'###COND###:Form`{Bool`}] [narrowing label('go-crit2)] .
+  rl '_st_['<_>['_|_['`{2`,crt`}.CProc,'PS:ProcSet]],'###COND###:Form`{Bool`}]
+    => '_st_['<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]],
+    '###COND###:Form`{Bool`}] [narrowing label('done-crit2)] .
+  rl '_st_['<_>['_|_['`{2`,ext`}.2Proc,'PS:ProcSet]],'###COND###:Form`{Bool`}]
+    => '_st_['<_>['_|_['`{0`,try`}.WProc,'PS:ProcSet]],
+    '###COND###:Form`{Bool`}] [narrowing label('exit-crit2)] .
+endm
+==========================================
+reduce in DIJKSTRA-UNCONDITIONALIZED : wellFormed(M) .
+rewrites: 2
+result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 40 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in FT-COMM-UNCONDITIONALIZED : M .
+rewrites: 139
+result SModule: mod 'FT-COMM is
+  protecting 'FT-COMM-DATA .
+  protecting 'FVP-BOOL-EQFORM .
+  sorts 'CState ; 'State .
+  none
+  op '_st_ : 'State 'Form`{Bool`} -> 'CState [ctor prec(57)] .
+  op '`[_::_|_|_|_::_`] : 'Nat 'ListNat 'MaybeNat 'MaybePairNat 'ListNat 'Nat
+    -> 'State [ctor] .
+  none
+  none
+  rl '_st_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'k:Nat,'pa?:MaybePairNat,
+    'l2:ListNat,'m:Nat],'###COND###:Form`{Bool`}] => '_st_['`[_::_|_|_|_::_`][
+    'n:Nat,'l1:ListNat,'null.MaybeNat,'pa?:MaybePairNat,'l2:ListNat,'m:Nat],
+    '###COND###:Form`{Bool`}] [narrowing label('drop-ack)] .
+  rl '_st_['`[_::_|_|_|_::_`]['n:Nat,'l1:ListNat,'n?:MaybeNat,'pa:PairNat,
+    'l2:ListNat,'m:Nat],'###COND###:Form`{Bool`}] => '_st_['`[_::_|_|_|_::_`][
+    'n:Nat,'l1:ListNat,'n?:MaybeNat,'nullp.MaybePairNat,'l2:ListNat,'m:Nat],
+    '###COND###:Form`{Bool`}] [narrowing label('drop-snd)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'q:NzNat],'l':NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] =>
+    '_st_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'q:NzNat,
+    'nullp.MaybePairNat,'l':NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] [
+    narrowing label('resend-ack)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'_+_['1.NzNat,'m:Nat]],'l':NeListNat,'m:Nat],
+    '###COND###:Form`{Bool`}] => '_st_['`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'_+_['1.NzNat,'m:Nat],'nullp.MaybePairNat,'__['l':NeListNat,
+    'n:Nat],'_+_['1.NzNat,'m:Nat]],'###COND###:Form`{Bool`}] [narrowing label(
+    'rec-+)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'l:NeListNat,'n?:MaybeNat,'`[_`,_`][
+    'n:Nat,'_+_['1.NzNat,'m:Nat]],'nil.ListNat,'m:Nat],
+    '###COND###:Form`{Bool`}] => '_st_['`[_::_|_|_|_::_`]['p:NzNat,
+    'l:NeListNat,'_+_['1.NzNat,'m:Nat],'nullp.MaybePairNat,'n:Nat,'_+_[
+    '1.NzNat,'m:Nat]],'###COND###:Form`{Bool`}] [narrowing label('rec-1)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'n?:MaybeNat,'nullp.MaybePairNat,
+    'l1:ListNat,'m:Nat],'###COND###:Form`{Bool`}] => '_st_['`[_::_|_|_|_::_`][
+    'p:NzNat,'n:Nat,'null.MaybeNat,'`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,
+    'm:Nat],'_/\_['###COND###:Form`{Bool`},'_?=_['_=/=_['n?:MaybeNat,'p:NzNat],
+    'true.Bool]]] [narrowing label('resend-1)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'n:Nat,'p:NzNat,'pa?:MaybePairNat,
+    'l:NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] => '_st_[
+    '`[_::_|_|_|_::_`]['p:NzNat,'nil.ListNat,'null.MaybeNat,
+    'nullp.MaybePairNat,'l:NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] [
+    narrowing label('rec-ack-1)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'n?:MaybeNat,
+    'nullp.MaybePairNat,'l1:ListNat,'m:Nat],'###COND###:Form`{Bool`}] => '_st_[
+    '`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'l:NeListNat],'null.MaybeNat,
+    '`[_`,_`]['n:Nat,'p:NzNat],'l1:ListNat,'m:Nat],'_/\_[
+    '###COND###:Form`{Bool`},'_?=_['_=/=_['n?:MaybeNat,'p:NzNat],'true.Bool]]]
+    [narrowing label('resend-+)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat],'p:NzNat,
+    'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] =>
+    '_st_['`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],'m:Nat,'null.MaybeNat,
+    '`[_`,_`]['m:Nat,'_+_['1.NzNat,'p:NzNat]],'l:NeListNat,'q:NzNat],
+    '###COND###:Form`{Bool`}] [narrowing label('rec-ack-2)] .
+  rl '_st_['`[_::_|_|_|_::_`]['p:NzNat,'__['n:Nat,'m:Nat,'l':NeListNat],
+    'p:NzNat,'pa?:MaybePairNat,'l:NeListNat,'q:NzNat],'###COND###:Form`{Bool`}]
+    => '_st_['`[_::_|_|_|_::_`]['_+_['1.NzNat,'p:NzNat],'__['m:Nat,
+    'l':NeListNat],'null.MaybeNat,'`[_`,_`]['m:Nat,'_+_['1.NzNat,'p:NzNat]],
+    'l:NeListNat,'q:NzNat],'###COND###:Form`{Bool`}] [narrowing label(
+    'rec-ack-+)] .
+endm
+==========================================
+reduce in FT-COMM-UNCONDITIONALIZED : wellFormed(M) .
+rewrites: 2
+result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 40 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : M .
+rewrites: 121
+result SModule: mod 'THERMOSTAT is
+  protecting 'FVP-BOOL-EQFORM .
+  protecting 'FVP-NAT-PRED .
+  protecting 'FVP-NUMBERS .
+  sorts 'CConf ; 'Conf ; 'DelayMode ; 'InMode ; 'Mode .
+  subsort 'DelayMode < 'Mode .
+  subsort 'InMode < 'Mode .
+  op '<_`,_`,_> : 'Nat 'Nat 'Mode -> 'Conf [ctor] .
+  op '_st_ : 'Conf 'Form`{Bool`} -> 'CConf [ctor prec(57)] .
+  op '`{_`,_`,_`} : 'Nat 'Nat 'Mode -> 'Conf [ctor] .
+  op 'bound : nil -> 'Nat [none] .
+  op 'delay : 'InMode -> 'DelayMode [ctor] .
+  op 'heat-rate : 'Mode 'Nat -> 'Nat [none] .
+  op 'max : nil -> 'Nat [none] .
+  op 'min : nil -> 'Nat [none] .
+  op 'off : nil -> 'InMode [ctor] .
+  op 'on : nil -> 'InMode [ctor] .
+  op 'time-until : 'InMode -> 'Nat [none] .
+  none
+  none
+  rl '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,'MODE:Mode],'###COND###:Form`{Bool`}]
+    => '_st_['`{_`,_`,_`}['TIME:Nat,'heat-rate['MODE:Mode,'TMP:Nat],
+    'MODE:Mode],'###COND###:Form`{Bool`}] [narrowing label('tick)] .
+  rl '_st_['`{_`,_`,_`}['0.Nat,'TMP:Nat,'delay['IM:InMode]],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['0.Nat,'TMP:Nat,'IM:InMode],
+    '###COND###:Form`{Bool`}] [narrowing label('delay-over)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'off.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
+    'off.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['TMP:Nat,'_+_[
+    'min.Nat,'bound.Nat]],'false.Bool]]] [narrowing label('inmode-off)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'off.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['time-until['on.InMode],
+    'TMP:Nat,'delay['on.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
+    'TMP:Nat,'_+_['min.Nat,'bound.Nat]],'true.Bool]]] [narrowing label(
+    'turning-on)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'on.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
+    'on.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['max.Nat,'_+_[
+    'bound.Nat,'TMP:Nat]],'false.Bool]]] [narrowing label('inmode-on)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'on.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['time-until['off.InMode],
+    'TMP:Nat,'delay['off.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
+    'max.Nat,'_+_['bound.Nat,'TMP:Nat]],'true.Bool]]] [narrowing label(
+    'turning-off)] .
+  rl '_st_['`{_`,_`,_`}['_+_['1.NzNat,'TIME:Nat],'TMP:Nat,'DM:DelayMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
+    'DM:DelayMode],'###COND###:Form`{Bool`}] [narrowing label('delaying)] .
+endm
+==========================================
+reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M) .
+rewrites: 2
+result Bool: true
 Bye.

@@ -8,7 +8,8 @@ load ../../../contrib/tools/meta/narrowing.maude
 --- =============================
 
 mod BANK-ACCOUNT-INIT-STATES is
-    extending FVP-NARROWING-MODULO-T-GRAPH .
+    extending FVP-CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+   protecting UNCONDITIONALIZE-FVP-BOOL .
 
     var N : Nat . vars NeNS NeNS' : NeNodeSet . vars T T' : Term .
 
@@ -42,14 +43,14 @@ mod BANK-ACCOUNT-INIT-STATES is
 
     op cinit : Nat -> [Term] .
     --------------------------
-    eq cinit(0) = '_|_[init(0), pred(0)] .
-    eq cinit(1) = '_|_[init(0), pred(1)] .
-    eq cinit(2) = '_|_[init(1), pred(0)] .
-    eq cinit(3) = '_|_[init(1), pred(1)] .
-    eq cinit(4) = '_|_[init(2), pred(2)] .
-    eq cinit(5) = '_|_[init(3), pred(3)] .
-    eq cinit(6) = '_|_[init(4), pred(5)] .
-    eq cinit(7) = '_|_[init(5), pred(6)] .
+    eq cinit(0) = '_st_[init(0), pred(0)] .
+    eq cinit(1) = '_st_[init(0), pred(1)] .
+    eq cinit(2) = '_st_[init(1), pred(0)] .
+    eq cinit(3) = '_st_[init(1), pred(1)] .
+    eq cinit(4) = '_st_[init(2), pred(2)] .
+    eq cinit(5) = '_st_[init(3), pred(3)] .
+    eq cinit(6) = '_st_[init(4), pred(5)] .
+    eq cinit(7) = '_st_[init(5), pred(6)] .
 
     op sub : Nat -> [Substitution] .
     --------------------------------
@@ -69,16 +70,15 @@ endm
 
 mod BANK-ACCOUNT-CTOR-UNCONDITIONALIZED is
     extending BANK-ACCOUNT-INIT-STATES .
-    extending GRAPH-ANALYSIS .
 
     vars C C' : Term .
 
-    eq #T  = 'State .
-    eq #C  = 'Form`{Bool`} .
-    eq #ST = '_|_   .
+    eq #tSort  = 'State .
 
-    eq #MC = upModule('BANK-ACCOUNT-DEFINEDOPS, false) .
-    eq #MO = upModule('BANK-ACCOUNT-CTOR,       false) .
+    eq #MO = upModule('BANK-ACCOUNT-CTOR, false) .
+
+    op #MC : -> Module .
+    eq #MC = upModule(#cModule, false) .
 
     eq implies?(C, C)  = true .
    ceq implies?(C, C') = true  if {'false.Bool, 'Bool} := metaReduce(#MC, '_=>_[C, C']) .

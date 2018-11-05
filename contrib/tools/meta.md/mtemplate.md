@@ -71,6 +71,34 @@ fmod MODULE-DECLARATION is
     eq NeMDS NeMDS = NeMDS .
 ```
 
+Here we have faster projections than matching on the overall `ModuleDeclSet`.
+
+```maude
+    op  importDeclSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op    sortDeclSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op subsortDeclSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op      opDeclSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op      membAxSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op    equationSet : ModuleDeclSet -> [ModuleDeclSet] .
+    op        ruleSet : ModuleDeclSet -> [ModuleDeclSet] .
+    ------------------------------------------------------
+    eq  importDeclSet(MD MDS) = if (MD ::  ImportDecl) then MD else none fi  importDeclSet(MDS) .
+    eq    sortDeclSet(MD MDS) = if (MD ::    SortDecl) then MD else none fi    sortDeclSet(MDS) .
+    eq subsortDeclSet(MD MDS) = if (MD :: SubsortDecl) then MD else none fi subsortDeclSet(MDS) .
+    eq      opDeclSet(MD MDS) = if (MD ::      OpDecl) then MD else none fi      opDeclSet(MDS) .
+    eq      membAxSet(MD MDS) = if (MD ::      MembAx) then MD else none fi      membAxSet(MDS) .
+    eq    equationSet(MD MDS) = if (MD ::    Equation) then MD else none fi    equationSet(MDS) .
+    eq        ruleSet(MD MDS) = if (MD ::        Rule) then MD else none fi        ruleSet(MDS) .
+
+    eq  importDeclSet(none) = none .
+    eq    sortDeclSet(none) = none .
+    eq subsortDeclSet(none) = none .
+    eq      opDeclSet(none) = none .
+    eq      membAxSet(none) = none .
+    eq    equationSet(none) = none .
+    eq        ruleSet(none) = none .
+```
+
 Using the syntax of the prelude, imports and sort declarations are treated specially.
 Here we add the notion of `ImportDecl` and `SortDecl`, so that they can be treated uniformly with the rest of the declarations.
 

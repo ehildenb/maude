@@ -105,17 +105,17 @@ result Variable: '#1:Nat
 ==========================================
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(3))) .
 rewrites: 22
-result NeTermList: 'false.Bool,'true.Bool,'_<_['#1:Nat,'#2:NzNat]
+result NeTermSet: 'false.Bool | 'true.Bool | ('_<_['#1:Nat,'#2:NzNat])
 ==========================================
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(4))) .
-rewrites: 27
-result NeTermList: 'false.Bool,'true.Bool,'true.Bool,'_<_['#1:Nat,'_+_[
-    '1.NzNat,'#2:Nat]]
+rewrites: 28
+result NeTermSet: 'false.Bool | 'true.Bool | ('_<_['#1:Nat,'_+_['1.NzNat,
+    '#2:Nat]])
 ==========================================
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(5))) .
-rewrites: 27
-result NeTermList: 'false.Bool,'true.Bool,'true.Bool,'_<_['#1:NzNat,'_+_[
-    '1.NzNat,'#2:Nat]]
+rewrites: 28
+result NeTermSet: 'false.Bool | 'true.Bool | ('_<_['#1:NzNat,'_+_['1.NzNat,
+    '#2:Nat]])
 ==========================================
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(6))) .
 rewrites: 12
