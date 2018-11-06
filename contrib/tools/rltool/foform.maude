@@ -406,8 +406,8 @@ fmod FOFORMSIMPLIFY-IMPL is
   eq tt /\ F = F  .
   eq ff \/ F = F  .
 
-  eq ff /\ C = ff .
-  eq tt \/ D = tt .
+  eq ff /\ F = ff .
+  eq tt \/ F = tt .
 
   eq F  \/ ~ F = tt .
   eq F  /\ ~ F = ff .
