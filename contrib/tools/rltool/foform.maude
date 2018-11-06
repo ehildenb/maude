@@ -1237,8 +1237,8 @@ fmod FOFORM-FILTER is
   --- OUT: filters atoms in C1 into C2 iff they are wellFormed() EqAtoms in Module and into C3 otherwise
   ---      if Bool is true, non-EqAtoms are put into C3; otherwise, they are put into C2
   op filter-conj : Module Bool Conj? Conj? Conj? ~> FOFormPair .
-  eq filter-conj(U,B,EA \/ C1,C2,C3) = if wellFormed(U,EA) then filter-conj(U,B,C1,C2 \/ EA,C3) else filter-conj(U,B,C1,C2,C3 \/ EA) fi .
-  eq filter-conj(U,B,A \/ C1,C2,C3) = if B then filter-conj(U,B,C1,C2,C3 \/ A) else filter-conj(U,B,C1,C2 \/ A,C3) fi [owise] .
+  eq filter-conj(U,B,EA /\ C1,C2,C3) = if wellFormed(U,EA) then filter-conj(U,B,C1,C2 /\ EA,C3) else filter-conj(U,B,C1,C2,C3 /\ EA) fi .
+  eq filter-conj(U,B,A /\ C1,C2,C3) = if B then filter-conj(U,B,C1,C2,C3 /\ A) else filter-conj(U,B,C1,C2 /\ A,C3) fi [owise] .
   eq filter-conj(U,B,mtForm,C2,C3)   = (C2,C3) .
 endfm
 
