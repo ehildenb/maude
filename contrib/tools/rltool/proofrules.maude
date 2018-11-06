@@ -16,7 +16,7 @@ fmod INTERSECT-REACHFORM is
     renameTmpVar(U,notFound,conj-antc(R << S,C')) & intersectReachform(U,FSS,R) .
 
   op simplifyIntersectReachform : Module QFCTermSet ReachForm -> ReachFormSet .
-  eq simplifyIntersectReachform(U,TST,R) = goal-simplify(U,intersectReachform(U,TST,R)) .
+  eq simplifyIntersectReachform(U,TST,R) = getrf(goal-simplify(U,liftRFSS(intersectReachform(U,TST,R)))) .
 endfm
 
 fmod REACH-PROOF-GOAL-SUBSUMPTION is
@@ -30,6 +30,7 @@ fmod REACH-PROOF-GOAL-SUBSUMPTION is
   var F F' : QFForm? . var FSS : FOFormSubstPairSet . var S : Substitution .
   var U : Module . var R : ReachForm . var RS : ReachFormSet .
   var VS : VariableSet .
+  var RSS : ReachFormSubstPairSet .
 
   --- OUT: True if the first set gets subsumed by the second
   op syn-subsume? : ProofMetadata QFCTermSet QFCTermSet -> MaybeBool .
@@ -44,8 +45,12 @@ fmod REACH-PROOF-GOAL-SUBSUMPTION is
   eq sem-subsume?(D,VS,MF,MF') =
     errb('Internal 'Error: 'Semantic 'subsumption 'only 'supports 'term 'sets 'on 'RHS) [owise] .
 
-  op subsume? : ProofMetadata VariableSet ReachFormSet -> MaybeBool .
+  op subsume? : ProofMetadata VariableSet ReachForm -> MaybeBool .
   eq subsume?(D,VS,MA => MF) = sem-subsume?(D,VS,MA,MF) .
+
+  op subsume? : ProofMetadata VariableSet ReachFormSubstPairSet -> MaybeBool .
+  eq subsume?(D,VS,(R,S) & RSS) = strict-and(subsume?(D,captureNewVars(VS,S),R),subsume?(D,VS,RSS)) .
+  eq subsume?(D,VS,mtRFSS) = true .
 
   --- OUT: true iff the QFCTermSet is disjoint from the head of the reachform or
   ---      the intersected goal is provably subsumed
@@ -135,7 +140,7 @@ fmod REACH-PROOF-RULES-AUX is
   pr LCCRULE-NARROWING .
   pr REACH-PROOF-GOAL-SUBSUMPTION .
   pr TRANSITION-APPLICATION .
-  pr TRANSITIONSUBSTPAIRSET .
+  pr TRANSITION-TUPLES .
   pr FOFORMSET-RENAME .
   pr TRANSITIONSET-RENAME .
   pr RLTOOL-SWITCHES .
@@ -168,7 +173,7 @@ fmod REACH-PROOF-RULES-AUX is
   var ARLK : [AxiomResultList] .
 
   op simp-action : ProofMetadata Module ProofGoal -> ProofUpdate .
-  eq simp-action(D,U,G) = (none || newChildGoals(G,(goal-simplify(U,getbody(G)),none))) .
+  eq simp-action(D,U,G) = (none || newChildGoals(G,goal-simplify(U,liftRFSS(getbody(G))))) .
 
   op termcheck-action : ProofMetadata Module QFCTermSet ProofGoal -> ProofUpdate .
   op termcheck-action : ProofMetadata Module Bool ProofGoal -> ProofUpdate .
@@ -203,7 +208,7 @@ fmod REACH-PROOF-RULES-AUX is
   op sub-action2 : ProofMetadata Module [Bool] ProofGoal -> ProofUpdate .
   eq sub-action(D,U,G) = sub-action1(D,U,coerceBool(checkUnsat(D,lhs-cond(getbody(G))),false),G) .
   eq sub-action1(D,U,true,G)  = (none || mt) .
-  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),goal-simplify(U,getbody(G))),G) .
+  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),goal-simplify(U,liftRFSS(getbody(G)))),G) .
   eq sub-action2(D,U,MB,G) =
     if MB == true
       then (none || mt)

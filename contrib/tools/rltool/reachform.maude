@@ -76,9 +76,9 @@ fmod TRANSITION-OPERATIONS is
   pr TRANSITION-PROJECTIONS .
   pr CONSTRAINED-TERMSET-OPERATIONS .
   pr CONSTRAINED-TERMSETPAIR .
-  pr FOFORM-EXTRACT-SUBSTITUTION .
   pr CONSTRAINED-TEMRSET-SUBSTITUTION .
   pr FOFORMSIMPLIFY .
+  pr QIDSET-REFINEMENT .
 
   var M : Module . var Y : Type . var R : ReachForm . var RX : ReachFormEx . var VS VS' : VariableSet .
   var T : Term . var C C' : QFForm . var CT CT' : QFCTerm . var CTS CTS' : QFCTermSet . var S : Substitution .
@@ -151,32 +151,7 @@ fmod TRANSITION-OPERATIONS is
   --- OUT: set constraint for a reachform on the RHS
   op set-lhs-cond : ReachForm QFForm -> ReachForm .
   eq set-lhs-cond(CT => CTS,C) = setCond(CT,C) => CTS .
-
-  --- OUT: simplify a reachform's LHS condition by a formula simplification function
-  op simplify-cond : ReachForm -> ReachForm .
-  eq simplify-cond((T | C) => CTS) = (T | simplify(C)) => CTS .
 endfm
-
-
-fmod TRANSITION-CTOR-SIMPLIFICATION is
-  pr TRANSITION-OPERATIONS .
-  pr MGCI .
-
-  var M : Module . var R : ReachForm .
-  var T : Term . var S : Substitution .
-  var C C' : QFForm . var CTS : QFCTermSet .
-
-  --- OUT: extract conjoined substitutions from the LHS
-  ---      condition and apply them everywhere
-  op extract-conjoined-sub-rf : Module ReachForm -> ReachForm .
-  eq extract-conjoined-sub-rf(M,R) =
-    extract-conjoined-sub-rf(M,#extract-conjoined-sub(M,lhs-cond(R)),R) .
-
-  op extract-conjoined-sub-rf : Module FOFormSubstPair ReachForm -> ReachForm .
-  eq extract-conjoined-sub-rf(M,(C,S),(T | C') => CTS) =
-    (T << ctor-sub(M,S) | C) => ((CTS <<Term ctor-sub(M,S)) <<Form S) .
-endfm
-
 
 fmod TRANSITIONSET-OPERATIONS is pr TRANSITIONSET . pr TRANSITION-OPERATIONS .
 
@@ -552,13 +527,18 @@ fmod TRANSITION-RENAME is
  ceq $renameForm(FS,FS')           = FS' if FS =/= mt and-then FS' =/= mt .
 endfm
 
-fmod TRANSITIONSUBSTPAIRSET is
+fmod TRANSITION-TUPLES is
   pr TRANSITIONSET .
   pr SUBSTITUTIONSET-AUX .
   pr TRANSITION-SUBSTITUTION .
+  pr MODULE-LIST .
 
-  var F : ReachForm . var FS : ReachFormSet .
+  var U : Module .
+  var F : ReachForm .
   var S : Substitution . var SS : SubstitutionSet .
+  var RFS : ReachFormSet .
+  var FS : ReachFormSubstPair .
+  var FSS : ReachFormSubstPairSet .
 
   sort ReachFormSubstPair ReachFormSubstPairSet .
   subsort ReachFormSubstPair < ReachFormSubstPairSet .
@@ -566,8 +546,22 @@ fmod TRANSITIONSUBSTPAIRSET is
   op _&_ : ReachFormSubstPairSet ReachFormSubstPairSet -> ReachFormSubstPairSet [ctor assoc comm id: mtRFSS] .
   op mtRFSS : -> ReachFormSubstPairSet [ctor] .
 
+  sort NeModListReachFormSubstTuple .
+  op ((_,_)) : NeModuleList ReachFormSubstPairSet -> NeModListReachFormSubstTuple [ctor] .
+
+  op getrf : ReachFormSubstPairSet -> ReachFormSet .
+  eq getrf((F,S) & FSS) = F & getrf(FSS) .
+  eq getrf(mtRFSS) = mt .
+
+  op getrf : NeModListReachFormSubstTuple -> ReachFormSet .
+  eq getrf((U,(F,S) & FSS)) = F & getrf((U,FSS)) .
+  eq getrf((U,mtRFSS)) = mt .
+
+  op getrfss : NeModListReachFormSubstTuple -> ReachFormSubstPairSet .
+  eq getrfss((U,FS)) = FS .
+
   op liftRFSS : ReachFormSet -> ReachFormSubstPairSet .
-  eq liftRFSS(F & FS) = (F,none) & liftRFSS(FS) .
+  eq liftRFSS(F & RFS) = (F,none) & liftRFSS(RFS) .
   eq liftRFSS(mt) = mtRFSS .
 
   op liftRFSS : ReachForm SubstitutionSet -> ReachFormSubstPairSet .
@@ -579,12 +573,68 @@ fmod TRANSITIONSUBSTPAIRSET is
   eq F RFSS<< empty = mtRFSS .
 endfm
 
+fmod TRANSITION-CTOR-SIMPLIFICATION is
+  pr TRANSITION-TUPLES .
+  pr TRANSITION-OPERATIONS .
+  pr FOFORM-EXTRACT-SUBSTITUTION .
+  pr MGCI .
+
+  var M : Module . var R : ReachForm .
+  var T : Term . var CS S : Substitution .
+  var C C' : QFForm . var CTS : QFCTermSet .
+
+  --- OUT: extract conjoined substitutions from the LHS
+  ---      condition and apply them everywhere
+  op extract-conjoined-sub-rf : Module ReachFormSubstPair -> ReachFormSubstPair .
+  eq extract-conjoined-sub-rf(M,(R,S)) =
+    extract-conjoined-sub-rf(M,#extract-conjoined-sub(M,lhs-cond(R)),R,S) .
+
+  op extract-conjoined-sub-rf : Module FOFormSubstPair ReachForm Substitution -> ReachFormSubstPair .
+  eq extract-conjoined-sub-rf(M,(C,CS),(T | C') => CTS,S) =
+    ((T << ctor-sub(M,CS) | C) => ((CTS <<Term ctor-sub(M,CS)) <<Form CS), S .. CS) .
+endfm
+
+view NeModListReachFormSubstTuple from TRIV to TRANSITION-TUPLES is sort Elt to NeModListReachFormSubstTuple . endv
+
+fmod VAR-UNIF-SIMPLIFY is
+  pr TRANSITION-TUPLES .
+  pr FOFORM-FILTER .
+  pr CTOR-VARIANT .
+
+  var M : Module .
+  var F : ReachForm . var S : Substitution .
+  var T : Term .
+  var D : NeQFCTermSet .
+  var FSS : ReachFormSubstPairSet .
+  var PC : PosEqConj . var NC : NegEqConj? . var C : Conj . var C? C'? : Conj .
+
+  --- OUT: simplify a reachform's LHS condition by contructor variant unification
+  ---  NB: note after performing constructor variant unification, we can totally
+  ---      remove the equalities from the constraint, since they will be applied
+  ---      everywhere else in the formula
+  op varunif-simp : Module ReachFormSubstPairSet -> ReachFormSubstPairSet .
+  eq varunif-simp(M,(F,S) & FSS) =
+    if lhs-cond(F) :: Conj then
+      varunif-simp(M,(F,S),filter-conj(M,lhs-cond(F)))
+    else
+      (F,S)
+    fi & varunif-simp(M,FSS) .
+  eq varunif-simp(M,mtRFSS) = mtRFSS .
+
+  op varunif-simp : Module ReachFormSubstPair FOFormPair -> ReachFormSubstPairSet .
+  eq varunif-simp(M,((T | C) => D,S),(PC /\ NC,C?)) =
+    ( ((T | NC /\ C?) => D) << ctor-unifiers(M,toUnifProb(PC)),
+      S .. ctor-unifiers(M,toUnifProb(PC))
+    ) .
+  eq varunif-simp(M,(F,S),(C?,C'?)) = (F,S) [owise] .
+endfm
+
 --- TODO:
 --- Everything below this line show be moved out of this file
 
 fmod STEPRESULTSET is
   pr TRANSITIONSET .
-  pr TRANSITIONSUBSTPAIRSET .
+  pr TRANSITION-TUPLES .
   pr MAYBE-QID .
 
   var SRS : StepResultSet . var SRSK : [StepResultSet] .
@@ -674,53 +724,64 @@ fmod TRANSITION-INVARIANT is
   eq wrap-term(M,F,Q) = reach-form(wrap-term(M,ctermsetpair(F),Q)) .
 endfm
 
-fmod MODULE-REACHFORM-PAIR is
-  pr TRANSITION .
-  sort ModuleReachFormPair .
-  op ((_,_)) : Module ReachForm -> ModuleReachFormPair [ctor] .
-  op getrf : ModuleReachFormPair -> ReachForm .
-  eq getrf((U:Module,R:ReachForm)) = R:ReachForm .
-endfm
-
-view ModuleReachFormPair from TRIV to MODULE-REACHFORM-PAIR is sort Elt to ModuleReachFormPair . endv
-
 fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
   pr TRANSITIONSET .
   pr FOFORMREDUCE .
   pr FOFORMSIMPLIFY .
-  pr MODULE-REACHFORM-PAIR .
+  pr TRANSITION-TUPLES .
   pr PATTERN-OPS .
   pr TRANSITION-CTOR-SIMPLIFICATION .
+  pr VAR-UNIF-SIMPLIFY .
 
-  var U : Module .
+  var U RU VU : Module .
+  var UL : NeModuleList .
   var T : Term . var C : QFForm? . var D : QFCTermSet . var R : ReachForm .
+  var F : ReachForm .
+  var S : Substitution .
+  var FS : ReachFormSubstPair .
+  var FSS : ReachFormSubstPairSet .
 
   --- 1) compute the syntatically non-trivial form
   --- 2) apply all equations as simplification rules to equality literals
   --- 3) apply generic formula simplification rules
   --- 4) find equality literals that are proper substitutions and apply them
 
-  op simplify-impl1 : ModuleReachFormPair -> ModuleReachFormPair .
-  eq simplify-impl1((U,R)) = (U,simplify-impl2(U,R)) .
+  op simplify-impl1 : NeModListReachFormSubstTuple -> NeModListReachFormSubstTuple .
+  eq simplify-impl1((UL,FSS)) = (UL,simplify-impl2(UL,FSS)) .
 
-  op simplify-impl2 : Module ReachForm -> ReachForm .
-  eq simplify-impl2(U,(T | C) => D) =
-    simplify-cond(extract-conjoined-sub-rf(U,(T | reduce(U,true,cond(overapproximateDiff(U,(T | C),D)))) => D)) .
+  op simplify-impl2 : NeModuleList ReachFormSubstPairSet -> ReachFormSubstPairSet .
+  eq simplify-impl2(UL,(F,S) & FS & FSS) = simplify-impl2(UL,(F,S)) & simplify-impl2(UL,FS & FSS) .
+  eq simplify-impl2(UL,mtRFSS) = mtRFSS .
+
+  eq simplify-impl2(RU ; VU,(F,S)) =
+    simplify-cond(RU,extract-conjoined-sub-rf(RU,varunif-simp(VU,reduce-cond(RU,overapproximateDiff(RU,(F,S)))))) .
+
+  --- OUT: simplify a reachform's LHS condition by a formula simplification function
+  op simplify-cond : Module ReachFormSubstPair -> ReachFormSubstPair .
+  eq simplify-cond(U,((T | C) => D,S)) = ((T | simplify(C)) => D,S) .
+
+  --- OUT: reduce a reachform's LHS condition by a module
+  op reduce-cond : Module ReachFormSubstPair -> ReachFormSubstPair .
+  eq reduce-cond(U,((T | C) => D,S)) = ((T | reduce(U,true,C)) => D,S) .
+
+  --- OUT: conjoin overapproximation of difference with LHS condition
+  op overapproximateDiff : Module ReachFormSubstPair -> ReachFormSubstPair .
+  eq overapproximateDiff(U,((T | C) => D,S)) = (((T | cond(overapproximateDiff(U,(T | C),D))) => D),S) .
 endfm
 
 view goal-simplify-impl from FUN to REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
-  sort Elt to ModuleReachFormPair .
+  sort Elt to NeModListReachFormSubstTuple .
   op F to simplify-impl1 .
 endv
 
 fmod REACH-PROOF-GOAL-SIMPLIFICATION is
   pr FIXF{goal-simplify-impl} * (op FixF to goal-simplify-impl) .
 
-  var U : Module . var R : ReachForm . var RS : ReachFormSet .
+  var UL : NeModuleList . var FS : ReachFormSubstPair . var FSS : ReachFormSubstPairSet .
 
-  op goal-simplify : Module ReachFormSet -> ReachFormSet .
-  eq goal-simplify(U,R & RS) = getrf(goal-simplify-impl((U,R))) & goal-simplify(U,RS) .
-  eq goal-simplify(U,mt) = mt .
+  op goal-simplify : NeModuleList ReachFormSubstPairSet -> ReachFormSubstPairSet .
+  eq goal-simplify(UL,FS & FSS) = getrfss(goal-simplify-impl((UL,FS))) & goal-simplify(UL,FSS) .
+  eq goal-simplify(UL,mtRFSS) = mtRFSS .
 endfm
 
 fmod TRANSITION-FUNCTOR is
