@@ -770,6 +770,7 @@ fmod REACH-PROOF-STATE-OPS is
   var NQL : NeQidList .
   var U U' : Module .
   var AH AH' : Map{Nat,AxiomRecord} .
+  var Q Q' : Qid .
 
   --- OUT: empty proof metadata
   op emptyData : -> ProofMetadata .
@@ -814,6 +815,14 @@ fmod REACH-PROOF-STATE-OPS is
   eq get-out(D)           = nil [owise] .
   eq get-err(st(err PS) ; D) = true .
   eq get-err(D)              = false [owise] .
+
+  --- OUT: get special attributes
+  op getbackend : ProofMetadata Qid Qid -> Module .
+  eq getbackend(reg(Reg) ; D,Q,Q') = getbackend(Q,Q',Reg) .
+  eq getbackend(D,Q,Q') = noModule [owise] .
+
+  op getgl! : ProofMetadata Nat ~> ProofGoal .
+  eq getgl!(D,N) = getgl!(get-prf(D),N) .
 
   --- OUT: true iff the metadata has a duplicated item
   op duplMetadata? : ProofMetadata ~> Bool .
@@ -939,9 +948,6 @@ fmod REACH-PROOF-STATE-OPS is
 
   op delgl : ProofMetadata ProofGoalSet -> ProofMetadata? .
   eq delgl(D ; prf(GS),GS') = D ; prf(delgl(GS,GS')) .
-
-  op getgl! : ProofMetadata Nat ~> ProofGoal .
-  eq getgl!(D,N) = getgl!(get-prf(D),N) .
 
   op flipPaused : ProofMetadata -> ProofMetadata? .
   eq flipPaused(D ; prf(GS)) = D ; prf(flipPaused(GS)) .
