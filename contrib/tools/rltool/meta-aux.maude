@@ -1831,6 +1831,10 @@ fmod SCOPED-REGISTRY is
   eq getbackend(Task,Impl,(Task |-> (ImplList (ImplMod,Impl,ModArgList) ImplList'),Registry)) = ImplMod .
   eq getbackend(Task,Impl,Registry) = noModule [owise] .
 
+  op getModByImpl : Qid ScopedRegistry -> Module .
+  eq getModByImpl(Impl,(Task |-> ImplList (ImplMod,Impl,ModArgList) ImplList',Registry)) = ImplMod .
+  eq getModByImpl(Impl,Registry) = noModule [owise] .
+
   --- ### NEW
   op getmodules : ScopedRegistry -> ModuleList .
   op getmodules : ScopedMapList -> ModuleList .
