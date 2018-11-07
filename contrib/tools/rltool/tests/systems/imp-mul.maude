@@ -41,3 +41,5 @@ load ../../rltool.maude
 (step .) (continue .) (continue .)
 (case 202 on &22:Nat by (0) U (P:NzNat) .)
 (step .) (continue .) (continue .)
+(list-goals .)
+--- TODO: investigate weird last simlification step --- perhaps simplification base case is wrong somewhere flipping the boolean
