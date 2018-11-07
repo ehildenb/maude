@@ -46,7 +46,7 @@ endm
 mod BANK-ACCOUNT-DEFINEDOPS is
   protecting BANK-ACCOUNT .
 
-  vars X Y : Bool . var N : Nat . var MSGS : MsgConf .
+  vars X Y : Bool . var K N M : Nat . var MSGS : MsgConf .
 
   op ~_ : Bool -> Bool .
   eq ~ true  = false [variant] .
@@ -67,6 +67,12 @@ mod BANK-ACCOUNT-DEFINEDOPS is
   ---------------------------
   eq debts(mt)                 = 0 .
   eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
+
+  op nonzero? : Nat -> Bool .
+  eq nonzero?(0) = false .
+  eq nonzero?(K) = true [owise] .
+
+ ceq K + N <= K + M = N <= M if nonzero?(K) .
 endm
 
 mod BANK-ACCOUNT-stop is
