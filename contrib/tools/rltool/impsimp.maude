@@ -63,11 +63,10 @@ fmod IMP-SIMP-IMPL is
   op imp-simp-impl1 : NeModListFOFormPair ~> NeModListFOFormPair .
   eq imp-simp-impl1((RewMod ; VSMod ; SimpMod,D)) =
     (RewMod ; VSMod ; SimpMod,
-      simplify(
         downTerm(modReduce(SimpMod,
           upTerm(reduce(RewMod,false,
                    extract-clause-sub(RewMod,
-                     vu-clause-simp(VSMod,D))))),error("imp-simp-impl1 failed")))) .
+                     vu-clause-simp(VSMod,D))))),error("imp-simp-impl1 failed"))) .
 endfm
 
 view imp-simp-impl from FUN to IMP-SIMP-IMPL is sort Elt to NeModListFOFormPair . op F to imp-simp-impl1 . endv
