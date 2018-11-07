@@ -4,8 +4,8 @@ load ../../rltool.maude
 --- < bal: n pend: x overdraft: ff > # msgs | n >= x = tt /\ x = debts(msgs)
 
 (select BANK-ACCOUNT-stop .)
-(use tool impsimp for validity         on BANK-ACCOUNT-DEFINEDOPS with FOFORMSIMPLIFY .)
-(use tool varsat  for validity         on FVP-NAT-PRED .)
+(use tool impsimp for validity         on BANK-ACCOUNT-DEFINEDOPS with FOFORMSIMPLIFY-IMP-IMPL .)
+---(use tool varsat  for validity         on FVP-NAT-PRED .)
 (use tool varsat  for unsatisfiability on FVP-NAT-PRED .)
 (declare-vars (A:Account) U (Msgs:MsgConf) U 
               (N:Nat) U (M:Nat) U (B:Bool) .)
@@ -24,8 +24,13 @@ load ../../rltool.maude
 (continue .)
 (continue .)
 (continue .)
----(
+(focus 29 .)
+set print conceal on .
+print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm _;_ .
+---set break on .
+break select imp-simp-impl .
 (step .)
+---(
 (continue .)
 (continue .)
 (continue .)
@@ -65,10 +70,3 @@ load ../../rltool.maude
 (continue .)
 (continue .)
 ---)
-(continue .)
-(focus 30 .)
-set print conceal on .
-print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm _;_ .
-set break on .
-break select imp-simp-disj vu-clause-simp vu-clause-simp2 .
-(step .)
