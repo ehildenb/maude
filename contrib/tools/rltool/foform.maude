@@ -376,24 +376,6 @@ fmod FOFORM-DEFINEDOPS is
   eq F1 <==> F2 = (F1 ==> F2) /\ (F2 ==> F1) .
 endfm
 
-fmod FOFORMSIMPLIFY-IMP-IMPL is
-  pr FOFORM .
-  var F G H K : FOForm . var K? : FOForm? .
-  var C : Conj . var D : Disj . var T T' : Term .
-
-  --- Repeated Subformula
-  eq F /\ F = F .
-  eq F \/ F = F .
-
-  --- Implication
-  eq (~ (F /\ G)) \/  F               = tt .
-  eq (~  F      ) \/ ((F \/ K?) /\ H) = (~ F) \/ H .
-  eq (~ (F /\ G)) \/ ((F \/ K?) /\ H) = (~ G) \/ H .
-
-  --- Break up implication into clauses
-  eq (~ (F /\ (G \/ H)) ) \/ K = ((~ (F /\ G)) \/ K) /\ ((~ (F /\ H)) \/ K) .
-endfm
-
 fmod FOFORMSIMPLIFY-IMPL is
   pr FOFORM .
   var F G H K : FOForm . var K? : FOForm? .
@@ -419,12 +401,33 @@ fmod FOFORMSIMPLIFY-IMPL is
   eq T != T = ff .
 endfm
 
+fmod FOFORMSIMPLIFY-IMP-IMPL is
+  pr FOFORMSIMPLIFY-IMPL .
+  var F G H K : FOForm . var K? : FOForm? .
+  var C : Conj . var D : Disj . var T T' : Term .
+
+  --- Repeated Subformula
+  eq F /\ F = F .
+  eq F \/ F = F .
+
+  --- Implication
+  eq (~ (F /\ G)) \/  F               = tt .
+  eq (~  F      ) \/ ((F \/ K?) /\ H) = (~ F) \/ H .
+  eq (~ (F /\ G)) \/ ((F \/ K?) /\ H) = (~ G) \/ H .
+
+  --- Break up implication into clauses
+  eq (~ (F /\ (G \/ H)) ) \/ K = ((~ (F /\ G)) \/ K) /\ ((~ (F /\ H)) \/ K) .
+endfm
+
+
 fmod FOFORMSIMPLIFY is
   pr FOFORM .
   pr REFLECT .
   op simplify : FOForm ~> FOForm .
+  op simplify-imp : FOForm ~> FOForm .
   var F : FOForm .
   eq simplify(F) = downTerm(redReflect('FOFORMSIMPLIFY-IMPL,upTerm(F)),error("FOForm Simplify Failed")) .
+  eq simplify-imp(F) = downTerm(redReflect('FOFORMSIMPLIFY-IMP-IMPL,upTerm(F)),error("FOForm Simplify Failed")) .
 endfm
 
 fmod FOFORMREDUCE is
