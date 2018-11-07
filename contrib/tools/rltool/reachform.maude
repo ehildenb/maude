@@ -533,12 +533,12 @@ fmod TRANSITION-TUPLES is
   pr TRANSITION-SUBSTITUTION .
   pr MODULE-LIST .
 
-  var U : Module .
+  var UL : NeModuleList .
   var F : ReachForm .
-  var S : Substitution . var SS : SubstitutionSet .
-  var RFS : ReachFormSet .
-  var FS : ReachFormSubstPair .
-  var FSS : ReachFormSubstPairSet .
+  var S S' : Substitution . var SS : SubstitutionSet .
+  var FS : ReachFormSet .
+  var FSP : ReachFormSubstPair .
+  var FSPS : ReachFormSubstPairSet .
 
   sort ReachFormSubstPair ReachFormSubstPairSet .
   subsort ReachFormSubstPair < ReachFormSubstPairSet .
@@ -550,18 +550,18 @@ fmod TRANSITION-TUPLES is
   op ((_,_)) : NeModuleList ReachFormSubstPairSet -> NeModListReachFormSubstTuple [ctor] .
 
   op getrf : ReachFormSubstPairSet -> ReachFormSet .
-  eq getrf((F,S) & FSS) = F & getrf(FSS) .
+  eq getrf((F,S) & FSPS) = F & getrf(FSPS) .
   eq getrf(mtRFSS) = mt .
 
   op getrf : NeModListReachFormSubstTuple -> ReachFormSet .
-  eq getrf((U,(F,S) & FSS)) = F & getrf((U,FSS)) .
-  eq getrf((U,mtRFSS)) = mt .
+  eq getrf((UL,(F,S) & FSPS)) = F & getrf((UL,FSPS)) .
+  eq getrf((UL,mtRFSS)) = mt .
 
   op getrfss : NeModListReachFormSubstTuple -> ReachFormSubstPairSet .
-  eq getrfss((U,FS)) = FS .
+  eq getrfss((UL,FSPS)) = FSPS .
 
   op liftRFSS : ReachFormSet -> ReachFormSubstPairSet .
-  eq liftRFSS(F & RFS) = (F,none) & liftRFSS(RFS) .
+  eq liftRFSS(F & FS) = (F,none) & liftRFSS(FS) .
   eq liftRFSS(mt) = mtRFSS .
 
   op liftRFSS : ReachForm SubstitutionSet -> ReachFormSubstPairSet .
@@ -571,6 +571,10 @@ fmod TRANSITION-TUPLES is
   op _RFSS<<_ : ReachForm SubstitutionSet -> ReachFormSubstPairSet .
   eq F RFSS<< (S | SS) = (F << S,S) & (F RFSS<< SS) .
   eq F RFSS<< empty = mtRFSS .
+
+  op _<<_ : ReachFormSubstPair SubstitutionSet -> ReachFormSubstPairSet .
+  eq (F,S) << (S' | SS) = (F << S',S .. S') & ((F,S) << SS) .
+  eq (F,S) << empty     = mtRFSS .
 endfm
 
 fmod TRANSITION-CTOR-SIMPLIFICATION is
