@@ -1,0 +1,43 @@
+load ../../systems/imp.maude
+load ../../rltool.maude
+
+(select     IMP-SEMANTICS  .)
+(use tool impsimp for validity on IMP-SYNTAX+MUL with FOFORMSIMPLIFY-IMP-IMPL .)
+(use tool varsat  for unsatisfiability on IMP-SYNTAX .)
+(def-term-set (< done | E:Env >) | true .)
+(declare-vars (X:Nat) U (Y:Nat) U (S:Nat) U (X':Nat) U (S':Nat) .)
+--- double induction: [1] induction on while loop derivation
+(add-goal loop : (< while (0 <: x) {x,, = x,, +: x, ; x = x -: 1 ;} ~> done | x |-> X  *  x, |-> Y * x,, |-> S  >) | true =>
+                 (< done                                                    | x |-> X' *  x, |-> Y * x,, |-> S' >) | (X') = (0) /\ (S') = (S + (X * Y)) .) --- x = 0 abstracted b/c otherwise match fails
+(start-proof .)
+
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(case 202 on &22:Nat by (0) U (P:NzNat) .)
+(step .) (continue .) (continue .)

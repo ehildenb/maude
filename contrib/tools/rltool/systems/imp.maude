@@ -1,0 +1,172 @@
+load ../theories/numbers.maude
+
+fmod IMP-DATA is
+  pr FVP-NAT-PRED .
+  sort Id .
+  op x  :    -> Id [ctor] .
+  op _, : Id -> Id [ctor] .
+endfm
+
+fmod IMP-DATA+MUL is
+  pr IMP-DATA .
+  pr FVP-NAT-MULT .
+endfm
+
+fmod IMP-SYNTAX is
+  pr IMP-DATA .
+  sort AExp BExp Exp Stmt Ids Value .
+  subsort Id Nat < AExp .
+  subsort Bool < BExp .
+  subsort BExp AExp < Exp .
+  subsort Bool Nat < Value < Exp .
+
+  --- ctors 
+  op __              : Stmt Stmt      -> Stmt  [ctor prec 42 gather (E e) metadata "10"] .
+  op if (_) _ else _ : BExp Stmt Stmt -> Stmt  [ctor metadata "11" ] .
+  op while (_) _     : BExp Stmt      -> Stmt  [ctor metadata "12"] .
+  op {_}             : Stmt           -> Stmt  [ctor metadata "13"] .
+  op {}              :                -> Stmt  [ctor metadata "14"] .
+  op _=_;            : Id AExp        -> Stmt  [ctor metadata "15"] .
+  op _+:_            : AExp AExp      -> AExp  [ctor metadata "16"] .
+  op _-:_            : AExp AExp      -> AExp  [ctor metadata "17"] .
+  op _*:_            : AExp AExp      -> AExp  [ctor metadata "18"] .
+  op !_              : BExp           -> BExp  [ctor metadata "19"] .
+  op _<:_            : AExp AExp      -> BExp  [ctor metadata "20"] .
+  op _&&:_           : BExp BExp      -> BExp  [ctor metadata "21"] .
+  --- defined
+  op val?            : Exp            -> Bool [metadata "22"] .
+  ---
+  var A A' : AExp . var B B' : BExp .
+  ---
+  eq val?(Q:Id)     = false [variant] .
+  eq val?(A +: A')  = false [variant] .
+  eq val?(A *: A')  = false [variant] .
+  eq val?(A -: A')  = false [variant] .
+  eq val?(! B)      = false [variant] .
+  eq val?(A <: A')  = false [variant] .
+  eq val?(B &&: B') = false [variant] .
+  eq val?(V:Value)  = true  [variant] .
+endfm
+
+fmod IMP-SYNTAX+MUL is
+  pr IMP-SYNTAX .
+  pr IMP-DATA+MUL .
+endfm
+
+fmod IMP-HOLE-SYNTAX is
+  pr IMP-SYNTAX .
+  sort !AExp !BExp !Stmt .
+  --- !AExp
+  op []+:_  : AExp -> !AExp [ctor] .
+  op _+:[]  : AExp -> !AExp [ctor] .
+  op []*:_  : AExp -> !AExp [ctor] .
+  op _*:[]  : AExp -> !AExp [ctor] .
+  op []-:_  : AExp -> !AExp [ctor] .
+  op _-:[]  : AExp -> !AExp [ctor] .
+  --- !BExp
+  op ![]    : -> !BExp         [ctor] .
+  op []<:_  : AExp -> !BExp    [ctor] .
+  op _<:[]  : Nat -> !BExp [ctor] .
+  op []&&:_ : BExp -> !BExp    [ctor] .
+  --- !Stmt
+  op if ([]) _ else _ : Stmt Stmt -> !Stmt [ctor] .
+  op while ([]) _     : Stmt      -> !Stmt [ctor] .
+  op _=[];            : Id        -> !Stmt [ctor] .
+endfm
+
+fmod ENVIRONMENT is
+  pr IMP-DATA .
+  sort Env WrappedEnv .
+  --- Env
+  op _*_    : Env Env -> Env [ctor prec 51 assoc comm id: mt] .
+  op _|->_  : Id Nat -> Env [ctor prec 50] .
+  op mt     : -> Env [ctor] .
+  op {_}    : Env -> WrappedEnv [ctor] .
+endfm
+
+mod IMP-FVP-FRAGMENT is
+  pr IMP-HOLE-SYNTAX .
+  pr ENVIRONMENT .
+
+  sort RedContext Continuation Redex .
+  subsort Stmt Exp !AExp !BExp !Stmt < Redex .
+
+  --- RedContext
+  op <_|_>  : Continuation Env -> RedContext [ctor] .
+  --- Continuation
+  op _~>_   : Redex Continuation -> Continuation [ctor prec 43] .
+  op done   : -> Continuation [ctor] .
+endm
+
+mod IMP-SEMANTICS is
+  pr IMP-FVP-FRAGMENT .
+  pr IMP-SYNTAX .
+  pr IMP-SYNTAX+MUL .
+
+  var K : Continuation .
+  var E : Env .
+  var S S' : Stmt .
+  var Q : Id .
+  var BE BE' : BExp .
+  var AE AE' : AExp .
+  var N M X Y X' : Nat .
+  var B : Bool .
+
+  --- Rules
+  --- Heating Rules
+ crl [#if]       : < if (BE) S else S' ~> K | E >  => < BE ~> if ([]) S else S' ~> K | E > if val?(BE) = false .
+ crl [#assign]   : < (Q = AE ;) ~> K | E >         => < AE ~> Q = [];    ~> K | E >        if val?(AE) = false .
+ crl [#add-lft]  : < AE +:  AE' ~> K | E >         => < AE ~> [] +: AE'  ~> K | E >        if val?(AE) = false .
+ crl [#add-rght] : < N  +:  AE  ~> K | E >         => < AE ~> N  +: []   ~> K | E >        if val?(AE) = false .
+ crl [#mul-lft]  : < AE *:  AE' ~> K | E >         => < AE ~> [] *: AE'  ~> K | E >        if val?(AE) = false .
+ crl [#mul-rght] : < N  *:  AE  ~> K | E >         => < AE ~> N  *: []   ~> K | E >        if val?(AE) = false .
+ crl [#sub-lft]  : < AE -:  AE' ~> K | E >         => < AE ~> [] -: AE'  ~> K | E >        if val?(AE) = false .
+ crl [#sub-rght] : < N  -:  AE  ~> K | E >         => < AE ~> N  -: []   ~> K | E >        if val?(AE) = false .
+ crl [#and]      : < BE &&: BE' ~> K | E >         => < BE ~> [] &&: BE' ~> K | E >        if val?(BE) = false .
+ crl [#lt-lft]   : < AE <:  AE' ~> K | E >         => < AE ~> [] <: AE'  ~> K | E >        if val?(AE) = false .
+ crl [#lt-rght]  : < N  <:  AE  ~> K | E >         => < AE ~> N  <: []   ~> K | E >        if val?(AE) = false .
+ crl [#not]      : < ! BE       ~> K | E >         => < BE ~> ! []       ~> K | E >        if val?(BE) = false .
+  --- Cooling Rules
+  rl [@if]       : < B  ~> if ([]) S else S' ~> K | E > => < if (B) S else S' ~> K | E > .
+  rl [@assign]   : < N  ~> Q = [];   ~> K | E >     => < (Q = N ;) ~> K | E > .
+  rl [@add-lft]  : < N  ~> [] +: AE  ~> K | E >     => < N  +: AE  ~> K | E > .
+  rl [@add-rght] : < M  ~> N  +: []  ~> K | E >     => < N  +: M   ~> K | E > .
+  rl [@sub-lft]  : < N  ~> [] -: AE  ~> K | E >     => < N  -: AE  ~> K | E > .
+  rl [@sub-rght] : < M  ~> N  -: []  ~> K | E >     => < N  -: M   ~> K | E > .
+  rl [@and]      : < B  ~> [] &&: BE ~> K | E >     => < B &&: BE  ~> K | E > .
+  rl [@lt-lft]   : < N  ~> [] <: AE  ~> K | E >     => < N <: AE   ~> K | E > .
+  rl [@lt-rght]  : < M ~> N  <: []   ~> K | E >     => < N <: M    ~> K | E > .
+  rl [@not]      : < B  ~> ! []      ~> K | E >     => < ! B       ~> K | E > .
+  --- Semantic Rules
+  --- Stmts
+  rl [stmtlist]  : < S S' ~> K | E >                 => < S ~> S' ~> K | E > .
+  rl [block]     : < {S} ~> K | E >                  => < S ~> K | E > .
+  rl [emp-block] : < {}  ~> K | E >                  => < K | E > .
+  rl [if-true]   : < if (true) S else S' ~> K | E >  => < S  ~> K | E > .
+  rl [if-false]  : < if (false) S else S' ~> K | E > => < S' ~> K | E > .
+  rl [while]     : < while (BE) {S} ~> K | E >       => < if (BE) {S while (BE) {S}} else {} ~> K | E > .
+  --- Assignemnt/lookup rules assume memory locations exist and are unique
+  rl [assign]    : < (Q = N ;) ~> K | E * Q |-> M >  => < K | E * Q |-> N > .
+  rl [lookup]    : < Q ~> K | E * Q |-> N >          => < N ~> K | E * Q |-> N > .
+  --- Exps
+  rl [add]       : < N +: M       ~> K | E >        => < N + M    ~> K | E > .
+  rl [mul]       : < N *: M       ~> K | E >        => < N * M    ~> K | E > .
+  rl [sub]       : < N -: M       ~> K | E >        => < sd(N,M)  ~> K | E > .
+  rl [lt]        : < N <: M       ~> K | E >        => < N < M    ~> K | E > .
+  rl [not-1]     : < ! true       ~> K | E >        => < false    ~> K | E > .
+  rl [not-2]     : < ! false      ~> K | E >        => < true     ~> K | E > .
+  rl [and-true]  : < true  &&: BE ~> K | E >        => < BE       ~> K | E > .
+  rl [and-false] : < false &&: BE ~> K | E >        => < false    ~> K | E > .
+endm
+
+mod NONSEQ-IMP-SEMANTICS is
+  pr IMP-SEMANTICS .
+
+  var AE AE' : AExp .
+  var E : Env .
+  var N : Nat .
+  var K : Continuation .
+
+ crl [@add-rght] : < AE +: AE' ~> K | E >         => < AE' ~> AE +: []   ~> K | E > if val?(AE) = false .
+  rl [#add-rght] : < N  ~> AE +: []   ~> K | E >  => < AE +: N  ~> K | E > .
+endm
