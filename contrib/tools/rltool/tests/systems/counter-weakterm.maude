@@ -1,5 +1,8 @@
 load ../../systems/counter.maude
-load ../../rltool.maude
+load ../../rltool-lib.maude
+
+select RLTOOL-NOVU .
+loop rltl-init .
 
 (select COUNTER-EXAMPLE .)
 (use tool varsat for validity on FVP-NAT-PRED .)

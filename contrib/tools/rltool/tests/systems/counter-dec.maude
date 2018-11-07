@@ -1,5 +1,8 @@
 load ../../systems/counter.maude
-load ../../rltool.maude
+load ../../rltool-lib.maude
+
+select RLTOOL-NOVU .
+loop rltl-init .
 
 set print conceal on .
 print conceal mod_is_sorts_._____endm fmod_is_sorts_.____endfm .
