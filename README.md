@@ -25,16 +25,38 @@ It is recommended that you use the latest versions of bison and flex since Maude
 You should use gcc 3.1 or later as there are code generation issues with the 3.0.* series.
 Maude requires the following packages:
 
+On Ubuntu, you can run:
+
+```sh
+sudo apt install gcc bison flex
+```
+
+Additionally, you'll need:
+
 -   [GNU gmp](http://www.swox.com/gmp/)
 -   [GNU libsigsegv](http://libsigsegv.sourceforge.net/)
 -   [Tecla](http://www.astro.caltech.edu/~mcs/tecla/)
 -   [BuDDY](http://sourceforge.net/projects/buddy)
+
+On Ubuntu, you can run:
+
+```sh
+sudo apt install libgmp-dev libsigsegv-dev libtecla-dev libbdd-dev
+```
 
 ### Optional Dependencies
 
 -   [CVC4](http://cvc4.cs.nyu.edu/web/)
 -   [Yices2](https://github.com/SRI-CSL/yices2.git)
 -   [GNU gperf (for Yices2)](https://www.gnu.org/software/gperf/)
+
+**NOTE**: There is not an Ubuntu package for Yices2 yet.
+
+On Ubuntu, you can run:
+
+```sh
+sudo apt install cvc4 gperf
+```
 
 ### Building
 
