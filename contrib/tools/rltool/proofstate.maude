@@ -817,9 +817,9 @@ fmod REACH-PROOF-STATE-OPS is
   eq get-err(D)              = false [owise] .
 
   --- OUT: get special attributes
-  op getbackend : ProofMetadata Qid Qid -> Module .
-  eq getbackend(reg(Reg) ; D,Q,Q') = getbackend(Q,Q',Reg) .
-  eq getbackend(D,Q,Q') = noModule [owise] .
+  op getModByImpl : ProofMetadata Qid -> Module .
+  eq getModByImpl(reg(Reg) ; D,Q) = getModByImpl(Q,Reg) .
+  eq getModByImpl(D,Q) = noModule [owise] .
 
   op getgl! : ProofMetadata Nat ~> ProofGoal .
   eq getgl!(D,N) = getgl!(get-prf(D),N) .
