@@ -599,6 +599,11 @@ mod RLTL-UI is
      [QL,< rltl-o : rltl-c | output : nil, AS > C,OUT QL'] .
 endm
 
+mod RLTOOL-NOVU is
+  pr RLTL-UI .
+  pr RLTOOL-DEFAULT-CONFIG-NOVU .
+endm
+
 mod RLTOOL is
   pr RLTL-UI .
   pr RLTOOL-DEFAULT-CONFIG .

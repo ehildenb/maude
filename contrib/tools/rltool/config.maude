@@ -3,6 +3,7 @@ fmod RLTOOL-SWITCHES is
   op printStatusOnContinue : -> Bool .
   op printAxiomFailures : -> Bool .
   op skipQuantifierCheck : -> Bool .
+  op enableVarUnifSimp : -> Bool .
 endfm
 
 fmod RLTOOL-DEFAULT-CONFIG is
@@ -10,6 +11,15 @@ fmod RLTOOL-DEFAULT-CONFIG is
   eq printStatusOnContinue = false .
   eq printAxiomFailures = false .
   eq skipQuantifierCheck = true .
+  eq enableVarUnifSimp = true .
+endfm
+
+fmod RLTOOL-DEFAULT-CONFIG-NOVU is
+  pr RLTOOL-SWITCHES .
+  eq printStatusOnContinue = false .
+  eq printAxiomFailures = false .
+  eq skipQuantifierCheck = true .
+  eq enableVarUnifSimp = false .
 endfm
 
 fmod RLTOOL-DEBUG-CONFIG is
@@ -17,4 +27,5 @@ fmod RLTOOL-DEBUG-CONFIG is
   eq printStatusOnContinue = true .
   eq printAxiomFailures = true .
   eq skipQuantifierCheck = true .
+  eq enableVarUnifSimp = true .
 endfm

@@ -3,7 +3,7 @@ fmod INTERSECT-REACHFORM is
   pr TRANSITION-OPERATIONS .
   pr TRANSITIONSET-RENAME .
   pr TRANSITIONSET-SUBSTITUTION .
-  var U : Module .
+  var U : Module . var UL : ModuleList .
   var T : Term . var C C' : QFForm? . var D TST : QFCTermSet . var R : ReachForm .
   var FSS : FOFormSubstPairSet . var S : Substitution .
 
@@ -15,8 +15,10 @@ fmod INTERSECT-REACHFORM is
   eq intersectReachform(U,(C',S) | FSS,R) =
     renameTmpVar(U,notFound,conj-antc(R << S,C')) & intersectReachform(U,FSS,R) .
 
-  op simplifyIntersectReachform : Module QFCTermSet ReachForm -> ReachFormSet .
-  eq simplifyIntersectReachform(U,TST,R) = getrf(goal-simplify(U,liftRFSS(intersectReachform(U,TST,R)))) .
+  --- OUT: simplify the result of intersecting a reachability formula with a pattern predicate
+  ---  NB: we need multiple module arguments for the simplify function
+  op simplifyIntersectReachform : NeModuleList QFCTermSet ReachForm -> ReachFormSubstPairSet .
+  eq simplifyIntersectReachform(U ; UL,TST,R) = goal-simplify(U ; UL,liftRFSS(intersectReachform(U,TST,R))) .
 endfm
 
 fmod REACH-PROOF-GOAL-SUBSUMPTION is
@@ -56,15 +58,7 @@ fmod REACH-PROOF-GOAL-SUBSUMPTION is
   ---      the intersected goal is provably subsumed
   op disjointOrSubsume : ProofMetadata VariableSet QFCTermSet ReachForm -> MaybeBool .
   eq disjointOrSubsume(D,VS,TST,MA => MF) =
-    disjointOrSubsume(D,VS,simplifyIntersectReachform(get-mod(D),TST,MA => MF)) .
-
-  op disjointOrSubsume : ProofMetadata VariableSet ReachFormSet -> MaybeBool .
-  eq disjointOrSubsume(D,VS,R & RS) = disjointOrSubsume(D,VS,subsume?(D,VS,R),RS) .
-  eq disjointOrSubsume(D,VS,mt) = true .
-
-  op disjointOrSubsume : ProofMetadata VariableSet MaybeBool ReachFormSet -> MaybeBool .
-  eq disjointOrSubsume(D,VS,MB,R & RS) = disjointOrSubsume(D,VS,strict-and(MB,subsume?(D,VS,R)),RS) .
-  eq disjointOrSubsume(D,VS,MB,mt) = strict-and(MB,true) .
+    subsume?(D,VS,simplifyIntersectReachform(get-mod(D) ; if enableVarUnifSimp then getModByImpl(D,'varsat) else noModule fi,TST,MA => MF)) .
 endfm
 
 --- This module defines a function to apply a list of axioms (labelled reach formulas)
@@ -173,7 +167,7 @@ fmod REACH-PROOF-RULES-AUX is
   var ARLK : [AxiomResultList] .
 
   op simp-action : ProofMetadata Module ProofGoal -> ProofUpdate .
-  eq simp-action(D,U,G) = (none || newChildGoals(G,goal-simplify(U,liftRFSS(getbody(G))))) .
+  eq simp-action(D,U,G) = (none || newChildGoals(G,goal-simplify(U ; if enableVarUnifSimp then getModByImpl(D, 'varsat) else noModule fi,liftRFSS(getbody(G))))) .
 
   op termcheck-action : ProofMetadata Module QFCTermSet ProofGoal -> ProofUpdate .
   op termcheck-action : ProofMetadata Module Bool ProofGoal -> ProofUpdate .
@@ -208,7 +202,7 @@ fmod REACH-PROOF-RULES-AUX is
   op sub-action2 : ProofMetadata Module [Bool] ProofGoal -> ProofUpdate .
   eq sub-action(D,U,G) = sub-action1(D,U,coerceBool(checkUnsat(D,lhs-cond(getbody(G))),false),G) .
   eq sub-action1(D,U,true,G)  = (none || mt) .
-  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),goal-simplify(U,liftRFSS(getbody(G)))),G) .
+  eq sub-action1(D,U,false,G) = sub-action2(D,U,subsume?(D,getvars(G),goal-simplify(U ; if enableVarUnifSimp then getModByImpl(D,'varsat) else noModule fi,liftRFSS(getbody(G)))),G) .
   eq sub-action2(D,U,MB,G) =
     if MB == true
       then (none || mt)
