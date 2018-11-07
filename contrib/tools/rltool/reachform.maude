@@ -604,19 +604,22 @@ fmod VAR-UNIF-SIMPLIFY is
   pr TRANSITION-TUPLES .
   pr FOFORM-FILTER .
   pr CTOR-VARIANT .
+  pr SUBSTITUTION-RENAME .
 
   var M : Module .
   var F : ReachForm . var S : Substitution .
+  var SS : SubstitutionSet .
   var T : Term .
   var D : NeQFCTermSet .
   var FSS : ReachFormSubstPairSet .
-  var PC : PosEqConj . var NC : NegEqConj? . var C : Conj . var C? C'? : Conj .
+  var PC : PosEqConj . var NC : NegEqConj? . var C : Conj . var C? C'? : Conj? .
 
   --- OUT: simplify a reachform's LHS condition by contructor variant unification
   ---  NB: note after performing constructor variant unification, we can totally
   ---      remove the equalities from the constraint, since they will be applied
   ---      everywhere else in the formula
   op varunif-simp : Module ReachFormSubstPairSet -> ReachFormSubstPairSet .
+  eq varunif-simp(noModule,FSS) = FSS . --- HACK: this line must go first---owise case analysis will fail
   eq varunif-simp(M,(F,S) & FSS) =
     if lhs-cond(F) :: Conj then
       varunif-simp(M,(F,S),filter-conj(M,lhs-cond(F)))
@@ -627,10 +630,11 @@ fmod VAR-UNIF-SIMPLIFY is
 
   op varunif-simp : Module ReachFormSubstPair FOFormPair -> ReachFormSubstPairSet .
   eq varunif-simp(M,((T | C) => D,S),(PC /\ NC,C?)) =
-    ( ((T | NC /\ C?) => D) << ctor-unifiers(M,toUnifProb(PC)),
-      S .. ctor-unifiers(M,toUnifProb(PC))
-    ) .
+    varunif-simp( ( ((T | NC /\ C?) => D), S ), ctor-unifiers(M,toUnifProb(PC))) .
   eq varunif-simp(M,(F,S),(C?,C'?)) = (F,S) [owise] .
+
+  op varunif-simp : ReachFormSubstPair SubstitutionSet -> ReachFormSubstPairSet .
+  eq varunif-simp((F,S),SS) = (F,S) << renameTmpVar(upModule('TRANSITION,true),upTerm(F),SS) .
 endfm
 
 --- TODO:
