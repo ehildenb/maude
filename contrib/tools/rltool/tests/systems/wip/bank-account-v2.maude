@@ -1,5 +1,10 @@
 load ../theories/numbers.maude
 
+--- NOTE: in order to make this version work well, use a ctor split
+---       to force the overly symbolic variables in debts() or other
+---       places to become concretized so that we can safely apply
+---       our lemma in a terminating way
+
 fmod BANK-ACCOUNT-SIGNATURE is
   protecting FVP-NAT-PRED .
 
