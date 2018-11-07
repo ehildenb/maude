@@ -761,12 +761,15 @@ fmod REACH-PROOF-GOAL-SIMPLIFICATION-IMPL is
   eq simplify-impl2(UL,(F,S) & FS & FSS) = simplify-impl2(UL,(F,S)) & simplify-impl2(UL,FS & FSS) .
   eq simplify-impl2(UL,mtRFSS) = mtRFSS .
 
+  --- OUT: simplification of goals by various methods
+  ---  NB: all module arguments may be noModule except the first
   eq simplify-impl2(RU ; VU,(F,S)) =
-    simplify-cond(RU,extract-conjoined-sub-rf(RU,varunif-simp(VU,reduce-cond(RU,overapproximateDiff(RU,(F,S)))))) .
+    simplify-cond(varunif-simp(VU,extract-conjoined-sub-rf(RU,reduce-cond(RU,overapproximateDiff(RU,(F,S)))))) .
 
   --- OUT: simplify a reachform's LHS condition by a formula simplification function
-  op simplify-cond : Module ReachFormSubstPair -> ReachFormSubstPair .
-  eq simplify-cond(U,((T | C) => D,S)) = ((T | simplify(C)) => D,S) .
+  op simplify-cond : ReachFormSubstPairSet -> ReachFormSubstPairSet .
+  eq simplify-cond(((T | C) => D,S) & FSS) = ((T | simplify(C)) => D,S) & simplify-cond(FSS) .
+  eq simplify-cond(mtRFSS) = mtRFSS .
 
   --- OUT: reduce a reachform's LHS condition by a module
   op reduce-cond : Module ReachFormSubstPair -> ReachFormSubstPair .
