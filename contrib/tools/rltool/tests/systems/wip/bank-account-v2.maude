@@ -1,6 +1,6 @@
 load ../theories/numbers.maude
 
-mod BANK-ACCOUNT is
+fmod BANK-ACCOUNT-SIGNATURE is
   protecting FVP-NAT-PRED .
 
   sorts Msg MsgConf .
@@ -14,12 +14,46 @@ mod BANK-ACCOUNT is
   sort Account .
 
   op < bal:_pend:_overdraft:_> : Nat Nat Bool -> Account [ctor] .
-  ----------------------------------------------------------------
+  ---------------------------------------------------------------
 
   sorts State .
 
   op _#_ : Account MsgConf -> State [ctor] .
   ------------------------------------------
+endfm
+
+fmod BANK-ACCOUNT-DEFINEDOPS is
+  protecting BANK-ACCOUNT-SIGNATURE .
+
+  var M : Nat . var MS : MsgConf .
+
+  op debts : MsgConf -> Nat .
+  ---------------------------
+  eq debts(mt)               = 0 .
+  eq debts(withdraw(M) , MS) = M + debts(MS) .
+endfm
+
+fmod BANK-ACCOUNT-LEMMAS is
+  pr BANK-ACCOUNT-DEFINEDOPS .
+
+  var K M N : Nat .
+
+  --- NOTE: this predicate makes ceqs below non-terminating
+  ---       taken alone, it is also non-confluent, BUT the
+  ---       ceq below where it is used IS confluent
+  op nonzero? : Nat -> Bool .
+  eq nonzero?(0) = false .
+  eq nonzero?(N) = true  [owise] .
+
+  --- LEMMA 1: monotonicity of the less-than boolean function in two arguments
+ ceq  K + M <= K + N   =   M <= N   if nonzero?(K) .
+
+  --- LEMMA 2: monotonicity of the less-than boolean function in one argument
+ ceq  K + M <= N       =   M <= N   if nonzero?(K) .
+endfm
+
+mod BANK-ACCOUNT is
+  pr BANK-ACCOUNT-SIGNATURE .
 
   vars n m x : Nat . var p : NzNat . var msgs : MsgConf .
 
@@ -43,26 +77,11 @@ mod BANK-ACCOUNT is
   => < bal: n + m pend: x overdraft: false > # msgs [nonexec] .
 endm
 
-mod BANK-ACCOUNT-DEFINEDOPS is
-  protecting BANK-ACCOUNT .
-
-  vars X Y : Bool . var K N M : Nat . var MSGS : MsgConf .
-
-  op debts : MsgConf -> Nat .
-  ---------------------------
-  eq debts(mt)                 = 0 .
-  eq debts(withdraw(N) , MSGS) = N + debts(MSGS) .
-
-  op nonzero? : Nat -> Bool .
-  eq nonzero?(0) = false .
-  eq nonzero?(K) = true [owise] .
-
- ceq K + N <= K + M = N <= M if nonzero?(K) .
- ceq K + N <= 0     = N <= 0 if nonzero?(K) .
-endm
-
 mod BANK-ACCOUNT-stop is
   pr BANK-ACCOUNT-DEFINEDOPS .
+  pr BANK-ACCOUNT-LEMMAS .
+  pr BANK-ACCOUNT .
+
   op [_,_] : Account MsgConf -> State [ctor] .
   rl [stop] : A:Account # M:MsgConf => [A:Account,M:MsgConf] .
 endm
