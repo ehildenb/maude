@@ -17,6 +17,7 @@ d. associative/id axioms
 
 ```maude
 load ../base/prelude-aux.maude
+load ../base/full-maude.maude
 
 fmod UNSORTIFY is
   pr META-LEVEL .

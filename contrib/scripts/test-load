@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+test_file="$1" && shift
+test_dir="$(dirname $test_file)"
+test_name="$(basename $test_file)"
+
+maude_exec=$(pwd)/../src/Main/maude
+
+cd "$test_dir"
+tmp_output="$(mktemp $test_name.out.XXX)"
+tmp_expected="$(mktemp $test_name.expect.XXX)"
+trap "rm -rf $tmp_output $tmp_expected" INT TERM EXIT
+
+echo "Bye." > "$tmp_expected"
+
+cat "$test_name" | $maude_exec -no-banner -no-advise &> "$tmp_output"
+
+git --no-pager diff --exit-code --no-index "$tmp_expected" "$tmp_output"

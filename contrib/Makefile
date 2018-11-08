@@ -65,6 +65,15 @@ systems/%.maude: systems.md/%.md $(tangler)
 	mkdir -p $(dir $@)
 	pandoc --from markdown --to $(tangler) --metadata=code:.maude $< > $@
 
+# Testing
+# -------
+
+load_maude:=$(meta_maude) $(lmc_maude) $(fvp_maude) $(systems_maude)
+test-load: $(load_maude:=.load)
+
+%.load: %
+	./scripts/test-load $*
+
 # Papers and write-ups
 # --------------------
 
