@@ -141,16 +141,16 @@ mod THERMOSTAT-INT-COMFORTABLE is
 Here we setup a thermostat which tries to stay between `18` and `26`, and will switch states when `3` away from a boundary temperature.
 
 ```maude
-    eq min   = 10 + 8      .
-    eq max   = 10 + 10 + 6 .
-    eq bound = 3           .
+    eq min   = 10 + 8      [variant] .
+    eq max   = 10 + 10 + 6 [variant] .
+    eq bound = 3           [variant] .
 ```
 
 The thermostat takes `4` seconds to turn on, and `2` seconds to turn off.
 
 ```maude
-    eq time-until(on)  = 4 .
-    eq time-until(off) = 2 .
+    eq time-until(on)  = 4 [variant] .
+    eq time-until(off) = 2 [variant] .
 ```
 
 When turning on/off, the heater is effective for `1` unit temperature per second.
@@ -194,12 +194,12 @@ mod THERMOSTAT-REAL-COMFORTABLE is
     vars TIME TMP TMP' : Real .
     var IM : InMode . var MD : DelayMode . var MODE : Mode .
 
-    eq min   = 18/1 .
-    eq max   = 26/1 .
-    eq bound = 3/1  .
+    eq min   = 18/1 [variant] .
+    eq max   = 26/1 [variant] .
+    eq bound = 3/1  [variant] .
 
-    eq time-until(on)  = 4/1 .
-    eq time-until(off) = 2/1 .
+    eq time-until(on)  = 4/1 [variant] .
+    eq time-until(off) = 2/1 [variant] .
 
     eq source(on)         = 5/1 [variant] .
     eq source(off)        = 0/1 [variant] .
