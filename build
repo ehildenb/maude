@@ -119,6 +119,7 @@ build_test() {
 }
 
 build_test_load() {
+    build_tangle
     (   cd "$contrib_dir"
         make test-load "$@"
     )
