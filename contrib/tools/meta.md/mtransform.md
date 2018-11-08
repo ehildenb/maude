@@ -81,6 +81,37 @@ fmod BUILDIN-EQUATIONS is
 endfm
 ```
 
+Reversing Rules
+---------------
+
+This transformation will reverse both conditional and unconditional rules by swapping the LHS and the RHS.
+It leaves conditions *unchanged* on conditional rules.
+
+```maude
+fmod REVERSE-RULES is
+   protecting MODULE-TEMPLATE .
+
+    var IDS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet .
+    var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet .
+    vars NeMDS NeMDS' : NeModuleDeclSet .
+
+    vars T T' : Term . var C : Condition . var AS : AttrSet .
+    var M : Module .
+
+    op reverseRules : ModuleDeclSet -> [ModuleDeclSet] .
+    ----------------------------------------------------
+    eq reverseRules(IDS SDS SSDS OPDS MAS EQS) = IDS SDS SSDS OPDS MAS EQS .
+    eq reverseRules(NeMDS NeMDS')              = reverseRules(NeMDS) reverseRules(NeMDS') .
+
+    eq reverseRules(  rl T => T'      [ AS ] . ) = (  rl T' => T      [ AS ] . ) .
+    eq reverseRules( crl T => T' if C [ AS ] . ) = ( crl T' => T if C [ AS ] . ) .
+
+    op reverseRules : Module -> [Module] .
+    --------------------------------------
+    eq reverseRules(M) = fromTemplate(getName(M), reverseRules(asTemplate(M))) .
+endfm
+```
+
 Removing Conditional Equations/Rules
 ------------------------------------
 

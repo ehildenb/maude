@@ -25,6 +25,15 @@ fmod META-LEVEL-NAT-RENAMED is
                            ) .
 endfm
 
+select REVERSE-RULES .
+
+reduce reverseRules(asTemplate(upModule('BAKERY-FVP, true))) .
+
+reduce reverseRules(asTemplate(upModule('QLOCK-STATE, true))) == asTemplate(upModule('QLOCK-STATE, true)) .
+
+reduce reverseRules(reverseRules(asTemplate(upModule('DIJKSTRA   , true)))) == asTemplate(upModule('DIJKSTRA    , true)) .
+reduce reverseRules(reverseRules(asTemplate(upModule('BAKERY-FVP , true)))) == asTemplate(upModule('BAKERY-FVP  , true)) .
+
 select UNCONDITIONALIZE .
 
 reduce stripConditions(asTemplate(upModule('DIJKSTRA    , true))) .

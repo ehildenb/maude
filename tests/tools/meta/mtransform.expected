@@ -6,6 +6,83 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
     SortDeclSet).
 ==========================================
+reduce in REVERSE-RULES : reverseRules(asTemplate(upModule('BAKERY-FVP, true)))
+    .
+rewrites: 78
+result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
+    'NzNat .)
+subsort 'NcMode < 'Mode .
+subsort 'NzNat < 'Nat .
+eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+rl '<_`,_`,_`,_>['P:Mode,'0.Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    '0.Nat,'wait.NcMode,'Y:Nat] [label('p2_wait1)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'0.Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'crit.Mode,'Y:Nat] [label('p2_crit)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'wait.NcMode,'_+_['1.NzNat,'X:Nat]] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'Y:Nat] [label('p2_sleep)] .
+rl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'0.Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'X:Nat,'Q:Mode,'0.Nat] [label('p1_wait1)] .
+rl '<_`,_`,_`,_>['sleep.NcMode,'0.Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] [label('p1_crit)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['1.NzNat,'Y:Nat],'Q:Mode,'Y:Nat] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'X:Nat,'Q:Mode,'Y:Nat] [label('p1_sleep)] .
+op '0 : nil -> 'Nat [ctor] .
+op '1 : nil -> 'NzNat [ctor] .
+op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
+op 'crit : nil -> 'Mode [ctor] .
+op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+op 'max : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 'min : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 's : 'Nat -> 'Nat [none] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm] .
+op 'sleep : nil -> 'NcMode [ctor] .
+op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
+op 'wait : nil -> 'NcMode [ctor] .
+crl '<_`,_`,_`,_>['P:Mode,'X:Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'wait.NcMode,'Y:Nat] if '_<_['Y:Nat,'X:Nat] = 'true.Bool [label(
+    'p2_wait2)] .
+crl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'X:Nat,'Q:Mode,'Y:Nat] if '_<=_['X:Nat,'Y:Nat] = 'true.Bool [
+    label('p1_wait2)] .
+==========================================
+reduce in REVERSE-RULES : reverseRules(asTemplate(upModule('QLOCK-STATE,
+    true))) == asTemplate(upModule('QLOCK-STATE, true)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
+    'DIJKSTRA, true)))) == asTemplate(upModule('DIJKSTRA, true)) .
+rewrites: 216
+result Bool: true
+==========================================
+reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
+    'BAKERY-FVP, true)))) == asTemplate(upModule('BAKERY-FVP, true)) .
+rewrites: 154
+result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 40 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
 reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
 rewrites: 110
