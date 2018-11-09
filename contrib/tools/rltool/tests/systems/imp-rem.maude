@@ -1,0 +1,86 @@
+load ../../systems/imp.maude
+
+---
+--- Goal: prove the imp program below correctly implements
+---       the remainder function specified below
+---
+
+fmod IMP-REM is
+  pr IMP-SYNTAX+MUL .
+
+  var N N₂ : Nat . var D D₂ : NzNat .
+
+  op rem : Nat Nat -> Nat .
+  eq rem(N + D,D)  = rem(N,D) .
+  eq rem(D,D + D₂) = D .
+  eq rem(0,D)      = 0 .
+endfm
+
+mod IMP-SEMANTICS+REM is
+  pr IMP-SEMANTICS .
+  pr IMP-REM .
+endm
+
+load ../../rltool.maude
+
+(select IMP-SEMANTICS+REM .)
+(use tool impsimp for validity on IMP-REM with FOFORMSIMPLIFY-IMP-IMPL .)
+(use tool varsat  for unsatisfiability on IMP-SYNTAX .)
+(def-term-set (< done | E:Env >) | true .)
+(declare-vars (NUM:Nat) U (DEN:NzNat) U (NUM':Nat) .)
+
+---
+--- Abstract description of IMP remainder program
+---
+--- PRECONDITION:
+--- num = NUM
+--- den = DEN
+---
+--- PROGRAM:
+--- while (den <= num) { --- equal to !(num < den)
+---   num = num - den
+--- }
+---
+--- POSTCONDITION:
+--- num = rem(NUM,DEN)
+--- NUM < DEN
+---
+
+(add-goal rem : (< while (! (x <: x,)) {
+                     x = x -: x, ;
+		   } ~> done | x |-> NUM * x, |-> DEN >) | true
+	      =>
+                (< done | x |-> NUM' * x, |-> DEN >) | (NUM') = (rem(NUM,DEN)) /\ (NUM' < DEN) = (true) .)
+(start-proof .)
+
+(step .) (continue .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .) (continue .)
+--- instantiation allows the second/third branches of the rem() function to apply
+(case 134 on &18:Nat by (0) U (P:NzNat) .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .)
+(list-goals .)
+quit
