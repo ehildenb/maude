@@ -24,26 +24,6 @@
 //	Code for unification descent functions.
 //
 
-local_inline bool
-MetaLevelOpSymbol::getCachedUnificationProblem(MetaModule* m,
-					       FreeDagNode* subject,
-					       Int64 solutionNr,
-					       UnificationProblem*& unification,
-					       Int64& lastSolutionNr)
-{
-  CacheableState* cachedState;
-  if (m->remove(subject, cachedState, lastSolutionNr))
-    {
-      if (lastSolutionNr <= solutionNr)
-	{
-	  unification = safeCast(UnificationProblem*, cachedState);
-	  return true;
-	}
-      delete cachedState;
-    }
-  return false;
-}
-
 bool
 MetaLevelOpSymbol::metaUnify2(FreeDagNode* subject, RewritingContext& context, bool disjoint)
 {
@@ -62,7 +42,7 @@ MetaLevelOpSymbol::metaUnify2(FreeDagNode* subject, RewritingContext& context, b
 	  const mpz_class& varIndex = metaLevel->getNat(metaVarIndex);
 	  UnificationProblem* unification;
 	  Int64 lastSolutionNr;
-	  if (!getCachedUnificationProblem(m, subject, solutionNr, unification, lastSolutionNr))
+	  if (!(m->getCachedStateObject(subject, solutionNr, unification, lastSolutionNr)))
 	    {
 	      Vector<Term*> lhs;
 	      Vector<Term*> rhs;

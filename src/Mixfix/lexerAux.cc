@@ -23,7 +23,7 @@
 //
 //	Auxiliary functions and data needed by lexical analyzer.
 //
-#define MAX_IN_DEPTH	10
+#define MAX_IN_DEPTH	100
 
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
@@ -196,7 +196,7 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
 		   QUOTE(fileName));
       return false;
     }
-  int dirMarker = directoryManager.pushd(directory.c_str());
+  int dirMarker = directoryManager.pushd(directory);
   if (dirMarker == UNDEFINED)
     {
       IssueWarning(LineNumber(lineNr) << ": couldn't chdir to " <<
@@ -218,6 +218,7 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
   ++inStackPtr;
   yyin = fp;
   fileTable.openFile(lineNumber, fileName.c_str(), silent);
+  directoryManager.visitFile(fileName);
   yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   UserLevelRewritingContext::setInteractive(false);
   return true;

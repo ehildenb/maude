@@ -73,7 +73,7 @@ bool
 MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& context)
 {
   //
-  //	op metaNarrowingApply : Module Term Qid TermList Qid Nat -> NarrowingResult?
+  //	op metaNarrowingApply : Module Term TermList Qid Nat -> NarrowingResult?
   //
   //	Arguments:
   //	  Module to work in
@@ -113,7 +113,7 @@ MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& co
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextNarrowing();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  result = metaLevel->upNarrowingApplyFailure(state->isIncomplete());

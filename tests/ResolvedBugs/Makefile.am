@@ -8,7 +8,10 @@ TESTS = \
 	metaIntRewriteJune2018 \
 	metaModuleCacheJune2018 \
 	metaIntImportJune2018 \
-	metaIntAscentJune2018
+	metaIntAscentJune2018 \
+	objectMessageOct2018 \
+	metaIntMatchOct2018 \
+	physArgIndexOct2018
 
 
 MAUDE_FILES = \
@@ -21,7 +24,11 @@ MAUDE_FILES = \
 	metaIntRewriteJune2018.maude \
 	metaModuleCacheJune2018.maude \
 	metaIntImportJune2018.maude \
-	metaIntAscentJune2018.maude
+	metaIntAscentJune2018.maude \
+	objectMessageOct2018.maude \
+	metaIntMatchOct2018.maude \
+	physArgIndexOct2018.maude
+
 
 
 RESULT_FILES = \
@@ -34,6 +41,10 @@ RESULT_FILES = \
 	metaIntRewriteJune2018.expected \
 	metaModuleCacheJune2018.expected \
 	metaIntImportJune2018.expected \
-	metaIntAscentJune2018.expected
+	metaIntAscentJune2018.expected \
+	objectMessageOct2018.expected \
+	metaIntMatchOct2018.expected \
+	physArgIndexOct2018.expected
+
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)

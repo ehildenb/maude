@@ -69,7 +69,7 @@ public:
 
   void clearCount();
   void addInCount(const RewritingContext& other);
-  void transferCount(RewritingContext& other);
+  void transferCountFrom(RewritingContext& other);
   Int64 getTotalCount() const;
   Int64 getMbCount() const;
   Int64 getEqCount() const;
@@ -202,8 +202,8 @@ RewritingContext::RewritingContext(int substitutionSize)
     rootNode(0)
 {
   //
-  //	This constructor exists so we can build RewritingContexts for use in the solve() phase of matching where
-  //	we don't otherwise have a RewritingContext to hand.
+  //	This constructor exists so we can build RewritingContexts for use in the solve()
+  //	phase of matching where we don't otherwise have a RewritingContext to hand.
   //
 }
 
@@ -326,7 +326,7 @@ RewritingContext::addInCount(const RewritingContext& other)
 }
 
 inline void
-RewritingContext::transferCount(RewritingContext& other)
+RewritingContext::transferCountFrom(RewritingContext& other)
 {
   mbCount += other.mbCount;
   other.mbCount = 0;

@@ -269,7 +269,7 @@ ApplicationProcess::resolveRemainingConditionFragments(StrategicSearch& searchOb
 	  //	We transfer, rather than simply add in the rewrite count because MatchProcess may do
 	  //	some more rewriting with newContext.
 	  //
-	  searchObject.getContext()->transferCount(*newContext);
+	  searchObject.getContext()->transferCountFrom(*newContext);
 	  //
 	  //	We use clone() rather than copy() because newContext will have the wrong copy size.
 	  //

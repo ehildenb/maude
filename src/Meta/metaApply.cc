@@ -90,7 +90,7 @@ MetaLevelOpSymbol::metaApply(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextRewrite();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      if (!success)
 		{
 		  delete state;
@@ -211,7 +211,7 @@ MetaLevelOpSymbol::metaXapply(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextRewrite();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      if (!success)
 		{
 		  delete state;

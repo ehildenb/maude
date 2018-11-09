@@ -1,6 +1,109 @@
+2018-10-23  Steven Eker  <eker@install.csl.sri.com>
+
+	* positionState.cc (exploreNextPosition): use stackPhysicalArguments()
+
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* variantSearch.hh (getLastReturnedUnifier): take and pass
+	variableFamily
+
+	* variantSearch.cc (getLastReturnedVariant): pass variableFamily
+	to VariantFolder::getLastReturnedVariant()
+
+	* variantFolder.hh (SimpleRootContainer): updated decl for
+	getLastReturnedVariant()
+
+	* variantFolder.cc (getLastReturnedVariant): take variableFamily
+	argument
+	(getNextSurvivingVariant): code cleaning
+
+	* variantSearch.hh (SimpleRootContainer): updated decls for
+	getNextVariant() and getLastReturnedVariant()
+
+	* variantSearch.cc (getNextVariant): take variableFamily argument
+	(getLastReturnedVariant): take variableFamily argument
+
+	* narrowingSequenceSearch.cc (findNextMatch): delete commented
+	out matchState->transferCount(*(getContext())) and add comment
+	to explain
+
+	* searchState.hh (transferCount): becomes transferCountTo()
+	(transferCount): use transferCountFrom()
+
+	* variantUnificationProblem.cc (findNextUnifier):
+	transferCount() -> transferCountFrom()
+
+	* stateTransitionGraph.cc (getNextState): transferCount() ->
+	transferCountTo()
+
+	* rewriteSequenceSearch.cc (findNextMatch): transferCount() ->
+	transferCountTo()
+
+	* rewriteConditionState.cc (solve): transferCount() ->
+	transferCountTo()
+
+	* narrowingSequenceSearch3.cc (NarrowingSequenceSearch3):
+	transferCount() -> transferCountFrom()
+	(findNextUnifier, findNextInterestingState):
+	transferCount() -> transferCountFrom()
+
+	* narrowingSearchState2.cc (findNextNarrowing): transferCount() ->
+	transferCountFrom() (2 places)
+
+	* stateTransitionGraph.hh (transferCount): becomes
+	transferCountTo()
+	(transferCountTo): use transferCountFrom()
+
+2018-09-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* variantSearch.hh (SimpleRootContainer): changed default value
+	for incomingVariableFamily from 2 to NONE so we still report
+	@ variables as a problem if no incomingVariableFamily is specified
+
+	* variantSearch.cc (VariantSearch): change secondVariableFamily
+	calculation to handle NONE correctly
+
+	* variantSearch.hh (SimpleRootContainer): disallowedVariableFamily ->
+	incomingVariableFamily
+
+	* variantSearch.cc (VariantSearch): disallowedVariableFamily ->
+	incomingVariableFamily
+	(VariantSearch): pass incomingVariableFamily to
+	variableNameConflict()
+
+2018-09-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* unificationProblem.hh (getVariableFamily): added
+
+2018-09-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* unificationProblem.cc (UnificationProblem): initialize
+	variableFamilyToUse
+	(UnificationProblem): pass variableFamilyToUse to
+	UnificationContext
+	(findOrderSortedUnifiers): pass variableFamilyToUse to
+	getFreshVariableName()
+
+	* unificationProblem.hh (SimpleRootContainer): updated
+	decl for ctor
+	(SimpleRootContainer): added data member variableFamilyToUse
+
+	* unificationProblem.cc (UnificationProblem): take
+	incomingVariableFamily and pass it to variableNameConflict()
+
+2018-09-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* narrowingSearchState2.hh (SimpleRootContainer): deleted
+	decl for simpler ctor
+
+	* narrowingSearchState2.cc (NarrowingSearchState2): deleted
+	simpler version since nothing calls it
+
+===================================Maude119===========================================
+
 2017-12-05  Steven Eker  <eker@install.csl.sri.com>
 
-	* narakonadi:?item=60039&type=message%2Frfc822rowingFolder.cc (RetainedState): getNrRealVariables() ->
+	* narrowingFolder.cc (RetainedState):getNrRealVariables() ->
 	getNrProtecctedVariables() to fix symmetric bug
 
 	* variantFolder.cc (RetainedVariant): getNrRealVariables() ->

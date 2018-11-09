@@ -88,6 +88,7 @@ RewriteSearchState::findNextRewrite()
 		{
 		  LhsAutomaton* a = withExtension ? rl->getExtLhsAutomaton() :
 		    rl->getNonExtLhsAutomaton();
+		  //cerr << "trying " << rl << " at " << " positionIndex " <<  getPositionIndex() << " dagNode " << getDagNode() << endl;
 		  if (findFirstSolution(rl, a))
 		    return true;
 		}

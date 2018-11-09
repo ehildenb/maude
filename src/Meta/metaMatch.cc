@@ -41,7 +41,6 @@ MetaLevelOpSymbol::makeMatchSearchState(MetaModule* m,
 	  Pattern* pattern = new Pattern(p, false, condition);
 	  RewritingContext* subjectContext = term2RewritingContext(s, context);
 	  subjectContext->root()->computeTrueSort(*subjectContext);
-	  context.addInCount(*subjectContext);
 	  return new MatchSearchState(subjectContext,
 				      pattern,
 				      MatchSearchState::GC_PATTERN |
@@ -78,7 +77,7 @@ MetaLevelOpSymbol::metaMatch(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      if (!success)
 		{
 		  delete state;
@@ -130,7 +129,6 @@ MetaLevelOpSymbol::makeMatchSearchState2(MetaModule* m,
 		  Pattern* pattern = new Pattern(p, true, condition);
 		  RewritingContext* subjectContext = term2RewritingContext(s, context);
 		  subjectContext->root()->computeTrueSort(*subjectContext);
-		  context.addInCount(*subjectContext);
 		  return new MatchSearchState(subjectContext,
 					      pattern,
 					      MatchSearchState::GC_PATTERN |
@@ -171,7 +169,7 @@ MetaLevelOpSymbol::metaXmatch(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      if (!success)
 		{
 		  delete state;

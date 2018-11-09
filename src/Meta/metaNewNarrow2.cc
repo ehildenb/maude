@@ -121,7 +121,7 @@ MetaLevelOpSymbol::metaNarrowingSearch(FreeDagNode* subject, RewritingContext& c
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextUnifier();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  result = metaLevel->upNarrowingSearchFailure(state->isIncomplete());
@@ -209,7 +209,7 @@ MetaLevelOpSymbol::metaNarrowingSearchPath(FreeDagNode* subject, RewritingContex
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextUnifier();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  result = metaLevel->upNarrowingSearchPathFailure(state->isIncomplete());

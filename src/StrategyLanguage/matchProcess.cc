@@ -106,7 +106,7 @@ MatchProcess::run(StrategicSearch& searchObject)
       //
       //	solve() could perform rewrites to apply cmbs.
       //
-      searchObject.getContext()->transferCount(*matchContext);
+      searchObject.getContext()->transferCountFrom(*matchContext);
     }
   else
     success = findFirst;

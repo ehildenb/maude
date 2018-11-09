@@ -1,3 +1,14 @@
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* testStrategy.cc (decompose): transferCount() -> transferCountTo()
+
+	* matchProcess.cc (run): transferCount() -> transferCountFrom()
+
+	* applicationProcess.cc (resolveRemainingConditionFragments):
+	transferCount() -> transferCountFrom()
+
+===================================Maude119===========================================
+
 2017-09-27  Steven Eker  <eker@install.csl.sri.com>
 
 	* strategyLanguage.hh: added class SubtermStrategy

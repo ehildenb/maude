@@ -56,7 +56,7 @@ public:
   bool findNextSolution();
 
   RewritingContext* getContext() const;
-  void transferCount(RewritingContext& recipient);
+  void transferCountTo(RewritingContext& recipient);
 
   void setInitialSubstitution(Vector<Term*>& variables, Vector<DagRoot*>& values);
 
@@ -89,10 +89,9 @@ SearchState::getContext() const
 }
 
 inline void
-SearchState::transferCount(RewritingContext& recipient)
+SearchState::transferCountTo(RewritingContext& recipient)
 {
-  recipient.addInCount(*context);
-  context->clearCount();
+  recipient.transferCountFrom(*context);
 }
 
 inline void

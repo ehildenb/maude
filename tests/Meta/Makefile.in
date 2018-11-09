@@ -458,7 +458,12 @@ TESTS = \
 	russianDollsNonFlat \
 	metaIntMatch \
 	metaIntSearch \
-	metaIntSort
+	metaIntSort \
+	metaIntUnify \
+	metaIntVariant \
+	metaIntVariantUnify \
+	metaIntPrint \
+	metaIntParse
 
 MAUDE_FILES = \
 	metaApply.maude \
@@ -496,7 +501,12 @@ MAUDE_FILES = \
 	russianDollsNonFlat.maude \
 	metaIntMatch.maude \
 	metaIntSearch.maude \
-	metaIntSort.maude
+	metaIntSort.maude \
+	metaIntUnify.maude \
+	metaIntVariant.maude \
+	metaIntVariantUnify.maude \
+	metaIntPrint.maude \
+	metaIntParse.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -536,7 +546,12 @@ RESULT_FILES = \
 	russianDollsNonFlat.expected \
 	metaIntMatch.expected \
 	metaIntSearch.expected \
-	metaIntSort.expected
+	metaIntSort.expected \
+	metaIntUnify.expected \
+	metaIntVariant.expected \
+	metaIntVariantUnify.expected \
+	metaIntPrint.expected \
+	metaIntParse.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)
 all: all-am
@@ -969,6 +984,41 @@ metaIntSearch.log: metaIntSearch
 metaIntSort.log: metaIntSort
 	@p='metaIntSort'; \
 	b='metaIntSort'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntUnify.log: metaIntUnify
+	@p='metaIntUnify'; \
+	b='metaIntUnify'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntVariant.log: metaIntVariant
+	@p='metaIntVariant'; \
+	b='metaIntVariant'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntVariantUnify.log: metaIntVariantUnify
+	@p='metaIntVariantUnify'; \
+	b='metaIntVariantUnify'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntPrint.log: metaIntPrint
+	@p='metaIntPrint'; \
+	b='metaIntPrint'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+metaIntParse.log: metaIntParse
+	@p='metaIntParse'; \
+	b='metaIntParse'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

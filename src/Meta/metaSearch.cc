@@ -101,7 +101,7 @@ MetaLevelOpSymbol::metaSearch(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      Verbose("metaSearch: visited " << state->getNrStates() << " states.");
 	      if (!success)
 		{
@@ -151,7 +151,7 @@ MetaLevelOpSymbol::metaSearchPath(FreeDagNode* subject, RewritingContext& contex
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      Verbose("metaSearchPath: visited " << state->getNrStates() << " states.");
 	      if (!success)
 		{

@@ -66,7 +66,7 @@ TestStrategy::decompose(StrategicSearch& searchObject, DecompositionProcess* rem
   RewritingContext* newContext = context->makeSubcontext(searchObject.getCanonical(remainder->getDagIndex()));
   MatchSearchState* state = new MatchSearchState(newContext, &pattern, MatchSearchState::GC_CONTEXT, 0, depth);
   bool result = state->findNextMatch();
-  state->transferCount(*context);
+  state->transferCountTo(*context);
   delete state;
   return result ? StrategicExecution::SURVIVE : StrategicExecution::DIE;
 }

@@ -22,7 +22,7 @@
 
 ***
 ***	Maude meta-interpreters.
-***	Version alpha 118.
+***	Version alpha 119.
 ***
 
 mod META-INTERPRETER is
@@ -53,6 +53,12 @@ mod META-INTERPRETER is
   op showView : Oid Oid Qid -> Msg [ctor msg format (b o)] .
   op showingView : Oid Oid View -> Msg [ctor msg format (m o)] .
 
+  op printTerm : Oid Oid Qid Term PrintOptionSet -> Msg [ctor msg format (b o)] .
+  op printedTerm : Oid Oid QidList -> Msg [ctor msg format (m o)] .
+
+  op parseQidList : Oid Oid Qid QidList Type? -> Msg [ctor msg format (b o)] .
+  op parsedQidList : Oid Oid ResultPair? -> Msg [ctor msg format (m o)] .
+
   op getLesserSorts : Oid Oid Qid Type -> Msg [ctor msg format (b o)] .
   op gotLesserSorts : Oid Oid SortSet -> Msg [ctor msg format (m o)] .
 
@@ -74,6 +80,12 @@ mod META-INTERPRETER is
   op getGlbTypes : Oid Oid Qid TypeSet -> Msg [ctor msg format (b o)] .
   op gotGlbTypes : Oid Oid TypeSet -> Msg [ctor msg format (m o)] .
 
+  op getMaximalAritySet : Oid Oid Qid Qid TypeList Sort -> Msg [ctor msg format (b o)] .
+  op gotMaximalAritySet : Oid Oid TypeListSet -> Msg [ctor msg format (m o)] .
+
+  op normalizeTerm : Oid Oid Qid Term -> Msg [ctor msg format (b o)] .
+  op normalizedTerm : Oid Oid Term Type -> Msg [ctor msg format (m o)] .
+
   op reduceTerm : Oid Oid Qid Term -> Msg [ctor msg format (b o)] .
   op reducedTerm : Oid Oid RewriteCount Term Type -> Msg [ctor msg format (m o)] .
 
@@ -88,17 +100,30 @@ mod META-INTERPRETER is
 
   op getSearchResult : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg [ctor msg format (b o)] .
   op gotSearchResult : Oid Oid RewriteCount Term Type Substitution -> Msg [ctor msg format (m o)] .
-
   op getSearchResultAndPath : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg [ctor msg format (b o)] .
   op gotSearchResultAndPath : Oid Oid RewriteCount Term Type Substitution Trace -> Msg [ctor msg format (m o)] .
 
   op getMatch : Oid Oid Qid Term Term Condition Nat -> Msg [ctor msg format (b o)] .
   op gotMatch : Oid Oid RewriteCount Substitution -> Msg [ctor msg format (m o)] .
-
   op getXmatch : Oid Oid Qid Term Term Condition Nat Bound Nat -> Msg [ctor msg format (b o)] .
   op gotXmatch : Oid Oid RewriteCount Substitution Context -> Msg [ctor msg format (m o)] .
 
+  op getUnifier : Oid Oid Qid UnificationProblem Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotUnifier : Oid Oid Substitution Qid -> Msg [ctor msg format (m o)] .
+  op getDisjointUnifier : Oid Oid Qid UnificationProblem Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotDisjointUnifier : Oid Oid Substitution Substitution Qid -> Msg [ctor msg format (m o)] .
+
+  op getVariant : Oid Oid Qid Term TermList Bool Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotVariant : Oid Oid RewriteCount Term Substitution Qid Parent Bool -> Msg [ctor msg format (m o)] .
+
+  op getVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotVariantUnifier : Oid Oid RewriteCount Substitution Qid -> Msg [ctor msg format (m o)] .
+  op getDisjointVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotDisjointVariantUnifier : Oid Oid RewriteCount Substitution Substitution Qid -> Msg [ctor msg format (m o)] .
+
   op noSuchResult : Oid Oid RewriteCount -> Msg [ctor msg format (m o)] .
+  op noSuchResult : Oid Oid Bool -> Msg [ctor msg format (m o)] .
+  op noSuchResult : Oid Oid RewriteCount Bool -> Msg [ctor msg format (m o)] .
 
   op quit : Oid Oid -> Msg [ctor msg format (b o)] .
   op bye : Oid Oid -> Msg [ctor msg format (m o)] .
@@ -120,6 +145,11 @@ mod META-INTERPRETER is
            op-hook showViewMsg			(showView : Oid Oid Qid ~> Msg)
            op-hook showingViewMsg		(showingView : Oid Oid View ~> Msg)
 
+  	   op-hook printTermMsg			(printTerm : Oid Oid Qid Term PrintOptionSet ~> Msg)
+  	   op-hook printedTermMsg		(printedTerm : Oid Oid QidList ~> Msg)
+	   op-hook parseQidListMsg		(parseQidList : Oid Oid Qid QidList Type? ~> Msg)
+	   op-hook parsedQidListMsg		(parsedQidList : Oid Oid ResultPair? ~> Msg)
+
 	   op-hook getLesserSortsMsg		(getLesserSorts : Oid Oid Qid Type ~> Msg)
 	   op-hook gotLesserSortsMsg		(gotLesserSorts : Oid Oid SortSet ~> Msg)
 	   op-hook getMaximalSortsMsg		(getMaximalSorts : Oid Oid Qid Kind ~> Msg)
@@ -134,6 +164,10 @@ mod META-INTERPRETER is
 	   op-hook gotKindsMsg			(gotKinds : Oid Oid KindSet ~> Msg)
 	   op-hook getGlbTypesMsg		(getGlbTypes : Oid Oid Qid TypeSet ~> Msg)
 	   op-hook gotGlbTypesMsg		(gotGlbTypes : Oid Oid TypeSet ~> Msg)
+	   op-hook getMaximalAritySetMsg	(getMaximalAritySet : Oid Oid Qid Qid TypeList Sort ~> Msg)
+	   op-hook gotMaximalAritySetMsg	(gotMaximalAritySet : Oid Oid TypeListSet ~> Msg)
+           op-hook normalizeTermMsg		(normalizeTerm : Oid Oid Qid Term ~> Msg)
+           op-hook normalizedTermMsg		(normalizedTerm : Oid Oid Term Type ~> Msg)
 
            op-hook reduceTermMsg		(reduceTerm : Oid Oid Qid Term ~> Msg)
            op-hook reducedTermMsg		(reducedTerm : Oid Oid RewriteCount Term Type ~> Msg)
@@ -153,7 +187,23 @@ mod META-INTERPRETER is
            op-hook getXmatchMsg			(getXmatch : Oid Oid Qid Term Term Condition Nat Bound Nat ~> Msg)
            op-hook gotXmatchMsg			(gotXmatch : Oid Oid RewriteCount Substitution Context ~> Msg)
 
+           op-hook getUnifierMsg		(getUnifier : Oid Oid Qid UnificationProblem Qid Nat ~> Msg)
+           op-hook gotUnifierMsg		(gotUnifier : Oid Oid Substitution Qid ~> Msg)
+           op-hook getDisjointUnifierMsg	(getDisjointUnifier : Oid Oid Qid UnificationProblem Qid Nat ~> Msg)
+           op-hook getDisjointVariantUnifierMsg	(getDisjointVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat ~> Msg)
+           op-hook gotDisjointUnifierMsg	(gotDisjointUnifier : Oid Oid Substitution Substitution Qid ~> Msg)
+
+           op-hook getVariantMsg		(getVariant : Oid Oid Qid Term TermList Bool Qid Nat ~> Msg)
+           op-hook gotVariantMsg		(gotVariant : Oid Oid RewriteCount Term Substitution Qid Parent Bool ~> Msg)
+
+           op-hook getVariantUnifierMsg		(getVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat ~> Msg)
+           op-hook gotVariantUnifierMsg		(gotVariantUnifier : Oid Oid RewriteCount Substitution Qid ~> Msg)
+           op-hook getDisjointVariantUnifierMsg	(getDisjointVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat ~> Msg)
+           op-hook gotDisjointVariantUnifierMsg	(gotDisjointVariantUnifier : Oid Oid RewriteCount Substitution Substitution Qid ~> Msg)
+
 	   op-hook noSuchResultMsg		(noSuchResult : Oid Oid RewriteCount ~> Msg)
+	   op-hook noSuchResult2Msg		(noSuchResult : Oid Oid Bool ~> Msg)
+	   op-hook noSuchResult3Msg		(noSuchResult : Oid Oid RewriteCount Bool ~> Msg)
            op-hook quitMsg			(quit : Oid Oid ~> Msg)
            op-hook byeMsg			(bye : Oid Oid ~> Msg)
            op-hook shareWith			(metaReduce : Module Term ~> ResultPair)

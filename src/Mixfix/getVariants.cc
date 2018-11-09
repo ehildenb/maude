@@ -100,10 +100,14 @@ Interpreter::doGetVariants(Timer& timer,
   Int64 i = 0;
   for (; i != limit; i++)
     {
-      int nrFreeVariables;
-      int parentIndex;
-      bool moreInLayer;
-      const Vector<DagNode*>* variant = state->getNextVariant(nrFreeVariables, parentIndex, moreInLayer);
+      //
+      //	We don't have a use for the extra information returned by getNextVariant().
+      //
+      int dummy;    // nrFreeVariables;
+      int dummy2;   // variableFamily
+      int dummy3;   // parentIndex
+      bool dummy4;  // moreInLayer
+      const Vector<DagNode*>* variant = state->getNextVariant(dummy, dummy2, dummy3, dummy4);
       //
       //	If we did all the narrowing up front, there are no narrowing or rewriting
       //	steps to catch a ^C so we need to check here and treat it as an abort.

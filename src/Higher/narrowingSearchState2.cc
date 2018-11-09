@@ -179,38 +179,6 @@ NarrowingSearchState2::NarrowingSearchState2(RewritingContext* context,
   positionState = new PositionState(dagToNarrow, flags, minDepth, maxDepth);
 }
 
-NarrowingSearchState2::NarrowingSearchState2(RewritingContext* context,
-					     FreshVariableGenerator* freshVariableGenerator,
-					     int incomingVariableFamily,
-					     int label,
-					     int flags,
-					     int minDepth,
-					     int maxDepth)
-  : context(context),
-    freshVariableGenerator(freshVariableGenerator),
-    incomingVariableFamily(incomingVariableFamily),
-    module(context->root()->symbol()->getModule())
-{
-  ruleIndex = -1;  // not yet started
-  incompleteFlag = false;
-  unificationProblem = 0;
-  reverseMapping = 0;
-
-  DagNode* dagToNarrow = context->root();
-  newContext = context;
-  //
-  //	Each variable occurring in the target dag needs an index
-  //	different from any that occurs in a variable occurring in a
-  //	rule lhs.
-  //
-  int firstTargetSlot = module->getMinimumSubstitutionSize();
-  dagToNarrow->indexVariables(variableInfo, firstTargetSlot);
-  //
-  //	Make a PositionState object to traverse it.
-  //
-  positionState = new PositionState(dagToNarrow, flags, minDepth, maxDepth);
-}
-
 NarrowingSearchState2::~NarrowingSearchState2()
 {
   bool gcVarGen = positionState->getFlags() & GC_VAR_GEN;
@@ -252,7 +220,7 @@ NarrowingSearchState2::findNextNarrowing()
       //
       bool nextUnifier = unificationProblem->findNextUnifier();
       if (context != newContext)
-	context->transferCount(*newContext);
+	context->transferCountFrom(*newContext);
       if (nextUnifier)
 	return true;  // need to make substitution from variant unifier
       incompleteFlag |= unificationProblem->isIncomplete();
@@ -313,7 +281,7 @@ NarrowingSearchState2::findNextNarrowing()
 								     incomingVariableFamily);
 		  bool nextUnifier = unificationProblem->findNextUnifier();
 		  if (context != newContext)
-		    context->transferCount(*newContext);
+		    context->transferCountFrom(*newContext);
 		  if (nextUnifier)
 		    return true;
 		  incompleteFlag |= unificationProblem->isIncomplete();

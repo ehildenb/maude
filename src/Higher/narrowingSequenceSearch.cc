@@ -141,7 +141,11 @@ NarrowingSequenceSearch::findNextMatch()
 					MatchSearchState::GC_CONTEXT);
     tryMatch:
       bool foundMatch = matchState->findNextMatch();
-      //matchState->transferCount(*(getContext()));
+      //
+      //	We don't transfer the rewrite count from matchState since there is
+      //	no condition, and there should be no membership axioms so count must
+      //	be zero.
+      //
       if (foundMatch)
 	return true;
       delete matchState;

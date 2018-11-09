@@ -1,3 +1,19 @@
+Overview of Changes in alpha119
+===============================
+* smart load "sload" directive
+* more sort computation messages added to the meta-interpreter
+* unification and disjoint unification added to the meta-interpreter
+* fixed fake rewrites from object-message rewriting that
+  were visible in trace/break/profile
+* variant generation added to the meta-interpreter
+* fixed mb/eq double counting bugs in metaMatch()/metaXmatch()
+  and getMatch()/getXmatch()
+* variant unifier generation added to the meta-interpreter
+* fixed memory leak in metaGetVariant()
+* pretty printing added to the meta-interpreter
+* parsing added to the meta-interpreter
+* fixed physical vs nominal argument index stacking bugs
+
 Overview of Changes in alpha118
 ===============================
 * getSearchResult()/getSearchResultAndPath() messages added to

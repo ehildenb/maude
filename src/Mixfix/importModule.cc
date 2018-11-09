@@ -261,6 +261,7 @@ ImportModule::deepSelfDestruct()
 bool
 ImportModule::unprotect()
 {
+  Assert(protectCount > 0, "trying to decrement protectCount of " << protectCount);
   --protectCount;
   if (protectCount == 0 && importPhase == DOOMED)
     {

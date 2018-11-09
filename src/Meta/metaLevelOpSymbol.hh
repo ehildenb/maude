@@ -65,18 +65,6 @@ private:
   static DagNode* term2Dag(Term* t);
   static RewritingContext* term2RewritingContext(Term* term, RewritingContext& context);
 
-  //
-  //	Unification is unique in that it doesn't require rewriting or
-  //	a RewritingContext. Even metaMatch() requires rewriting to
-  //	to evaluate membership axioms, but unification doesn't support
-  //	membership axioms.
-  //
-  static bool getCachedUnificationProblem(MetaModule* m,
-					  FreeDagNode* subject,
-					  Int64 solutionNr,
-					  UnificationProblem*& unification,
-					  Int64& lastSolutionNr);
-
   PreModule* getPreModule(int name);
 
   MatchSearchState* makeMatchSearchState(MetaModule* m,

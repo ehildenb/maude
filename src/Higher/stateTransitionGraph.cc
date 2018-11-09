@@ -91,7 +91,7 @@ StateTransitionGraph::getNextState(int stateNr, int index)
   while (nrNextStates <= index)
     {
       bool success = rewriteState->findNextRewrite();
-      rewriteState->transferCount(*initial);
+      rewriteState->transferCountTo(*initial);
       
       if (success)
 	{

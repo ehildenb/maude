@@ -1,3 +1,218 @@
+2018-10-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	parseQidListMsg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for parseQidList()
+
+	* interpreterPrint.cc (parseQidList): added
+
+	* interpreterSignature.cc: added parseQidListMsg/parsedQidListMsg
+
+	* interpreterPrint.cc (printTerm): correct print options
+	argument number
+
+2018-10-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaVariant.cc (metaGetVariant2): fix memory leak were start
+	term is successfully down'd but blocker terms are not
+
+2018-10-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	printTermMsg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for printTerm()
+
+	* interpreterPrint.cc: created
+
+	* interpreterSignature.cc: added printTermMsg/printedTermMsg
+
+2018-10-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterVariantUnify.cc (getVariantUnifier): use
+	gotDisjointVariantUnifierMsg, gotVariantUnifierMsg
+
+	* interpreterSignature.cc: added gotVariantUnifierMsg,
+	gotDisjointVariantUnifierMsg
+
+	* metaLevel.hh (M): made narrowing version of
+	upDisjointSubstitutions() public
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getVariantUnifierMsg, getDisjointVariantUnifierMsg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getVariantUnifier()
+
+	* interpreterVariantUnify.cc: created
+
+2018-10-11  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added getUnifierVariantMsg,
+	getDisjointVariantUnifierMsg
+
+	* metaMatch.cc (makeMatchSearchState): don't
+	add in count from subjectContext since that will
+	be accounted for when the solutions are extracted
+	(makeMatchSearchState2): fixed symmteric bug
+
+	* interpreterMatch.cc (makeMatchSearchState): don't
+	add in count from subjectContext since that will
+	be accounted for when the solutions are extracted
+	(makeMatchSearchState2): fixed symmteric bug
+
+2018-10-04  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterVariant.cc (getVariant): use addInCount()
+	in the fail case
+	(getVariant): only do transferCountFrom() once we've generated
+	the reply
+
+	* interpreterMatch.cc (getMatch, getXmatch): do addInCount()
+	rather than transferCountTo() in the fail case
+
+	* interpreterSearch.cc (getSearchResult): do addInCount() rather
+	than transferCountTo() in the fail case
+
+2018-10-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterRewrite.cc (erewriteTerm, frewriteTerm)
+	(rewriteTerm, reduceTerm): use upRewriteCount()
+
+	* interpreterVariant.cc (getVariant): fill out RewriteCount
+	for gotVariant()
+
+	* interpreterSignature.cc: gotVariantMsg now has
+	8 arguments
+
+2018-10-01  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterVariant.cc (getVariant): fix memory leak
+	when blocker terms bad
+
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.hh (upNoParent): added
+
+	* interpreterSignature.cc: added noSuchResult3Msg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getVariant()
+
+	* interpreterVariant.cc: created
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getVariantMsg
+
+	* interpreterSignature.cc: added getVariantMsg/gotVariantMsg
+
+	* metaVariant.cc (metaGetVariant2): pass dummy variableFamily
+	argument to getNextVariant()
+	(metaGetVariant2): pass dummy variableFamily argument to
+	getLastReturnedVariant()
+	(metaVariantUnify2): pass dummy variableFamily argument to
+	getLastReturnedUnifier()
+
+	* interpreterSearch.cc (getSearchResult): transferCount() ->
+	transferCountTo() (2 places)
+
+	* interpreterMatch.cc (getMatch): transferCount() ->
+	transferCountTo() (2 places)
+	(getXmatch): transferCount() -> transferCountTo() (2 places)
+
+	* metaVariant.cc (metaGetVariant2): transferCount() ->
+	transferCountFrom()
+	(metaVariantUnify2): transferCount() -> transferCountFrom()
+
+	* metaSearch.cc (metaSearchPath): transferCount() ->
+	transferCountTo()
+	(metaSearch): transferCount() -> transferCountTo()
+
+	* metaNewNarrow2.cc (metaNarrowingSearch): transferCount() ->
+	transferCountFrom()
+	(metaNarrowingSearchPath): transferCount() -> transferCountFrom()
+
+	* metaNewNarrow.cc (metaNarrowingApply): transferCount() ->
+	transferCountFrom()
+
+	* metaNarrow.cc (metaNarrow): transferCount() ->
+	transferCountFrom()
+	(metaNarrow2): transferCount() -> transferCountFrom()
+
+	* metaMatch.cc (metaMatch): transferCount() ->
+	transferCountTo()
+	(metaXmatch): transferCount() -> transferCountTo()
+
+	* metaApply.cc (metaApply): transferCount() ->
+	transferCountTo()
+	(metaXapply): transferCount() -> transferCountTo()
+
+2018-09-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterUnify.cc (getUnifier): use simpler
+	FreshVariableSource()
+
+2018-09-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.hh (M): made upQid() public
+	(M): made upDisjointSubstitutions(), upSubstitution() public
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getUnifier()
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getUnifierMsg, getDisjointUnifierMsg
+
+	* interpreterSignature.cc: added getUnifierMsg/gotUnifierMsg,
+	getDisjointUnifierMsg/gotDisjointUnifierMsg, noSuchResult2Msg
+
+	* interpreterUnify.cc: created
+
+2018-09-24  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevelOpSymbol.hh (FreeSymbol): deleted decl for
+	getCachedUnificationProblem()
+
+	* metaUnify.cc (metaUnify2): use getCachedStateObject()
+	(getCachedUnificationProblem): deleted
+
+	* metaOpCache.hh (getCachedStateObject): added non-context
+	version
+
+2018-09-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaUp.cc (upDagNode): pass 0 as variable family to
+	getFreshVariableName()
+
+2018-09-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.hh (M): made upTerm() public
+
+	* interpreterSignature.cc: added normalizeTermMsg/normalizedTermMsg
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	normalizeTermMsg
+
+	* interpreterSort.cc (normalizeTerm): added
+
+2018-09-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getMaximalAritySet()
+
+	* interpreterSignature.cc: added
+	getMaximalAritySetMsg/gotMaximalAritySetMsg
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getMaximalAritySetMsg
+
+	* interpreterSort.cc (getMaximalAritySet): added
+
+===================================Maude119===========================================
+
 2018-08-17  Steven Eker  <eker@install.csl.sri.com>
 
 	* interpreterManagerSymbol.cc (handleMessage): dispatch

@@ -34,7 +34,13 @@ TESTS = \
 	russianDollsNonFlat \
 	metaIntMatch \
 	metaIntSearch \
-	metaIntSort
+	metaIntSort \
+	metaIntUnify \
+	metaIntVariant \
+	metaIntVariantUnify \
+	metaIntPrint \
+	metaIntParse
+
 
 MAUDE_FILES = \
 	metaApply.maude \
@@ -72,7 +78,12 @@ MAUDE_FILES = \
 	russianDollsNonFlat.maude \
 	metaIntMatch.maude \
 	metaIntSearch.maude \
-	metaIntSort.maude
+	metaIntSort.maude \
+	metaIntUnify.maude \
+	metaIntVariant.maude \
+	metaIntVariantUnify.maude \
+	metaIntPrint.maude \
+	metaIntParse.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -112,6 +123,11 @@ RESULT_FILES = \
 	russianDollsNonFlat.expected \
 	metaIntMatch.expected \
 	metaIntSearch.expected \
-	metaIntSort.expected
+	metaIntSort.expected \
+	metaIntUnify.expected \
+	metaIntVariant.expected \
+	metaIntVariantUnify.expected \
+	metaIntPrint.expected \
+	metaIntParse.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)

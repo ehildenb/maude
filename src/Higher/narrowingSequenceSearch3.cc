@@ -109,7 +109,7 @@ NarrowingSequenceSearch3::NarrowingSequenceSearch3(RewritingContext* initial,
     dagToNarrow = renamedDagToNarrow;
   RewritingContext* reduceContext = initial->makeSubcontext(dagToNarrow);
   reduceContext->reduce();
-  initial->transferCount(*reduceContext);
+  initial->transferCountFrom(*reduceContext);
   //
   //	Create initial state in state collection.
   //
@@ -145,7 +145,7 @@ NarrowingSequenceSearch3::findNextUnifier()
       if (unificationProblem != 0)
 	{
 	  currentUnifier = unificationProblem->getNextUnifier(nrFreeVariablesInUnifier, variableFamilyInUnifier);
-	  initial->transferCount(*(unificationProblem->getContext()));
+	  initial->transferCountFrom(*(unificationProblem->getContext()));
 	  if (unificationProblem->isIncomplete())
 	    incompleteFlag = true;
 
@@ -228,7 +228,7 @@ NarrowingSequenceSearch3::findNextInterestingState()
       for (;;)
 	{
 	  bool success = stateBeingExpanded->findNextNarrowing();
-	  initial->transferCount(*(stateBeingExpanded->getContext()));
+	  initial->transferCountFrom(*(stateBeingExpanded->getContext()));
 	  if (stateBeingExpanded->isIncomplete())
 	    incompleteFlag = true;
 	  if (!success)
@@ -285,7 +285,7 @@ NarrowingSequenceSearch3::findNextInterestingState()
 	  replacementContextProtector.setNode(replacementContext);  // protect replacementContext from GC during reduce()
 	  reduceContext->reduce();  // can call GC
 	  replacementContextProtector.setNode(0);  // withdraw protection
-	  initial->transferCount(*reduceContext);
+	  initial->transferCountFrom(*reduceContext);
 	  //
 	  //	Does new state survive folding?
 	  //

@@ -74,7 +74,11 @@ PositionState::exploreNextPosition()
 	return false;
       const RedexPosition& rp = positionQueue[nextToExplore];
       DagNode* d = rp.node();
-      d->symbol()->stackArguments(d, positionQueue, nextToExplore, flags & RESPECT_FROZEN, rp.isEager());
+      //
+      //	We only consider repeated arguments once, where supported by
+      //	theory.
+      //
+      d->symbol()->stackPhysicalArguments(d, positionQueue, nextToExplore, flags & RESPECT_FROZEN, rp.isEager());
       int newFinish = positionQueue.length();
       if (finish < newFinish)
 	{

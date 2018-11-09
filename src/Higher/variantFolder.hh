@@ -61,6 +61,7 @@ public:
   //	no intervening call to insertVariant() has taken place (which could purge it).
   //
   const Vector<DagNode*>* getLastReturnedVariant(int& nrFreeVariables,
+						 int& variableFamily,
 						 int* parentNumber = 0,
 						 bool* moreInLayer = 0);
 
