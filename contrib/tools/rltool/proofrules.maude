@@ -295,12 +295,12 @@ fmod REACH-PROOF-RULES-AUX is
   op lift-result : ProofGoal ProofStrat ProofMetadata ProofUpdate -> ProofMetadata? .
   eq lift-result(G,CN,D,(D')) =
     if update(false,CN) == giveup
-      then lift-result(G,D,raw-set(D',out('Notice: 'proof 'branch 'failed: &sp printGoals(get-mod(D),G) '\n)),mt)
+      then lift-result(G,D,raw-set(D',out('\r 'Notice: 'proof 'branch 'failed: '\o &sp printGoals(get-mod(D),G) '\n)),mt)
       else lift-result(G,D,D',newChildGoalWithStrat(G,update(false,CN),active,getbody(G)))
     fi .
   eq lift-result(G,CN,D,(D' || GS)) =
     if update(true,CN) == giveup
-      then lift-result(G,D,raw-set(D',out('Notice: 'proof 'branch 'failed: &sp printGoals(get-mod(D),G) '\n)),mt)
+      then lift-result(G,D,raw-set(D',out('\r 'Notice: 'proof 'branch 'failed: '\o &sp printGoals(get-mod(D),G) '\n)),mt)
       else lift-result(G,D,D',setstrat(GS,update(true,CN)))
     fi .
 endfm
