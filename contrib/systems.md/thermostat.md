@@ -215,3 +215,46 @@ However, the drain to the outside is now inverse linear with the current tempera
     eq drain(TMP) = 1/10 * (2/1 - TMP) [variant] .
 endm
 ```
+
+### Instantiation to RAT
+
+```maude
+view RingRat from UNITAL-ORDERED-RING to RAT is
+    sort RingBool to Bool .
+    sort Ring     to Rat  .
+
+    op 1 to term s(0) .
+endv
+
+mod THERMOSTAT-RAT is protecting THERMOSTAT{RingRat, RingRat} . endm
+```
+
+The following is an example thermostat over the rats.
+The bound and timing parameters are the same as for the integers, just interpereted over the rats instead.
+
+```maude
+mod THERMOSTAT-RAT-COMFORTABLE is
+    extending THERMOSTAT-RAT .
+
+    vars TIME TMP TMP' : Rat .
+    var IM : InMode . var MD : DelayMode . var MODE : Mode .
+
+    eq min   = 18 [variant] .
+    eq max   = 26 [variant] .
+    eq bound = 3  [variant] .
+
+    eq time-until(on)  = 4 [variant] .
+    eq time-until(off) = 2 [variant] .
+
+    eq source(on)         = 5 [variant] .
+    eq source(off)        = 0 [variant] .
+    eq source(delay(on))  = 2 [variant] .
+    eq source(delay(off)) = 2 [variant] .
+```
+
+However, the drain to the outside is now inverse linear with the current temperature.
+
+```maude
+    eq drain(TMP) = 1/10 * (2 - TMP) [variant] .
+endm
+```
