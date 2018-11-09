@@ -1,14 +1,29 @@
 load ../../systems/imp.maude
+
+fmod IMP-MUL-LEMMAS is
+  pr IMP-SYNTAX+MUL .
+  var N : Nat . var P : NzNat .
+  eq (N + 1) <= (N + P) = true .
+endfm
+
+mod IMP-SEMANTICS+LEMMAS is
+  pr IMP-SEMANTICS .
+  pr IMP-MUL-LEMMAS .
+endm
+
 load ../../rltool.maude
 
-(select     IMP-SEMANTICS  .)
-(use tool impsimp for validity on IMP-SYNTAX+MUL with FOFORMSIMPLIFY-IMP-IMPL .)
+(select IMP-SEMANTICS+LEMMAS  .)
+(use tool impsimp for validity on IMP-MUL-LEMMAS with FOFORMSIMPLIFY-IMP-IMPL .)
 (use tool varsat  for unsatisfiability on IMP-SYNTAX .)
 (def-term-set (< done | E:Env >) | true .)
-(declare-vars (X:Nat) U (Y:Nat) U (S:Nat) U (X':Nat) U (S':Nat) .)
---- double induction: [1] induction on while loop derivation
-(add-goal loop : (< while (0 <: x) {x,, = x,, +: x, ; x = x -: 1 ;} ~> done | x |-> X  *  x, |-> Y * x,, |-> S  >) | true =>
-                 (< done                                                    | x |-> X' *  x, |-> Y * x,, |-> S' >) | (X') = (0) /\ (S') = (S + (X * Y)) .) --- x = 0 abstracted b/c otherwise match fails
+(declare-vars (X:Nat) U (Y:Nat) U (S:Nat) U (X':Nat) U (S':Nat) U (MAX:Nat) .)
+
+(add-goal loop : (< while (x <: x,,,) {x = x +: 1 ; x,, = x,, +: x, ;} ~> done
+                    | x |-> X  *  x, |-> Y * x,, |-> S  * x,,, |-> MAX >) | (X <= MAX) = (true) /\ (S) = (X * Y) =>
+                 (< done
+		    | x |-> X' *  x, |-> Y * x,, |-> S' * x,,, |-> MAX >) | (X') = (MAX) /\ (S') = (MAX * Y) .) 
+
 (start-proof .)
 
 (step .) (continue .) (continue .)
@@ -39,6 +54,11 @@ load ../../rltool.maude
 (step .) (continue .) (continue .)
 (step .) (continue .) (continue .)
 (step .) (continue .) (continue .)
-(case 202 on &22:Nat by (0) U (P:NzNat) .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(case 220 on &21:Nat by (0) U (P:NzNat) .)
 (step .) (continue .) (continue .)
 (list-goals .)
+quit
+
