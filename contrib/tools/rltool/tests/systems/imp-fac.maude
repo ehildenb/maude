@@ -4,10 +4,13 @@ fmod IMP-FAC is
   pr IMP-SYNTAX+MUL .
 
   var N M : Nat .
+  var P : NzNat .
 
   op fac : Nat -> Nat .
   eq fac(N + 1) = (N + 1) * fac(N) .
   eq fac(0) = 1 .
+
+  eq (N + 1) <= (N + P) = true .
 endfm
 
 mod IMP-SEMANTICS+FAC is
@@ -21,40 +24,47 @@ load ../../rltool.maude
 (use tool impsimp for validity on IMP-FAC with FOFORMSIMPLIFY-IMP-IMPL .)
 (use tool varsat  for unsatisfiability on IMP-SYNTAX .)
 (def-term-set (< done | E:Env >) | true .)
-(declare-vars (CNT:Nat) U (TOT:Nat) U (CNT':Nat) U (TOT':Nat) .)
+(declare-vars (CNT:Nat) U (TOT:Nat) U (CNT':Nat) U (TOT':Nat) U (MAX:Nat) .)
 
 ---
 --- To obtain the true factorial program, just let TOT = 1 in the precondition
 ---
---- PRECONDITION:
---- count = CNT
---- tot = TOT
----
 --- PROGRAM:
---- while (0 < count) {
+--- tot = fac(0)
+--- while (count < max) {
+---   count = count + 1
 ---   tot   = tot * count
----   count = count - 1
+---
+--- INVARANT: 
+--- CNT <= MAX
+--- TOT = fac(CNT)
 ---
 --- POSTCONDITION:
---- count = 0
---- tot = TOT * fac(CNT)
+--- CNT = MAX
+--- TOT = fac(MAX)
 ---
-(add-goal fac : (< while (0 <: x) {
+(add-goal fac : (< while (x <: x,,) {
+		     x  = x  +: 1 ;
                      x, = x, *: x ;
-		     x  = x  -: 1 ;
-		   } ~> done | x |-> CNT * x, |-> TOT  >) | true
+		   } ~> done | x |-> CNT * x, |-> TOT * x,, |-> MAX >) | (CNT <= MAX) = (true) /\ (TOT) = (fac(CNT))
 	      =>
-                (< done | x |-> CNT' * x, |-> TOT' >) | (CNT') = (0) /\ (TOT') = (TOT * fac(CNT)) .)
+                (< done | x |-> CNT' * x, |-> TOT' * x,, |-> MAX >) | (CNT') = (MAX) /\ (TOT') = (fac(MAX)) .)
 (start-proof .)
-(step .) (continue .) (continue .)
 (step .) (continue .)
 (step .) (continue .)
+(step .)
 (step .) (continue .)
 (step .) (continue .)
 (step .) (continue .)
 (step .)
-(step .) (continue .) (continue .)
-(step .) (continue .) (continue .)
+(step .)
+(step .) (continue .) 
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
 (step .) (continue .)
 (step .) (continue .)
 (step .) (continue .)
