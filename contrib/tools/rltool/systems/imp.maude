@@ -131,6 +131,8 @@ mod IMP-SEMANTICS is
   rl [@assign]   : < N  ~> Q = [];   ~> K | E >     => < (Q = N ;) ~> K | E > .
   rl [@add-lft]  : < N  ~> [] +: AE  ~> K | E >     => < N  +: AE  ~> K | E > .
   rl [@add-rght] : < M  ~> N  +: []  ~> K | E >     => < N  +: M   ~> K | E > .
+  rl [@mul-lft]  : < N  ~> [] *: AE  ~> K | E >     => < N  *: AE  ~> K | E > .
+  rl [@mul-rght] : < M  ~> N  *: []  ~> K | E >     => < N  *: M   ~> K | E > .
   rl [@sub-lft]  : < N  ~> [] -: AE  ~> K | E >     => < N  -: AE  ~> K | E > .
   rl [@sub-rght] : < M  ~> N  -: []  ~> K | E >     => < N  -: M   ~> K | E > .
   rl [@and]      : < B  ~> [] &&: BE ~> K | E >     => < B &&: BE  ~> K | E > .
