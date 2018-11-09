@@ -1,0 +1,80 @@
+load ../../systems/imp.maude
+
+fmod IMP-FAC is
+  pr IMP-SYNTAX+MUL .
+
+  var N M : Nat .
+
+  op fac : Nat -> Nat .
+  eq fac(N + 1) = (N + 1) * fac(N) .
+  eq fac(0) = 1 .
+endfm
+
+mod IMP-SEMANTICS+FAC is
+  pr IMP-SEMANTICS .
+  pr IMP-FAC .
+endm
+
+load ../../rltool.maude
+
+(select IMP-SEMANTICS+FAC .)
+(use tool impsimp for validity on IMP-FAC with FOFORMSIMPLIFY-IMP-IMPL .)
+(use tool varsat  for unsatisfiability on IMP-SYNTAX .)
+(def-term-set (< done | E:Env >) | true .)
+(declare-vars (CNT:Nat) U (TOT:Nat) U (CNT':Nat) U (TOT':Nat) .)
+
+---
+--- To obtain the true factorial program, just let TOT = 1 in the precondition
+---
+--- PRECONDITION:
+--- count = CNT
+--- tot = TOT
+---
+--- PROGRAM:
+--- while (0 < count) {
+---   tot   = tot * count
+---   count = count - 1
+---
+--- POSTCONDITION:
+--- count = 0
+--- tot = TOT * fac(CNT)
+---
+(add-goal fac : (< while (0 <: x) {
+                     x, = x, *: x ;
+		     x  = x  -: 1 ;
+		   } ~> done | x |-> CNT * x, |-> TOT  >) | true
+	      =>
+                (< done | x |-> CNT' * x, |-> TOT' >) | (CNT') = (0) /\ (TOT') = (TOT * fac(CNT)) .)
+(start-proof .)
+(step .) (continue .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .)
+(step .) (continue .) (continue .)
+(step .) (continue .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .)
+(list-goals .)
+quit
