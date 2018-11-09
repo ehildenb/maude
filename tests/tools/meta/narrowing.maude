@@ -37,8 +37,6 @@ reduce wellFormed(##m##, init(7)) .
 --- Module `VARIANT-SET`
 --- ====================
 
---- ### Module `NAT>`
-
 reduce variants(##m##, init(0)) .
 reduce variants(##m##, init(1)) .
 reduce variants(##m##, init(2)) .
@@ -47,6 +45,10 @@ reduce variants(##m##, init(4)) .
 reduce variants(##m##, init(5)) .
 reduce variants(##m##, init(6)) .
 reduce variants(##m##, init(7)) .
+
+reduce filterRenaming(variants(##m##, init(0))) .
+reduce filterRenaming(variants(##m##, init(4))) .
+reduce filterRenaming(variants(##m##, init(5))) .
 
 reduce getTerms(variants(##m##, init(0))) .
 reduce getTerms(variants(##m##, init(3))) .
