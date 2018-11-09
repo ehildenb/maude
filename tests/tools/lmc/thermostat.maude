@@ -222,3 +222,73 @@ reduce implies?(lt('X:Real, 'Y:Real), le('X:Real, 'Y:Real)) .
 
 reduce bfs(state(goodConf), 12) .
 reduce state(goodConf) =>[5] state(badConf) .
+
+--- ### Thermostat Search modulo REAL with RAT Concrete Represenattion
+
+fmod EQFORM-RAT is protecting EQFORM-IMPL{Bool} + RAT . endfm
+
+fmod UNCONDITIONALIZE-RAT is
+   protecting DETERMINISTIC-VARIABLES .
+    including UNCONDITIONALIZE .
+
+    vars T T' : Term . var S : Sort . vars EqC EqC' : EqCondition .
+
+    eq #cModule   = 'EQFORM-RAT .
+    eq #cSort     = 'Form`{Bool`} .
+    eq #cTrue     = 'tt.TrueLit`{Bool`} .
+    eq #cFalse    = 'ff.FalseLit`{Bool`} .
+    eq #cConjunct = '_/\_ .
+    -----------------------
+
+    eq #mkCondition(T  = T') = '_?=_[T, T'] .
+    eq #mkCondition(T := T') = '_?=_[T, T'] .
+    eq #mkCondition(T : S)   = '_?=_[T, #var(T, S)] .
+    -------------------------------------------------
+endfm
+
+mod THERMOSTAT-RAT-NARROWING-GRAPH is
+   protecting RAT-REAL-CONVERSION .
+    including UNCONDITIONALIZE-RAT .
+    including THERMOSTAT-COMMON-INIT .
+
+    vars T T' : Term . var TYPE : Type .
+
+    eq #nSort = 'Rat .
+    eq #nTrue = 'true.Bool .
+    ------------------------
+
+    eq #MO = upModule('THERMOSTAT-RAT-COMFORTABLE, true) .
+    ------------------------------------------------------
+
+   ceq isUnsat(T) = T' == #cFalse if { T' , TYPE } := metaReduce(upModule('EQFORM-SMT-BOOLEAN, true), 'simplify[#Rat2Real(T)]) .
+   -----------------------------------------------------------------------------------------------------------------------------
+
+   ceq implies?(T, T') = T' == #cTrue if { T' , TYPE } := metaReduce(upModule('EQFORM-SMT-BOOLEAN, true), 'simplify['_=>_[#Rat2Real(T), #Rat2Real(T')]]) .
+   -------------------------------------------------------------------------------------------------------------------------------------------------------
+endm
+
+reduce wellFormed(#M) .
+reduce wellFormed(#M, goodConf) .
+reduce wellFormed(#M, badConf) .
+
+reduce isUnsat(lt('X:Rat, 'X:Rat)) == true .
+reduce isUnsat(le('X:Rat, 'Y:Rat)) == false .
+reduce isUnsat(le('X:Rat, 'X:Rat)) == false .
+
+reduce isUnsat(#cConjunct[lt('X:Rat, 'Y:Rat), #cTrue]) == false .
+reduce isUnsat(#cConjunct[lt('X:Rat, 'X:Rat), #cTrue]) == true .
+reduce isUnsat(#cConjunct[le('X:Rat, 'Y:Rat), #cTrue]) == false .
+reduce isUnsat(#cConjunct[le('X:Rat, 'X:Rat), #cTrue]) == false .
+
+reduce isUnsat(#cConjunct[lt('X:Rat, 'Y:Rat), #cFalse]) == true .
+reduce isUnsat(#cConjunct[lt('X:Rat, 'X:Rat), #cFalse]) == true .
+reduce isUnsat(#cConjunct[le('X:Rat, 'Y:Rat), #cFalse]) == true .
+reduce isUnsat(#cConjunct[le('X:Rat, 'X:Rat), #cFalse]) == true .
+
+reduce isUnsat(#cConjunct[lt('X:Rat, 'Y:Rat), lt('Y:Rat, 'X:Rat)]) == true .
+reduce isUnsat(#cConjunct[le('X:Rat, 'Y:Rat), le('Y:Rat, 'X:Rat)]) == false .
+
+reduce implies?(lt('X:Real, 'Y:Real), le('X:Real, 'Y:Real)) .
+
+reduce bfs(state(goodConf), 2) .
+reduce state(goodConf) =>[5] state(badConf) .
