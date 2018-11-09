@@ -107,7 +107,7 @@ reduce state(goodConf) =>[5] state(badConf) .
 view Boolean from TRIV to REAL is sort Elt to Boolean . endv
 
 fmod EQFORM-SMT-BOOLEAN is
-   protecting EQFORM-IMPL{Boolean} + REAL .
+   protecting EQFORM-IMPL{Boolean} + REAL-SIMPLIFICATION .
    protecting META-LEVEL * ( sort Nat to NatP
                            , op _+_             to _+P_
                            , op _=/=_           to _=/=P_
