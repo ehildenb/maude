@@ -252,6 +252,65 @@ result FoldedLabeledGraph: (0 -[label('wake,
     '@2:ProcIdleSet,'`[_`]['crit['@1:Name]],'`[_`]['wait['__['s.NzNat,
     '@1:Name]]]]],'tt.TrueLit`{Bool`}])
 | 19
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : ill-formed(N, [crit(N)] [crit(s N)], s s N) .
+rewrites: 2
+result Bool: ill-formed(s s N, none, s s N)
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : ill-formed(N, [wait(N)] [wait(N)], s N) .
+rewrites: 2
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s N, PWS, M)) => (true ?=
+    ill-formed(s N, PWS [idle], M)) .
+rewrites: 2
+result NonTrivForm{Bool}: ~ true ?= ill-formed(s N, PWS, M) \/ true ?=
+    ill-formed(s N, PWS, M)
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s N, PWS, N')) => (true ?=
+    ill-formed(s N, PWS [wait(N')] [wait(s N')], s s N')) .
+rewrites: 3
+result NonTrivForm{Bool}: ~ true ?= ill-formed(s N, PWS, N') \/ true ?=
+    ill-formed(s N, PWS, N')
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s N, PWS, N')) => (true ?=
+    ill-formed(s N, PWS [wait(N')], s N')) .
+rewrites: 2
+result NonTrivForm{Bool}: ~ true ?= ill-formed(s N, PWS, N') \/ true ?=
+    ill-formed(s N, PWS, N')
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s N, PWS, s M)) => (true
+    ?= ill-formed(s N, PWS [wait(M)], s M)) .
+rewrites: 2
+result NonTrivForm{Bool}: ~ true ?= ill-formed(s N, PWS, s M) \/ true ?=
+    ill-formed(s N, PWS, M)
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s N, PWS, M)) => (true ?=
+    ill-formed(s N, PWS [wait(M)], s M)) .
+rewrites: 2
+result NonTrivForm{Bool}: ~ true ?= ill-formed(s N, PWS, M) \/ true ?=
+    ill-formed(s N, PWS, M)
+==========================================
+reduce in BAKERY-NPROC-RECFUNC : (true ?= ill-formed(s s N, PWS, N)) => (true
+    ?= ill-formed(s M, PWS [wait(N)], s N)) .
+rewrites: 5
+result PosEqLit{Bool}: true ?= ill-formed(s M, PWS, N)
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 48 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in BAKERY-NPROC-RECFUNC-NARROWING-GRAPH : wellFormed(#M) .
+rewrites: 64
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-RECFUNC-NARROWING-GRAPH : wellFormed(#M,
+    wellFormedManyWait) .
+rewrites: 5
+result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 48 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check

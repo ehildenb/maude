@@ -186,6 +186,106 @@ reduce wellFormed(#M, confManyIdleEq) .
 
 reduce bfs(state(confManyIdleEq)) .
 
+--- #### With Constrained States and Lemmas
+
+--- Similar to the two process case, an equational abstraction of the system can be avoided searching in a constraint system.
+
+mod BAKERY-NPROC-RECFUNC is
+   protecting BAKERY .
+   protecting FVP-BOOL-EQFORM * ( sort Nat to Name
+                                , op 1 to s
+                                , op _+_ to __
+                                ) .
+
+    vars N N' M : Name . vars NzN NzN' : NzNat . vars EqF EqF' : EqForm{Bool} .
+    var P : Proc . var PWS : ProcWaitSet . vars PS : ProcSet .
+
+--- The predicate `ill-formed` encodes the cases when a queue at the bakery is not well formed.
+--- The first name corresponds to the current customer being served, and the second to the next number someone will pull if they walk in.
+
+    op ill-formed : Name ProcSet Name -> Bool .
+    -------------------------------------------
+
+--- Bakerys can be ill-formed because the pool of waiting processes has numbers which
+---
+--- -   should have already been called, or
+--- -   remain to be called.
+
+    eq ill-formed(N NzN, PS, N) = true .
+
+    eq ill-formed(N NzN, [wait(N)] PS, M) = true .
+    eq ill-formed(N NzN, [crit(N)] PS, M) = true .
+
+    eq ill-formed(N, [wait(M N')] PS, M) = true .
+    eq ill-formed(N, [crit(M N')] PS, M) = true .
+
+--- Stating some recursive properties of ill-formed states assists when proving the implication in $T$ for state subsumption in $\R$.
+--- Read right-to-left as implications, these are inductive properties about `ill-formed` states, that is:
+---
+--- -   adding `[idle]` processes does not change whether a state is `ill-formed`,
+--- -   if a pool of processes `PS` has numbers amongst them down to `s N`, then adding a process with number `N` does not affect `ill-formed`, and
+--- -   if a pool of processes `PS` has numbers amongst them less than `M`, adding a process wth number `s M` does not affect `ill-formed`.
+
+    eq ill-formed(N, [idle] PS, M) = ill-formed(N, PS, M) .
+
+    eq ill-formed(N, [crit(N)] PS, M) = ill-formed(s N, PS, M) .
+    eq ill-formed(N, [wait(N)] PS, M) = ill-formed(s N, PS, M) .
+
+    eq ill-formed(N, [wait(M)] PS, s M) = ill-formed(N, PS, M) .
+    eq ill-formed(N, [crit(M)] PS, s M) = ill-formed(N, PS, M) .
+endm
+
+--- Note that `ill-formed` does not imply our overall property we wish to show for the system, as it does not bar states with two critical processes.
+--- For instance, the following does not simplify to `true`:
+
+reduce ill-formed(N, [crit(N)] [crit(s N)], s s N) .
+
+--- but this does:
+
+reduce ill-formed(N, [wait(N)] [wait(N)], s N) .
+
+reduce (true ?= ill-formed(s N, PWS       , M))
+    => (true ?= ill-formed(s N, PWS [idle], M)) .
+
+reduce (true ?= ill-formed(s N, PWS, N'))
+    => (true ?= ill-formed(s N, PWS [wait(N')] [wait(s N')], s s N')) .
+
+reduce (true ?= ill-formed(s N, PWS, N'))
+    => (true ?= ill-formed(s N, PWS [wait(N')], s N')) .
+
+reduce (true ?= ill-formed(s N, PWS           , s M))
+    => (true ?= ill-formed(s N, PWS [wait(M)] , s M)) .
+
+reduce (true ?= ill-formed(s N, PWS,              M))
+    => (true ?= ill-formed(s N, PWS [wait(M)] , s M)) .
+
+reduce (true ?= ill-formed(s s N , PWS           , N))
+    => (true ?= ill-formed(s M   , PWS [wait(N)] , s N)) .
+
+fmod BAKERY-NPROC-RECFUNC-NARROWING-GRAPH is
+    extending BAKERY-NARROWING-GRAPH-COMMON .
+
+    vars C C' T T' T'' : Term . var TYPE : Type .
+
+    eq #MO = upModule('BAKERY-NPROC-RECFUNC, true) .
+
+    op ep : Term Term Term -> [Term] .
+    ----------------------------------
+    eq ep(T, T', T'') = '_!=_['true.Bool, 'ill-formed[T, T', T'']] .
+
+   ceq implies?(C, C') = true if { T , TYPE } := metaReduce(#M, '_=>_[C, C'])
+                              /\ T = #cTrue .
+
+    op wellFormedManyWait : -> Term .
+    ---------------------------------
+    eq wellFormedManyWait = #cTerm['_;_;_['X:Name, 'Y:Name, 'PWS:ProcWaitSet], ep('Y:Name, 'PWS:ProcWaitSet, 'X:Name)] .
+endfm
+
+reduce wellFormed(#M) .
+reduce wellFormed(#M, wellFormedManyWait) .
+
+--- reduce bfs(state(wellFormedManyWait)) .
+
 --- Module FVP-BAKERY
 --- =================
 
