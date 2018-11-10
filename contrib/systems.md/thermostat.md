@@ -46,8 +46,9 @@ mod THERMOSTAT is
                    => < TIME , TMP , off >
                    if TMP < min + bound = false .
 
-    rl [delaying] : { TIME + 1 , TMP , DM }
-                 => < TIME     , TMP , DM > .
+   crl [delaying] : { TIME         , TMP , DM }
+                 => < TIME monus 1 , TMP , DM >
+                 if 0 < TIME = true .
 
     rl [delay-over] : { 0 , TMP , delay(IM) }
                    => < 0 , TMP , IM        > .

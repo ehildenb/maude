@@ -413,7 +413,7 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : M .
-rewrites: 121
+rewrites: 126
 result SModule: mod 'THERMOSTAT is
   protecting 'FVP-BOOL-EQFORM .
   protecting 'FVP-NAT-PRED .
@@ -443,6 +443,10 @@ result SModule: mod 'THERMOSTAT is
   rl '_st_['`{_`,_`,_`}['0.Nat,'TMP:Nat,'delay['IM:InMode]],
     '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['0.Nat,'TMP:Nat,'IM:InMode],
     '###COND###:Form`{Bool`}] [narrowing label('delay-over)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'DM:DelayMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['_monus_['TIME:Nat,'1.NzNat],
+    'TMP:Nat,'DM:DelayMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['0.Nat,
+    'TIME:Nat],'true.Bool]]] [narrowing label('delaying)] .
   rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'off.InMode],
     '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
     'off.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['TMP:Nat,'_+_[
@@ -461,9 +465,6 @@ result SModule: mod 'THERMOSTAT is
     'TMP:Nat,'delay['off.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
     'max.Nat,'_+_['bound.Nat,'TMP:Nat]],'true.Bool]]] [narrowing label(
     'turning-off)] .
-  rl '_st_['`{_`,_`,_`}['_+_['1.NzNat,'TIME:Nat],'TMP:Nat,'DM:DelayMode],
-    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
-    'DM:DelayMode],'###COND###:Form`{Bool`}] [narrowing label('delaying)] .
 endm
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M) .
