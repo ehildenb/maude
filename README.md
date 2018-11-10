@@ -1,4 +1,4 @@
-branch: pr
+branch: dev
 
 Maude
 =====
