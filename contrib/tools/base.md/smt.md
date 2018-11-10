@@ -217,5 +217,31 @@ fmod RAT-REAL-CONVERSION is
                    /\ S'  := substr(S, 0, N)
                    /\ S'' := substr(S, N + 1, length(S) - (N + 1)) .
 endfm
+```
+
+Simplifications of `REAL` via `RAT`
+-----------------------------------
+
+```maude
+fmod REAL-SIMPLIFICATION is
+   protecting RAT-REAL-CONVERSION .
+
+    vars RL RL' : Real .
+
+    eq RL + 0/1    = RL .
+    eq RL + (- RL) = RL .
+    ---------------------
+
+    eq RL - RL' = RL + (- RL') .
+    ----------------------------
+
+    eq RL * 0/1 = 0/1 .
+    eq RL * 1/1 = RL  .
+    -------------------
+
+    eq 0/1 / RL  = 0/1 .
+    eq RL  / 1/1 = RL  .
+    --------------------
+endfm
 
 ```
