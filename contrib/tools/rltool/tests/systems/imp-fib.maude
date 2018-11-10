@@ -1,0 +1,139 @@
+load ../../systems/imp.maude
+
+---
+--- Goal: prove the imp program below correctly implements
+---       the fib function specified below
+---
+
+fmod IMP-FIB is
+  pr IMP-SYNTAX+MUL .
+
+  var N : Nat . var P : NzNat .
+
+  op fib : Nat -> Nat .
+  eq fib(0) = 1 .
+  eq fib(1) = 1 .
+  eq fib(N + 1 + 1) = fib(N + 1) + fib(N) .
+
+  eq  (N + 1) <= (N + P) = true .
+endfm
+
+mod IMP-SEMANTICS+FIB is
+  pr IMP-SEMANTICS .
+  pr IMP-FIB .
+endm
+
+load ../../rltool.maude
+
+(select IMP-SEMANTICS+FIB .)
+(use tool impsimp for validity on IMP-FIB with FOFORMSIMPLIFY-IMP-IMPL .)
+(use tool varsat  for unsatisfiability on IMP-SYNTAX .)
+(def-term-set (< done | E:Env >) | true .)
+(declare-vars (PRE:Nat) U (FIB:Nat) U (TMP:Nat) U (CNT:Nat) U (PRE':Nat) U (FIB':Nat) U (CNT':Nat) U (TMP':Nat) U (MAX:Nat) .)
+
+---
+--- Abstract description of IMP fibonacci program
+---
+--- INVARIANT
+--- CNT <= MAX
+--- FIB = fib(CNT)
+--- PRE = fib(CNT - 1)
+---
+--- PROGRAM:
+--- while (cnt < max) {
+---   if (x < 2) {
+---     fib = 1
+---     pre = 1
+---   } else {
+---     cnt = cnt + 1
+---     tmp = fib
+---     fib = fib + pre
+---     pre = tmp
+---   }
+--- }
+---
+--- POSTCONDITION:
+--- CNT = MAX
+--- FIB = fib(MAX)
+---
+
+(add-goal fib : (< while (x <: x,,,,) {
+                        if (x <: 1 + 1) {
+			   x,, = 1 ;
+			   x,  = 1 ;
+			} else {
+                           x    = x +: 1    ;  --- CNT = CNT + 1
+                           x,,, = x,,       ;  --- TMP = FIB
+                           x,,  = x,, +: x, ;  --- FIB = FIB + PRE
+                           x,   = x,,,      ;  --- PRE = TMP
+			}
+                     } ~> done | x |-> CNT * x, |-> PRE * x,, |-> FIB * x,,, |-> TMP * x,,,, |-> MAX >) | (CNT <= MAX) = (true)
+		                                                                                       /\ (FIB) = (fib(CNT))
+												       /\ (PRE) = (fib(sd(CNT,1)))
+               =>
+                  (< done | x |-> CNT' * x, |-> PRE' * x,, |-> FIB' * x,,, |-> TMP' * x,,,, |-> MAX >) | (FIB') = (fib(MAX))
+										                      /\ (CNT') = (MAX) .)
+
+(start-proof .)
+(step .) (continue .)
+(step .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) 
+(step .) (continue .)
+(step .) 
+(step .) (continue .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .) (continue .)
+(step .)
+(list-goals .)
+quit
