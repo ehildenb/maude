@@ -1607,6 +1607,7 @@ fmod META-TERM is
   op none : -> Substitution [ctor] .
   op _;_ : Substitution Substitution -> Substitution
     [ctor assoc comm id: none prec 65] .
+  eq V <- V       ; A:Assignment = none .
   eq A:Assignment ; A:Assignment = A:Assignment .
 
 *** contexts (terms with a single hole)
