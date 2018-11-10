@@ -100,11 +100,11 @@ result Variant: {'true.Bool,
   'Y:Nat <- '#2:Nat,2,none,false}
 ==========================================
 reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(0))) .
-rewrites: 16
+rewrites: 32
 result VariantSet: .VariantSet
 ==========================================
 reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(4))) .
-rewrites: 60
+rewrites: 108
 result VariantSet: {'false.Bool,
   'X:Nat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat] ; 
   'Y:Nat <- '%1:Nat,2,0,false} #
@@ -116,7 +116,7 @@ result VariantSet: {'false.Bool,
   'Y:Nat <- '_+_['%1:Nat,'%2:NzNat],2,0,true}
 ==========================================
 reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(5))) .
-rewrites: 60
+rewrites: 108
 result VariantSet: {'false.Bool,
   'Y:Nat <- '%1:Nat ; 
   'Z:NzNat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat],2,0,false} #

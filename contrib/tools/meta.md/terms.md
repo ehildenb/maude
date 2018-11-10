@@ -90,7 +90,7 @@ fmod SUBSTITUTION-SET is
     op isRenaming : Substitution -> Bool .
     --------------------------------------
     eq isRenaming(none)         = true .
-    eq isRenaming(V <- T ; SUB) = (T :: Variable) and-then isRenaming(SUB) .
+    eq isRenaming(V <- T ; SUB) = (T :: Variable) and-then getType(V) == getType(T) and-then isRenaming(SUB) .
 endfm
 ```
 

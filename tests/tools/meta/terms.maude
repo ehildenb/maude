@@ -3,7 +3,9 @@ load ../../../contrib/tools/meta/terms.maude
 select SUBSTITUTION-SET .
 
 reduce isRenaming(none) .
+reduce isRenaming('T:Foo <- 'T2:Foo) .
 reduce isRenaming('T:Foo <- 'B:Bar) .
-reduce isRenaming('T:Foo <- 'B:Bar ; 'X:Foo <- 'B:Bar) .
+reduce isRenaming('T:Foo <- 'T2:Foo ; 'X:Foo <- 'B:Bar) .
+reduce isRenaming('T:Foo <- 'T2:Foo ; 'B:Bar <- 'B2:Bar) .
 reduce isRenaming('T:Foo <- 'B:Bar ; 'X:Foo <- 'bar.Bar) .
 reduce isRenaming('T:Foo <- 'bar.Bar) .
