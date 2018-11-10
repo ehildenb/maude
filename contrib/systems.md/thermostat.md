@@ -1,7 +1,7 @@
 Thermostat
 ==========
 
-A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
+A simple thermostat in Maude, which switches between on/off based on some threshold temperatures.
 The state components of the thermostate are the current time, the temperature, and the mode (on, off, turning on, turning off).
 
 Parametric Thermostat
@@ -42,6 +42,8 @@ endfth
 ```
 
 ### Thermostat Definition
+
+When discussing the thermostat, `TIME` and `TMP` will be used as the units of measure.
 
 ```maude
 mod THERMOSTAT{TIME :: UNITAL-ORDERED-RING, TMP :: UNITAL-ORDERED-RING} is
@@ -138,7 +140,7 @@ mod THERMOSTAT-INT-COMFORTABLE is
     var TMP : Int .
 ```
 
-Here we setup a thermostat which tries to stay between `18` and `26`, and will switch states when `3` away from a boundary temperature.
+Here we setup a thermostat which tries to stay between `18 TMP` and `26 TMP`, and will switch states when `3 TMP` away from a boundary temperature.
 
 ```maude
     eq min   = 10 + 8      [variant] .
@@ -146,16 +148,16 @@ Here we setup a thermostat which tries to stay between `18` and `26`, and will s
     eq bound = 3           [variant] .
 ```
 
-The thermostat takes `4` seconds to turn on, and `2` seconds to turn off.
+The thermostat takes `4 TIME` to turn on, and `2 TIME` to turn off.
 
 ```maude
     eq time-until(on)  = 4 [variant] .
     eq time-until(off) = 2 [variant] .
 ```
 
-When turning on/off, the heater is effective for `1` unit temperature per second.
-When on, the heater produces `5` units temperature per second, and when off produces nothing.
-Every second, `3` units of temperature are drained to the environment.
+When turning on/off, the heater is effective for `2 TMP/TIME`.
+When on, the heater produces `5 TMP/TIME`, and when off produces nothing.
+The room looses heat at a rate of `3 TMP/TIME` to the environment.
 
 ```maude
     eq source(on)         = 5 [variant] .
