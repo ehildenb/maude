@@ -243,5 +243,37 @@ fmod REAL-SIMPLIFICATION is
     eq RL  / 1/1 = RL  .
     --------------------
 endfm
+```
 
+Conditional Theories with `REAL`
+--------------------------------
+
+The `EQFORM` quantifier-free formulae are instantiated over `Real` predicates so we can use them as constraints in a conditional theory.
+
+```maude
+fmod EQFORM-REAL is protecting EQFORM-IMPL{Boolean} + REAL-SIMPLIFICATION . endfm
+```
+
+`UNCONDITIONALIZE-REAL` is used to instantiate the `unconditionalize` operation to `Real` predicates.
+We use the parameter theory `EQFORM-REAL` for the parameter theory `#cModule`, and fill in the remaining sorts and symbols appropriately.
+
+```maude
+fmod UNCONDITIONALIZE-REAL is
+   protecting DETERMINISTIC-VARIABLES .
+    including UNCONDITIONALIZE .
+
+    vars T T' : Term . var S : Sort . vars EqC EqC' : EqCondition .
+
+    eq #cModule   = 'EQFORM-REAL .
+    eq #cSort     = 'Form`{Boolean`} .
+    eq #cTrue     = 'tt.TrueLit`{Boolean`} .
+    eq #cFalse    = 'ff.FalseLit`{Boolean`} .
+    eq #cConjunct = '_/\_ .
+    -----------------------
+
+    eq #mkCondition(T  = T') = '_?=_[T, T'] .
+    eq #mkCondition(T := T') = '_?=_[T, T'] .
+    eq #mkCondition(T : S)   = '_?=_[T, #var(T, S)] .
+    -------------------------------------------------
+endfm
 ```
