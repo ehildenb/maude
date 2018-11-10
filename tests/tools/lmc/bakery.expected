@@ -184,6 +184,82 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
     SortDeclSet).
 ==========================================
+reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : wellFormed(#M)
+    .
+rewrites: 64
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : wellFormed(#M,
+    conf2Crit) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : wellFormed(#M,
+    confManyIdleEq) .
+rewrites: 7
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : bfs(state(
+    confManyIdleEq)) .
+rewrites: 695
+result FoldedLabeledGraph: (0 -[label('wake, 
+  'PIS:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]] ; 
+  'X:Name <- '@1:Name)]-> 2
+2 -[label('crit, 
+  '@1:Name <- '@1:Name ; 
+  '@2:ProcIdleSet <- '@2:ProcIdleSet)]-> 4
+2 -[label('wake, 
+  '@1:Name <- '@1:Name ; 
+  '@2:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 6
+4 -[label('exit, 
+  '@1:Name <- '@1:Name ; 
+  '@2:ProcIdleSet <- '@2:ProcIdleSet)]-> 0[fold(
+  'PIS:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]] ; 
+  'X:Name <- '__['s.NzNat,'@1:Name])]
+4 -[label('wake, 
+  '@1:Name <- '@1:Name ; 
+  '@2:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 10
+6 -[label('crit, 
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '@1:ProcIdleSet)]-> 10[fold(
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '@1:ProcIdleSet)]
+6 -[label('wake, 
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 6[fold(
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '@1:ProcIdleSet)]
+10 -[label('exit, 
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '@1:ProcIdleSet)]-> 2[fold(
+  '@1:Name <- '__['s.NzNat,'@2:Name] ; 
+  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]
+10 -[label('wake, 
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 10[fold(
+  '@1:Name <- '@2:Name ; 
+  '@2:ProcIdleSet <- '@1:ProcIdleSet)])
+| 0 |-> state('_st_['_;_;_['X:Name,'X:Name,'PIS:ProcIdleSet],
+    'tt.TrueLit`{Bool`}])
+2 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['@2:ProcIdleSet,
+    '`[_`]['wait['@1:Name]]]],'tt.TrueLit`{Bool`}])
+4 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['@2:ProcIdleSet,
+    '`[_`]['crit['@1:Name]]]],'tt.TrueLit`{Bool`}])
+6 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__[
+    '@2:ProcIdleSet,'`[_`]['wait['@1:Name]],'`[_`]['wait['__['s.NzNat,
+    '@1:Name]]]]],'tt.TrueLit`{Bool`}])
+10 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__[
+    '@2:ProcIdleSet,'`[_`]['crit['@1:Name]],'`[_`]['wait['__['s.NzNat,
+    '@1:Name]]]]],'tt.TrueLit`{Bool`}])
+| 19
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 48 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : wellFormed(#M) .
 rewrites: 117
 result Bool: true

@@ -145,6 +145,47 @@ reduce bfs(state(cConf2Idle)) .
 
 reduce state(cConf2Idle) =>* state(conf2Crit) .
 
+--- ### Arbitrary Process Bakery
+
+--- #### With Equational Abstraction
+
+--- As a sanity check, results of section 3.3 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
+--- This required an equational abstraction which removed "extra" waiting processes, which was shown to be sound.
+
+mod BAKERY-NPROC-EQUATIONAL-ABSTRACTION is
+    including BAKERY .
+
+    vars M L : Name . var PS : ProcSet .
+
+    eq s s s L M ; M ; PS [wait(s L M)] [wait(s s L M)]
+     =   s s L M ; M ; PS [wait(s L M)] .
+endm
+
+--- Here we instantiate to the abstracted theory:
+
+mod BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH is
+    extending BAKERY-NARROWING-GRAPH-COMMON .
+
+    eq #MO = upModule('BAKERY-NPROC-EQUATIONAL-ABSTRACTION, true) .
+
+--- The initial state has all `idle` processes and equal counters.
+
+    op confManyIdleEq : -> [Term] .
+    -------------------------------
+    eq confManyIdleEq = #cTerm[confManyIdle('X:Name, 'X:Name), #cTrue] .
+endm
+
+reduce wellFormed(#M) .
+
+reduce wellFormed(#M, conf2Crit) .
+reduce wellFormed(#M, confManyIdleEq) .
+
+--- Under this assumption, a finite state graph is achieved.
+--- The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
+--- In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
+
+reduce bfs(state(confManyIdleEq)) .
+
 --- Module FVP-BAKERY
 --- =================
 
