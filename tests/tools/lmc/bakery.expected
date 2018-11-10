@@ -48,37 +48,26 @@ reduce in BAKERY-2PROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : wellFormed(#M,
 rewrites: 8
 result Bool: true
 ==========================================
-reduce in BAKERY-2PROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : bfs(state(
-    conf2IdleEq)) .
-rewrites: 511
-result FoldedLabeledGraph: (0 -[label('wake, 
-  'X:Name <- '@1:Name)]-> 2
-2 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 4
-2 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 6
-4 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 0[fold(
-  'X:Name <- '@1:Name)]
-4 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 10
-6 -[label('crit, 
-  '@1:Name <- '@1:Name)]-> 10
-10 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 2)
-| 0 |-> state('_st_['_;_;_['X:Name,'X:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]],'tt.TrueLit`{Bool`}])
-2 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['wait['@1:Name]]]],'tt.TrueLit`{Bool`}])
-4 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['crit['@1:Name]]]],'tt.TrueLit`{Bool`}])
-6 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'wait['@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]],
-    'tt.TrueLit`{Bool`}])
-10 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'crit['@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]],
-    'tt.TrueLit`{Bool`}])
-| 15
+reduce in BAKERY-2PROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH :
+    renderTikZGraph(0, bfs(state(conf2IdleEq))) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; [idle] [idle]}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; [idle] [wait(X)]}$};"
+"    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};"
+"    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; [wait(X)] [wait(s X)]}$};"
+"    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
+"    \\path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {exit} (s_2);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);"
+"    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 2094
+result Bool: true
 ==========================================
 reduce in BAKERY-2PROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : state(
     conf2IdleEq) =>* state(conf2Crit) .
@@ -100,82 +89,60 @@ reduce in BAKERY-2PROC-NARROWING-GRAPH : wellFormed(#M, conf2Crit) .
 rewrites: 5
 result Bool: true
 ==========================================
-reduce in BAKERY-2PROC-NARROWING-GRAPH : wellFormed(#M, cConf2Idle) .
-rewrites: 8
+reduce in BAKERY-2PROC-NARROWING-GRAPH : renderTikZGraph(0, bfs(state(#cTerm[
+    conf2Idle('X:Name, 'Y:Name),#cTrue]), 4)) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}$};"
+"    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; [idle] [crit(X)]}$};"
+"    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}$};"
+"    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
+"    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s X ; s X ; [crit(s X)] [wait(X)]}$};"
+"    \node[elliptic state] (s_18) at (0,-26) {$\texttt{s s X ; s s X ; [idle] [wait(X)]}$};"
+"    \\path[->] (s_14) edge [bend left=10] node [pos=0.3,right] {exit} (s_18);"
+"    \\path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_10);"
+"    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 3033
 result Bool: true
 ==========================================
-reduce in BAKERY-2PROC-NARROWING-GRAPH : bfs(state(cConf2Idle)) .
-rewrites: 1586
-result FoldedLabeledGraph: (0 -[label('wake, 
-  'X:Name <- '@1:Name ; 
-  'Y:Name <- '@2:Name)]-> 2
-0 -[label('wake, 
-  'X:Name <- '__['%1:Name,'%2:Name] ; 
-  'Y:Name <- '%1:Name)]-> 4
-2 -[label('crit, 
-  '@1:Name <- '%1:Name ; 
-  '@2:Name <- '%1:Name)]-> 6
-2 -[label('wake, 
-  '@1:Name <- '@2:Name ; 
-  '@2:Name <- '@1:Name)]-> 8
-2 -[label('wake, 
-  '@1:Name <- '__['%1:Name,'%2:Name] ; 
-  '@2:Name <- '%1:Name)]-> 10
-4 -[label('crit, 
-  '%1:Name <- '@1:Name ; 
-  '%2:Name <- '0.Name)]-> 6[fold(
-  '%1:Name <- '@1:Name)]
-4 -[label('wake, 
-  '%1:Name <- '@1:Name ; 
-  '%2:Name <- '@2:Name)]-> 10[fold(
-  '%1:Name <- '@1:Name ; 
-  '%2:Name <- '@2:Name)]
-6 -[label('exit, 
-  '%1:Name <- '@1:Name)]-> 16
-6 -[label('wake, 
-  '%1:Name <- '@1:Name)]-> 18
-8 -[label('crit, 
-  '@1:Name <- '%1:Name ; 
-  '@2:Name <- '%1:Name)]-> 18[fold(
-  '@1:Name <- '%1:Name)]
-10 -[label('crit, 
-  '%1:Name <- '@1:Name ; 
-  '%2:Name <- '0.Name)]-> 18
-16 -[label('wake, 
-  '@1:Name <- '@1:Name)]-> 4[fold(
-  '%1:Name <- '__['s.NzNat,'@1:Name] ; 
-  '%2:Name <- '0.Name)]
-18 -[label('exit, 
-  '@1:Name <- '@1:Name)]-> 4[fold(
-  '%1:Name <- '__['s.NzNat,'@1:Name] ; 
-  '%2:Name <- '0.Name)])
-| 0 |-> state('_st_['_;_;_['X:Name,'Y:Name,'__['`[_`]['idle.ModeIdle],'`[_`][
-    'idle.ModeIdle]]],'_?=_['_<=_['Y:Name,'X:Name],'true.Bool]])
-2 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['wait['@1:Name]]]],'_?=_['true.Bool,'_<=_['@2:Name,
-    '@1:Name]]])
-4 |-> state('_st_['_;_;_['__['s.NzNat,'%1:Name,'%2:Name],'%1:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['wait['__['%1:Name,'%2:Name]]]]],
-    'tt.TrueLit`{Bool`}])
-6 |-> state('_st_['_;_;_['__['s.NzNat,'%1:Name],'%1:Name,'__['`[_`][
-    'idle.ModeIdle],'`[_`]['crit['%1:Name]]]],'tt.TrueLit`{Bool`}])
-8 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@2:Name],'@1:Name,'__['`[_`][
-    'wait['@2:Name]],'`[_`]['wait['__['s.NzNat,'@2:Name]]]]],'_?=_['true.Bool,
-    '_<=_['@1:Name,'@2:Name]]])
-10 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'%1:Name,'%2:Name],'%1:Name,
-    '__['`[_`]['wait['__['%1:Name,'%2:Name]]],'`[_`]['wait['__['s.NzNat,
-    '%1:Name,'%2:Name]]]]],'tt.TrueLit`{Bool`}])
-16 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'__['s.NzNat,'@1:Name],'__[
-    '`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]],'tt.TrueLit`{Bool`}])
-18 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__['`[_`][
-    'crit['@1:Name]],'`[_`]['wait['__['s.NzNat,'@1:Name]]]]],
-    'tt.TrueLit`{Bool`}])
-| 27
-==========================================
-reduce in BAKERY-2PROC-NARROWING-GRAPH : state(cConf2Idle) =>* state(conf2Crit)
-    .
-rewrites: 4650
-result Bool: false
+reduce in BAKERY-2PROC-NARROWING-GRAPH : renderTikZGraph(0, bfs(state(#cTerm[
+    conf2Idle('X:Name, 'Y:Name),le('Y:Name, 'X:Name)]))) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; [idle] [idle]}\\ st \\ \texttt{Y} \\le \texttt{X}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; [idle] [wait(X)]}\\ st \\ \texttt{Y} \\le \texttt{X}$};"
+"    \node[elliptic state] (s_4) at (2,-13) {$\texttt{s N M ; N ; [idle] [wait(N M)]}$};"
+"    \node[elliptic state] (s_6) at (0,-18) {$\texttt{s N ; N ; [idle] [crit(N)]}$};"
+"    \node[elliptic state] (s_8) at (2,-17) {$\texttt{s s Y ; X ; [wait(Y)] [wait(s Y)]}\\ st \\ \texttt{X} \\le \texttt{Y}$};"
+"    \node[elliptic state] (s_10) at (4,-16) {$\texttt{s s N M ; N ; [wait(N M)] [wait(s N M)]}$};"
+"    \node[elliptic state] (s_16) at (0,-22) {$\texttt{s X ; s X ; [idle] [idle]}$};"
+"    \node[elliptic state] (s_18) at (2,-21) {$\texttt{s s X ; X ; [crit(X)] [wait(s X)]}$};"
+"    \\path[->>] (s_18) edge [bend left=10] node [pos=0.3,left] {exit} (s_4);"
+"    \\path[->>] (s_16) edge [bend left=10] node [pos=0.3,left] {wake} (s_4);"
+"    \\path[->] (s_10) edge [bend left=10] node [pos=0.3,right] {crit} (s_18);"
+"    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {crit} (s_18);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_18);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {exit} (s_16);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {wake} (s_10);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {crit} (s_6);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_6);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 4454
+result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 48 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -199,59 +166,28 @@ reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : wellFormed(#M,
 rewrites: 7
 result Bool: true
 ==========================================
-reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH : bfs(state(
-    confManyIdleEq)) .
-rewrites: 695
-result FoldedLabeledGraph: (0 -[label('wake, 
-  'PIS:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]] ; 
-  'X:Name <- '@1:Name)]-> 2
-2 -[label('crit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcIdleSet <- '@2:ProcIdleSet)]-> 4
-2 -[label('wake, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 6
-4 -[label('exit, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcIdleSet <- '@2:ProcIdleSet)]-> 0[fold(
-  'PIS:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]] ; 
-  'X:Name <- '__['s.NzNat,'@1:Name])]
-4 -[label('wake, 
-  '@1:Name <- '@1:Name ; 
-  '@2:ProcIdleSet <- '__['@2:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 10
-6 -[label('crit, 
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '@1:ProcIdleSet)]-> 10[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '@1:ProcIdleSet)]
-6 -[label('wake, 
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 6[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '@1:ProcIdleSet)]
-10 -[label('exit, 
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '@1:ProcIdleSet)]-> 2[fold(
-  '@1:Name <- '__['s.NzNat,'@2:Name] ; 
-  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]
-10 -[label('wake, 
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '__['@1:ProcIdleSet,'`[_`]['idle.ModeIdle]])]-> 10[fold(
-  '@1:Name <- '@2:Name ; 
-  '@2:ProcIdleSet <- '@1:ProcIdleSet)])
-| 0 |-> state('_st_['_;_;_['X:Name,'X:Name,'PIS:ProcIdleSet],
-    'tt.TrueLit`{Bool`}])
-2 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['@2:ProcIdleSet,
-    '`[_`]['wait['@1:Name]]]],'tt.TrueLit`{Bool`}])
-4 |-> state('_st_['_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__['@2:ProcIdleSet,
-    '`[_`]['crit['@1:Name]]]],'tt.TrueLit`{Bool`}])
-6 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__[
-    '@2:ProcIdleSet,'`[_`]['wait['@1:Name]],'`[_`]['wait['__['s.NzNat,
-    '@1:Name]]]]],'tt.TrueLit`{Bool`}])
-10 |-> state('_st_['_;_;_['__['s.NzNat,'s.NzNat,'@1:Name],'@1:Name,'__[
-    '@2:ProcIdleSet,'`[_`]['crit['@1:Name]],'`[_`]['wait['__['s.NzNat,
-    '@1:Name]]]]],'tt.TrueLit`{Bool`}])
-| 19
+reduce in BAKERY-NPROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH :
+    renderTikZGraph(0, bfs(state(confManyIdleEq))) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; X ; PIS}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; X ; PIS [wait(X)]}$};"
+"    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};"
+"    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s X ; X ; PIS [wait(X)] [wait(s X)]}$};"
+"    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};"
+"    \\path[->>] (s_10) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_10);"
+"    \\path[->>] (s_10) edge [bend left=10] node [pos=0.3,left] {exit} (s_2);"
+"    \\path[->>] (s_6) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_6);"
+"    \\path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);"
+"    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 2412
+result Bool: true
 ==========================================
 reduce in BAKERY-NPROC-RECFUNC : ill-formed(N, [crit(N)] [crit(s N)], s s N) .
 rewrites: 2
@@ -310,6 +246,57 @@ result Bool: true
 reduce in BAKERY-NPROC-RECFUNC-NARROWING-GRAPH : wellFormed(#M,
     wellFormedManyWait) .
 rewrites: 5
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-RECFUNC-NARROWING-GRAPH : renderTikZGraph(0, bfs(states(
+    #cTerm[conf('X:Name, 'Y:Name, 'PIS:ProcIdleSet),#cTrue]), 3)) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PIS}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{s X ; Y ; @3 [wait(X)]}$};"
+"    \node[elliptic state] (s_4) at (0,-18) {$\texttt{s X ; X ; PIS [crit(X)]}$};"
+"    \node[elliptic state] (s_6) at (2,-17) {$\texttt{s s Y ; X ; @3 [wait(Y)] [wait(s Y)]}$};"
+"    \node[elliptic state] (s_10) at (0,-22) {$\texttt{s s X ; X ; PIS [crit(X)] [wait(s X)]}$};"
+"    \node[elliptic state] (s_14) at (2,-21) {$\texttt{s s Y ; s Y ; @1 [crit(s Y)] [wait(Y)]}$};"
+"    \node[elliptic state] (s_16) at (4,-20) {$\texttt{s s s Z ; X ; PIS [wait(Z)] [wait(s Z)] [wait(s s Z)]}$};"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {wake} (s_16);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_14);"
+"    \\path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {crit} (s_10);"
+"    \\path[->] (s_4) edge [bend left=10] node [pos=0.3,right] {wake} (s_10);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {exit} (s_0);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_6);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {crit} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 3260
+result Bool: true
+==========================================
+reduce in BAKERY-NPROC-RECFUNC-NARROWING-GRAPH : renderTikZGraph(0, bfs(states(
+    #cTerm[conf('X:Name, 'Y:Name, 'PWS:ProcWaitSet),ep('Y:Name,
+    'PWS:ProcWaitSet, 'X:Name)]), 3)) ==
+    "\tikzset{elliptic state/.style={draw,ellipse}}"
+"\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+"\footnotesize"
+"    \node[elliptic state] (s_0) at (0,-10) {$\texttt{X ; Y ; PWS}\\ st \\ \texttt{true != ill-formed(Y, PWS, X)}$};"
+"    \node[elliptic state] (s_2) at (0,-14) {$\texttt{X ; Y ; PWS3 [crit(Y)]}\\ st \\ \texttt{true != ill-formed(s Y, PWS3, X)}$};"
+"    \node[elliptic state] (s_4) at (2,-13) {$\texttt{s X ; Y ; PWS3 [wait(X)]}\\ st \\ \texttt{true != ill-formed(Y, PWS3, X)}$};"
+"    \node[elliptic state] (s_6) at (0,-18) {$\texttt{X ; s Z ; PWS2 [idle]}\\ st \\ \texttt{true != ill-formed(s Z, PWS2, X)}$};"
+"    \node[elliptic state] (s_8) at (2,-17) {$\texttt{s X ; Z ; PWS2 [crit(Z)] [wait(X)]}\\ st \\ \texttt{true != ill-formed(s Z, PWS2, X)}$};"
+"    \node[elliptic state] (s_16) at (0,-22) {$\texttt{X ; s Y ; PWS3 [idle] [crit(s Y)]}\\ st \\ \texttt{true != ill-formed(s s Y, PWS3, X)}$};"
+"    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {wake} (s_2);"
+"    \\path[->>] (s_8) edge [bend left=10] node [pos=0.3,left] {exit} (s_6);"
+"    \\path[->>] (s_6) edge [bend left=10] node [pos=0.3,left] {wake} (s_4);"
+"    \\path[->] (s_6) edge [bend left=10] node [pos=0.3,right] {crit} (s_16);"
+"    \\path[->>] (s_4) edge [loop below,min distance=25] node [pos=0.3,left] {wake} (s_4);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {crit} (s_2);"
+"    \\path[->>] (s_4) edge [bend left=10] node [pos=0.3,left] {crit} (s_2);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {wake} (s_8);"
+"    \\path[->] (s_2) edge [bend left=10] node [pos=0.3,right] {exit} (s_6);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {wake} (s_4);"
+"    \\path[->] (s_0) edge [bend left=10] node [pos=0.3,right] {crit} (s_2);"
+"\\end{tikzpicture}" .
+rewrites: 5345
 result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 48 sort tuples. First such tuple is (Type).
