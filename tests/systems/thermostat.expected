@@ -1,88 +1,92 @@
 ==========================================
-get variants in THERMOSTAT-COMFORTABLE : heat-rate(MODE, TMP) .
+reduce in THERMOSTAT-COMFORTABLE : heat-rate(on, 3 + 10) .
+rewrites: 38
+result NzNat: 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1
+==========================================
+get variants in THERMOSTAT-COMFORTABLE : heat-rate(MODE:Mode, TMP) .
 
 Variant #1
 rewrites: 6
 Nat: (#2:Nat + source(#1:Mode)) monus 1 + 1 + 1
-MODE --> #1:Mode
+MODE:Mode --> #1:Mode
 TMP --> #2:Nat
 
 Variant #2
 rewrites: 24
 Nat: %2:Nat + source(%1:Mode)
-MODE --> %1:Mode
+MODE:Mode --> %1:Mode
 TMP --> 1 + 1 + 1 + %2:Nat
 
 Variant #3
 rewrites: 24
 NzNat: 1 + 1 + %1:Nat
-MODE --> on
+MODE:Mode --> on
 TMP --> %1:Nat
 
 Variant #4
 rewrites: 24
 Nat: %1:Nat monus 1 + 1 + 1
-MODE --> off
+MODE:Mode --> off
 TMP --> %1:Nat
 
 Variant #5
 rewrites: 24
 Nat: (1 + 1 + %1:Nat) monus 1 + 1 + 1
-MODE --> delay(on)
+MODE:Mode --> delay(on)
 TMP --> %1:Nat
 
 Variant #6
 rewrites: 24
 Nat: (1 + 1 + %1:Nat) monus 1 + 1 + 1
-MODE --> delay(off)
+MODE:Mode --> delay(off)
 TMP --> %1:Nat
 
 Variant #7
 rewrites: 48
 Nat: #1:Nat
-MODE --> off
+MODE:Mode --> off
 TMP --> 1 + 1 + 1 + #1:Nat
 
 Variant #8
 rewrites: 48
 Nat: 0
-MODE --> off
+MODE:Mode --> off
 TMP --> 1 + 1
 
 Variant #9
 rewrites: 48
 Nat: 0
-MODE --> off
+MODE:Mode --> off
 TMP --> 1
 
 Variant #10
 rewrites: 48
 Nat: 0
-MODE --> off
+MODE:Mode --> off
 TMP --> 0
 
 Variant #11
 rewrites: 48
 Nat: 0
-MODE --> delay(on)
+MODE:Mode --> delay(on)
 TMP --> 0
 
 Variant #12
 rewrites: 48
 Nat: #1:Nat
-MODE --> delay(on)
+MODE:Mode --> delay(on)
 TMP --> 1 + #1:Nat
 
 Variant #13
 rewrites: 48
 Nat: 0
-MODE --> delay(off)
+MODE:Mode --> delay(off)
 TMP --> 0
 
 Variant #14
 rewrites: 48
 Nat: #1:Nat
-MODE --> delay(off)
+MODE:Mode --> delay(off)
 TMP --> 1 + #1:Nat
 
 No more variants.

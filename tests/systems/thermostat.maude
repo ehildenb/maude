@@ -1,30 +1,9 @@
 load ../../contrib/systems/thermostat.maude
 
-mod THERMOSTAT-COMFORTABLE is
-    extending THERMOSTAT .
+select THERMOSTAT-COMFORTABLE .
 
-    vars TIME TMP TMP' : Nat .
-    var IM : InMode . var MD : DelayMode . var MODE : Mode .
+reduce heat-rate(on, 10 + 3) .
 
-    --- thermostat control parameters
-    eq min   = 10 + 8      .
-    eq max   = 10 + 10 + 6 .
-    eq bound = 3           .
-
-    --- air conditioning warm-up/cool-down times
-    eq time-until(on)  = 4 .
-    eq time-until(off) = 2 .
-
-    --- heat from the furnace
-    eq source(on)         = 5 [variant] .
-    eq source(off)        = 0 [variant] .
-    eq source(delay(on))  = 2 [variant] .
-    eq source(delay(off)) = 2 [variant] .
-
-    --- constant loss to the outside
-    eq drain(TMP) = 3 [variant] .
-endm
-
-get variants heat-rate(MODE, TMP) .
+get variants heat-rate(MODE:Mode, TMP:Nat) .
 
 search { 0 , 10 + 10 , off } =>* C:Conf .

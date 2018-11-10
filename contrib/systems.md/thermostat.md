@@ -77,3 +77,43 @@ The following are parameters which must be filled in for your particular thermos
     -----------------------
 endm
 ```
+
+Thermostat Instantiation
+------------------------
+
+The following is an example thermostat over the naturals.
+
+```maude
+mod THERMOSTAT-COMFORTABLE is
+    extending THERMOSTAT + FVP-NUMBERS .
+    var TMP : Nat .
+```
+
+Here we setup a thermostat which tries to stay between `18` and `26`, and will switch states when `3` away from a boundary temperature.
+
+```maude
+    eq min   = 10 + 8      .
+    eq max   = 10 + 10 + 6 .
+    eq bound = 3           .
+```
+
+The thermostat takes `4` seconds to turn on, and `2` seconds to turn off.
+
+```maude
+    eq time-until(on)  = 4 .
+    eq time-until(off) = 2 .
+```
+
+When turning on/off, the heater is effective for `1` unit temperature per second.
+When on, the heater produces `5` units temperature per second, and when off produces nothing.
+Every second, `3` units of temperature are drained to the environment.
+
+```maude
+    eq source(on)         = 5 [variant] .
+    eq source(off)        = 0 [variant] .
+    eq source(delay(on))  = 2 [variant] .
+    eq source(delay(off)) = 2 [variant] .
+
+    eq drain(TMP) = 3 [variant] .
+endm
+```
