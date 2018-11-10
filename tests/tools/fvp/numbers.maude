@@ -75,3 +75,20 @@ get variants true ?= (1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 
 
 get variants true ?= (1 + V1:Nat <  1 + 1 + 1 + 1)
           /\ true ?= (1 + V1:Nat <= 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1) .
+
+fmod TEST-NON-CTOR-TERM is
+   protecting FVP-BOOL-EQFORM + FVP-NAT-PRED .
+
+    sort Foo .
+
+    vars N N' : Nat . var F : Foo .
+
+    op max-foo : Foo -> Nat .
+    -------------------------
+endfm
+
+--- **TODO**: Third line causes Maude to crash!
+get variants true ?= max(N', max-foo(F)) < N' .
+get variants true ?= N' <= N .
+get variants true ?= max(N', max-foo(F)) < N'
+          /\ true ?= N' <= N .
