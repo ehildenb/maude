@@ -190,6 +190,7 @@ fmod META-RLTL-COMMAND is
    op debug`command_on_.     : @Token@ Nat -> MetaRLTLCommand [ctor] .
    op show`level_.           : Nat -> MetaRLTLCommand [ctor] .
    op show`levels`.          : -> MetaRLTLCommand [ctor] .
+   op show`goals_.           : NeSet{Nat} -> MetaRLTLCommand [ctor] .
    op do`step_.              : Nat -> MetaRLTLCommand [ctor] .
    op get_parents_.          : Bound NeSet{Nat} -> MetaRLTLCommand [ctor] .
 endfm
@@ -220,6 +221,7 @@ fmod RLTL-COMMAND is
    op continue          : -> RLTLCommand [ctor] .
    op debug             : Qid Nat -> RLTLCommand [ctor] .
    op showlevel         : Bound -> RLTLCommand [ctor] .
+   op showgoal          : NeSet{Nat} -> RLTLCommand [ctor] .
    op dostep            : Nat -> RLTLCommand [ctor] .
    op getparents        : Bound Set{Nat} -> RLTLCommand [ctor] .
 endfm
@@ -281,6 +283,7 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'debug`command_on_.[T1,T2])      = debug(parse-token(T1),downNat(T2)) .
    eq rltl-parse((M,S),'show`level_.[T1])               = showlevel(downNat(T1)) .
    eq rltl-parse((M,S),'show`levels`..MetaRLTLCommand)  = showlevel(unbounded) .
+   eq rltl-parse((M,S),'show`goals_.[T1])               = showgoal(downNeNatSet(T1)) .
    eq rltl-parse((M,S),'get_parents_.[T1,T2])           = getparents(downBound(T1),downNeNatSet(T2)) .
 endfm
 
