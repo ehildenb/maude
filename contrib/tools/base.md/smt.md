@@ -121,5 +121,101 @@ fmod REAL-INTEGER is
   op toInteger : Real -> Integer [special (id-hook SMT_Symbol (toInteger))] .
   op isInteger : Real -> Boolean [special (id-hook SMT_Symbol (isInteger))] .
 endfm
+```
+
+Conversion Between `RAT` and `REAL`
+-----------------------------------
+
+```maude
+fmod RAT-REAL-CONVERSION is
+   protecting RAT .
+   protecting REAL .
+   protecting CONVERSION .
+
+   protecting VARIANT-SET .
+   protecting META-LEVEL .
+
+    var NzN : NzNat . var N : Nat . vars NzR NzR' : NzRat . vars R R' : Rat . var RL : Real . var Q : Qid . vars S S' S'' : String .
+    var TYPE : Type . var RL? : [Real] .
+    var GT : GroundTerm . var C : Constant . var V : Variable . vars T T' : Term . var TL : TermList .
+
+    op errorReal : -> [Real] .
+    --------------------------
+
+    op Rat2Real : Rat -> [Real] .
+    -----------------------------
+   ceq Rat2Real(R) = RL if C := getTerms(variants(upModule('RAT, true), upTerm(R))) /\ RL := downTerm(qid(string(getName(C)) + "/1.Real"), errorReal) .
+   ceq Rat2Real(R) = RL if V := upTerm(R)                                           /\ RL := downTerm(qid(string(getName(V)) + ":Real"),   errorReal) .
+
+   ceq Rat2Real(R) = RL? if Q[TL] := upTerm(R) /\ not (Q[TL] :: GroundTerm) /\ RL? := downTerm(Q[#Rat2Real(TL)], errorReal) .
+
+   ceq Rat2Real(NzN) = RL if RL := downTerm(qid(string(NzN, 10) + "/1.Real"), errorReal) .
+
+    eq Rat2Real(NzR + NzR') = Rat2Real(NzR) + Rat2Real(NzR') [variant] .
+    eq Rat2Real(NzR * NzR') = Rat2Real(NzR) * Rat2Real(NzR') [variant] .
+
+    eq Rat2Real(- R)    = - Rat2Real(R)              [variant] .
+
+    op #Rat2Real : TermList -> TermList .
+    -------------------------------------
+   ceq #Rat2Real(T) = upTerm(RL) if R := downTerm(T, errorRat) /\ RL := Rat2Real(R) .
+
+    eq #Rat2Real(empty)         = empty .
+    eq #Rat2Real((T , T' , TL)) = #Rat2Real(T) , #Rat2Real(T') , #Rat2Real(TL) .
+    -----------------------------
+---(
+    eq #Rat2Real(empty)         = empty .
+    eq #Rat2Real((T , T' , TL)) = #Rat2Real(T) , #Rat2Real(T') , #Rat2Real(TL) .
+
+    eq #Rat2Real('_+_[T])         = T .
+    eq #Rat2Real('_+_[T, T', TL]) = '_+_[#Rat2Real(T), #Rat2Real('_+_[T', TL])] .
+
+    eq #Rat2Real(Q[TL]) = if isSuccSymbol(Q)
+                           then '_+_[SuccSymbol2Real(Q), #Rat2Real(TL)]
+                           else Q[#Rat2Real(TL)]
+                          fi .
+
+    eq #Rat2Real(V) = qid(string(getName(V)) + ":Real") .
+    eq #Rat2Real(C) = if getType(C) == 'Boolean
+                        then C
+                        else qid(string(getName(C)) + "/1" + ".Real")
+                      fi .
+)---
+
+    op isSuccSymbol : Qid -> Bool .
+    -------------------------------
+    eq isSuccSymbol(Q) = substr(string(Q), 0, 2) == "s_" .
+
+    op SuccSymbol2Real : Qid -> Qid .
+    ---------------------------------
+    eq SuccSymbol2Real('s_) = '1/1.Real .
+   ceq SuccSymbol2Real(Q)   = qid(substr(S, 3, N) + "/1.Real")
+                           if Q =/= 's_
+                           /\ S := string(Q)
+                           /\ N := length(S) - 3 .
+
+    op errorRat : -> [Rat] .
+    ------------------------
+
+    op Real2Rat : Real -> [Rat] .
+    -----------------------------
+   ceq Real2Rat(RL) = R if T  := upTerm(RL)
+                        /\ T' := #Real2Rat(T)
+                        /\ R  := downTerm(T', errorRat) .
+
+    op #Real2Rat : Term -> Term .
+    -----------------------------
+    eq #Real2Rat(empty)         = empty .
+    eq #Real2Rat((T , T' , TL)) = #Real2Rat(T) , #Real2Rat(T') , #Real2Rat(TL) .
+
+    eq #Real2Rat(Q[TL]) = Q[#Real2Rat(TL)] .
+
+    eq #Real2Rat(V) = qid(string(getName(V)) + ":Rat") .
+   ceq #Real2Rat(C) = qid(S' + "/" + S'' + ".Real")
+                   if S   := string(getName(C))
+                   /\ N   := find(S, "/", length(S))
+                   /\ S'  := substr(S, 0, N)
+                   /\ S'' := substr(S, N + 1, length(S) - (N + 1)) .
+endfm
 
 ```
