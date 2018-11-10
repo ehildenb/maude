@@ -1,3 +1,7 @@
+SMT Bindings
+============
+
+```maude
 ***(
 
     This file is part of the Maude 2 interpreter.
@@ -25,6 +29,13 @@
 ***	Version alpha 104.
 ***
 
+load ../meta/narrowing.maude
+```
+
+Boolean Data
+------------
+
+```maude
 set include BOOL off .
 set include BOOLEAN off .
 
@@ -44,6 +55,13 @@ fmod BOOLEAN is
   op _?_:_ : Boolean Boolean Boolean -> Boolean [gather (e e e) prec 71 special (id-hook SMT_Symbol (ite))] .
 endfm
 
+view Boolean from TRIV to BOOLEAN is sort Elt to Boolean . endv
+```
+
+Integer Data
+------------
+
+```maude
 fmod INTEGER is
   protecting BOOLEAN .
   sort Integer .
@@ -68,7 +86,12 @@ fmod INTEGER is
   *** seems to break CVC4
   op _divisible_ : Integer Integer -> Boolean [prec 51 special (id-hook SMT_Symbol (divisible))] .
 endfm
+```
 
+Real Data
+---------
+
+```maude
 fmod REAL is
   protecting BOOLEAN .
   sort Real .
@@ -100,3 +123,4 @@ fmod REAL-INTEGER is
 endfm
 
 set include BOOLEAN on .
+```

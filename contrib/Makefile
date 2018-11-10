@@ -1,7 +1,7 @@
 # Settings
 # --------
 
-base_md:=tools/base.md/prelude-aux.md
+base_md:=$(wildcard tools/base.md/*.md)
 base_maude:=$(patsubst tools/base.md/%.md, tools/base/%.maude, $(base_md))
 
 meta_md:=$(wildcard tools/meta.md/*.md)

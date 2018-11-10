@@ -48,3 +48,4 @@ lib*.a
 /contrib/tools/lmc/*
 /contrib/tools/meta/*
 /contrib/tools/base/prelude-aux.maude
+/contrib/tools/base/smt.maude
