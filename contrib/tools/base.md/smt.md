@@ -122,5 +122,4 @@ fmod REAL-INTEGER is
   op isInteger : Real -> Boolean [special (id-hook SMT_Symbol (isInteger))] .
 endfm
 
-set include BOOLEAN on .
 ```
