@@ -166,3 +166,50 @@ Every second, `3` units of temperature are drained to the environment.
     eq drain(TMP) = 3 [variant] .
 endm
 ```
+
+### Instantiation to REAL
+
+```maude
+load ../tools/base/smt.maude
+
+view RingReal from UNITAL-ORDERED-RING to REAL is
+    sort RingBool to Boolean .
+    sort Ring     to Real    .
+
+    op 0 to term 0/1 .
+    op 1 to term 1/1 .
+endv
+
+mod THERMOSTAT-REAL is protecting THERMOSTAT{RingReal, RingReal} . endm
+```
+
+The following is an example thermostat over the reals.
+The bound and timing parameters are the same as for the integers, just interpereted over the reals instead.
+
+```maude
+mod THERMOSTAT-REAL-COMFORTABLE is
+    extending THERMOSTAT-REAL .
+    extending FVP-NUMBERS .
+
+    vars TIME TMP TMP' : Real .
+    var IM : InMode . var MD : DelayMode . var MODE : Mode .
+
+    eq min   = 18/1 .
+    eq max   = 26/1 .
+    eq bound = 3/1  .
+
+    eq time-until(on)  = 4/1 .
+    eq time-until(off) = 2/1 .
+
+    eq source(on)         = 5/1 [variant] .
+    eq source(off)        = 0/1 [variant] .
+    eq source(delay(on))  = 2/1 [variant] .
+    eq source(delay(off)) = 2/1 [variant] .
+```
+
+However, the drain to the outside is now inverse linear with the current temperature.
+
+```maude
+    eq drain(TMP) = 1/10 * (2/1 - TMP) [variant] .
+endm
+```

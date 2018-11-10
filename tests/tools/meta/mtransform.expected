@@ -327,7 +327,7 @@ endm
 ==========================================
 reduce in DIJKSTRA-UNCONDITIONALIZED : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -403,7 +403,7 @@ endm
 ==========================================
 reduce in FT-COMM-UNCONDITIONALIZED : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -530,11 +530,11 @@ endm
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M, init) .
 rewrites: 3
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : narrowSteps(M, init) .
 rewrites: 236

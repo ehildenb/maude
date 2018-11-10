@@ -7,3 +7,7 @@ reduce heat-rate(on, 10 + 3) .
 get variants heat-rate(MODE:Mode, TMP:Nat) .
 
 search { 0 , 10 + 10 , off } =>* C:Conf .
+
+select THERMOSTAT-REAL-COMFORTABLE .
+
+reduce heat-rate(on, 3/1) .
