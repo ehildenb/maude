@@ -64,7 +64,7 @@ result Bool: true
 ==========================================
 reduce in TEST-PURIFY : moduleIntersect(asTemplate(natOrderMod), asTemplate(
     natOrderMod)) == asTemplate(natOrderMod) .
-rewrites: 30
+rewrites: 32
 result Bool: true
 ==========================================
 reduce in TEST-PURIFY : moduleIntersect(asTemplate(natListMod), asTemplate(

@@ -13,7 +13,7 @@ Variant Sets
 ```maude
 fmod VARIANT-SET is
    protecting META-LEVEL .
-   protecting TERM-SET .
+   protecting SUBSTITUTION-SET .
 
     var N N' : Nat . var P : Parent . var B : Bool .
     var M : Module . var T : Term . var SUB : Substitution .
@@ -42,6 +42,35 @@ fmod VARIANT-SET is
     -------------------------------------
     eq getTerms(.VariantSet)            = .TermSet .
     eq getTerms({T, SUB, N, P, B} # VS) = T | getTerms(VS) .
+
+    op filterRenaming : VariantSet -> [VariantSet] .
+    ------------------------------------------------
+    eq filterRenaming({T , SUB , N , P , B}) = if not isRenaming(SUB) then {T, SUB, N, P, B} else .VariantSet fi .
+
+    eq filterRenaming(.VariantSet) = .VariantSet .
+    eq filterRenaming(V # V' # VS) = filterRenaming(V) # filterRenaming(V') # filterRenaming(VS) .
+endfm
+```
+
+Unification Sets
+----------------
+
+```maude
+fmod UNIFICATION is
+    protecting META-LEVEL .
+    protecting SUBSTITUTION-SET .
+
+    vars T T' : Term . vars N N' : Nat .
+    var M : Module . var SUB : Substitution .
+
+    op unifiers : Module Term Term -> [SubstitutionSet] .
+    -----------------------------------------------------
+    eq unifiers(M, T, T') = allUnifiers(M, T, T', 0) .
+
+    op allUnifiers : Module Term Term Nat -> [SubstitutionSet] .
+    ------------------------------------------------------------
+   ceq allUnifiers(M, T, T', N) = .SubstitutionSet                   if noUnifier    := metaUnify(M, T =? T', 0, N) .
+   ceq allUnifiers(M, T, T', N) = SUB | allUnifiers(M, T, T', N + 1) if { SUB , N' } := metaUnify(M, T =? T', 0, N) .
 endfm
 ```
 

@@ -4,20 +4,31 @@ rewrites: 1
 result Bool: true
 ==========================================
 reduce in SUBSTITUTION-SET : isRenaming(
-  'T:Foo <- 'B:Bar) .
-rewrites: 4
+  'T:Foo <- 'T2:Foo) .
+rewrites: 20
 result Bool: true
 ==========================================
 reduce in SUBSTITUTION-SET : isRenaming(
-  'T:Foo <- 'B:Bar ; 
+  'T:Foo <- 'B:Bar) .
+rewrites: 19
+result Bool: false
+==========================================
+reduce in SUBSTITUTION-SET : isRenaming(
+  'T:Foo <- 'T2:Foo ; 
   'X:Foo <- 'B:Bar) .
-rewrites: 7
+rewrites: 38
+result Bool: false
+==========================================
+reduce in SUBSTITUTION-SET : isRenaming(
+  'B:Bar <- 'B2:Bar ; 
+  'T:Foo <- 'T2:Foo) .
+rewrites: 39
 result Bool: true
 ==========================================
 reduce in SUBSTITUTION-SET : isRenaming(
   'T:Foo <- 'B:Bar ; 
   'X:Foo <- 'bar.Bar) .
-rewrites: 6
+rewrites: 19
 result Bool: false
 ==========================================
 reduce in SUBSTITUTION-SET : isRenaming(

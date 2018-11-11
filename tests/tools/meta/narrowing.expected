@@ -99,6 +99,34 @@ result Variant: {'true.Bool,
   'X:Nat <- '#1:Nat ; 
   'Y:Nat <- '#2:Nat,2,none,false}
 ==========================================
+reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(0))) .
+rewrites: 32
+result VariantSet: .VariantSet
+==========================================
+reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(4))) .
+rewrites: 108
+result VariantSet: {'false.Bool,
+  'X:Nat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat] ; 
+  'Y:Nat <- '%1:Nat,2,0,false} #
+{'true.Bool,
+  'X:Nat <- '%1:Nat ; 
+  'Y:Nat <- '_+_['%1:Nat,'%2:Nat],2,0,true} #
+{'true.Bool,
+  'X:Nat <- '_+_['1.NzNat,'%1:Nat] ; 
+  'Y:Nat <- '_+_['%1:Nat,'%2:NzNat],2,0,true}
+==========================================
+reduce in NAT-HARNESS : filterRenaming(variants(##m##, init(5))) .
+rewrites: 108
+result VariantSet: {'false.Bool,
+  'Y:Nat <- '%1:Nat ; 
+  'Z:NzNat <- '_+_['1.NzNat,'%1:Nat,'%2:Nat],2,0,false} #
+{'true.Bool,
+  'Y:Nat <- '_+_['%1:Nat,'%2:NzNat] ; 
+  'Z:NzNat <- '_+_['1.NzNat,'%1:Nat],2,0,true} #
+{'true.Bool,
+  'Y:Nat <- '_+_['%2:Nat,'%1:NzNat] ; 
+  'Z:NzNat <- '%1:NzNat,2,0,true}
+==========================================
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(0))) .
 rewrites: 10
 result Variable: '#1:Nat
@@ -124,6 +152,16 @@ result Constant: 'false.Bool
 reduce in NAT-HARNESS : getTerms(variants(##m##, init(7))) .
 rewrites: 13
 result Constant: 'true.Bool
+==========================================
+reduce in NAT-HARNESS : unifiers(##m##, init(0), init(1)) .
+rewrites: 10
+result Substitution: 
+  'X:Nat <- '_+_['1.NzNat,'#1:Nat] ; 
+  'Y:Nat <- '#1:Nat
+==========================================
+reduce in NAT-HARNESS : unifiers(##m##, init(6), init(7)) .
+rewrites: 9
+result SubstitutionSet: .SubstitutionSet
 ==========================================
 reduce in NARROWING : allNarrowSteps(upModule('EXT-CYCLE, true), 'f[
     'a.PreState], 0) .

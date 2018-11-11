@@ -6,7 +6,88 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
     SortDeclSet).
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('DIJKSTRA,
+reduce in REVERSE-RULES : reverseRules(asTemplate(upModule('BAKERY-FVP, true)))
+    .
+rewrites: 82
+result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
+    'NzNat .)
+subsort 'NcMode < 'Mode .
+subsort 'NzNat < 'Nat .
+eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+eq '_<=_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<=_['N:Nat,
+    'N':Nat] [none] .
+eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+eq '_<_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<_['N:Nat,
+    'N':Nat] [none] .
+eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+rl '<_`,_`,_`,_>['P:Mode,'0.Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    '0.Nat,'wait.NcMode,'Y:Nat] [label('p2_wait1)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'0.Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'crit.Mode,'Y:Nat] [label('p2_crit)] .
+rl '<_`,_`,_`,_>['P:Mode,'X:Nat,'wait.NcMode,'_+_['1.NzNat,'X:Nat]] =>
+    '<_`,_`,_`,_>['P:Mode,'X:Nat,'sleep.NcMode,'Y:Nat] [label('p2_sleep)] .
+rl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'0.Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'X:Nat,'Q:Mode,'0.Nat] [label('p1_wait1)] .
+rl '<_`,_`,_`,_>['sleep.NcMode,'0.Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] [label('p1_crit)] .
+rl '<_`,_`,_`,_>['wait.NcMode,'_+_['1.NzNat,'Y:Nat],'Q:Mode,'Y:Nat] =>
+    '<_`,_`,_`,_>['sleep.NcMode,'X:Nat,'Q:Mode,'Y:Nat] [label('p1_sleep)] .
+op '0 : nil -> 'Nat [ctor] .
+op '1 : nil -> 'NzNat [ctor] .
+op '<_`,_`,_`,_> : 'Mode 'Nat 'Mode 'Nat -> 'BState [ctor] .
+op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
+op 'crit : nil -> 'Mode [ctor] .
+op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+op 'max : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 'min : 'Nat 'Nat -> 'Nat [assoc comm] .
+op 's : 'Nat -> 'Nat [none] .
+op 'sd : 'Nat 'Nat -> 'Nat [comm] .
+op 'sleep : nil -> 'NcMode [ctor] .
+op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
+op 'wait : nil -> 'NcMode [ctor] .
+crl '<_`,_`,_`,_>['P:Mode,'X:Nat,'crit.Mode,'Y:Nat] => '<_`,_`,_`,_>['P:Mode,
+    'X:Nat,'wait.NcMode,'Y:Nat] if '_<_['Y:Nat,'X:Nat] = 'true.Bool [label(
+    'p2_wait2)] .
+crl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
+    'wait.NcMode,'X:Nat,'Q:Mode,'Y:Nat] if '_<=_['X:Nat,'Y:Nat] = 'true.Bool [
+    label('p1_wait2)] .
+==========================================
+reduce in REVERSE-RULES : reverseRules(asTemplate(upModule('QLOCK-STATE,
+    true))) == asTemplate(upModule('QLOCK-STATE, true)) .
+rewrites: 5
+result Bool: true
+==========================================
+reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
+    'DIJKSTRA, true)))) == asTemplate(upModule('DIJKSTRA, true)) .
+rewrites: 216
+result Bool: true
+==========================================
+reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
+    'BAKERY-FVP, true)))) == asTemplate(upModule('BAKERY-FVP, true)) .
+rewrites: 162
+result Bool: true
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 6 out of 40 sort tuples. First such tuple is (Type).
+Warning: sort declarations for operator resolveNames failed preregularity check
+    on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
+Warning: ctor declarations for associative operator __ are conflict on 138 out
+    of 17576 sort triples. First such triple is (ModuleDeclSet, SortDeclSet,
+    SortDeclSet).
+==========================================
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('DIJKSTRA,
     true))) .
 rewrites: 110
 result NeModuleDeclSet: (sorts '2Proc ; '2ProcSet ; 'Bool ; 'CProc ; 'Conf ;
@@ -94,17 +175,21 @@ op 'safe? : 'ProcSet -> 'Bool [none] .
 op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('BAKERY-FVP,
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('BAKERY-FVP,
     true))) .
-rewrites: 78
+rewrites: 82
 result NeModuleDeclSet: (sorts 'BState ; 'Bool ; 'Mode ; 'Nat ; 'NcMode ;
     'NzNat .)
 subsort 'NcMode < 'Mode .
 subsort 'NzNat < 'Nat .
 eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
 eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+eq '_<=_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<=_['N:Nat,
+    'N':Nat] [none] .
 eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
 eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+eq '_<_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<_['N:Nat,
+    'N':Nat] [none] .
 eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
 eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
 eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
@@ -147,42 +232,22 @@ op 'true : nil -> 'Bool [ctor special(
     id-hook('SystemTrue, nil))] .
 op 'wait : nil -> 'NcMode [ctor] .
 ==========================================
-reduce in UNCONDITIONALIZE : stripConditions(asTemplate(upModule('QLOCK-STATE,
-    true))) .
-rewrites: 4
-result NeModuleDeclSet: (sorts 'Bool* ; 'Nat* ; 'NeQueue ; 'Pred ; 'Queue ;
-    'Soup .)
-subsort 'Nat* < 'NeQueue .
-subsort 'Nat* < 'Soup .
-subsort 'NeQueue < 'Queue .
-eq '_in_['N:Nat*,'N:Nat*] = 'true.Pred [variant] .
-eq '_in_['N:Nat*,'__['N:Nat*,'S:Soup]] = 'true.Pred [variant] .
-eq 'dupl['__['N:Nat*,'N:Nat*]] = 'true.Pred [variant] .
-eq 'dupl['__['N:Nat*,'N:Nat*,'S:Soup]] = 'true.Pred [variant] .
-op '0 : nil -> 'Nat* [ctor] .
-op '1 : nil -> 'Nat* [ctor] .
-op '_:+_ : 'Nat* 'Nat* -> 'Nat* [assoc comm ctor id('0.Nat*)] .
-op '_=/=_ : 'Pred 'Pred -> 'Bool* [ctor] .
-op '_@_ : 'NeQueue 'NeQueue -> 'NeQueue [assoc ctor] .
-op '__ : 'Soup 'Soup -> 'Soup [assoc comm ctor id('mt.Soup)] .
-op '_in_ : 'Nat* 'Soup -> 'Pred [ctor] .
-op 'dupl : 'Soup -> 'Pred [ctor] .
-op 'mt : nil -> 'Soup [ctor] .
-op 'nil : nil -> 'Queue [ctor] .
-op 'true : nil -> 'Pred [ctor] .
-op 'tt : nil -> 'Bool* [ctor] .
+reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('QLOCK-STATE,
+    true))) == asTemplate(upModule('QLOCK-STATE, true)) .
+rewrites: 5
+result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('DIJKSTRA,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('DIJKSTRA,
     stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
 rewrites: 114
 result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('BAKERY-FVP,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('BAKERY-FVP,
     stripConditions(asTemplate(upModule('BAKERY-FVP, true))))) .
-rewrites: 82
+rewrites: 86
 result Bool: true
 ==========================================
-reduce in UNCONDITIONALIZE : wellFormed(fromTemplate('QLOCK-STATE,
+reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('QLOCK-STATE,
     stripConditions(asTemplate(upModule('QLOCK-STATE, true))))) .
 rewrites: 8
 result Bool: true
@@ -401,4 +466,70 @@ endm
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M) .
 rewrites: 2
 result Bool: true
+==========================================
+reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M, init) .
+rewrites: 3
+result Bool: true
+==========================================
+reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : narrowSteps(M, init) .
+rewrites: 85
+result NeNarrowStepResults: {'inmode-off : '_st_['<_`,_`,_>['%1:Nat,'_+_[
+    '%1:Nat,'%2:NzNat],'off.InMode],'_?=_['false.Bool,'_<_['_+_['%1:Nat,
+    '%2:NzNat],'_+_['bound.Nat,'min.Nat]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '%1:Nat ; 
+  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'inmode-off : '_st_['<_`,_`,_>[
+    '@1:Nat,'@2:Nat,'off.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'@2:Nat]],
+    '_?=_['false.Bool,'_<_['@2:Nat,'_+_['bound.Nat,'min.Nat]]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '@1:Nat ; 
+  'TMP:Nat <- '@2:Nat} || {'inmode-off : '_st_['<_`,_`,_>['_+_['%1:Nat,
+    '%2:Nat],'%1:Nat,'off.InMode],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Nat <- '%1:Nat} || {'inmode-on : '_st_['<_`,_`,_>['%1:Nat,'_+_['%1:Nat,
+    '%2:NzNat],'on.InMode],'_?=_['false.Bool,'_<_['max.Nat,'_+_['bound.Nat,
+    '%1:Nat,'%2:NzNat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '%1:Nat ; 
+  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'inmode-on : '_st_['<_`,_`,_>[
+    '@1:Nat,'@2:Nat,'on.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'@2:Nat]],
+    '_?=_['false.Bool,'_<_['max.Nat,'_+_['bound.Nat,'@2:Nat]]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '@1:Nat ; 
+  'TMP:Nat <- '@2:Nat} || {'inmode-on : '_st_['<_`,_`,_>['_+_['%1:Nat,'%2:Nat],
+    '%1:Nat,'on.InMode],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Nat <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'%1:Nat,'delay['off.InMode]],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Nat <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'@2:Nat,'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<_[
+    'max.Nat,'_+_['bound.Nat,'@2:Nat]]],'_?=_['true.Bool,'_<_['@1:Nat,
+    '@2:Nat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '@1:Nat ; 
+  'TMP:Nat <- '@2:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'_+_['%1:Nat,'%2:NzNat],'delay['off.InMode]],'_?=_['true.Bool,
+    '_<_['max.Nat,'_+_['bound.Nat,'%1:Nat,'%2:NzNat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Nat <- '%1:Nat ; 
+  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'turning-on : '_st_['<_`,_`,_>[
+    'time-until['on.InMode],'%1:Nat,'delay['on.InMode]],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Nat <- '%1:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'@2:Nat,'delay['on.InMode]],'_/\_['_?=_['true.Bool,'_<_[
+    '@1:Nat,'@2:Nat]],'_?=_['true.Bool,'_<_['@2:Nat,'_+_['bound.Nat,
+    'min.Nat]]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '@1:Nat ; 
+  'TMP:Nat <- '@2:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'_+_['%1:Nat,'%2:NzNat],'delay['on.InMode]],'_?=_['true.Bool,
+    '_<_['_+_['%1:Nat,'%2:NzNat],'_+_['bound.Nat,'min.Nat]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Nat <- '%1:Nat ; 
+  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]}
 Bye.

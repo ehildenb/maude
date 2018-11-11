@@ -106,6 +106,7 @@ generated for both the list and set functor assuming the 14 above).
 
 ```maude
 load terms.maude
+load ../meta/meta-aux.maude
 
 set include BOOL off .
 
@@ -202,21 +203,34 @@ fmod EQFORM-IMPL{X :: TRIV} is
   op _\/_ : Form{X}           Form{X}           -> Form{X}          [ditto] .
   ---------------------------------------------------------------------------
 
+  vars X X' : X$Elt .
   var EqL : EqLit{X} .
   vars F F' : Form{X} .
 
-  eq ff /\ EqL = ff .
-  eq tt \/ EqL = tt .
+  eq ~ tt = ff [variant] .
+  eq ~ ff = tt [variant] .
 
-  eq EqL /\ EqL = EqL .
-  eq EqL \/ EqL = EqL .
+  eq ff /\ ff = ff [variant] .
+  eq tt \/ tt = tt [variant] .
+
+  eq ff /\ EqL = ff [variant] .
+  eq tt \/ EqL = tt [variant] .
+
+  eq EqL /\ EqL = EqL [variant] .
+  eq EqL \/ EqL = EqL [variant] .
+
+  eq X ?= X = tt [variant] .
+  eq X != X = ff [variant] .
+
+  eq X ?= X' /\ X != X' = ff [variant] .
+  eq X ?= X' \/ X != X' = tt [variant] .
 
   --- Implication
   op _=>_  : Form{X} Form{X} -> Form{X} .
   op _<=>_ : Form{X} Form{X} -> Form{X} .
   ---------------------------------------
-  eq F  => F' = (~ F) \/ F' .
-  eq F <=> F' = (F => F') /\ (F' => F) .
+  eq F  => F' = (~ F) \/ F'            [variant] .
+  eq F <=> F' = (F => F') /\ (F' => F) [variant] .
 endfm
 
 view Term from TRIV to META-TERM is sort Elt to Term . endv
@@ -565,5 +579,146 @@ fmod EQFORM-SET is
   op (_|_) : EqFormNeSet     EqFormSet     -> EqFormNeSet    [ctor ditto] .
   op (_|_) : NormFormNeSet   NormFormSet   -> NormFormNeSet  [ctor ditto] .
   op (_|_) : FormNeSet       FormSet       -> FormNeSet      [ctor ditto] .
+
+  var S : Substitution . var NeSS : NeSubstitutionSet . var SS : SubstitutionSet .
+  var F : Form         . var FNeS : FormNeSet         . var FS : FormSet .
+
+  op _<<_ : FormSet SubstitutionSet -> [FormSet] .
+  ------------------------------------------------
+  eq mtFormSet  << SS = mtFormSet .
+  eq (F | FNeS) << SS = (F << SS) | (FNeS << SS) .
+
+  eq FS << .SubstitutionSet = mtFormSet .
+  eq FS << (S | NeSS)       = (FS << S) | (FS << NeSS) .
+endfm
+```
+
+```maude
+fmod EQFORM-OPERATIONS is
+  pr EQFORM .
+  pr TERM-EXTRA . --- defines vars() : Term -> QidSet
+
+  vars CF CG : NoTrueForm . vars DF DG : NoFalseForm .
+  vars F F1 F2 : Form . vars PEC1 : PosEqConj .
+  vars M : Module . vars T T' : Term .
+
+  op  wellFormed : Module Form -> [Bool] .
+  op $wellFormed : Module Form -> [Bool] .
+  ----------------------------------------
+ ceq  wellFormed(M,F) = $wellFormed(M,F) if wellFormed(M) .
+
+  eq $wellFormed(M,tt)       = true .
+  eq $wellFormed(M,ff)       = true .
+  eq $wellFormed(M,~ F)      = $wellFormed(M,F) .
+  eq $wellFormed(M,CF /\ CG) = $wellFormed(M,CF) and-then $wellFormed(M,CG) .
+  eq $wellFormed(M,DF \/ DG) = $wellFormed(M,DF) and-then $wellFormed(M,DG) .
+
+  eq $wellFormed(M,T ?= T') = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+  eq $wellFormed(M,T != T') = wellFormed(M,T) and-then wellFormed(M,T') and-then sameKind(M,leastSort(M,T),leastSort(M,T')) .
+
+  op normalize : Module Form -> [Form] .
+  --------------------------------------
+  eq normalize(M,tt)       = tt .
+  eq normalize(M,ff)       = ff .
+  eq normalize(M,~ F)      = ~ normalize(M,F) .
+  eq normalize(M,CF /\ CG) = normalize(M,CF) /\ normalize(M,CG) .
+  eq normalize(M,DF \/ DG) = normalize(M,DF) \/ normalize(M,DG) .
+
+  eq normalize(M,T ?= T') = getTerm(metaNormalize(M,T)) ?= getTerm(metaNormalize(M,T')) .
+  eq normalize(M,T != T') = getTerm(metaNormalize(M,T)) != getTerm(metaNormalize(M,T')) .
+
+  op reduce : Module Form -> [Form] .
+  -----------------------------------
+  eq reduce(M,tt)       = tt .
+  eq reduce(M,ff)       = ff .
+  eq reduce(M,~ F)      = ~ reduce(M,F) .
+  eq reduce(M,CF /\ CG) = reduce(M,CF) /\ reduce(M,CG) .
+  eq reduce(M,DF \/ DG) = reduce(M,DF) \/ reduce(M,DG) .
+
+  eq reduce(M,T ?= T') = getTerm(metaReduce(M,T)) ?= getTerm(metaReduce(M,T')) .
+  eq reduce(M,T != T') = getTerm(metaReduce(M,T)) != getTerm(metaReduce(M,T')) .
+
+  op vars : Form -> QidSet .
+  --------------------------
+  eq vars(tt)       = none .
+  eq vars(ff)       = none .
+  eq vars(~ F)      = vars(F) .
+  eq vars(CF /\ CG) = vars(CF) ; vars(CG) .
+  eq vars(DF \/ DG) = vars(DF) ; vars(DG) .
+
+  eq vars(T ?= T') = vars(T) ; vars(T') .
+  eq vars(T != T') = vars(T) ; vars(T') .
+
+  --- INP: PosConj
+  --- PRE: PosConj has no ff literals
+  --- OUT: UnificationProblem
+  op toUnifProb : PosEqConj -> UnificationProblem .
+  ------------------------------------------------
+  eq toUnifProb((T ?= T') /\ PEC1) = T =? T' /\ toUnifProb(PEC1) .
+  eq toUnifProb(T ?= T')           = T =? T' .
+endfm
+```
+
+```maude
+fmod EQFORM-SET-OPERATIONS is
+  pr EQFORM-OPERATIONS .
+  pr EQFORM-SET .
+  pr EQFORM-CNF .
+  pr EQFORM-DNF .
+
+  var C : EqConj . var D : EqDisj . vars CF CG : NoTrueForm . vars DF DG : NoFalseForm .
+  var FS : FormSet . var F F' : Form . var UP : UnificationProblem .
+  var PEA : PosEqLit . var PELS : PosEqLitSet . var T T' : Term . var M : Module .
+
+  op wellFormed : Module FormSet -> Bool .
+  ----------------------------------------
+  eq wellFormed(M , F | F' | FS) = wellFormed(M,F) and-then wellFormed(M,F' | FS) .
+  eq wellFormed(M , mtFormSet)   = true .
+
+  op disj-join : FormSet -> [Form] .
+  op disj-join : FormSet -> [Form] .
+  ----------------------------------
+  eq disj-join(F | FS)    = F \/ disj-join(FS) .
+  eq disj-join(mtFormSet) = ff .
+
+  op conj-join : FormSet -> [Form] .
+  op conj-join : FormSet -> [Form] .
+  ----------------------------------
+  eq conj-join(F | FS)    = F /\ conj-join(FS) .
+  eq conj-join(mtFormSet) = tt .
+
+  op toDisjSet  :   Form -> [EqDisjSet] .
+  op toDisjSet' : EqDisj -> [EqDisjSet] .
+  ---------------------------------------
+  eq toDisjSet (F)      = toDisjSet'(cnf(F)) .
+  eq toDisjSet'(tt)     = mtFormSet .
+  eq toDisjSet'(ff)     = mtFormSet .
+  eq toDisjSet'(D /\ F) = D | toDisjSet'(F) .
+
+  op toConjSet  :   Form -> [EqConjSet] .
+  op toConjSet' : EqConj -> [EqConjSet] .
+  ---------------------------------------
+  eq toConjSet (F)      = toConjSet'(dnf(F)) .
+  eq toConjSet'(tt)     = mtFormSet .
+  eq toConjSet'(ff)     = mtFormSet .
+  eq toConjSet'(C \/ F) = C | toConjSet'(F) .
+
+  op toEqSet : PosEqLitSet -> EquationSet .
+  -----------------------------------------
+  eq toEqSet((T ?= T') | PELS) = (eq T = T' [none] .) toEqSet(PELS) .
+  eq toEqSet(mtFormSet)        = none .
+
+  op toPosEqLits : PosEqForm          -> PosEqLitSet .
+  op toPosEqLits : UnificationProblem -> PosEqLitSet .
+  ----------------------------------------------------
+  eq toPosEqLits(tt)       = mtFormSet .
+  eq toPosEqLits(ff)       = mtFormSet .
+  eq toPosEqLits(T ?= T')  = T ?= T' .
+  eq toPosEqLits(~ F)      = toPosEqLits(F) .
+  eq toPosEqLits(CF /\ CG) = toPosEqLits(CF) | toPosEqLits(CG) .
+  eq toPosEqLits(DF \/ DG) = toPosEqLits(DF) | toPosEqLits(DG) .
+
+  eq toPosEqLits(T =? T' /\ UP) = (T ?= T') | toPosEqLits(UP) .
+  eq toPosEqLits(T =? T')       = T ?= T' .
 endfm
 ```

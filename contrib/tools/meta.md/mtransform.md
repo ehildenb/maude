@@ -81,28 +81,53 @@ fmod BUILDIN-EQUATIONS is
 endfm
 ```
 
-Removing Conditional Equations/Rules
-------------------------------------
+Reversing Rules
+---------------
+
+This transformation will reverse both conditional and unconditional rules by swapping the LHS and the RHS.
+It leaves conditions *unchanged* on conditional rules.
 
 ```maude
-fmod UNCONDITIONALIZE is
-   protecting META-LEVEL .
+fmod REVERSE-RULES is
    protecting MODULE-TEMPLATE .
 
-    vars Q OP : Qid . var M : Module . var FM : FModule . vars S S' CS : Sort .
-    vars T T' C' : Term . vars A A' : Attr . var AS : AttrSet .
-    var C : Condition . var V : Variable .
-    var H : Header . var MD : ModuleDecl . var MDS : ModuleDeclSet .
+    var IDS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet .
+    var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet .
     vars NeMDS NeMDS' : NeModuleDeclSet .
-    var IDS : ImportDeclSet . var SDS : SortDeclSet .
-    var SSDS : SubsortDeclSet . var OPDS : OpDeclSet . var MAS : MembAxSet .
-    var EQS : EquationSet . var RLS : RuleSet . vars EqC EqC' : EqCondition .
-    vars NeRLS NeRLS' : NeRuleSet .
+
+    vars T T' : Term . var C : Condition . var AS : AttrSet .
+    var M : Module .
+
+    op reverseRules : ModuleDeclSet -> [ModuleDeclSet] .
+    ----------------------------------------------------
+    eq reverseRules(IDS SDS SSDS OPDS MAS EQS) = IDS SDS SSDS OPDS MAS EQS .
+    eq reverseRules(NeMDS NeMDS')              = reverseRules(NeMDS) reverseRules(NeMDS') .
+
+    eq reverseRules(  rl T => T'      [ AS ] . ) = (  rl T' => T      [ AS ] . ) .
+    eq reverseRules( crl T => T' if C [ AS ] . ) = ( crl T' => T if C [ AS ] . ) .
+
+    op reverseRules : Module -> [Module] .
+    --------------------------------------
+    eq reverseRules(M) = fromTemplate(getName(M), reverseRules(asTemplate(M))) .
+endfm
 ```
 
-The following allow for simple manipulation of modules with coonditions, including removing and retrieving conditions for rules.
+Stripping Conditions
+--------------------
+
+Stripping conditions from the rules of a module creates an over-approximation of the transition system represented by them.
+Every rule application that could happen in the original system still can happen, but they may apply in more ways (when the condition would have stopped the rule application).
 
 ```maude
+fmod STRIP-CONDITIONS is
+    protecting META-LEVEL .
+    protecting MODULE-TEMPLATE .
+
+    var M : Module . var Q : Qid . vars T T' : Term . var C : Condition . var AS : AttrSet .
+    var IDS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet .
+    var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet .
+    vars NeMDS NeMDS' : NeModuleDeclSet . var MDS : ModuleDeclSet .
+
     op stripConditions : ModuleDeclSet -> [ModuleDeclSet] .
     -------------------------------------------------------
     eq stripConditions(IDS SDS SSDS OPDS MAS EQS)   = IDS SDS SSDS OPDS MAS EQS .
@@ -122,14 +147,28 @@ The following allow for simple manipulation of modules with coonditions, includi
     op conditionFor : Qid Module -> [Condition] .
     ---------------------------------------------
     eq conditionFor(Q, M) = conditionFor(Q, asTemplate(M)) .
+endfm
 ```
 
-### Unconditionalize
+Unconditionalize Transformation
+-------------------------------
 
-The general algorithm for unconditionalizing rules with equational conditions follows.
-It's parametric in several operators and sorts (prefixed below with `#`) about the module which the conditions will be translated into.
+This operation will "internalize" the conditions of the rules in a conditional theory.
+It assumes that the theory is topmost to begin with, and augments it with a new operator which allows storing a constraint as well as the original state.
+Conditions are added to the right-hand-side of the rule as accumulated constraints.
+This transformation is parametric in several operators and sorts (prefixed below with `#`) about the module which the conditions will be translated into.
 
 ```maude
+fmod UNCONDITIONALIZE is
+   protecting META-LEVEL .
+   protecting MODULE-TEMPLATE .
+
+    var M : Module . var Q : Qid . vars T T' C' : Term . vars EqC EqC' : EqCondition .
+    var A : Attr . var AS : AttrSet . var CS : Sort . var V : Variable .
+    var IDS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet .
+    var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet .
+    vars NeRLS NeRLS' : NeRuleSet . var RLS : RuleSet .
+
     op unconditionalize : ModuleDeclSet -> [ModuleDeclSet] .
     --------------------------------------------------------
    ceq unconditionalize(IDS SDS SSDS OPDS MAS EQS RLS)
