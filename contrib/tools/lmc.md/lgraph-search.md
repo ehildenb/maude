@@ -42,6 +42,11 @@ Natural numbers can be interpreted as `NodeId`s, which makes it possible to refe
     op _;_      : NodeSet NeNodeSet -> NeNodeSet [ditto] .
     ------------------------------------------------------
     eq NeNS ; NeNS = NeNS .
+
+    op _\_ : NodeSet NodeSet -> NodeSet .
+    -------------------------------------
+    eq       NS  \       NS'  = NS [owise] .
+    eq (ND ; NS) \ (ND ; NS') = NS \ (ND ; NS') .
 ```
 
 A `Fold` is a "witness" that a specified node is less general than another node.
