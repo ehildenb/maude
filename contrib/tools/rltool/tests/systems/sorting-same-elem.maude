@@ -3,7 +3,7 @@ load ../../rltool.maude
 
 (select SORTING-stop .)
 
-(use tool impsimp for validity on SORTING-DATA-PREDS with FOFORMSIMPLIFY .)
+(use tool impsimp for validity on SORTING-DATA-PREDS with FOFORMSIMPLIFY-IMPL .)
 
 (declare-vars (S:MSet) U (L:List) U (L':List) .)
 
@@ -20,3 +20,4 @@ load ../../rltool.maude
 (continue .)
 (step .)
 quit .
+
