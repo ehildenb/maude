@@ -263,6 +263,101 @@ In the data structure `FoldedLabeledGraph?`, we additionally maintain a `frontie
 endfm
 ```
 
+### TikZ Rendering of Folded Labeled Graphs
+
+To ease the presentation of these systems, a primitive TikZ rendering engine is supplied.
+Note that this does not attempt to do any placement of the nodes, so the result must still be tuned to produce a readable graph.
+
+```maude
+fmod FOLDING-LABELED-GRAPH-RENDER-TIKZ is
+   protecting FOLDING-LABELED-GRAPH .
+   protecting CONVERSION .
+
+    sort Lines .
+    ------------
+    subsort String < Lines .
+
+    sorts TikZLine TikZGrid .
+    -------------------------
+    subsort TikZLine < TikZGrid .
+
+    vars N N' : Nat . vars ND ND' : Node . var NID : NodeId . var NeNS : NeNodeSet . vars NS NS' NS'' : NodeSet .
+    var F : Fold . var L : Label . vars STR STR' STR'' : String .
+    vars NeNM NeNM' : NeNodeMap . var NM : NodeMap .
+    vars NeLG NeLG' : NeLabeledGraph . var LG : LabeledGraph .
+    vars TL TL' : TikZLine . var TG : TikZGrid .
+
+    op .Lines :             -> Lines .
+    op __     : Lines Lines -> Lines [assoc id: .Lines format(d n d)] .
+    -------------------------------------------------------------------
+
+    op TikZNode : NodeId Node -> Node .
+    op TikZLine :     NodeSet -> TikZLine .
+    ---------------------------------------
+
+    op .TikZGrid :                   -> TikZGrid .
+    op __        : TikZGrid TikZGrid -> TikZGrid [assoc id: .TikZGrid format(d n d)] .
+    ----------------------------------------------------------------------------------
+
+    op makeTikZNodes : NodeSet NodeMap -> [NodeSet] .
+    -------------------------------------------------
+    eq makeTikZNodes(.NodeSet , NM) = .NodeSet .
+    eq makeTikZNodes(ND ; NS  , NM) = TikZNode(ND, NM [ ND ]) ; makeTikZNodes(NS, NM) .
+
+    op makeTikZGrid : LabeledGraph NodeMap NodeSet         -> [TikZGrid] .
+    op makeTikZGrid : LabeledGraph NodeMap NodeSet NodeSet -> [TikZGrid] .
+    ----------------------------------------------------------------------
+    eq makeTikZGrid(LG, NM, NS) = makeTikZGrid(LG, NM, NS, .NodeSet) .
+
+    eq makeTikZGrid(LG, NM, .NodeSet, NS') = .TikZGrid .
+   ceq makeTikZGrid(LG, NM, NeNS, NS')     = TikZLine(ND ; NS) makeTikZGrid(LG, NM, NS'', NS' ; NS'')
+                                          if ND ; NS := makeTikZNodes(NeNS, NM)
+                                          /\ NS''    := succ(LG, NeNS) \ NS' .
+
+    op renderTikZLabel : Label -> String .
+    op renderTikZNode  : Node  -> String .
+    --------------------------------------
+    eq renderTikZNode(TikZNode(N, ND)) = "    \node[elliptic state] (s_" + string(N, 10) + ") {" + renderTikZNode(ND) + "};" .
+
+    op renderTikZAbsNode : Nat Nat Node -> String .
+    -----------------------------------------------
+    eq renderTikZAbsNode(N, N', TikZNode(NID, ND)) = "    \node[elliptic state] (s_" + string(NID, 10) + ") at (" + string(N, 10) + ",-" + string(N', 10) + ") {" + renderTikZNode(ND) + "};" .
+
+    op renderTikZAbsLine : Nat Nat TikZLine -> Lines .
+    --------------------------------------------------
+    eq renderTikZAbsLine(N, N', TikZLine(.NodeSet)) = .Lines .
+    eq renderTikZAbsLine(N, N', TikZLine(ND ; NS))  = renderTikZAbsNode(N    , N'       , ND)
+                                                      renderTikZAbsLine(N + 2, sd(N', 1), TikZLine(NS)) .
+
+    op renderTikZAbsGrid : Nat TikZGrid -> Lines .
+    ----------------------------------------------
+    eq renderTikZAbsGrid(N, .TikZGrid) = .Lines .
+    eq renderTikZAbsGrid(N, TL TG)     = renderTikZAbsLine(0, N, TL)
+                                         renderTikZAbsGrid(N + 4, TG) .
+
+    op renderTikZPaths : LabeledGraph -> Lines .
+    --------------------------------------------
+    eq renderTikZPaths(.LabeledGraph) = .Lines .
+    eq renderTikZPaths(NeLG NeLG')    = renderTikZPaths(NeLG) renderTikZPaths(NeLG') .
+
+   ceq renderTikZPaths(N -[ L ]-> N'[F]) = "    \\path[" + STR + "] (s_" + string(N, 10) + ") edge [" + STR' + "] node [pos=0.3," + STR'' + "] {" + renderTikZLabel(L) + "} (s_" + string(N', 10) + ");"
+                                        if STR STR' STR'' := if F == .Fold and N =/= N' then  "->" "bend left=10"               "right"
+                                                        else if                N  == N' then "->>" "loop below,min distance=25" "left"
+                                                                                        else "->>" "bend left=10"               "left"
+                                                             fi fi .
+
+    op renderTikZGraph : NodeSet FoldedLabeledGraph? -> Lines .
+    -----------------------------------------------------------
+    eq renderTikZGraph(NS, LG | NM | N | NS')
+     = "\tikzset{elliptic state/.style={draw,ellipse}}"
+       "\begin{tikzpicture}[shorten >=1pt,on grid,transform shape]"
+       "\footnotesize"
+       renderTikZAbsGrid(10, makeTikZGrid(withoutFolds(LG), NM, NS, NS))
+       renderTikZPaths(LG)
+       "\\end{tikzpicture}" .
+endfm
+```
+
 Folding Graph Searches
 ----------------------
 
