@@ -200,6 +200,19 @@ fmod FOLDING-LABELED-GRAPH is
     eq withoutFolds(N[F] -[L]-> N'[F']) = N -[L]-> N' .
 ```
 
+We can access a `FoldingLabeledGraph?` in various ways, including the `pred` and `succ` relations, and transitive closures of them.
+
+```maude
+    op succ : LabeledGraph NodeSet -> [NodeSet] .
+    op pred : LabeledGraph NodeSet -> [NodeSet] .
+    ---------------------------------------------
+    eq succ(ND -[ L ]-> ND' LG, ND ; NS) = ND' ; succ(LG, ND ; NS) .
+    eq succ(                LG,      NS) = .NodeSet [owise] .
+
+    eq pred(ND -[ L ]-> ND' LG, ND' ; NS) = ND ; pred(LG, ND' ; NS) .
+    eq pred(                LG,       NS) = .NodeSet [owise] .
+```
+
 A `FoldedLabeledGraph` will use the `NodeMap` to store nodes, instead of directly storing them as nodes.
 This will allow for "folding" the graph when a certain node is subsumed by another.
 In the data structure `FoldedLabeledGraph?`, we additionally maintain a `frontier` of nodes which have not been explored for successor states yet.
