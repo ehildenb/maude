@@ -173,9 +173,10 @@ The `Label` used is left abstract.
 fmod FOLDING-LABELED-GRAPH is
    protecting FOLDING-NODEMAP .
 
-    var N : Nat . vars NID NID' NID'' : NodeId . vars ND ND' : Node .
+    vars N N' : Nat . vars NID NID' NID'' : NodeId . vars ND ND' : Node .
     vars NeNS NeNS' : NeNodeSet . var NS NS' NS'' : NodeSet .
     vars NM NM' NM'' : NodeMap .
+    vars F F' : Fold .
 
     sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
     -----------------------------------------------------
@@ -191,6 +192,12 @@ fmod FOLDING-LABELED-GRAPH is
 
     op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
     --------------------------------------------------------
+
+    op withoutFolds : LabeledGraph -> [LabeledGraph] .
+    --------------------------------------------------
+    eq withoutFolds(.LabeledGraph)      = .LabeledGraph .
+    eq withoutFolds(NeLG NeLG')         = withoutFolds(NeLG) withoutFolds(NeLG') .
+    eq withoutFolds(N[F] -[L]-> N'[F']) = N -[L]-> N' .
 ```
 
 A `FoldedLabeledGraph` will use the `NodeMap` to store nodes, instead of directly storing them as nodes.
