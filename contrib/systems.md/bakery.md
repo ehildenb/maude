@@ -118,10 +118,10 @@ fmod BAKERY-SYNTAX is
     -----------------------------
 
     op none :                         -> ProcIdleSet .
-    op __   : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none] .
-    op __   : ProcWaitSet ProcWaitSet -> ProcWaitSet [assoc comm id: none] .
-    op __   :     ProcSet     ProcSet ->     ProcSet [assoc comm id: none] .
-    ------------------------------------------------------------------------
+    op __   : ProcIdleSet ProcIdleSet -> ProcIdleSet [assoc comm id: none format(d s d)] .
+    op __   : ProcWaitSet ProcWaitSet -> ProcWaitSet [ditto] .
+    op __   :     ProcSet     ProcSet ->     ProcSet [ditto] .
+    ----------------------------------------------------------
 endfm
 
 mod BAKERY is
@@ -132,8 +132,8 @@ mod BAKERY is
     sort Conf .
     -----------
 
-    op _;_;_ : Name Name ProcSet -> Conf .
-    --------------------------------------
+    op _;_;_ : Name Name ProcSet -> Conf [prec 56 format(d s s s s d)] .
+    --------------------------------------------------------------------
     rl [wake] : N ; M ; [idle]    PS => (s N) ; M     ; [wait(N)] PS [narrowing] .
     rl [crit] : N ; M ; [wait(M)] PS => N     ; M     ; [crit(M)] PS [narrowing] .
     rl [exit] : N ; M ; [crit(M)] PS => N     ; (s M) ; [idle]    PS [narrowing] .
