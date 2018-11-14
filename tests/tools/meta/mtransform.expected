@@ -327,7 +327,7 @@ endm
 ==========================================
 reduce in DIJKSTRA-UNCONDITIONALIZED : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -403,7 +403,7 @@ endm
 ==========================================
 reduce in FT-COMM-UNCONDITIONALIZED : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -413,123 +413,285 @@ Warning: ctor declarations for associative operator __ are conflict on 138 out
     SortDeclSet).
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : M .
-rewrites: 121
-result SModule: mod 'THERMOSTAT is
+rewrites: 119
+result SModule: mod 'THERMOSTAT-INT is
   protecting 'FVP-BOOL-EQFORM .
-  protecting 'FVP-NAT-PRED .
-  protecting 'FVP-NUMBERS .
-  sorts 'CConf ; 'Conf ; 'DelayMode ; 'InMode ; 'Mode .
+  sorts 'Bool ; 'CConf ; 'Conf ; 'DelayMode ; 'InMode ; 'Int ; 'Mode ; 'Nat ;
+    'NzInt ; 'NzNat ; 'NzNeg .
   subsort 'DelayMode < 'Mode .
   subsort 'InMode < 'Mode .
-  op '<_`,_`,_> : 'Nat 'Nat 'Mode -> 'Conf [ctor] .
+  subsort 'Nat < 'Int .
+  subsort 'NzInt < 'Int .
+  subsort 'NzNat < 'Nat .
+  subsort 'NzNat < 'NzInt .
+  subsort 'NzNeg < 'NzInt .
+  op '-_ : 'Int -> 'Int [none] .
+  op '-_ : 'NzNat -> 'NzNeg [ctor] .
+  op '0 : nil -> 'Nat [ctor] .
+  op '1 : nil -> 'NzNat [ctor] .
+  op '<_`,_`,_> : 'Int 'Int 'Mode -> 'Conf [ctor] .
+  op '_+_ : 'Int 'Int -> 'Int [assoc comm id('0.Nat)] .
+  op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+  op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+  op '_-_ : 'Int 'Int -> 'Int [none] .
+  op '_<=_ : 'Int 'Int -> 'Bool [none] .
+  op '_<=_ : 'Nat 'Nat -> 'Bool [none] .
+  op '_<_ : 'Int 'Int -> 'Bool [none] .
+  op '_<_ : 'Nat 'Nat -> 'Bool [none] .
+  op '_monus_ : 'Nat 'Nat -> 'Nat [none] .
   op '_st_ : 'Conf 'Form`{Bool`} -> 'CConf [ctor prec(57)] .
-  op '`{_`,_`,_`} : 'Nat 'Nat 'Mode -> 'Conf [ctor] .
-  op 'bound : nil -> 'Nat [none] .
+  op '`{_`,_`,_`} : 'Int 'Int 'Mode -> 'Conf [ctor] .
+  op 'bound : nil -> 'Int [none] .
   op 'delay : 'InMode -> 'DelayMode [ctor] .
-  op 'heat-rate : 'Mode 'Nat -> 'Nat [none] .
-  op 'max : nil -> 'Nat [none] .
-  op 'min : nil -> 'Nat [none] .
+  op 'drain : 'Int -> 'Int [none] .
+  op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+  op 'heat-rate : 'Mode 'Int -> 'Int [none] .
+  op 'max : nil -> 'Int [none] .
+  op 'max : 'Int 'Int -> 'Int [assoc comm] .
+  op 'max : 'Nat 'Nat -> 'Nat [assoc comm] .
+  op 'min : nil -> 'Int [none] .
+  op 'min : 'Int 'Int -> 'Int [assoc comm] .
+  op 'min : 'Nat 'Nat -> 'Nat [assoc comm] .
   op 'off : nil -> 'InMode [ctor] .
   op 'on : nil -> 'InMode [ctor] .
-  op 'time-until : 'InMode -> 'Nat [none] .
+  op 's : 'Nat -> 'Nat [none] .
+  op 'sd : 'Nat 'Nat -> 'Nat [comm] .
+  op 'source : 'Mode -> 'Int [none] .
+  op 'time-until : 'InMode -> 'Int [none] .
+  op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
   none
-  none
-  rl '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,'MODE:Mode],'###COND###:Form`{Bool`}]
-    => '_st_['`{_`,_`,_`}['TIME:Nat,'heat-rate['MODE:Mode,'TMP:Nat],
+  eq '-_['0.Nat] = '0.Nat [variant] .
+  eq '-_['-_['I:Int]] = 'I:Int [variant] .
+  eq '_+_['NzN:NzNat,'-_['_+_['N:Nat,'NzN:NzNat]]] = '-_['N:Nat] [variant] .
+  eq '_+_['-_['NzN:NzNat],'-_['NzN':NzNat]] = '-_['_+_['NzN:NzNat,'NzN':NzNat]]
+    [variant] .
+  eq '_-_['I:Int,'I':Int] = '_+_['I:Int,'-_['I':Int]] [variant] .
+  eq '_<=_['N:Nat,'-_['NzN':NzNat]] = 'false.Bool [variant] .
+  eq '_<=_['N:Nat,'_+_['N:Nat,'N':Nat]] = 'true.Bool [variant] .
+  eq '_<=_['-_['NzN:NzNat],'N':Nat] = 'true.Bool [variant] .
+  eq '_<=_['-_['NzN:NzNat],'-_['NzN':NzNat]] = '_<=_['NzN':NzNat,'NzN:NzNat] [
+    variant] .
+  eq '_<=_['_+_['N:Nat,'NzN:NzNat],'N:Nat] = 'false.Bool [variant] .
+  eq '_<=_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<=_['N:Nat,
+    'N':Nat] [none] .
+  eq '_<_['N:Nat,'-_['NzN':NzNat]] = 'false.Bool [variant] .
+  eq '_<_['N:Nat,'_+_['N:Nat,'NzN:NzNat]] = 'true.Bool [variant] .
+  eq '_<_['-_['NzN:NzNat],'N':Nat] = 'true.Bool [variant] .
+  eq '_<_['-_['NzN:NzNat],'-_['NzN':NzNat]] = '_<_['NzN':NzNat,'NzN:NzNat] [
+    variant] .
+  eq '_<_['_+_['N:Nat,'N':Nat],'N:Nat] = 'false.Bool [variant] .
+  eq '_<_['_+_['N:Nat,'NzN:NzNat],'_+_['N':Nat,'NzN:NzNat]] = '_<_['N:Nat,
+    'N':Nat] [none] .
+  eq '_monus_['N:Nat,'_+_['N:Nat,'M:Nat]] = '0.Nat [variant] .
+  eq '_monus_['_+_['N:Nat,'M:Nat],'N:Nat] = 'M:Nat [variant] .
+  eq 'heat-rate['MODE:Mode,'TMP:Int] = '_-_['_+_['TMP:Int,'source['MODE:Mode]],
+    'drain['TMP:Int]] [none] .
+  eq 'max['N':Nat,'-_['NzN:NzNat]] = 'N':Nat [variant] .
+  eq 'max['N:Nat,'_+_['N:Nat,'M:Nat]] = '_+_['N:Nat,'M:Nat] [variant] .
+  eq 'max['-_['NzN:NzNat],'-_['NzN':NzNat]] = '-_['min['NzN:NzNat,'NzN':NzNat]]
+    [variant] .
+  eq 'min['N':Nat,'-_['NzN:NzNat]] = '-_['NzN:NzNat] [variant] .
+  eq 'min['N:Nat,'_+_['N:Nat,'M:Nat]] = 'N:Nat [variant] .
+  eq 'min['-_['NzN:NzNat],'-_['NzN':NzNat]] = '-_['max['NzN:NzNat,'NzN':NzNat]]
+    [variant] .
+  eq 's['N:Nat] = '_+_['1.NzNat,'N:Nat] [variant] .
+  eq 'sd['N:Nat,'_+_['N:Nat,'M:Nat]] = 'M:Nat [variant] .
+  rl '_st_['<_`,_`,_>['TIME:Int,'TMP:Int,'MODE:Mode],'###COND###:Form`{Bool`}]
+    => '_st_['`{_`,_`,_`}['TIME:Int,'heat-rate['MODE:Mode,'TMP:Int],
     'MODE:Mode],'###COND###:Form`{Bool`}] [narrowing label('tick)] .
-  rl '_st_['`{_`,_`,_`}['0.Nat,'TMP:Nat,'delay['IM:InMode]],
-    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['0.Nat,'TMP:Nat,'IM:InMode],
+  rl '_st_['`{_`,_`,_`}['0.Nat,'TMP:Int,'delay['IM:InMode]],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['0.Nat,'TMP:Int,'IM:InMode],
     '###COND###:Form`{Bool`}] [narrowing label('delay-over)] .
-  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'off.InMode],
-    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
-    'off.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['TMP:Nat,'_+_[
-    'min.Nat,'bound.Nat]],'false.Bool]]] [narrowing label('inmode-off)] .
-  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'off.InMode],
+  rl '_st_['`{_`,_`,_`}['TIME:Int,'TMP:Int,'DM:DelayMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['_-_['TIME:Int,'1.NzNat],
+    'TMP:Int,'DM:DelayMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['0.Nat,
+    'TIME:Int],'true.Bool]]] [narrowing label('delaying)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Int,'TMP:Int,'off.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Int,'TMP:Int,
+    'off.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['TMP:Int,'_+_[
+    'min.Int,'bound.Int]],'false.Bool]]] [narrowing label('inmode-off)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Int,'TMP:Int,'off.InMode],
     '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['time-until['on.InMode],
-    'TMP:Nat,'delay['on.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
-    'TMP:Nat,'_+_['min.Nat,'bound.Nat]],'true.Bool]]] [narrowing label(
+    'TMP:Int,'delay['on.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
+    'TMP:Int,'_+_['min.Int,'bound.Int]],'true.Bool]]] [narrowing label(
     'turning-on)] .
-  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'on.InMode],
-    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
-    'on.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['max.Nat,'_+_[
-    'bound.Nat,'TMP:Nat]],'false.Bool]]] [narrowing label('inmode-on)] .
-  rl '_st_['`{_`,_`,_`}['TIME:Nat,'TMP:Nat,'on.InMode],
+  rl '_st_['`{_`,_`,_`}['TIME:Int,'TMP:Int,'on.InMode],
+    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Int,'TMP:Int,
+    'on.InMode],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_['max.Int,'_+_[
+    'bound.Int,'TMP:Int]],'false.Bool]]] [narrowing label('inmode-on)] .
+  rl '_st_['`{_`,_`,_`}['TIME:Int,'TMP:Int,'on.InMode],
     '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['time-until['off.InMode],
-    'TMP:Nat,'delay['off.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
-    'max.Nat,'_+_['bound.Nat,'TMP:Nat]],'true.Bool]]] [narrowing label(
+    'TMP:Int,'delay['off.InMode]],'_/\_['###COND###:Form`{Bool`},'_?=_['_<_[
+    'max.Int,'_+_['bound.Int,'TMP:Int]],'true.Bool]]] [narrowing label(
     'turning-off)] .
-  rl '_st_['`{_`,_`,_`}['_+_['1.NzNat,'TIME:Nat],'TMP:Nat,'DM:DelayMode],
-    '###COND###:Form`{Bool`}] => '_st_['<_`,_`,_>['TIME:Nat,'TMP:Nat,
-    'DM:DelayMode],'###COND###:Form`{Bool`}] [narrowing label('delaying)] .
 endm
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M) .
 rewrites: 2
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : wellFormed(M, init) .
 rewrites: 3
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in THERMOSTAT-UNCONDITIONALIZED-TEST : narrowSteps(M, init) .
-rewrites: 85
-result NeNarrowStepResults: {'inmode-off : '_st_['<_`,_`,_>['%1:Nat,'_+_[
-    '%1:Nat,'%2:NzNat],'off.InMode],'_?=_['false.Bool,'_<_['_+_['%1:Nat,
-    '%2:NzNat],'_+_['bound.Nat,'min.Nat]]]],
+rewrites: 236
+result NeNarrowStepResults: {'inmode-off : '_st_['<_`,_`,_>['%1:Nat,'-_[
+    '%2:NzNat],'off.InMode],'ff.FalseLit`{Bool`}],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '%1:Nat ; 
-  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'inmode-off : '_st_['<_`,_`,_>[
-    '@1:Nat,'@2:Nat,'off.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'@2:Nat]],
-    '_?=_['false.Bool,'_<_['@2:Nat,'_+_['bound.Nat,'min.Nat]]]]],
+  'TIME:Int <- '%1:Nat ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'inmode-off : '_st_['<_`,_`,_>['%2:Nat,'_+_[
+    '%1:NzNat,'%2:Nat],'off.InMode],'_?=_['false.Bool,'_<_['_+_['%1:NzNat,
+    '%2:Nat],'_+_['bound.Int,'min.Int]]]],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '@1:Nat ; 
-  'TMP:Nat <- '@2:Nat} || {'inmode-off : '_st_['<_`,_`,_>['_+_['%1:Nat,
+  'TIME:Int <- '%2:Nat ; 
+  'TMP:Int <- '_+_['%1:NzNat,'%2:Nat]} || {'inmode-off : '_st_['<_`,_`,_>[
+    '@1:Int,'@2:Int,'off.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Int,'@2:Int]],
+    '_?=_['false.Bool,'_<_['@2:Int,'_+_['bound.Int,'min.Int]]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '@1:Int ; 
+  'TMP:Int <- '@2:Int} || {'inmode-off : '_st_['<_`,_`,_>['-_['%1:NzNat],
+    '%2:Nat,'off.InMode],'_?=_['false.Bool,'_<_['%2:Nat,'_+_['bound.Int,
+    'min.Int]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '%2:Nat} || {'inmode-off : '_st_['<_`,_`,_>['-_['%1:NzNat],'-_[
+    '%2:NzNat],'off.InMode],'_/\_['_?=_['true.Bool,'_<_['%2:NzNat,'%1:NzNat]],
+    '_?=_['false.Bool,'_<_['-_['%2:NzNat],'_+_['bound.Int,'min.Int]]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'inmode-off : '_st_['<_`,_`,_>['-_[
+    '@1:NzNat],'-_['_+_['@1:NzNat,'@2:Nat]],'off.InMode],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['@1:NzNat] ; 
+  'TMP:Int <- '-_['_+_['@1:NzNat,'@2:Nat]]} || {'inmode-off : '_st_['<_`,_`,_>[
+    '-_['_+_['@1:NzNat,'@2:NzNat]],'-_['@2:NzNat],'off.InMode],'_?=_[
+    'false.Bool,'_<_['-_['@2:NzNat],'_+_['bound.Int,'min.Int]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['_+_['@1:NzNat,'@2:NzNat]] ; 
+  'TMP:Int <- '-_['@2:NzNat]} || {'inmode-off : '_st_['<_`,_`,_>['_+_['%1:Nat,
     '%2:Nat],'%1:Nat,'off.InMode],'ff.FalseLit`{Bool`}],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
-  'TMP:Nat <- '%1:Nat} || {'inmode-on : '_st_['<_`,_`,_>['%1:Nat,'_+_['%1:Nat,
-    '%2:NzNat],'on.InMode],'_?=_['false.Bool,'_<_['max.Nat,'_+_['bound.Nat,
-    '%1:Nat,'%2:NzNat]]]],
+  'TIME:Int <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Int <- '%1:Nat} || {'inmode-on : '_st_['<_`,_`,_>['%1:Nat,'-_[
+    '%2:NzNat],'on.InMode],'ff.FalseLit`{Bool`}],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '%1:Nat ; 
-  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'inmode-on : '_st_['<_`,_`,_>[
-    '@1:Nat,'@2:Nat,'on.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Nat,'@2:Nat]],
-    '_?=_['false.Bool,'_<_['max.Nat,'_+_['bound.Nat,'@2:Nat]]]]],
+  'TIME:Int <- '%1:Nat ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'inmode-on : '_st_['<_`,_`,_>['%2:Nat,'_+_[
+    '%1:NzNat,'%2:Nat],'on.InMode],'_?=_['false.Bool,'_<_['max.Int,'_+_[
+    'bound.Int,'%1:NzNat,'%2:Nat]]]],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '@1:Nat ; 
-  'TMP:Nat <- '@2:Nat} || {'inmode-on : '_st_['<_`,_`,_>['_+_['%1:Nat,'%2:Nat],
-    '%1:Nat,'on.InMode],'ff.FalseLit`{Bool`}],
+  'TIME:Int <- '%2:Nat ; 
+  'TMP:Int <- '_+_['%1:NzNat,'%2:Nat]} || {'inmode-on : '_st_['<_`,_`,_>[
+    '@1:Int,'@2:Int,'on.InMode],'_/\_['_?=_['true.Bool,'_<_['@1:Int,'@2:Int]],
+    '_?=_['false.Bool,'_<_['max.Int,'_+_['bound.Int,'@2:Int]]]]],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
-  'TMP:Nat <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+  'TIME:Int <- '@1:Int ; 
+  'TMP:Int <- '@2:Int} || {'inmode-on : '_st_['<_`,_`,_>['-_['%1:NzNat],
+    '%2:Nat,'on.InMode],'_?=_['false.Bool,'_<_['max.Int,'_+_['bound.Int,
+    '%2:Nat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '%2:Nat} || {'inmode-on : '_st_['<_`,_`,_>['-_['%1:NzNat],'-_[
+    '%2:NzNat],'on.InMode],'_/\_['_?=_['true.Bool,'_<_['%2:NzNat,'%1:NzNat]],
+    '_?=_['false.Bool,'_<_['max.Int,'_+_['bound.Int,'-_['%2:NzNat]]]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'inmode-on : '_st_['<_`,_`,_>['-_['@1:NzNat],
+    '-_['_+_['@1:NzNat,'@2:Nat]],'on.InMode],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['@1:NzNat] ; 
+  'TMP:Int <- '-_['_+_['@1:NzNat,'@2:Nat]]} || {'inmode-on : '_st_['<_`,_`,_>[
+    '-_['_+_['@1:NzNat,'@2:NzNat]],'-_['@2:NzNat],'on.InMode],'_?=_[
+    'false.Bool,'_<_['max.Int,'_+_['bound.Int,'-_['@2:NzNat]]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['_+_['@1:NzNat,'@2:NzNat]] ; 
+  'TMP:Int <- '-_['@2:NzNat]} || {'inmode-on : '_st_['<_`,_`,_>['_+_['%1:Nat,
+    '%2:Nat],'%1:Nat,'on.InMode],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Int <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
     'off.InMode],'%1:Nat,'delay['off.InMode]],'ff.FalseLit`{Bool`}],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
-  'TMP:Nat <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
-    'off.InMode],'@2:Nat,'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<_[
-    'max.Nat,'_+_['bound.Nat,'@2:Nat]]],'_?=_['true.Bool,'_<_['@1:Nat,
-    '@2:Nat]]]],
+  'TIME:Int <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Int <- '%1:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'%2:Nat,'delay['off.InMode]],'_?=_['true.Bool,'_<_['max.Int,
+    '_+_['bound.Int,'%2:Nat]]]],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '@1:Nat ; 
-  'TMP:Nat <- '@2:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
-    'off.InMode],'_+_['%1:Nat,'%2:NzNat],'delay['off.InMode]],'_?=_['true.Bool,
-    '_<_['max.Nat,'_+_['bound.Nat,'%1:Nat,'%2:NzNat]]]],
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '%2:Nat} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'@2:Int,'delay['off.InMode]],'_/\_['_?=_['true.Bool,'_<_[
+    'max.Int,'_+_['bound.Int,'@2:Int]]],'_?=_['true.Bool,'_<_['@1:Int,
+    '@2:Int]]]],
   'IM:InMode <- 'on.InMode ; 
-  'TIME:Nat <- '%1:Nat ; 
-  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]} || {'turning-on : '_st_['<_`,_`,_>[
+  'TIME:Int <- '@1:Int ; 
+  'TMP:Int <- '@2:Int} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'-_['%2:NzNat],'delay['off.InMode]],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '%1:Nat ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'-_['%2:NzNat],'delay['off.InMode]],'_/\_['_?=_['true.Bool,
+    '_<_['max.Int,'_+_['bound.Int,'-_['%2:NzNat]]]],'_?=_['true.Bool,'_<_[
+    '%2:NzNat,'%1:NzNat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'-_['@2:NzNat],'delay['off.InMode]],'_?=_['true.Bool,'_<_[
+    'max.Int,'_+_['bound.Int,'-_['@2:NzNat]]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['_+_['@1:NzNat,'@2:NzNat]] ; 
+  'TMP:Int <- '-_['@2:NzNat]} || {'turning-off : '_st_['<_`,_`,_>['time-until[
+    'off.InMode],'-_['_+_['@1:NzNat,'@2:Nat]],'delay['off.InMode]],
+    'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '-_['@1:NzNat] ; 
+  'TMP:Int <- '-_['_+_['@1:NzNat,'@2:Nat]]} || {'turning-off : '_st_[
+    '<_`,_`,_>['time-until['off.InMode],'_+_['%1:NzNat,'%2:Nat],'delay[
+    'off.InMode]],'_?=_['true.Bool,'_<_['max.Int,'_+_['bound.Int,'%1:NzNat,
+    '%2:Nat]]]],
+  'IM:InMode <- 'on.InMode ; 
+  'TIME:Int <- '%2:Nat ; 
+  'TMP:Int <- '_+_['%1:NzNat,'%2:Nat]} || {'turning-on : '_st_['<_`,_`,_>[
     'time-until['on.InMode],'%1:Nat,'delay['on.InMode]],'ff.FalseLit`{Bool`}],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '_+_['%1:Nat,'%2:Nat] ; 
-  'TMP:Nat <- '%1:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
-    'on.InMode],'@2:Nat,'delay['on.InMode]],'_/\_['_?=_['true.Bool,'_<_[
-    '@1:Nat,'@2:Nat]],'_?=_['true.Bool,'_<_['@2:Nat,'_+_['bound.Nat,
-    'min.Nat]]]]],
+  'TIME:Int <- '_+_['%1:Nat,'%2:Nat] ; 
+  'TMP:Int <- '%1:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'%2:Nat,'delay['on.InMode]],'_?=_['true.Bool,'_<_['%2:Nat,'_+_[
+    'bound.Int,'min.Int]]]],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '@1:Nat ; 
-  'TMP:Nat <- '@2:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
-    'on.InMode],'_+_['%1:Nat,'%2:NzNat],'delay['on.InMode]],'_?=_['true.Bool,
-    '_<_['_+_['%1:Nat,'%2:NzNat],'_+_['bound.Nat,'min.Nat]]]],
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '%2:Nat} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'@2:Int,'delay['on.InMode]],'_/\_['_?=_['true.Bool,'_<_[
+    '@1:Int,'@2:Int]],'_?=_['true.Bool,'_<_['@2:Int,'_+_['bound.Int,
+    'min.Int]]]]],
   'IM:InMode <- 'off.InMode ; 
-  'TIME:Nat <- '%1:Nat ; 
-  'TMP:Nat <- '_+_['%1:Nat,'%2:NzNat]}
+  'TIME:Int <- '@1:Int ; 
+  'TMP:Int <- '@2:Int} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'-_['%2:NzNat],'delay['on.InMode]],'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '%1:Nat ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'-_['%2:NzNat],'delay['on.InMode]],'_/\_['_?=_['true.Bool,'_<_[
+    '%2:NzNat,'%1:NzNat]],'_?=_['true.Bool,'_<_['-_['%2:NzNat],'_+_['bound.Int,
+    'min.Int]]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['%1:NzNat] ; 
+  'TMP:Int <- '-_['%2:NzNat]} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'-_['@2:NzNat],'delay['on.InMode]],'_?=_['true.Bool,'_<_['-_[
+    '@2:NzNat],'_+_['bound.Int,'min.Int]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['_+_['@1:NzNat,'@2:NzNat]] ; 
+  'TMP:Int <- '-_['@2:NzNat]} || {'turning-on : '_st_['<_`,_`,_>['time-until[
+    'on.InMode],'-_['_+_['@1:NzNat,'@2:Nat]],'delay['on.InMode]],
+    'ff.FalseLit`{Bool`}],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '-_['@1:NzNat] ; 
+  'TMP:Int <- '-_['_+_['@1:NzNat,'@2:Nat]]} || {'turning-on : '_st_['<_`,_`,_>[
+    'time-until['on.InMode],'_+_['%1:NzNat,'%2:Nat],'delay['on.InMode]],'_?=_[
+    'true.Bool,'_<_['_+_['%1:NzNat,'%2:Nat],'_+_['bound.Int,'min.Int]]]],
+  'IM:InMode <- 'off.InMode ; 
+  'TIME:Int <- '%2:Nat ; 
+  'TMP:Int <- '_+_['%1:NzNat,'%2:Nat]}
 Bye.

@@ -1,15 +1,52 @@
 Thermostat
 ==========
 
-A simple thermostat in maude, which switches between on/off based on some threshold temperatures.
+A simple thermostat in Maude, which switches between on/off based on some threshold temperatures.
 The state components of the thermostate are the current time, the temperature, and the mode (on, off, turning on, turning off).
 
-```maude
-load ../tools/fvp/numbers.maude
+Parametric Thermostat
+---------------------
 
-mod THERMOSTAT is
-   protecting FVP-NUMBERS .
-   protecting FVP-NAT-PRED .
+### Unital Ordered Rings
+
+The thermostat is parametric in an ordered ring with unit (which will be the data for the temperature).
+
+```maude
+fth UNITAL-ORDERED-RING is
+
+    sorts RingBool Ring .
+    ---------------------
+    vars R R' : Ring .
+
+    ops 0 1 : -> Ring [ctor] .
+    --------------------------
+
+    op _+_ : Ring Ring -> Ring [ctor assoc comm id: 0] .
+    ----------------------------------------------------
+
+    op -_ : Ring -> Ring [ctor] .
+    -----------------------------
+    eq - 0       = 0 [nonexec] .
+    eq R + (- R) = 0 [nonexec] .
+
+    op _-_ : Ring Ring -> Ring .
+    ----------------------------
+    eq R - R' = R + (- R') [nonexec] .
+
+    ops true false : -> RingBool [ctor] .
+    -------------------------------------
+
+    op _<_ : Ring Ring -> RingBool .
+    --------------------------------
+endfth
+```
+
+### Thermostat Definition
+
+When discussing the thermostat, `TIME` and `TMP` will be used as the units of measure.
+
+```maude
+mod THERMOSTAT{TIME :: UNITAL-ORDERED-RING, TMP :: UNITAL-ORDERED-RING} is
 
     sorts DelayMode InMode Mode .
     -----------------------------
@@ -17,16 +54,16 @@ mod THERMOSTAT is
 
     sort Conf .
     -----------
-    vars TIME TIME' TMP TMP' : Nat .
+    vars TIME TIME' : TIME$Ring . vars TMP TMP' : TMP$Ring .
     var MODE : Mode . var IM : InMode . var DM : DelayMode .
 
    ops on off :        -> InMode    [ctor] .
     op delay  : InMode -> DelayMode [ctor] .
     ----------------------------------------
 
-    op <_,_,_> : Nat Nat Mode -> Conf [ctor] .
-    op {_,_,_} : Nat Nat Mode -> Conf [ctor] .
-    ------------------------------------------
+    op <_,_,_> : TIME$Ring TMP$Ring Mode -> Conf [ctor] .
+    op {_,_,_} : TIME$Ring TMP$Ring Mode -> Conf [ctor] .
+    -----------------------------------------------------
     rl [tick] : < TIME , TMP                  , MODE >
              => { TIME , heat-rate(MODE, TMP) , MODE } .
 
@@ -46,23 +83,135 @@ mod THERMOSTAT is
                    => < TIME , TMP , off >
                    if TMP < min + bound = false .
 
-    rl [delaying] : { TIME + 1 , TMP , DM }
-                 => < TIME     , TMP , DM > .
+   crl [delaying] : { TIME     , TMP , DM }
+                 => < TIME - 1 , TMP , DM >
+                 if 0 < TIME = true .
 
     rl [delay-over] : { 0 , TMP , delay(IM) }
                    => < 0 , TMP , IM        > .
 ```
 
+The thermostat `heat-rate` is determined as a function of the thermostat parameters.
+
+```maude
+    op heat-rate : Mode TMP$Ring -> TMP$Ring .
+    ------------------------------------------
+    eq heat-rate(MODE, TMP) = (TMP + source(MODE)) - drain(TMP) .
+```
+
 The following are parameters which must be filled in for your particular thermostat.
 
 ```maude
-   ops min max bound : -> Nat .
-   ----------------------------
+    ops min max bound : -> TMP$Ring .
+    ---------------------------------
 
-   ops time-until : InMode -> Nat .
-   --------------------------------
+    op time-until : InMode -> TIME$Ring .
+    -------------------------------------
 
-    op heat-rate : Mode Nat -> Nat .
-    --------------------------------
+    op source : Mode -> TMP$Ring .
+    ------------------------------
+
+    op drain : TMP$Ring -> TMP$Ring .
+    ---------------------------------
+endm
+```
+
+Thermostat Instantiation
+------------------------
+
+### Instantiation to FVP-INT
+
+ ```maude
+load ../tools/fvp/numbers.maude
+
+view RingInt from UNITAL-ORDERED-RING to FVP-INT-PRED is
+    sort RingBool to Bool .
+    sort Ring     to Int  .
+endv
+
+mod THERMOSTAT-INT is protecting THERMOSTAT{RingInt, RingInt} . endm
+```
+
+The following is an example thermostat over the integers.
+
+```maude
+mod THERMOSTAT-INT-COMFORTABLE is
+    extending THERMOSTAT-INT + FVP-NUMBERS .
+    var TMP : Int .
+```
+
+Here we setup a thermostat which tries to stay between `18 TMP` and `26 TMP`, and will switch states when `3 TMP` away from a boundary temperature.
+
+```maude
+    eq min   = 10 + 8      [variant] .
+    eq max   = 10 + 10 + 6 [variant] .
+    eq bound = 3           [variant] .
+```
+
+The thermostat takes `4 TIME` to turn on, and `2 TIME` to turn off.
+
+```maude
+    eq time-until(on)  = 4 [variant] .
+    eq time-until(off) = 2 [variant] .
+```
+
+When turning on/off, the heater is effective for `2 TMP/TIME`.
+When on, the heater produces `5 TMP/TIME`, and when off produces nothing.
+The room looses heat at a rate of `3 TMP/TIME` to the environment.
+
+```maude
+    eq source(on)         = 5 [variant] .
+    eq source(off)        = 0 [variant] .
+    eq source(delay(on))  = 2 [variant] .
+    eq source(delay(off)) = 2 [variant] .
+
+    eq drain(TMP) = 3 [variant] .
+endm
+```
+
+### Instantiation to REAL
+
+```maude
+load ../tools/base/smt.maude
+
+view RingReal from UNITAL-ORDERED-RING to REAL is
+    sort RingBool to Boolean .
+    sort Ring     to Real    .
+
+    op 0 to term 0/1 .
+    op 1 to term 1/1 .
+endv
+
+mod THERMOSTAT-REAL is protecting THERMOSTAT{RingReal, RingReal} . endm
+```
+
+The following is an example thermostat over the reals.
+The bound and timing parameters are the same as for the integers, just interpereted over the reals instead.
+
+```maude
+mod THERMOSTAT-REAL-COMFORTABLE is
+    extending THERMOSTAT-REAL .
+    extending FVP-NUMBERS .
+
+    vars TIME TMP TMP' : Real .
+    var IM : InMode . var MD : DelayMode . var MODE : Mode .
+
+    eq min   = 18/1 [variant] .
+    eq max   = 26/1 [variant] .
+    eq bound = 3/1  [variant] .
+
+    eq time-until(on)  = 4/1 [variant] .
+    eq time-until(off) = 2/1 [variant] .
+
+    eq source(on)         = 5/1 [variant] .
+    eq source(off)        = 0/1 [variant] .
+    eq source(delay(on))  = 2/1 [variant] .
+    eq source(delay(off)) = 2/1 [variant] .
+```
+
+However, the drain to the outside is now inverse linear with the current temperature.
+
+```maude
+    eq drain(TMP) = 1/10 * (2/1 - TMP) [variant] .
 endm
 ```
