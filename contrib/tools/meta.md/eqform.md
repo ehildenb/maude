@@ -223,7 +223,10 @@ fmod EQFORM-IMPL{X :: TRIV} is
   op _=>_  : Form{X} Form{X} -> Form{X} .
   op _<=>_ : Form{X} Form{X} -> Form{X} .
   ---------------------------------------
-  eq F  => F' = (~ F) \/ F'            [variant] .
+  eq F  => F  = tt [variant] .
+  eq ff => F  = tt [variant] .
+  eq F  => tt = tt [variant] .
+
   eq F <=> F' = (F => F') /\ (F' => F) [variant] .
 endfm
 
