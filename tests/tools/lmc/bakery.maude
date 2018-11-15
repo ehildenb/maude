@@ -110,17 +110,19 @@ reduce wellFormed(upModule('BAKERY, false), confManyProc('X:Name, 'Y:Name)) .
 --- As a sanity check, results of section 3.1 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
 --- This required an equational abstraction which reduced all the names in the configuration uniformly when they are all non-`0`.
 
+--- **TODO**: Why is this system converging without the equational abstraction?
+
 mod BAKERY-2PROC-EQUATIONAL-ABSTRACTION is
     including BAKERY .
 
     vars N M K L : Name . var PIS : ProcIdleSet .
 
-    eq s N ; s M ; [idle]      [idle]      = N ; M ; [idle]    [idle] .
-    eq s N ; s M ; [wait(s K)] [idle]      = N ; M ; [wait(K)] [idle] .
-    eq s N ; s M ; [crit(s K)] [idle]      = N ; M ; [crit(K)] [idle] .
-    eq s N ; s M ; [wait(s K)] [wait(s L)] = N ; M ; [wait(K)] [wait(L)] .
-    eq s N ; s M ; [wait(s K)] [crit(s L)] = N ; M ; [wait(K)] [crit(L)] .
-    eq s N ; s M ; [crit(s K)] [crit(s L)] = N ; M ; [crit(K)] [crit(L)] .
+---    eq s N ; s M ; [idle]      [idle]      = N ; M ; [idle]    [idle] .
+---    eq s N ; s M ; [wait(s K)] [idle]      = N ; M ; [wait(K)] [idle] .
+---    eq s N ; s M ; [crit(s K)] [idle]      = N ; M ; [crit(K)] [idle] .
+---    eq s N ; s M ; [wait(s K)] [wait(s L)] = N ; M ; [wait(K)] [wait(L)] .
+---    eq s N ; s M ; [wait(s K)] [crit(s L)] = N ; M ; [wait(K)] [crit(L)] .
+---    eq s N ; s M ; [crit(s K)] [crit(s L)] = N ; M ; [crit(K)] [crit(L)] .
 endm
 
 --- Here we instantiate to the abstracted theory:
