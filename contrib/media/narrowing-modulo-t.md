@@ -313,9 +313,9 @@ After the user has instantiated the abstract graph search machinery, various ana
 `bfs` allows doing a (possible bounded) breadth-first search from a specified set of nodes.
 
 ``` {.maude}
-    op  bfs : NodeSet                  -> [FoldedLabeledGraph] .
-    op  bfs : NodeSet Bound            -> [FoldedLabeledGraph] .
-    -------------------------------------------------------------------
+    op  bfs : NodeSet       -> [FoldedLabeledGraph] .
+    op  bfs : NodeSet Bound -> [FoldedLabeledGraph] .
+    -------------------------------------------------
 ```
 
 `invariant` will check that a given `NodeSet` is invariant by extending it with one step and checking subsumption of the new nodes into the original set.
