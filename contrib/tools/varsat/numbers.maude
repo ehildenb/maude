@@ -183,7 +183,7 @@ endfm
 fmod PRESBURGER-NAT-TO-NAT is
   pr NAT* .
   pr META-LEVEL .
-  pr FOFORM .
+  pr QFFOFORM .
   pr RENAME-METAVARS .
 
   sort NatForm .

@@ -9,6 +9,7 @@ If true, it will check that all terms appearing in the program have a least type
 
 ```maude
 load foform.maude
+load ../base/full-maude.maude
 
 fmod KIND-CHECK is
   pr META-LEVEL .
@@ -165,7 +166,7 @@ fmod KIND-LIST-EXT is
   var T T' : Term .
   var TS : TermSet .
   var TL : NeTermList .
-  var NL : NegEqAtom .
+  var NL : NegEqLit .
   var NF : NegEqConj .
   var Q : Qid .
 
