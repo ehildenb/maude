@@ -73,85 +73,91 @@ B:Baz --> #1:Baz
 B:Bar --> #2:Bar
 
 Variant #2
-rewrites: 13
-TrueLit{Baz}: tt
-B:Baz --> %1:Bar
-B:Bar --> %1:Bar
-
-Variant #3
-rewrites: 13
+rewrites: 12
 PosEqLit{Baz}: baz ?= f(f(%1:Bar))
 B:Baz --> baz
 B:Bar --> %1:Bar
 
-Variant #4
-rewrites: 13
+Variant #3
+rewrites: 12
 PosEqLit{Baz}: baz ?= f(f(%1:Bar))
 B:Baz --> bar
 B:Bar --> %1:Bar
 
-Variant #5
-rewrites: 13
+Variant #4
+rewrites: 12
 PosEqLit{Baz}: baz ?= f(f(%1:Bar))
 B:Baz --> foo
 B:Bar --> %1:Bar
 
-Variant #6
-rewrites: 13
+Variant #5
+rewrites: 12
 PosEqLit{Baz}: wop ?= f(f(%1:Bar))
 B:Baz --> wop
 B:Bar --> %1:Bar
 
-Variant #7
-rewrites: 13
+Variant #6
+rewrites: 12
 PosEqLit{Baz}: baz ?= f(f(%1:Baz))
 B:Baz --> %1:Baz
 B:Bar --> bar
 
-Variant #8
-rewrites: 13
+Variant #7
+rewrites: 12
 PosEqLit{Baz}: wop ?= f(f(%1:Baz))
 B:Baz --> %1:Baz
 B:Bar --> wop
 
-Variant #9
-rewrites: 53
-TrueLit{Baz}: tt
+Variant #8
+rewrites: 44
+PosEqLit{Baz}: baz ?= baz
 B:Baz --> baz
 B:Bar --> bar
 
-Variant #10
-rewrites: 53
+Variant #9
+rewrites: 44
 PosEqLit{Baz}: wop ?= baz
 B:Baz --> baz
 B:Bar --> wop
 
+Variant #10
+rewrites: 44
+PosEqLit{Baz}: baz ?= baz
+B:Baz --> bar
+B:Bar --> bar
+
 Variant #11
-rewrites: 53
+rewrites: 44
 PosEqLit{Baz}: wop ?= baz
 B:Baz --> bar
 B:Bar --> wop
 
 Variant #12
-rewrites: 53
-TrueLit{Baz}: tt
+rewrites: 44
+PosEqLit{Baz}: baz ?= baz
 B:Baz --> foo
 B:Bar --> bar
 
 Variant #13
-rewrites: 53
+rewrites: 44
 PosEqLit{Baz}: wop ?= baz
 B:Baz --> foo
 B:Bar --> wop
 
 Variant #14
-rewrites: 53
+rewrites: 44
 PosEqLit{Baz}: wop ?= baz
 B:Baz --> wop
 B:Bar --> bar
 
+Variant #15
+rewrites: 44
+PosEqLit{Baz}: wop ?= wop
+B:Baz --> wop
+B:Bar --> wop
+
 No more variants.
-rewrites: 53
+rewrites: 44
 ==========================================
 get variants in EQFORM-TEST-INSTANTIATION : W:Wop ?= f(f(B:Baz)) .
 
@@ -185,14 +191,8 @@ PosEqLit{Baz}: wop ?= %1:Wop
 W:Wop --> %1:Wop
 B:Baz --> wop
 
-Variant #6
-rewrites: 9
-TrueLit{Baz}: tt
-W:Wop --> wop
-B:Baz --> wop
-
 No more variants.
-rewrites: 9
+rewrites: 8
 ==========================================
 get variants in EQFORM-TEST-INSTANTIATION : baz ?= f(B:Bar) .
 
@@ -202,17 +202,17 @@ PosEqLit{Baz}: baz ?= f(#1:Bar)
 B:Bar --> #1:Bar
 
 Variant #2
-rewrites: 3
-TrueLit{Baz}: tt
+rewrites: 2
+PosEqLit{Baz}: baz ?= baz
 B:Bar --> bar
 
 Variant #3
-rewrites: 3
+rewrites: 2
 PosEqLit{Baz}: wop ?= baz
 B:Bar --> wop
 
 No more variants.
-rewrites: 3
+rewrites: 2
 ==========================================
 reduce in EQFORM-TEST : ('_*_['Y:Nat,'X:Nat] ?= '_+_['1.Nat,'X:Nat] /\
     'true.Bool != '_<_['Y:Nat,'Z:Nat]) << (
@@ -286,20 +286,20 @@ rewrites: 0
 result Form: F:Form
 ==========================================
 reduce in EQFORM-TEST : 'B:Bar ?= 'foo.Foo /\ 'B:Bar != 'foo.Foo .
-rewrites: 1
-result FalseLit: ff
+rewrites: 0
+result EqConj: 'B:Bar ?= 'foo.Foo /\ 'B:Bar != 'foo.Foo
 ==========================================
 reduce in EQFORM-TEST : 'B:Bar ?= 'foo.Foo \/ 'B:Bar != 'foo.Foo .
-rewrites: 1
-result TrueLit: tt
+rewrites: 0
+result EqDisj: 'B:Bar ?= 'foo.Foo \/ 'B:Bar != 'foo.Foo
 ==========================================
 reduce in EQFORM-TEST : t1 ?= t1 .
-rewrites: 4
-result TrueLit: tt
+rewrites: 3
+result PosEqLit: 'f['f['B:Baz]] ?= 'f['f['B:Baz]]
 ==========================================
 reduce in EQFORM-TEST : t1 != t1 .
-rewrites: 4
-result FalseLit: ff
+rewrites: 3
+result NegEqLit: 'f['f['B:Baz]] != 'f['f['B:Baz]]
 ==========================================
 reduce in EQFORM-TEST : nnf(f1) .
 rewrites: 20

@@ -219,12 +219,6 @@ fmod EQFORM-IMPL{X :: TRIV} is
   eq EqL /\ EqL = EqL [variant] .
   eq EqL \/ EqL = EqL [variant] .
 
-  eq X ?= X = tt [variant] .
-  eq X != X = ff [variant] .
-
-  eq X ?= X' /\ X != X' = ff [variant] .
-  eq X ?= X' \/ X != X' = tt [variant] .
-
   --- Implication
   op _=>_  : Form{X} Form{X} -> Form{X} .
   op _<=>_ : Form{X} Form{X} -> Form{X} .
