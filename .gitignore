@@ -9,6 +9,7 @@
 # build products (when using automake)
 /autom4te.cache
 /src/Main/maude
+/src/Main/maude.exe
 /test-driver
 /aclocal.m4
 /configure
