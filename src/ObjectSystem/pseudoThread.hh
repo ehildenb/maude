@@ -25,7 +25,7 @@
 //
 #ifndef _pseudoThread_hh_
 #define _pseudoThread_hh_
-#include <sys/poll.h>
+//#include <sys/poll.h>
 #include <queue>
 #include "timeStuff.hh"
 
@@ -38,8 +38,8 @@ public:
 
   enum Flags
   {
-    READ = POLLIN,
-    WRITE = POLLOUT
+    READ = 0, //POLLIN,
+    WRITE = 1 //POLLOUT
   };
 
   enum ReturnStatus

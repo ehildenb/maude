@@ -36,4 +36,17 @@
 #  include <time.h>
 # endif
 #endif
+
+struct itimerval {
+		struct timeval it_value, it_interval;
+};
+#define ITIMER_REAL 0
+
+#define SIGHUP 1
+#define SIGQUIT 3
+#define SIGKILL 9
+#define SIGPIPE 13
+#define SIGALRM 14
+#define SIGCHLD 17
+
 #endif

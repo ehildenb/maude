@@ -228,7 +228,8 @@ FileManagerSymbol::getLine(FreeDagNode* message, ObjectSystemRewritingContext& c
       char* line = 0;
       size_t n = 0;
       errno = 0;
-      ssize_t nrRead = getline(&line, &n, ofp->fp);  // might included embedded null chars
+      //ssize_t nrRead = getline(&line, &n, ofp->fp);  // might included embedded null chars
+      ssize_t nrRead = -1;
       if (nrRead == -1)
 	{
 	  if (errno != 0)
@@ -312,7 +313,7 @@ FileManagerSymbol::getPosition(FreeDagNode* message, ObjectSystemRewritingContex
   OpenFile* ofp;
   DagNode* fileName = message->getArgument(0);
   getOpenFile(fileName, fd, ofp);
-  Int64 position = ftell(ofp->fp);
+  long position = ftell(ofp->fp);
   if (position < 0)
     {
       const char* errText = strerror(errno);

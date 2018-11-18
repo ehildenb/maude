@@ -26,7 +26,7 @@
 
 #include <unistd.h>
 #include <signal.h>
-#include <sys/ioctl.h>
+// #include <sys/ioctl.h>
 #include <errno.h>
 
 //      utility stuff
@@ -75,18 +75,18 @@ IO_Manager::setAutoWrap()
   //
   //	Set up autowrapping of standard output and standard error.
   //
-  winsize w;
+  //winsize w;
 
   int columns = DEFAULT_COLUMNS;
-  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0 && w.ws_col > 0)
-    columns = w.ws_col;
+  //if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0 && w.ws_col > 0)
+  //  columns = w.ws_col;
   // cout << "out columns " << columns << '\n';
   wrapOut = new AutoWrapBuffer(cout.rdbuf(), columns);
   (void) cout.rdbuf(wrapOut);
 
   columns = DEFAULT_COLUMNS;
-  if (ioctl(STDERR_FILENO, TIOCGWINSZ, &w) == 0 && w.ws_col > 0)
-    columns = w.ws_col;
+  //if (ioctl(STDERR_FILENO, TIOCGWINSZ, &w) == 0 && w.ws_col > 0)
+  //  columns = w.ws_col;
   // cout << "err columns " << columns << '\n';
   wrapErr = new AutoWrapBuffer (cerr.rdbuf(), columns);
   (void) cerr.rdbuf(wrapErr);

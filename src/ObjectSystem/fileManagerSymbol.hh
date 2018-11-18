@@ -101,7 +101,7 @@ private:
   void gotCharsReply(const Rope& text,
 		     FreeDagNode* originalMessage,
 		     ObjectSystemRewritingContext& context);
-  void positionGotReply(Int64 position,
+  void positionGotReply(long position,
 			FreeDagNode* originalMessage,
 			ObjectSystemRewritingContext& context);
 

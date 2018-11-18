@@ -27,7 +27,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <pwd.h>
+//#include <pwd.h>
 
 //      utility stuff
 #include "macros.hh"
@@ -131,19 +131,19 @@ DirectoryManager::realPath(const string& path, string& resolvedPath)
 	    //	Get users home directory.
 	    //
 	    dirPath = getenv("HOME");
-	    if (dirPath == 0)
-	      {
-		if (passwd* pw = getpwuid(getuid()))
-		  dirPath = pw->pw_dir;
-	      }
+	    //if (dirPath == 0)
+	    //  {
+	    //	if (passwd* pw = getpwuid(getuid()))
+	    //	  dirPath = pw->pw_dir;
+	    // }
 	  }
 	else
 	  {
 	    //
 	    //	Get somebody elses home directory.
 	    //
-	    if (passwd* pw = getpwnam(path.substr(1, e - 1).c_str()))
-	      dirPath = pw->pw_dir;
+	    //if (passwd* pw = getpwnam(path.substr(1, e - 1).c_str()))
+	    //  dirPath = pw->pw_dir;
 	  }
 	if (dirPath != 0)
 	  {

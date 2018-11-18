@@ -61,10 +61,15 @@ PseudoThread::processCallBacks(int& returnValue)
   return NONE;
 }
 
+#define POLLERR 0
+#define POLLIN  0
+#define POLLHUP 0
+#define POLLOUT 0
+
 int
 PseudoThread::processFds(long wait)
 {
-  static pollfd ufds[MAX_NR_FDS];
+  //static pollfd ufds[MAX_NR_FDS];
   int nfds = 0;
   //	cerr << "firstActive is " << firstActive << endl;
 
@@ -76,9 +81,9 @@ PseudoThread::processFds(long wait)
   for (int i = firstActive; i != NONE; i = fdInfo[i].nextActive)
     {
       Assert(fdInfo[i].flags != 0, "zero flags for " << i);
-      ufds[nfds].fd = i;
+      //ufds[nfds].fd = i;
       //cout << "polling fd " << i << " for " << fdInfo[i].flags << endl;
-      ufds[nfds].events = fdInfo[i].flags;
+      //ufds[nfds].events = fdInfo[i].flags;
       if (fdInfo[i].timeOutAt != NONE)
 	{
 	  long delay = fdInfo[i].timeOutAt - now;
@@ -103,7 +108,8 @@ PseudoThread::processFds(long wait)
   //
   //	Call poll() and check for interrupts and errors.
   //
-  int nrEvents = poll(ufds, nfds, milliseconds);
+  // int nrEvents = poll(ufds, nfds, milliseconds);
+  int nrEvents = -1;
   if (nrEvents < 0)
     {
       Assert(errno == EINTR, "poll() failed with " << errno);
@@ -120,7 +126,7 @@ PseudoThread::processFds(long wait)
       //
       for (int i = 0; i < nfds; i++)
 	{
-	  int fd = ufds[i].fd;
+	  int fd = 0; //ufds[i].fd;
 	  FD_Info& info = fdInfo[fd];
 	  if (info.timeOutAt != NONE && info.timeOutAt < now)
 	    {
@@ -139,9 +145,9 @@ PseudoThread::processFds(long wait)
       for (int i = 0; i < nfds; i++)
 	{
 	  //cout << "fd = " << ufds[i].fd << "  revents = " << ufds[i].revents << endl;
-	  int fd = ufds[i].fd;
+	  int fd = 0; //ufds[i].fd;
 	  FD_Info& info = fdInfo[fd];
-	  short t = ufds[i].revents;
+	  short t = 0; //ufds[i].revents;
 	  if (t != 0)
 	    {
 	      Assert(!(t & POLLNVAL), "invalid fd " << fd);

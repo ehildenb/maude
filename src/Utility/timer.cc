@@ -37,12 +37,13 @@ local_inline Int64
 Timer::calculateMicroseconds(const itimerval& startTime,
 			     const itimerval& stopTime)
 {
-  const Int64 M = 1000000;
-  Int64 usec = startTime.it_value.tv_usec - stopTime.it_value.tv_usec +
-    M * (startTime.it_value.tv_sec - stopTime.it_value.tv_sec);
-  if (usec < 0)  // timer wrap around
-    usec += M * CYCLE_LENGTH;
-  return usec;
+  return 0;
+  //const Int64 M = 1000000;
+  //Int64 usec = startTime.it_value.tv_usec - stopTime.it_value.tv_usec +
+  //  M * (startTime.it_value.tv_sec - stopTime.it_value.tv_sec);
+  //if (usec < 0)  // timer wrap around
+  //  usec += M * CYCLE_LENGTH;
+  //return usec;
 }
 
 void
@@ -54,12 +55,12 @@ Timer::startOsTimers()
   //	race conditions; so we just ignore all timer interrupts.
   //
   signal(SIGALRM, SIG_IGN);
-  signal(SIGVTALRM, SIG_IGN);
-  signal(SIGPROF, SIG_IGN);
+  //signal(SIGVTALRM, SIG_IGN);
+  //signal(SIGPROF, SIG_IGN);
   static itimerval init = { {CYCLE_LENGTH, 0}, {CYCLE_LENGTH, 0} };
-  setitimer(ITIMER_REAL, &init, 0);
-  setitimer(ITIMER_VIRTUAL, &init, 0);
-  setitimer(ITIMER_PROF, &init, 0);
+  //setitimer(ITIMER_REAL, &init, 0);
+  //setitimer(ITIMER_VIRTUAL, &init, 0);
+  //setitimer(ITIMER_PROF, &init, 0);
   osTimersStarted = true;
 }
 
@@ -75,9 +76,9 @@ Timer::Timer(bool startRunning)
       if (!osTimersStarted)
 	startOsTimers();
       running = true;
-      getitimer(ITIMER_REAL, &realStartTime);
-      getitimer(ITIMER_VIRTUAL, &virtStartTime);
-      getitimer(ITIMER_PROF, &profStartTime);
+      //getitimer(ITIMER_REAL, &realStartTime);
+      //getitimer(ITIMER_VIRTUAL, &virtStartTime);
+      //getitimer(ITIMER_PROF, &profStartTime);
     }
 }
 
@@ -89,9 +90,9 @@ Timer::start()
       if (!osTimersStarted)
 	startOsTimers();
       running = true;
-      getitimer(ITIMER_REAL, &realStartTime);
-      getitimer(ITIMER_VIRTUAL, &virtStartTime);
-      getitimer(ITIMER_PROF, &profStartTime);
+      //getitimer(ITIMER_REAL, &realStartTime);
+      //getitimer(ITIMER_VIRTUAL, &virtStartTime);
+      //getitimer(ITIMER_PROF, &profStartTime);
     }
   else
     valid = false;
@@ -105,9 +106,9 @@ Timer::stop()
       itimerval realStopTime;
       itimerval virtStopTime;
       itimerval profStopTime;
-      getitimer(ITIMER_PROF, &profStopTime);
-      getitimer(ITIMER_VIRTUAL, &virtStopTime);
-      getitimer(ITIMER_REAL, &realStopTime);
+      //getitimer(ITIMER_PROF, &profStopTime);
+      //getitimer(ITIMER_VIRTUAL, &virtStopTime);
+      //getitimer(ITIMER_REAL, &realStopTime);
       running = false;
       realAcc += calculateMicroseconds(realStartTime, realStopTime);
       virtAcc += calculateMicroseconds(virtStartTime, virtStopTime);
@@ -130,9 +131,9 @@ Timer::getTimes(Int64& real, Int64& virt, Int64& prof) const
 	  itimerval realStopTime;
 	  itimerval virtStopTime;
 	  itimerval profStopTime;
-	  getitimer(ITIMER_PROF, &profStopTime);
-	  getitimer(ITIMER_VIRTUAL, &virtStopTime);
-	  getitimer(ITIMER_REAL, &realStopTime);
+	  //getitimer(ITIMER_PROF, &profStopTime);
+	  //getitimer(ITIMER_VIRTUAL, &virtStopTime);
+	  //getitimer(ITIMER_REAL, &realStopTime);
 	  real += calculateMicroseconds(realStartTime, realStopTime);
 	  virt += calculateMicroseconds(virtStartTime, virtStopTime);
 	  prof += calculateMicroseconds(profStartTime, profStopTime);

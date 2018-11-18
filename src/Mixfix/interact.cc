@@ -56,53 +56,53 @@ UserLevelRewritingContext::setHandlers(bool handleCtrlC)
 {
   if (interactiveFlag && handleCtrlC)
     {
-      static struct sigaction ctrlC_Handler;
-      ctrlC_Handler.sa_handler = interruptHandler;
+      //static struct sigaction ctrlC_Handler;
+      //ctrlC_Handler.sa_handler = interruptHandler;
 #ifdef SA_INTERRUPT
       //
       //	Avoid old BSD semantics which automatically restarts
       //	interrupted system calls.
       //
-      ctrlC_Handler.sa_flags = SA_INTERRUPT;
+      //ctrlC_Handler.sa_flags = SA_INTERRUPT;
 #endif
-      sigaction(SIGINT, &ctrlC_Handler, 0);
+      //sigaction(SIGINT, &ctrlC_Handler, 0);
     }
   //
   //	We want to have requests for info to be minimally disruptive
   //	so we request system calls that are interrrupted be restarted.
   //
-  static struct sigaction sigInfoHandler;
-  sigInfoHandler.sa_handler = infoHandler;
-  sigInfoHandler.sa_flags = SA_RESTART;
+  //static struct sigaction sigInfoHandler;
+  //sigInfoHandler.sa_handler = infoHandler;
+  //sigInfoHandler.sa_flags = SA_RESTART;
 #ifdef SIGINFO
-  sigaction(SIGINFO, &sigInfoHandler, 0);
+  //sigaction(SIGINFO, &sigInfoHandler, 0);
 #else
-  sigaction(SIGUSR1, &sigInfoHandler, 0);
+  //sigaction(SIGUSR1, &sigInfoHandler, 0);
 #endif
 
 #ifdef NO_ASSERT
   //
   //	If we're not debugging we handle internal errors and stack overflows.
   //
-  BddUser::setErrorHandler(internalErrorHandler);  // BuDDy detects misuse of BDDs
-  signal(SIGBUS, internalErrorHandler);  // misaligned memory access or nonexistent real memeory
-  signal(SIGILL, internalErrorHandler);  // illegal instruction
+  //BddUser::setErrorHandler(internalErrorHandler);  // BuDDy detects misuse of BDDs
+  //signal(SIGBUS, internalErrorHandler);  // misaligned memory access or nonexistent real memeory
+  //signal(SIGILL, internalErrorHandler);  // illegal instruction
 
 #ifdef USE_LIBSIGSEGV
   //
   //	Stack overflows are reported as SIGSEGV signals and so we need to use the
   //	libsigsegv library to heuristically distinguish the two conditions.
   //
-  static char altStack[SIGSTKSZ];
-  sigsegv_install_handler(sigsegvHandler);  // illegal memory access or stack overflow
-  stackoverflow_install_handler(stackOverflowHandler, altStack, sizeof(altStack));
+  //static char altStack[SIGSTKSZ];
+  //sigsegv_install_handler(sigsegvHandler);  // illegal memory access or stack overflow
+  //stackoverflow_install_handler(stackOverflowHandler, altStack, sizeof(altStack));
 #else
   //
   //	If we can't use the library we will will catch SIGSEGVs but not install
   //	an alternative stack so that that stack overflows will show up as
   //	segmentation faults.
   //
-  signal(SIGSEGV, internalErrorHandler);
+  //signal(SIGSEGV, internalErrorHandler);
 #endif
 #endif
   //

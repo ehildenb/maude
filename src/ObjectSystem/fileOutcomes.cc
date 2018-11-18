@@ -78,7 +78,7 @@ FileManagerSymbol::gotCharsReply(const Rope& text,
 }
 
 void
-FileManagerSymbol::positionGotReply(Int64 position,
+FileManagerSymbol::positionGotReply(long position,
 				    FreeDagNode* originalMessage,
 				    ObjectSystemRewritingContext& context)
 {

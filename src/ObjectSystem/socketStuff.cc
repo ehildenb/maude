@@ -26,10 +26,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
+//#include <netdb.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <errno.h>
 
 bool
@@ -75,7 +77,7 @@ SocketManagerSymbol::setNonblockingFlag(int fd, FreeDagNode* message, ObjectSyst
   //	Set nonblocking flag for a nascent socket; since it is not yet an external object we
   //	can just close it and generate an error reply if things don't work out.
   //
-  int flags = fcntl(fd, F_GETFL);
+  int flags = -1; //fcntl(fd, F_GETFL);
   if (flags == -1)
     {
       const char* errText = strerror(errno);
@@ -84,7 +86,7 @@ SocketManagerSymbol::setNonblockingFlag(int fd, FreeDagNode* message, ObjectSyst
       errorReply(errText, message, context);
       return false;
     }
-  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+  if (true) //(fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
       const char* errText = strerror(errno);
       DebugAdvisory("unexpected fcntl() GETFL: " << errText);
@@ -212,7 +214,7 @@ SocketManagerSymbol::createServerTcpSocket(FreeDagNode* message, ObjectSystemRew
 	//	Set SO_REUSEADDR so port can be immediately reused following the close()
 	//	of this socket.
 	//
-	int value = 1;
+	char value = 1;
 	if (setsockopt(fd, SOL_SOCKET,  SO_REUSEADDR,  &value, sizeof(value)) == -1)
 	  {
 	    const char* errText = strerror(errno);

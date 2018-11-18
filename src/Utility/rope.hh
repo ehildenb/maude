@@ -11,7 +11,8 @@ public:
   typedef const value_type* const_pointer;
   typedef value_type& reference;
   typedef const value_type& const_reference;
-  typedef size_t size_type;
+  //typedef size_t size_type;
+  typedef long unsigned int size_type;
   typedef ptrdiff_t difference_type;
   //
   //	We only support const iterators; mutable iterators don't have an efficient implementation.

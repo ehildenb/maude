@@ -112,7 +112,7 @@ SocketManagerSymbol::doWrite(int fd)
   ActiveSocket& as = i->second;
   if (as.state & WAITING_TO_CONNECT)
     {
-      int errorCode;
+      char errorCode;
       socklen_t errorSize = sizeof(errorCode);
 #ifdef NO_ASSERT
       (void) getsockopt(fd, SOL_SOCKET, SO_ERROR, &errorCode, &errorSize);
@@ -203,7 +203,7 @@ SocketManagerSymbol::doError(int fd)
       //cerr << "state = " << as.state << endl;
       if (as.state & (WAITING_TO_CONNECT | WAITING_TO_WRITE | WAITING_TO_READ))
 	{
-	  int errorCode;
+	  char errorCode;
 	  socklen_t errorSize = sizeof(errorCode);
 #ifdef NO_ASSERT
 	  getsockopt(fd, SOL_SOCKET, SO_ERROR, &errorCode, &errorSize);
