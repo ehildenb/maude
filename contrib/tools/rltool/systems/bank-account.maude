@@ -48,6 +48,19 @@ mod BANK-ACCOUNT-DEFINEDOPS is
 
   vars X Y : Bool . var K N M : Nat . var MSGS : MsgConf .
 
+  --- idea that will work:
+  --- split up MsgConf into two mutually exclusive sorts
+  --- [1] the sort of confs that add up to zero
+  --- [2] the sort of confs that add up to a nonzero num
+  --- [3] subsort the debts function in each case
+  --- [4] add an equation that makes the debts function
+  ---     zero in the zero conf case
+  --- [5] add the equations below but replacing the N
+  ---     with a NzNat
+  --- Finally, in the middle of the proof, do a case
+  --- analysis on the MsgConf variable
+
+
   op debts : MsgConf -> Nat .
   ---------------------------
   eq debts(mt)                 = 0 .
