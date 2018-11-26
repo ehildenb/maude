@@ -1,0 +1,9 @@
+load ../../systems/ibos.maude
+load ../../rltool.maude
+(select IBOS-STOP .)
+(use tool varsat for validity on IBOS-FVP .)
+(declare-vars (C:Configuration) U (W:WebAppId) U (A:AttributeSet) U (L:Label) .)
+(def-term-set ([C]) | true .)
+(inv wui to '`[_`]  with (W) U (L) on ({< W | URL(L),A > C}) | (url-dupl(URL(L), A)) =/= (tt) .)
+(start-proof .)
+(auto .)

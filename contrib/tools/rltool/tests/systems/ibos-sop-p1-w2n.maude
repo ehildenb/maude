@@ -1,0 +1,166 @@
+load ../../systems/ibos.maude
+
+fmod IBOS-NONFVP is
+  pr IBOS-FVP .
+
+  var C : Configuration .
+  var W N : Nat* .
+  var P : NzNat* .
+  var A : AttributeSet .
+  var WIS : WebappProcInfoSet .
+  var NIS : NetworkProcInfoSet .
+  var ML : MessageList .
+  var NNPI : NonNetProcId .
+  var NWAI : NonWebAppId .
+  var PI PI' : ProcessId .
+  var IN OUT : Label .
+  var MT : MsgType .
+
+  --- Holds true if every FETCH-URL message sent to every network object
+  --- acts is in agreement with the kernel metadata
+  ---
+  --- Practically, this means we induct over each network object
+  --- and each message therein and check for agreement
+  ---
+  --- From a proof-theoretic standpoint, we are doing a triple induction
+  --- over all three arguments --- this is because, according to our
+  --- model, all three sets grow monotonically, so if we wish to reduce
+  --- our predicate over a new state to an assumption, we must pare
+  --- the other process info sets as well
+  op sop-p1 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+
+  --- [I] induct on Configuration
+  --- handle network processes with a MSG-FETCH-URL message
+  --- case 1: process has 2 or more messages enqueued (continue processing remaining messages)
+  eq sop-p1(C < network(N) | fromKernel(msg(webapp(W), network(N), MSG-FETCH-URL, OUT) ; ML), A >,
+            (pi(webapp(W),IN),WIS),
+	    (pi(network(N),IN,OUT),NIS))
+   = sop-p1(C < network(N) | fromKernel(ML), A >,
+            (pi(webapp(W),IN),WIS),
+	    (pi(network(N),IN,OUT),NIS)) .
+
+  --- case 2: process has only one message enqueued (done processing this network object)
+  eq sop-p1(C < network(N) | fromKernel(msg(webapp(W), network(N), MSG-FETCH-URL, OUT)), A >,
+            (pi(webapp(W),IN),WIS),
+	    (pi(network(N),IN,OUT),NIS))
+   = sop-p1(C, (pi(webapp(W),IN),WIS), (pi(network(N),IN,OUT),NIS)) .
+
+  --- handle network process with a different message enqueued at head
+  --- case 1: process has 2 or more messages enqueued (continue processing remaining messages)
+ ceq sop-p1(C < network(N) | fromKernel(msg(PI,PI',MT,OUT) ; ML), A >, WIS, NIS)
+   = sop-p1(C < network(N) | fromKernel(ML), A >, WIS, NIS)
+  if MT ~ MSG-FETCH-URL = false .
+
+  --- case 2: process has only one message enqueued (done this processing this network object)
+ ceq sop-p1(C < network(N) | fromKernel(msg(PI,PI',MT,OUT)), A >, WIS, NIS) = sop-p1(C, WIS, NIS)
+  if MT ~ MSG-FETCH-URL = false .
+
+  --- handle network process with no messages
+  eq sop-p1(C < network(N) | fromKernel(mt), A >, WIS, NIS) = sop-p1(C, WIS, NIS) .
+
+  --- handle all other kinds of processes
+  eq sop-p1(C < network | A >, WIS, NIS) = sop-p1(C, WIS, NIS) .
+  eq sop-p1(C < NNPI    | A >, WIS, NIS) = sop-p1(C, WIS, NIS) .
+
+  --- base case, return tt
+  eq sop-p1(none, WIS, NIS) = tt .
+
+  --- [II] Induct on WebappProcInfoSet/NetworkProcInfoSet (because these sets also grow)
+  --- handle case when a new webapp was added to our weblabel set
+  --- if this webapp is greater than all of those in our soup, remove it
+ ceq sop-p1(C,(pi(webapp(W),IN),WIS),NIS) = sop-p1(C,WIS,NIS)
+  if W wa<= C =/= tt .
+
+  --- handle case when a new newtork process was added to our networklabels set
+  --- if this network process id is greater than all of those in our soup, remove it
+ ceq sop-p1(C,WIS,(pi(network(N),IN,OUT),NIS)) = sop-p1(C,WIS,NIS)
+  if N np<= C =/= tt .
+
+  **** equality predicate for message types
+  op _~_ : MsgType MsgType -> Bool [comm] .
+  eq X:MsgType      ~ X:MsgType      = true .
+  --- new-url
+  eq MSG-NEW-URL    ~ MSG-FETCH-URL  = false .
+  eq MSG-NEW-URL    ~ MSG-RETURN-URL = false .
+  eq MSG-NEW-URL    ~ MSG-SWITCH-TAB = false .
+  --- fetch-url
+  eq MSG-FETCH-URL  ~ MSG-RETURN-URL = false .
+  eq MSG-FETCH-URL  ~ MSG-SWITCH-TAB = false .
+  --- return-url
+  eq MSG-RETURN-URL ~ MSG-SWITCH-TAB = false .
+
+  --- PROBLEM:
+  --- local simplifications in formula structure are unsound when shared variables
+  --- are present which exist outside of the fragment that are lost --- this is
+  --- because the information regarding the variables is lost when the constraint
+  --- is solved --- some possibilities:
+  --- [1] make variables into constants, do reductions, and then lift reduced items
+  ---     into my theory so they can be used in later reduction steps
+  --- [2] do reductions over formula-functor lifted algebras --- here we can express
+  ---     express constraints about variables directly in our rules
+  --- [3] make two copies of the formula --- one non-reduced version and one reduced
+  ---     version --- then be careful to always allow reductions for each goal locally
+  ---     have access to the unreduced parts that were assumed (or something like that)
+  --- [4] record each reduction step so we keep around the set of all true facts that
+  ---     we can assume --- then give our other reductions access to that set
+  ---(
+  --- NON-FVP predicate extensions
+  op _=/=_ : AttributeSet AttributeSet -> Bool .
+  op ff : -> Pred [ctor] .
+
+  --- can throw out all non-conforming objects
+  eq N np<= C < NNPI | A > = N np<= C .
+  eq W wa<= C < NWAI | A > = W wa<= C .
+  --- can throw out all objects which are smaller than me
+  eq N + P np<= C < network(N) | A > = N np<= C .
+  eq W + P wa<= C < webapp(W)  | A > = W wa<= C .
+  --- can't be less than something if there is nothing
+  eq N np<= none = ff .
+  eq W wa<= none = ff .
+
+  --- duplicates can ignore attributes
+  eq dupl(< PI | NA:NeAttributeSet > C) = dupl(< PI | none > C) .
+  --- duplicates can be split if two processes are not equal
+ ceq dupl(< PI | none > < PI' | none > C) = dupl(< PI | none > C) andP dupl(< PI' | none > C) if PI ~ PI' = false .
+  --- can't be a duplicate with less than two elements
+  eq dupl(< PI | none >) = ff .
+  eq dupl(none) = ff .
+  ---)
+endfm
+
+mod IBOS-NONFVP-STOP is pr IBOS-STOP . pr IBOS-NONFVP . endm
+
+load ../../rltool.maude
+(select     IBOS-NONFVP-STOP .)
+--- rules that handle network procs directly include:
+--- [1] kernelReceivesOPMessage-pa6-cc2b
+--- [2] kernelReceivesOPMessage-pa7-cc1b
+---(select-rls kernelReceivesOPMessage-pa6-cc2b .)
+---(select-rls kernelReceivesOPMessage-pa7-cc1b .)
+---(select-rls! kernelReceivesOPMessage-pa6-cc2b kernelReceivesOPMessage-pa7-cc1b .)
+---(select-rls new-url .)
+(select-fvp IBOS-NONFVP .)
+(declare-vars (C:Configuration) U (WPIS:WebappProcInfoSet) U (NPIS:NetworkProcInfoSet) U (URL:Label) U (MSG:Message) U (PS:PolicySet) U (NNP:Nat*) U
+              (NWA:Nat*) .)
+(def-term-set ([C]) | true .)
+--- INV is a generalized multiset equality between:
+--- [1] set of fromKernel messages at the beginning of a list in a netproc
+--- [2] labels in WebappInfoSet and NetworkProcInfoSet
+(inv to '`[_`] on
+({ C
+   < webappmgr | nextWAN(NWA) >
+   < kernel | weblabels(WPIS), networklabels(NPIS), displayedTopBar(URL), handledCurrently(MSG), msgPolicy(PS), nextNetworkProc(NNP) > } ) |
+   (sop-p1(C,WPIS,NPIS)) = (tt)                              /\
+   --- these are strengthenings of the invariant above that allow the simplification rules to apply more often
+   --- they are not strictly needed for correctness --- the invariant above should be enough
+   (dupl(C < webappmgr | none > < kernel | none >)) =/= (tt) /\
+   (NNP np<= C) =/= (tt)                                     /\
+   (NWA wa<= C) =/= (tt)
+.)
+(start-proof .)
+--- take first step
+(auto .)
+--- we want to see all of the info about if our reductions succeeded
+set print attribute on .
+--- do the axiom auto here
+(auto .)

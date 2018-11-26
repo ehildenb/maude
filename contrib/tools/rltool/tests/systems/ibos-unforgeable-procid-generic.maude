@@ -1,0 +1,21 @@
+load ../../systems/ibos.maude
+load ../../rltool.maude
+(select IBOS-STOP .)
+(use tool varsat for validity on IBOS-FVP .)
+(declare-vars (C:Configuration) U (P:ProcessId) U (N:Nat*) U (M:Nat*) U (A:AttributeSet) U (A':AttributeSet) U (NPIS:NetworkProcInfoSet) U (WPIS:WebappProcInfoSet) U (L:Label) U (PS:PolicySet) U (MSG:Message) .)
+(def-term-set ([C]) | true .)
+--- NOTE: allowing arbitrary extra attributes allows attributes to be repeated which
+---       causes us to lose control of the special numbers nextWAN/NetworkProc
+(inv upi to '`[_`] on ({C < webappmgr | nextWAN(N), A > < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS), weblabels(WPIS), displayedTopBar(L), nextNetworkProc(M), A' > }) 
+               |  (pi-dupl(C < webappmgr | nextWAN(N), A > < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS), weblabels(WPIS), displayedTopBar(L), nextNetworkProc(M), A' >)) =/= (tt) 
+               /\ (N wa<= C) =/= (tt) 
+               /\ (M np<= C) =/= (tt) 
+	       /\ (nw-dupl(nextWAN(N), A)) =/= (tt)
+	       /\ (nn-dupl(nextNetworkProc(M), A')) =/= (tt)
+	       .)
+(start-proof .)
+set break on .
+break select step .
+(auto .)
+where .
+quit

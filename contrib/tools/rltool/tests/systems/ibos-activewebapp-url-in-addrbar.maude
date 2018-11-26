@@ -1,0 +1,48 @@
+load ../../systems/ibos.maude
+load ../../rltool.maude
+
+--- NOTE: this property has expanded to encompass attributes:
+---       display: activeWebapp, displayedContent
+---       kernel: displayedTopBar, weblabels
+---       webappmgr: nextWAN
+--- NOTE: since we are not worried about ids of network processes here, the nextNetworkProc attribute probably doesn't matter
+--- NOTE: due to the changeTab rule requiring synchronization between the weblabels attribute and the state of the system, we either need to:
+---       [i]  use a recursive (non-FVP) predicate to describe the required relationship (strengthen the invariant + proof subcalculus to reason about it)
+---       [ii] strengthen the changeTab rule in our specification by strengthening its condition
+
+(select     IBOS-STOP .)
+---(select-rls new-url stop .)
+---(select-rls change-display .)
+---(select-rls tab-change .)
+(select-rls! new-url change-display tab-change stop .)
+(select-fvp IBOS-FVP  .)
+(declare-vars (C:Configuration) U
+              (NEXTWEB:Nat*) U (NEXTPROC:Nat*) U (DISP:Label) U (URL:Label) U (RNDR:Label) U (BAR:Label) U (W:WebAppId) U
+	      (NPIS:NetworkProcInfoSet) U (WPIS:WebappProcInfoSet) U (PS:PolicySet) U (MSG:Message) U (B:Bool) U (FK:MessageList) U (TK:MessageList) .)
+(def-term-set ([C]) | true .)
+(inv to '`[_`] on ({C < display | activeWebapp(W), displayedContent(DISP) >                                         --- activeWebapp() process id refers to process in soup
+		    < webappmgr | nextWAN(NEXTWEB) >
+		    < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS),
+		               weblabels((pi(W,URL),WPIS)) , displayedTopBar(URL), nextNetworkProc(NEXTPROC) > })
+
+	| --- activeWebapp's id and URL appear in weblabels(), URL appears in displayedTopBar()
+
+		  (pi-dupl(C < webappmgr | none > < kernel | none > < display | none >)) =/= (tt) --- no duplicate process ids in soup
+               /\ (waa-dupl(C)) =/= (tt)                                                          --- no duplicate webapp attrs in any webapp
+               /\ (NEXTWEB wa<= C) =/= (tt)                                                       --- NEXTWEB counter is larger than any current webapp id in Configuration
+	       /\ (NEXTWEB wl<= pi(W,URL),WPIS) =/= (tt)                                          --- NEXTWEB counter is larger than any current webapp id in weblabels()
+	       /\ (wa?(W)) = (tt)                                                                 --- the webapp id refers to a process
+	       ---/\ (set1neq((pi(W,URL),WPIS),C)) =/= (tt)                                          --- ensure WPIS and C are consistent
+	       ---/\ ((W,URL) inWL C) = (tt)                                                         --- [W,URL] tuple exists in C
+	       ---/\ (DISP ~b1 RNDR) = (tt)                                                          --- DISP is about-blank or equal to RNDR
+	       ---/\ ((W,URL,RNDR) inWUR C) = (tt)                                                   --- activeWebapp/URL/RNDR all exist in the soup
+               ---/\ (wl-id-dupl((pi(W,URL),WPIS))) =/= (tt)                                         --- no duplicate process ids in weblabels() set
+	       .)
+
+set print attribute on .
+print reveal _&_ .
+(start-proof .)
+(step .)
+(list-goals .)
+(auto .)
+quit
