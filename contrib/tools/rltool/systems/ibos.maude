@@ -1,0 +1,859 @@
+set include BOOL off .
+
+fmod BOOL-NO-BUILTIN is
+  pr TRUTH-VALUE .
+  op _==_  : Bool Bool -> Bool [ctor] . **** stub for real equality/disequality
+  op _=/=_ : Bool Bool -> Bool [ctor] .
+  op _a_   : Bool Bool -> Bool [assoc comm] .
+  eq true  a B:Bool = B:Bool [variant] .
+  eq false a B:Bool = false  [variant] .
+
+  op _~_ : Bool Bool -> Bool [comm] .
+  eq X:Bool ~ X:Bool = true  .
+  eq true   ~ false  = false .
+endfm
+
+fmod PRED is pr BOOL-NO-BUILTIN .
+  sort Pred .
+  op tt : -> Pred [ctor] .
+  op _==_   : Pred Pred -> Bool [ctor] .
+  op _=/=_  : Pred Pred -> Bool [ctor] .
+  op _andP_ : Pred Pred -> Pred [ctor assoc comm] .
+  var P : Pred .
+  eq tt andP tt = tt [variant] .
+  op _orP_  : Pred Pred -> Pred .
+  eq tt orP  P  = tt [variant] .
+  eq P  orP  tt = tt [variant] .
+
+  op pred : Bool -> Pred [ctor] .
+  eq pred(true) = tt .
+endfm
+
+
+fmod NAT-CTOR-NO-BUILTIN is
+  pr BOOL-NO-BUILTIN .
+  sorts Nat* NzNat* .
+  subsorts NzNat* < Nat* .
+  op 0   : -> Nat*               [ctor] .
+  op 1   : -> NzNat*             [ctor] .
+  op _+_ : NzNat* Nat* -> NzNat* [ctor assoc comm id: 0] .
+  op _+_ : Nat*   Nat* -> Nat*   [ctor assoc comm id: 0] .
+endfm
+
+fmod NAT-NO-BUILTIN is
+  pr NAT-CTOR-NO-BUILTIN .
+  op s     : Nat* -> Nat* .      **** operator is only used 6 times
+  op _<_   : Nat* Nat* -> Bool .
+  op _<=_  : Nat* Nat* -> Bool .
+  op _==_  : Nat* Nat* -> Bool . **** stub for real equality/disequality
+  op _=/=_ : Nat* Nat* -> Bool .
+  var N M : Nat* . var P : NzNat* .
+  eq s(N)           = N + 1 [variant] .
+  eq N     <  P + N = true  [variant] .
+  eq N + M <  N     = false [variant] .
+  eq P + N <= N     = false [variant] .
+  eq N     <= N + M = true  [variant] .
+endfm
+
+fmod NAT* is
+  pr NAT-NO-BUILTIN .
+  op _~_ : Nat* Nat* -> Bool [comm] .
+  eq N:Nat* ~ N:Nat*            = true  [variant] .
+  eq N:Nat* ~ N:Nat* + P:NzNat* = false [variant] .
+
+  **** constants defined for convenience
+  ops 2 3 4 5 6 7 8 9 10 11 12 13 14 15 80 81 256 500 1023 1024 1050 1056 : -> Nat* .
+  eq 2    = 1 + 1 [variant] .
+  eq 3    = 1 + 1 + 1 [variant] .
+  eq 4    = 1 + 1 + 1 + 1 [variant] .
+  eq 5    = 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 6    = 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 7    = 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 8    = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 9    = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 10   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 11   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 12   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 13   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 14   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  eq 15   = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 [variant] .
+  **** difference between non-consecutive numbers should be greater than 1
+  eq 80   = 15   + 1 + 1 + 1 [variant] .
+  eq 81   = 80   + 1 [variant] .
+  eq 256  = 81   + 1 + 1 + 1 [variant] .
+  eq 1023 = 256  + 1 + 1 + 1 [variant] .
+  eq 1024 = 1023 + 1 [variant] .
+  eq 1056 = 1024 + 1 + 1 + 1 + 1 [variant] .
+endfm
+
+fmod NAT*-PRED is
+  pr PRED .
+  pr NAT* .
+  op _!~_ : Nat* Nat* -> Pred [comm ctor] .
+  var N : Nat* . var P : NzNat* .
+  eq N + P !~ N = tt [variant] .
+endfm
+
+fmod PROC-ID is
+  pr NAT* .
+
+  sort ProcessId       .  **** general sort of process identifiers
+  sort NonNetProcId    .  **** processes which cannot act like a network
+  sort NonWebAppId     .  **** processes which are not webapps
+  sort PipeId          .  **** processes which can act like pipes
+  sort NonNetPipeId    .  **** processes which are pipes and not networks
+  sort NonWebPipeId    .  **** processes which are pipes and not webapps
+
+  sort KernelId        .  **** the kernel process's id
+  sort WebAppMgrId     .  **** the web app manager's id
+  sort UIId            .  **** the UI process's id
+  sort DisplayId       .  **** the display process's id
+  sort NICId           .  **** the NIC process's id
+  sort NetProcId       .  **** processes which can act like a network
+  sort WebAppId        .  **** processes which can act like a webapp
+
+  subsorts KernelId WebAppId NetProcId UIId DisplayId NICId WebAppMgrId < ProcessId .
+  subsorts UIId NetProcId WebAppId < PipeId < ProcessId .
+  subsorts KernelId DisplayId NICId UIId WebAppId WebAppMgrId < NonNetProcId < ProcessId .
+  subsorts KernelId DisplayId NICId UIId NetProcId WebAppMgrId < NonWebAppId < ProcessId .
+  subsorts UIId WebAppId < NonNetPipeId < NonNetProcId PipeId < ProcessId .
+  subsorts UIId NetProcId < NonWebPipeId < NonWebAppId PipeId < ProcessId .
+
+  op kernel    :      -> KernelId [ctor] .
+  op webapp    :      -> WebAppId [ctor] .
+  op webapp    : Nat* -> WebAppId [ctor] .
+  op network   :      -> NetProcId [ctor] .
+  op network   : Nat* -> NetProcId [ctor] .
+  op ui        :      -> UIId [ctor] .
+  op display   :      -> DisplayId [ctor] .
+  op nic       :      -> NICId [ctor] .
+  op webappmgr :      -> WebAppMgrId [ctor] .
+
+  vars PId   : ProcessId .
+  vars KeId  : KernelId .
+  vars WAId  : WebAppId .
+  vars NPId  : NetProcId .
+  vars DiId  : DisplayId .
+  vars UiId  : UIId .
+  var  WAMId : WebAppMgrId .
+  vars N N'  : Nat* .
+
+  --- ERR: this is not parsing properly when loaded by the RLTool
+  --- NEXT TIME: try earlier version of the tool
+  op _~_ : ProcessId ProcessId -> Bool [comm] .
+  eq PId ~ PId                = true   [variant] .
+  eq KeId ~ WAId              = false  [variant] .
+  eq KeId ~ NPId              = false  [variant] .
+  eq KeId ~ UiId              = false  [variant] .
+  eq KeId ~ DiId              = false  [variant] .
+  eq webapp ~ webapp(N)       = false  [variant] .
+  eq webapp(N) ~ webapp(N')   = N ~ N' [variant] .
+  eq WAId ~ NPId              = false  [variant] .
+  eq WAId ~ UiId              = false  [variant] .
+  eq WAId ~ DiId              = false  [variant] .
+  eq network ~ network(N)     = false  [variant] .
+  eq network(N) ~ network(N') = N ~ N' [variant] .
+  eq NPId ~ UiId              = false  [variant] .
+  eq NPId ~ DiId              = false  [variant] .
+  eq UiId ~ DiId              = false  [variant] .
+  eq WAMId ~ KeId             = false  [variant] .
+  eq WAMId ~ WAId             = false  [variant] .
+  eq WAMId ~ NPId             = false  [variant] .
+  eq WAMId ~ DiId             = false  [variant] .
+  eq WAMId ~ UiId             = false  [variant] .
+  eq WAMId ~ NPId             = false  [variant] .
+endfm
+
+fmod SYS is
+  inc PRED .
+  pr PROC-ID .
+  sorts Object EmptyConfiguration Configuration State .
+  sorts Attribute EmptyAttributeSet NeAttributeSet AttributeSet .
+  subsorts Object EmptyConfiguration < Configuration .
+  subsort Attribute < NeAttributeSet < AttributeSet .
+  subsort EmptyAttributeSet < AttributeSet .
+
+  **** objects
+  op <_|_> : ProcessId AttributeSet                -> Object             [ctor] .
+  **** attributes
+  op _,_   : AttributeSet AttributeSet             -> AttributeSet       [ctor assoc comm id: none] .
+  op _,_   : NeAttributeSet AttributeSet           -> NeAttributeSet     [ctor ditto] .
+  op _,_   : EmptyAttributeSet EmptyAttributeSet   -> EmptyAttributeSet  [ctor ditto] .
+  op none  :                                       -> EmptyAttributeSet  [ctor] .
+  **** configuration
+  op __    : Configuration Configuration           -> Configuration      [ctor assoc comm id: none] .
+  op __    : EmptyConfiguration EmptyConfiguration -> EmptyConfiguration [ctor ditto] .
+  op none  :                                       -> EmptyConfiguration [ctor] .
+  **** state
+  op {_}   : Configuration                         -> State              [ctor] .
+endfm
+
+fmod SYS-PREDS is pr SYS .
+  **** generalized ACU multiset predicate(s)
+  op _inC_   : ProcessId Configuration     -> Pred [ctor] .
+  op _inC_   : Object Configuration        -> Pred [ctor] .
+  op _inA_   : Attribute AttributeSet      -> Pred [ctor] .
+  op _subC_  : Configuration Configuration -> Pred [ctor] .
+  op _subA_  : AttributeSet  AttributeSet  -> Pred [ctor] .
+  op dupl    : Configuration               -> Pred [ctor] .
+  op a-dupl  : AttributeSet                -> Pred [ctor] .
+  op _np<=_  : Nat* Configuration          -> Pred [ctor] .
+  op _wa<=_  : Nat* Configuration          -> Pred [ctor] .
+  var C C'   : Configuration .
+  var O      : Object .
+  var P      : ProcessId .
+  var A A'   : Attribute .
+  var AS AS' : AttributeSet .
+  var N M    : Nat* .
+  eq O inC O C                         = tt [variant] .
+  eq P inC < P | AS > C                = tt [variant] .
+  eq A inA A,AS                        = tt [variant] .
+  eq AS subA AS,AS'                    = tt [variant] .
+  eq C subC C C'                       = tt [variant] .
+  eq N np<= < network(N + M) | AS > C  = tt [variant] .
+  eq N wa<= < webapp (N + M) | AS > C  = tt [variant] .
+  eq dupl(< P | AS > < P | AS' > C)    = tt [variant] .
+  eq a-dupl(A, A, AS)                  = tt [variant] .
+endfm
+
+fmod LABEL is pr NAT* .
+  sorts Label MaybeLabel .
+  subsorts Label < MaybeLabel .
+  op about-blank :     -> Label      [ctor] .
+  op url         : Nat* -> Label      [ctor] .
+  op nolabel     :     -> MaybeLabel [ctor] .
+
+  **** use var-sat built-in equality/diseqaulity
+  op _==_  : Label Label -> Bool .
+  op _=/=_ : Label Label -> Bool .
+
+  **** Equality enrichment (added by Camilo)
+  op _~_ : Label Label -> Bool [comm] .
+  eq L:Label     ~ L:Label      = true             [variant] .
+  eq about-blank ~ url(N:Nat*)  = false            [variant] .
+  eq url(N:Nat*) ~ url(N':Nat*) = N:Nat* ~ N':Nat* [variant] .
+endfm
+
+fmod LABEL-PRED is pr LABEL . pr PRED .
+  op _!~_ : Label Label -> Pred [comm ctor] .
+  var N : Nat* . var P : NzNat* .
+  eq about-blank !~ url(N) = tt [variant] .
+  eq url(N + P)  !~ url(N) = tt [variant] .
+endfm
+
+fmod LABEL-LIST is pr LABEL .
+  sort LabelList .
+  subsort Label < LabelList .
+  op mtLL : -> LabelList [ctor] .
+  op _;_ : LabelList LabelList -> LabelList   [ctor assoc] .
+endfm
+
+fmod LABEL-SET is pr LABEL .
+  sort LabelSet .
+  subsorts Label < LabelSet .
+  op _&_  : LabelSet LabelSet -> LabelSet [ctor assoc comm id: mtLS] .
+  op mtLS :                   -> LabelSet [ctor] .
+endfm
+
+fmod MSG is pr PROC-ID . pr LABEL .
+  **** message type definition
+  sorts MsgType Message .
+  op MSG-NEW-URL    : -> MsgType [ctor] . --- creates a new web app with given URL
+  op MSG-FETCH-URL  : -> MsgType [ctor] . --- tells network to fetch data for given URL
+  op MSG-RETURN-URL : -> MsgType [ctor] . --- stores data that was fetched from internet by MSG-FETCH-URL
+  op MSG-SWITCH-TAB : -> MsgType [ctor] . --- causes displayed tab to be switched
+  op msg  : ProcessId ProcessId MsgType Label -> Message [ctor] .
+endfm
+
+fmod MSG-LIST is pr MSG .
+  **** message list definition
+  sort MessageList .
+  subsort Message < MessageList .
+  op none : -> Message [ctor] .
+  op mt   : -> MessageList [ctor] .
+  op _;_  : MessageList MessageList -> MessageList [ctor assoc] .
+endfm
+
+fmod PIPEPROC is inc MSG-LIST . inc SYS .
+  *** channels for messages to and from the kernel
+  op fromKernel : MessageList -> Attribute [ctor] .
+  op toKernel   : MessageList -> Attribute [ctor] .
+endfm
+
+fmod WEBAPPMGR is inc SYS .
+**** next web app number, i.e. unused process id number for a web app
+  op nextWAN : Nat* -> Attribute [ctor] .
+endfm
+
+fmod WEBAPPMGR-PREDS is
+  pr  WEBAPPMGR .
+  inc SYS-PREDS .
+  op nw-dupl : AttributeSet -> Pred [ctor] .
+  var A : AttributeSet . var N M : Nat* .
+  eq nw-dupl(nextWAN(N), nextWAN(M), A) = tt [variant] .
+endfm
+
+**** Note that the webapp does not check whether what it gets back
+**** from the network is actually the website it asked for in the
+**** first place. We represent the data it gets by only giving its
+**** URL, that is, only giving its label. This changes the rendered
+**** URL to the URL the data is received from.
+**** The 'missing' check above is essentially happening in
+**** checkConnection(), in that only appropriately connected network
+**** processes and web apps can communicate, based on the policies,
+**** and only the right data can be transmitted.
+****
+**** need the capability to check whether a process id is for a webapp
+**** this is now handled by subsorting
+fmod WEBAPP is
+  inc WEBAPPMGR .
+  inc LABEL .
+  inc SYS .
+**** Webapps have data to be put on screen - we only refer to it by
+**** the label of the page where it is from.
+  op rendered : Label -> Attribute [ctor] .
+**** This is where the webapp should load its data from!
+  op URL : Label -> Attribute [ctor] .
+**** This notes whether it has already loaded, or has not yet started to do so.
+  op loading : Bool -> Attribute [ctor] .
+
+  **** Equal or only one about-blank
+  op _~b_ : Label Label -> Bool [comm] .
+  eq L:Label     ~b L:Label      = true             [variant] .
+  eq about-blank ~b url(N:Nat*)  = true             [variant] .
+  eq about-blank ~b about-blank  = false            [variant] .
+  eq url(N:Nat*) ~b url(N':Nat*) = N:Nat* ~ N':Nat* [variant] .
+
+  **** Checks if display matches a webapp
+  op (_,_)#(_,_) : WebAppId Label WebAppId Label -> Bool .
+  var N M U V : Nat* . var W W' : WebAppId . var L L' : Label .
+  eq (webapp,about-blank) # (webapp(M),url(U)) = true          [variant] .
+  eq (W,L)                # (webapp,L')        = false         [variant] .
+  eq (W,L)                # (W',about-blank)   = false         [variant] .
+  eq (webapp(N),url(U))   # (webapp(M),url(V)) = (N ~ M) a (U ~ V) [variant] .
+endfm
+
+fmod WEBAPP-PREDS is
+  pr  WEBAPP .
+  inc SYS-PREDS .
+  op url-dupl      : AttributeSet                       -> Pred [ctor] .
+  op url-dupl*     : Configuration                      -> Pred [ctor] .
+  op waa-dupl      : Configuration                      -> Pred [ctor] .
+  op (_,_)inWL_    : WebAppId Label Configuration       -> Pred [ctor] .
+  op (_,_,_)inWUR_ : WebAppId Label Label Configuration -> Pred [ctor] .
+  op _~b1_         : Label Label                        -> Pred [ctor] .
+  op wa?           : WebAppId                           -> Pred [ctor] .
+  var A : AttributeSet . var L L' : Label . var B B' : Bool . var I : Nat* . var W : WebAppId . var C : Configuration .
+  --- check if URLs are duplicated
+  eq url-dupl ((URL(L),URL(L'),A))                   = tt [variant] .
+  eq url-dupl*(< W | URL(L),URL(L'),A > C)           = tt [variant] .
+  --- check if any attribute is duplicated
+  eq waa-dupl(< W | URL(L),URL(L'),A > C)            = tt [variant] .
+  eq waa-dupl(< W | rendered(L),rendered(L'),A > C)  = tt [variant] .
+  eq waa-dupl(< W | loading(B),loading(B'),A > C)    = tt [variant] .
+  --- check if (id,URL(label)) pair exists in soup
+  eq (webapp(I),L) inWL < webapp(I) | URL(L),rendered(L'),A > C = tt [variant] .
+  --- check if (id,URL,rendered) triple exists in soup
+  eq (W,L,L') inWUR < W | URL(L),rendered(L'),A > C  = tt [variant] .
+  --- check if first argument is blank or if both args match
+  eq about-blank ~b1 L                               = tt [variant] .
+  eq L ~b1 L                                         = tt [variant] .
+  --- check if WebAppId really refers to WebApp
+  eq wa?(webapp(I))                                  = tt [variant] .
+endfm
+
+**** network process gets a request from a webapp; network process
+**** forms an ethernet frame; the kernel check that frame and give to
+**** NIC; NIC generate instant answer in form of EF; that ethernet
+**** frame then gets returned to the (correct! check origin, hopefully
+**** this one) network process which returns data to the web page that
+**** requested it originally
+****
+**** network proc forms packet for transmission - kernel has physical
+**** address, kernel gives physical address to driver (but NO access
+**** to that location's content), driver can program NIC to send the
+**** packet at given address [kernel double checks that this address
+**** is the given one request from a webapp:
+**** Made into the topmost labeled rule [request-from-webapp]
+**** in module KERNEL
+****
+**** The network process writes a request into the memory for pickup
+**** by NIC - needing to go through kernel in next step
+**** Made into the labeled topmost conditional rule [proc-out]
+**** in module KERNEL
+****
+**** Kernel now gives this to NIC - checking that target is what is
+**** allowed for this network process .
+***** That DMA rule is in the kernel
+**** The NIC can create a response for any message -
+**** order of returns is NOT guaranteed
+**** Extended to two rewrite rules to simulate the associativity
+**** axiom removed from the lists; the first rule rotates the labels
+**** in attribute out, while the second one moves the top label in
+**** out to the end of the list in attribute in
+**** Made into topmost rules [nic0] and [nic1]
+**** in module KERNEL
+****
+**** Incoming ethernet frame in the NIC gets assigned to the
+**** appropriate network process by the kernel
+***** That DMA rule is in the kernel
+**** The network  process reads a return by NIC from memory  - did go
+**** through kernel in prior step
+**** Made into labeled topmost rule [proc-in]
+**** in module KERNEL
+****
+**** Sending a message from the network process to the webapp - this
+**** will be subject to kernel checking according to regular policies
+**** Made into labeled topmost conditional rule [msg-to-kernel]
+**** in module KERNEL
+**** need the capability to check whether a process id is for a netproc
+**** this is now handled by subsorting
+fmod NETPROC is inc LABEL-LIST . inc SYS .
+  op returnTo : ProcessId -> Attribute [ctor] .
+  op in       : LabelList -> Attribute [ctor] .
+  op out      : LabelList -> Attribute [ctor] .
+endfm
+
+fmod MEMORY is inc SYS . inc LABEL .
+  ops mem-out mem-in : MaybeLabel -> Attribute [ctor] .
+endfm
+
+fmod NIC is inc SYS . inc LABEL-SET . inc LABEL-LIST .
+  op nic-out : LabelSet  -> Attribute [ctor] .
+  op nic-in  : LabelList -> Attribute [ctor] .
+endfm
+
+fmod KERNEL-POLICIES is inc SYS . inc PRED . pr MSG . pr LABEL .
+**** define how to build a single policy! then add them into the initial configuration
+**** Q: where to find the policies? A: ibos_source/dKernel/access.h
+**** ibos_source/dKernel/access.cc (line 195 and down; shows who can
+**** communicate to whom)
+****
+**** Q: for those things allowed  to communicate with each other, can
+**** ANYTHING  be sent  or  is  there further  control?  A: Only  the
+**** MsgType given in  that assignment can be sent!  These are all
+**** OP(browser)-related messages!
+****
+**** Policies are mostly browser-related, but can be on a lower level
+**** [i.e., syscall level], e.g., for networkProc -> hardware
+**** communication
+  sort Policy .
+  sort PolicySet .
+  subsort Policy < PolicySet .
+  op mtPS :                     -> PolicySet [ctor] .
+  op _,_  : PolicySet PolicySet -> PolicySet [ctor assoc comm id: mtPS] .
+
+  op msgPolicy        : PolicySet                     -> Attribute [ctor] .  **** make the policylist an attribute with this wrapper
+  op policy           : PipeId PipeId MsgType -> Policy    [ctor] .  **** a policy is a sender Id, receiver Id and MsgType (only PipeProcs can communicate with kernel)
+  op nextNetworkProc  : Nat*                           -> Attribute [ctor] .  **** the next available proc id for a network proc
+  op handledCurrently : Message                       -> Attribute [ctor] .  **** the message currently handled by the kernel
+**** webapp info stored by kernel
+**** label identifies the website this webapp is showing - this needs to match the
+**** first label of a network proc to allow communication
+  sorts WebappProcInfo WebappProcInfoSet .
+  subsorts WebappProcInfo < WebappProcInfoSet .
+  op pi        : WebAppId Label                      -> WebappProcInfo    [ctor] .
+  op mtWPIS    :                                     -> WebappProcInfoSet [ctor] .
+  op _,_       : WebappProcInfoSet WebappProcInfoSet -> WebappProcInfoSet [ctor assoc comm id: mtWPIS] .
+  op weblabels : WebappProcInfoSet                   -> Attribute         [ctor] .
+****network proc info stored by kernel
+**** first label to identify related webapps, second label for whom
+**** this network proc can communicate with (via actual ethernet; to outside world)
+  sorts NetworkProcInfo NetworkProcInfoSet .
+  subsorts NetworkProcInfo < NetworkProcInfoSet .
+  op pi            : NetProcId Label Label                 -> NetworkProcInfo    [ctor] .
+  op mtNPIS        :                                       -> NetworkProcInfoSet [ctor] .
+  op _,_           : NetworkProcInfoSet NetworkProcInfoSet -> NetworkProcInfoSet [ctor assoc comm id: mtNPIS] .
+  op networklabels : NetworkProcInfoSet                    -> Attribute          [ctor] .
+**** These next two rules are what was promised above in the network
+**** process module above when referring to DMA rules.
+**** Kernel gives network process DMA to NIC - checking that target is
+**** what is allowed for this network process .
+**** Made into a labeled topmost conditional rule [mem-out]
+**** in module KERNEL
+****
+**** Incoming ethernet frame in the NIC gets assigned to the
+**** appropriate network process DMA by the kernel
+**** Made into a labeled topmost conditional rule [mem-in]
+**** in module KERNEL
+****
+**** Receiving an OP message sets the sender ProcessId correctly. This
+**** also subjects the message to policy checking.
+****
+**** Made into a topmost rule in module KERNEL
+****
+**** Once the policy has been checked and any further processing has
+**** been dealt with, OP messages are forwarded.
+****
+**** Made into a topmost rule in module KERNEL
+****
+  op displayedTopBar  : Label      -> Attribute [ctor] . **** kernel-owned address bar - part of the 'secure' UI
+  op activeWebapp     : WebAppId   -> Attribute [ctor] . **** display memory modeled as an object.
+  op displayedContent : Label      -> Attribute [ctor] . **** label of the things being displayed as an attribute of that object
+****
+  op kernelDo         : Message -> Message   [ctor] . **** Kernel needs to do something
+**** Once the policy has been checked, further processing is taken care of;
+**** switching the active tab in the UI is done here.
+**** The kernel will change topbar, change memory access
+**** for display - zero display memory first - let new owner refresh
+**** display
+****
+**** Made into a topmost rule in module KERNEL
+****
+**** Allow the active webapp to change the display whenever it wants to do so.
+**** ONLY the active webapp can make changes to the display!
+**** Note that this is the more abstract version, for the concrete and buggy one, see the memory.maude file.
+**** Made into a tomost rule that uses equality enrichment in the condition
+**** in module KERNEL
+****
+**** Creating a NEW webapp:
+**** Once the policy has been checked, further processing is taken care of;
+**** this switches the active webapp to the newly created webapp for this URL
+**** The kernel will change topbar, change memory access
+**** for display - zero display memory first - let new owner refresh
+**** display later
+**** Q: How does the UI signal if the user types a new URL into the
+**** address bar for a fresh webapp; and what about an existing
+**** webapp [say that webapp is at URL A and the user types a URL B]
+**** A: new webapp! label NEVER changes - so new webapp is needed!
+****
+**** check whether there is a policy in the policyset that allows the
+**** message to be sent - initial policy set defined in RUN
+**** Transformed into labeled conditional rules in module KERNEL
+****
+  var L L' : Label . var N : Nat* . var NPIS : NetworkProcInfoSet . var WPIS : WebappProcInfoSet .
+**** auxiliary function for checking that a network process links to a given label
+  op networkproc-for-label : Label NetworkProcInfoSet -> Pred .
+  eq [nnpl] : networkproc-for-label(L',(pi(network(N),L,L'),NPIS)) = tt [variant] .
+**** auxiliary functions for checking connections for network procs and
+**** webapps in the information sets that are defined in the kernel
+**** checks if a particular network process exists in a kernel-maintained set of network information
+  op networkproc : Nat* NetworkProcInfoSet -> Pred .
+  eq [nnp] : networkproc(N,(pi(network(N),L,L'),NPIS)) = tt [variant] .
+**** checks if a particular web application exists in a kernel-maintained set of webapp information
+  op webapp : Nat* WebappProcInfoSet -> Pred .
+  eq [nwa] : webapp(N,(pi(webapp(N),L),WPIS)) = tt [variant] .
+endfm
+
+fmod KERNEL-PREDS is
+  pr KERNEL-POLICIES .
+  pr WEBAPP .
+  inc NAT*-PRED .
+  inc LABEL-PRED .
+  inc SYS-PREDS .
+
+  op nn-dupl    : AttributeSet                                         -> Pred [ctor] .
+  op wl-id-dupl : WebappProcInfoSet                                    -> Pred [ctor] .
+  op _wl<=_     : Nat* WebappProcInfoSet                               -> Pred [ctor] .
+  op w2nMsgWF   : Nat* Nat* Label WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+
+  var A : AttributeSet . var N M : Nat* . var L L' : Label .
+  var WPIS : WebappProcInfoSet . var NPIS : NetworkProcInfoSet .
+  var C : Configuration .
+
+  --- INP: Nat WebappProcInfoSet
+  --- PRE: None
+  --- OUT: tt iff Nat is less than or equal one element in the set
+  eq N wl<= pi(webapp(N + M),L),WPIS = tt [variant] .
+  --- INP: AttributeSet
+  --- PRE: None
+  --- OUT: tt iff AttributeSet contains two nextNetworkProc() attrs
+  eq nn-dupl(nextNetworkProc(N), nextNetworkProc(M), A) = tt [variant] .
+  --- INP: WebappProcInfoSet
+  --- PRE: None
+  --- OUT: tt iff two WebappProcInfos have the same WebAppId
+  eq wl-id-dupl((pi(webapp(N),L),pi(webapp(N),L'),WPIS)) = tt [variant] .
+  --- INP: Nat* Nat* Label
+  --- PRE: None
+  --- OUT: tt iff this w2n message triplet corresponds to a correct weblabel
+  ---      and network process info set pair
+  eq w2nMsgWF(N,M,L',(pi(webapp(M),L),WPIS),(pi(network(N),L,L'),NPIS)) = tt [variant] .
+
+  --- op set1neq : WebappProcInfoSet Configuration -> Pred [ctor] .
+  --- INP: WebappProcInfoSet Configuration
+  --- PRE: None
+  --- OUT: tt iff any WebappProcInfo does not match any Webapp
+  --- NB:  This function is NOT what I want!!!
+  --- eq set1neq((pi(webapp(N),L),WPIS),< webapp(M) | URL(L'),A > C) = N !~ M orP L !~ L' [variant] .
+endfm
+
+mod KERNEL is
+**** A lot of the 'kernel' things are found above in 'KERNEL-POLICIES' instead
+  inc KERNEL-POLICIES .
+  inc MSG-LIST        .
+  inc LABEL-LIST      .
+  inc WEBAPP          .
+  inc PIPEPROC        .
+  inc NETPROC         .
+  inc MEMORY          .
+  inc NIC             .
+  pr  SYS-PREDS       .
+  pr  WEBAPP-PREDS    .
+  var Att Att2    : AttributeSet .
+  var Att3        : AttributeSet .
+  var Cnf         : Configuration .
+  var L L' L''    : Label .
+  var L1 L2 L3    : Label .
+  var LL          : LabelList .
+  var LS          : LabelSet .
+  var ML          : MessageList .
+  var NPIS        : NetworkProcInfoSet .
+  var MP          : PolicySet .
+  var WPIS        : WebappProcInfoSet .
+  var MT          : MsgType .
+
+  var N N' NewWA  : Nat* .
+
+  var URL         : Label .
+
+  var PI PI'      : ProcessId    .
+
+  var ORG         : PipeId       .
+
+  var WI WI'      : WebAppId     .
+  var NI NI'      : NetProcId    .
+  var PPI PPI'    : PipeId       .
+  var PPI1 PPI2   : PipeId       .
+  var NNPI        : NonNetPipeId .
+  var NNPI1 NNPI2 : NonNetPipeId .
+  var NWPI1 NWPI2 : NonWebPipeId .
+
+**** Page Fault and other invalid messages need not be modeled, as
+**** they are simply dropped in the actual source code, and in the
+**** model they will never be generated.
+
+rl [proc-in] :
+    {Cnf < NI | Att,in(LL),mem-in(L)>}
+    => {Cnf < NI | Att,in(LL ; L),mem-in(nolabel)>}  .
+
+rl [proc-in] :
+    {Cnf < NI | Att,in(mtLL),mem-in(L)>}
+    => {Cnf < NI | Att,in(L),mem-in(nolabel)>} .
+
+rl [proc-out] :
+    {Cnf < NI | Att,mem-out(nolabel),out(L)>}
+    => {Cnf < NI | Att,mem-out(L),out(mtLL)>} .
+
+rl [proc-out] :
+    {Cnf < NI | Att,mem-out(nolabel),out(L ; LL)>}
+    => {Cnf < NI | Att,mem-out(L),out(LL)>} .
+
+rl [request-from-webapp] :
+    {Cnf < NI | Att,fromKernel(msg(PI',NI,MSG-FETCH-URL,L); ML),out(LL),returnTo(PI)>}
+    => {Cnf < NI | Att,fromKernel(ML),out(LL ; L),returnTo(PI')>} .
+
+rl [request-from-webapp] :
+    {Cnf < NI | Att,fromKernel(msg(PI',NI,MSG-FETCH-URL,L); ML),out(mtLL),returnTo(PI)>}
+    => {Cnf < NI | Att,fromKernel(ML),out(L),returnTo(PI')>} .
+
+rl [request-from-webapp] :
+    {Cnf < NI | Att,fromKernel(msg(PI',NI,MSG-FETCH-URL,L)),out(LL),returnTo(PI)>}
+    => {Cnf < NI | Att,fromKernel(mt),out(LL ; L),returnTo(PI')>} .
+
+rl [request-from-webapp] :
+    {Cnf < NI | Att,fromKernel(msg(PI',NI,MSG-FETCH-URL,L)),out(mtLL),returnTo(PI)>}
+    => {Cnf < NI | Att,fromKernel(mt),out(L),returnTo(PI')>} .
+
+rl [msg-to-kernel] :
+    {Cnf < NI | Att,in(L),returnTo(PI),toKernel(ML)>}
+    => {Cnf < NI | Att,in(mtLL),returnTo(PI),toKernel(ML ; msg(NI,PI,MSG-RETURN-URL,L))>} .
+
+rl [msg-to-kernel] :
+    {Cnf < NI | Att,in(L),returnTo(PI),toKernel(mt)>}
+    => {Cnf < NI | Att,in(mtLL),returnTo(PI),toKernel(msg(NI,PI,MSG-RETURN-URL,L))>} .
+
+rl [msg-to-kernel] :
+    {Cnf < NI | Att,in(L ; LL),returnTo(PI),toKernel(ML)>}
+    => {Cnf < NI | Att,in(LL),returnTo(PI),toKernel(ML ; msg(NI,PI,MSG-RETURN-URL,L))>} .
+
+rl [msg-to-kernel] :
+    {Cnf < NI | Att,in(L ; LL),returnTo(PI),toKernel(mt)>}
+    => {Cnf < NI | Att,in(LL),returnTo(PI),toKernel(msg(NI,PI,MSG-RETURN-URL,L))>} .
+
+rl [render] :
+    {Cnf < WI | Att,URL(L'),fromKernel(msg(PI,WI,MSG-RETURN-URL,L2); ML),loading(true),rendered(L)>}
+    => {Cnf < WI | Att,URL(L'),fromKernel(ML),loading(true),rendered(L2)>} .
+
+rl [render] :
+    {Cnf < WI | Att,URL(L'),fromKernel(msg(PI,WI,MSG-RETURN-URL,L2)),loading(true),rendered(L)>}
+    => {Cnf < WI | Att,URL(L'),fromKernel(mt),loading(true),rendered(L2)>} .
+
+rl [fetch] :
+    {Cnf < WI | Att,URL(L'),loading(false),rendered(L),toKernel(ML)>}
+    => {Cnf < WI | Att,URL(L'),loading(true),rendered(L),toKernel(ML ; msg(WI,network,MSG-FETCH-URL,L'))>} .
+
+rl [fetch] :
+    {Cnf < WI | Att,URL(L'),loading(false),rendered(L),toKernel(mt)>}
+    => {Cnf < WI | Att,URL(L'),loading(true),rendered(L),toKernel(msg(WI,network,MSG-FETCH-URL,L'))>} .
+
+rl [nic1] :
+    {Cnf < nic | Att,in(LL),nic-out(L & LS)>}
+    => {Cnf < nic | Att,in(LL ; L),nic-out(LS)>} .
+
+rl [nic1] :
+    {Cnf < nic | Att,in(mtLL),nic-out(L & LS)>}
+    => {Cnf < nic | Att,in(L),nic-out(LS)>} .
+
+rl [kernelReceivesOPMessage-pa4] :
+    {Cnf < NI | Att2,toKernel(msg(ORG,NWPI2,MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,NWPI2,MT))>}
+    => {Cnf < NI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(NI,NWPI2,MT,L)),msgPolicy(MP,policy(network,NWPI2,MT))>} .
+
+rl [kernelReceivesOPMessage-pa7-cc1a] :
+    {Cnf < NI | Att2,toKernel(msg(ORG,WI,MT,L''); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS,pi(NI,L,L')),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < NI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(NI,WI,MT,L'')),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS,pi(NI,L,L')),weblabels(WPIS,pi(WI,L))>} .
+
+rl [kernelReceivesOPMessage-pa4] :
+    {Cnf < NI | Att2,toKernel(msg(ORG,NWPI2,MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,NWPI2,MT))>}
+    => {Cnf < NI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(NI,NWPI2,MT,L)),msgPolicy(MP,policy(network,NWPI2,MT))>} .
+
+rl [kernelReceivesOPMessage-pa7-cc1a] :
+    {Cnf < NI | Att2,toKernel(msg(ORG,WI,MT,L''))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS,pi(NI,L,L')),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < NI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(NI,WI,MT,L'')),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS,pi(NI,L,L')),weblabels(WPIS,pi(WI,L))>} .
+
+rl [kernelReceivesOPMessage-pa3] :
+    {Cnf < NNPI1 | Att2,toKernel(msg(ORG,WI,MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(NNPI1,webapp,MT))>}
+    => {Cnf < NNPI1 | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(NNPI1,WI,MT,L)),msgPolicy(MP,policy(NNPI1,webapp,MT))>} .
+
+rl [kernelReceivesOPMessage-pa3] :
+    {Cnf < NNPI1 | Att2,toKernel(msg(ORG,WI,MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(NNPI1,webapp,MT))>}
+    => {Cnf < NNPI1 | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(NNPI1,WI,MT,L)),msgPolicy(MP,policy(NNPI1,webapp,MT))>} .
+
+rl [kernelReceivesOPMessage-pa5] :
+    {Cnf < NWPI1 | Att2,toKernel(msg(ORG,NI,MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(NWPI1,network,MT))>}
+    => {Cnf < NWPI1 | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(NWPI1,NI,MT,L)),msgPolicy(MP,policy(NWPI1,network,MT))>} .
+
+rl [kernelReceivesOPMessage-pa5] :
+    {Cnf < NWPI1 | Att2,toKernel(msg(ORG,NI,MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(NWPI1,network,MT))>}
+    => {Cnf < NWPI1 | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(NWPI1,NI,MT,L)),msgPolicy(MP,policy(NWPI1,network,MT))>} .
+
+rl [kernelForwardsOPMessage] :
+    {Cnf < PPI' | Att2,fromKernel(ML)> < kernel | Att,handledCurrently(msg(ORG,PPI',MT,L))>}
+    => {Cnf < PPI' | Att2,fromKernel(ML ; msg(ORG,PPI',MT,L))> < kernel | Att,handledCurrently(none)>} .
+
+rl [kernelForwardsOPMessage] :
+    {Cnf < PPI' | Att2,fromKernel(mt)> < kernel | Att,handledCurrently(msg(ORG,PPI',MT,L))>}
+    => {Cnf < PPI' | Att2,fromKernel(msg(ORG,PPI',MT,L))> < kernel | Att,handledCurrently(none)>} .
+
+rl [kernelReceivesOPMessage-pa10] :
+    {Cnf < PPI | Att2,toKernel(msg(ORG,PPI',MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP)>}
+    => {Cnf < PPI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP)>} .
+
+rl [kernelReceivesOPMessage-pa10] :
+    {Cnf < PPI | Att2,toKernel(msg(ORG,PPI',MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP)>}
+    => {Cnf < PPI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(none),msgPolicy(MP)>} .
+
+rl [kernelReceivesOPMessage-pa1] :
+    {Cnf < PPI1 | Att2,toKernel(msg(ORG,PPI2,MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(PPI1,PPI2,MT))>}
+    => {Cnf < PPI1 | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(PPI1,PPI2,MT,L)),msgPolicy(MP,policy(PPI1,PPI2,MT))>} .
+
+rl [kernelReceivesOPMessage-pa1] :
+    {Cnf < PPI1 | Att2,toKernel(msg(ORG,PPI2,MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(PPI1,PPI2,MT))>}
+    => {Cnf < PPI1 | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(PPI1,PPI2,MT,L)),msgPolicy(MP,policy(PPI1,PPI2,MT))>} .
+
+rl [kernelReceivesOPMessage-pa6-cc2a] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NI,MT,L'); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS,pi(NI',L,L')),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < WI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(WI,NI',MT,L')),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS,pi(NI',L,L')),weblabels(WPIS,pi(WI,L))>} .
+
+rl [kernelReceivesOPMessage-pa2] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NNPI2,MT,L); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,NNPI2,MT))>}
+    => {Cnf < WI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(WI,NNPI2,MT,L)),msgPolicy(MP,policy(webapp,NNPI2,MT))>} .
+
+rl [kernelReceivesOPMessage-pa6-cc2a] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NI,MT,L'))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS,pi(NI',L,L')),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < WI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(WI,NI',MT,L')),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS,pi(NI',L,L')),weblabels(WPIS,pi(WI,L))>} .
+
+rl [kernelReceivesOPMessage-pa2] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NNPI2,MT,L))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,NNPI2,MT))>}
+    => {Cnf < WI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(WI,NNPI2,MT,L)),msgPolicy(MP,policy(webapp,NNPI2,MT))>} .
+
+crl [tab-change] :
+    {Cnf < display | Att2,activeWebapp(WI),displayedContent(L3)> < kernel | Att,displayedTopBar(L2),handledCurrently(kernelDo(msg(ui,webapp(N),MSG-SWITCH-TAB,L1))),weblabels(WPIS,pi(webapp(N),L'))>}
+    => {Cnf < display | Att2,activeWebapp(webapp(N)),displayedContent(about-blank)> < kernel | Att,displayedTopBar(L'),handledCurrently(none),weblabels(WPIS,pi(webapp(N),L'))>}
+    if (webapp(N),L') inWL Cnf = tt .
+
+rl [kernelReceivesOPMessage-pa9] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(ui,webapp,MSG-NEW-URL))> < ui | Att2,toKernel(msg(ORG,webapp,MSG-NEW-URL,L); ML)>}
+    => {Cnf < kernel | Att,handledCurrently(kernelDo(msg(ui,webapp,MSG-NEW-URL,L))),msgPolicy(MP,policy(ui,webapp,MSG-NEW-URL))> < ui | Att2,toKernel(ML)>} .
+
+rl [kernelReceivesOPMessage-pa9] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(ui,webapp,MSG-NEW-URL))> < ui | Att2,toKernel(msg(ORG,webapp,MSG-NEW-URL,L))>}
+    => {Cnf < kernel | Att,handledCurrently(kernelDo(msg(ui,webapp,MSG-NEW-URL,L))),msgPolicy(MP,policy(ui,webapp,MSG-NEW-URL))> < ui | Att2,toKernel(mt)>} .
+
+rl [kernelReceivesOPMessage-pa8] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(ui,webapp,MSG-SWITCH-TAB))> < ui | Att2,toKernel(msg(ORG,WI,MSG-SWITCH-TAB,L); ML)>}
+    => {Cnf < kernel | Att,handledCurrently(kernelDo(msg(ui,WI,MSG-SWITCH-TAB,L))),msgPolicy(MP,policy(ui,webapp,MSG-SWITCH-TAB))> < ui | Att2,toKernel(ML)>} .
+
+rl [kernelReceivesOPMessage-pa8] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(ui,webapp,MSG-SWITCH-TAB))> < ui | Att2,toKernel(msg(ORG,WI,MSG-SWITCH-TAB,L))>}
+    => {Cnf < kernel | Att,handledCurrently(kernelDo(msg(ui,WI,MSG-SWITCH-TAB,L))),msgPolicy(MP,policy(ui,webapp,MSG-SWITCH-TAB))> < ui | Att2,toKernel(mt)>} .
+
+rl [mem-in] :
+    {Cnf < NI | Att,mem-in(nolabel)> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,in(L')>}
+    => {Cnf < NI | Att,mem-in(L')> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,in(mtLL)>} .
+
+rl [mem-in] :
+    {Cnf < NI | Att,mem-in(nolabel)> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,in(L' ; LL)>}
+    => {Cnf < NI | Att,mem-in(L')> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,in(LL)>} .
+
+rl [mem-out] :
+    {Cnf < NI | Att,mem-out(L')> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,nic-out(LS)>}
+    => {Cnf < NI | Att,mem-out(nolabel)> < kernel | Att2,networklabels(NPIS,pi(NI,L,L'))> < nic | Att3,nic-out(L' & LS)>} .
+
+crl [kernelReceivesOPMessage-pa6-cc2b] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NI,MT,L'); ML)> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS),nextNetworkProc(N),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < WI | Att2,toKernel(ML)> < kernel | Att,handledCurrently(msg(WI,network(N),MT,L')),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS),nextNetworkProc(s(N)),weblabels(WPIS,pi(WI,L))> < network(N)| fromKernel(mt),in(mtLL),mem-in(nolabel),mem-out(nolabel),out(mtLL),returnTo(WI),toKernel(mt)>}
+    if networkproc-for-label(L,NPIS)=/= tt = true .
+
+crl [kernelReceivesOPMessage-pa6-cc2b] :
+    {Cnf < WI | Att2,toKernel(msg(ORG,NI,MT,L'))> < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS),nextNetworkProc(N),weblabels(WPIS,pi(WI,L))>}
+    => {Cnf < WI | Att2,toKernel(mt)> < kernel | Att,handledCurrently(msg(WI,network(N),MT,L')),msgPolicy(MP,policy(webapp,network,MT)),networklabels(NPIS),nextNetworkProc(s(N)),weblabels(WPIS,pi(WI,L))> < network(N)| fromKernel(mt),in(mtLL),mem-in(nolabel),mem-out(nolabel),out(mtLL),returnTo(WI),toKernel(mt)>}
+    if networkproc-for-label(L,NPIS)=/= tt = true .
+
+crl [change-display] :
+    {Cnf < WI | Att3,rendered(L')> < display | Att2,activeWebapp(WI),displayedContent(L)>}
+    => {Cnf < WI | Att3,rendered(L')> < display | Att2,activeWebapp(WI),displayedContent(L')>}
+    if L =/= L' = true .
+
+crl [kernelReceivesOPMessage-pa7-cc1b] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(msg(ORG,webapp(N'),MT,L''); ML)>}
+    => {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(ML)>}
+    if (networkproc(N,NPIS)andP webapp(N',WPIS))=/= tt = true .
+
+crl [kernelReceivesOPMessage-pa7-cc1b] :
+    {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(msg(ORG,webapp(N'),MT,L''))>}
+    => {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(mt)>}
+    if (networkproc(N,NPIS)andP webapp(N',WPIS))=/= tt = true .
+
+ rl [new-url] :
+    {Cnf < display | Att2,activeWebapp(WI),displayedContent(L')> < kernel | Att,displayedTopBar(L),handledCurrently(kernelDo(msg(ui,webapp,MSG-NEW-URL,URL))),weblabels(WPIS)> < webappmgr | Att3,nextWAN(NewWA)>}
+    => {Cnf < display | Att2,activeWebapp(webapp(NewWA)),displayedContent(about-blank)> < kernel | Att,displayedTopBar(URL),handledCurrently(none),weblabels(WPIS,pi(webapp(NewWA),URL))> < webappmgr | Att3,nextWAN(s(NewWA))> < webapp(NewWA)| URL(URL),fromKernel(mt),loading(false),rendered(about-blank),toKernel(mt)>} .
+endm
+
+fmod IBOS-FVP is
+  pr KERNEL-POLICIES  .
+  inc MSG-LIST        .
+  inc LABEL-LIST      .
+  inc WEBAPP          .
+  inc PIPEPROC        .
+  inc NETPROC         .
+  inc MEMORY          .
+  inc NIC             .
+  inc SYS-PREDS       .
+  inc WEBAPPMGR-PREDS .
+  inc WEBAPP-PREDS    .
+  inc KERNEL-PREDS    .
+endfm
+
+mod IBOS is
+  pr KERNEL .
+endm
+
+mod IBOS-STOP is
+  pr IBOS .
+  pr IBOS-FVP .
+  op [_] : Configuration -> State [ctor] .
+  var C : Configuration .
+  rl [stop] : { C } => [ C ] .
+endm
+
+eof
