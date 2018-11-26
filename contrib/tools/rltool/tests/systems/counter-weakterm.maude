@@ -14,7 +14,7 @@ loop rltl-init .
 ---       clearly subsumed
 (add-goal weak-term : ({N}) | true => ({0}) | true .)
 (start-proof .)
-(step .)
+(auto .)
 (subsume 14 by 13 .)
-(step .)
+(auto .)
 quit .

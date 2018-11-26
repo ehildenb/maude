@@ -572,6 +572,7 @@ fmod CONSTRAINED-TERMSET-PRINTER is pr CONSTRAINED-TERMSET . pr CONSTRAINED-TERM
   var M : Module . var CT CT' : CTerm . var CTS : CTermSet . var Q : Qid .
 
   op print : Module Qid CTermSet -> QidList .
+  eq print(M,CTS)              = print(M,'\/,CTS) .
   eq print(M,Q,CT | CT' | CTS) = print(M,CT) Q print(M,Q,CT' | CTS) .
   eq print(M,Q,CT)             = print(M,CT) .
   eq print(M,Q,noterm)         = 'none .

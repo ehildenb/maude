@@ -8,7 +8,7 @@ load ../../rltool.maude
 (add-goal mutex : (< R:Nat, W:Nat  >) | (W:Nat)  = (0) \/ (W:Nat)  = (s(0)) /\ (R:Nat)  = (0) =>
           ([ R':Nat,W':Nat ]) | (W':Nat) = (0) \/ (W':Nat) = (s(0)) /\ (R':Nat) = (0)  .)
 (start-proof .)
-(step .)
-(step .)
+(auto .)
+(auto .)
 (list-goals .)
 quit

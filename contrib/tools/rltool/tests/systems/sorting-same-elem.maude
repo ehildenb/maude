@@ -12,12 +12,12 @@ load ../../rltool.maude
 (add-goal same-elem : ([L,S]) | (list2mset(L)) = (S) => (< L',S >) | (list2mset(L')) = (S) .)
 
 (start-proof .)
-(step .)
+(auto .)
 (continue .)
 (continue .)
 (continue .)
 (continue .)
 (continue .)
-(step .)
+(auto .)
 quit .
 

@@ -20,6 +20,6 @@ load ../../rltool.maude
 --- Do the needed case analysis here
 (case 1 on M:MSet by (M1:MSet M2:MSet) U (N':Nat) .)
 
-(step .)
-(step .)
+(auto .)
+(auto .)
 quit .

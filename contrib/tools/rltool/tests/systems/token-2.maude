@@ -14,6 +14,6 @@ load ../../rltool.maude
 (on 1 use strat mutex#3 .)
 (on 2 use strat mutex#3 .)
 (on 3 use strat mutex#1 mutex#2 .)
-(step .)
+(auto .)
 quit
 

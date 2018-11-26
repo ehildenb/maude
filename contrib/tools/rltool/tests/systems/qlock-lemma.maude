@@ -24,7 +24,7 @@ load ../../rltool.maude
 (on 1 use strat mutex1 mutex2 mutex3 .)
 (on 2 use strat mutex1 mutex2 mutex3 .)
 (on 3 use strat mutex1 mutex2 mutex3 .)
-(step .)
-(step .)
+(auto .)
+(auto .)
 (list-goals .)
 quit .

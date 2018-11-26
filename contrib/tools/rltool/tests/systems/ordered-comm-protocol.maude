@@ -31,8 +31,8 @@ load ../../rltool.maude
 (on 5 use strat send-mt ack-multi .)
 (on 6 use strat send-ne send-mt main .)
 (start-proof .)
-(step .)
+(auto .)
 (continue .)
-(step .)
-(step .)
+(auto .)
+(auto .)
 quit

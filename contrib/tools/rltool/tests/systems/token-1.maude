@@ -9,13 +9,12 @@ load ../../rltool.maude
 --- add goals without using invariant command
 (declare-vars (C:Conf) U (T:Token) U (T':Token) .)
 (def-term-set ([C]) | true .)
-set break on .
 (add-goal mutex : ({[a,crit] [b,wait]}) | true \/ ({[a,wait] [b,crit]}) | true \/ ({[a,wait] [b,wait] T }) | true =>
                   ([[a,crit] [b,wait]]) | true \/ ([[a,wait] [b,crit]]) | true \/ ([[a,wait] [b,wait] T']) | true .)
 (start-proof .)
 (on 1 use strat mutex#3 .)
 (on 2 use strat mutex#3 .)
 (on 3 use strat mutex#1 mutex#2 .)
-(step .)
+(auto .)
 quit
 

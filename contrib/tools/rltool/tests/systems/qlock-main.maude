@@ -24,5 +24,5 @@ load ../../rltool.maude
                                ([ I' | W' | mt | Q'      ]) | true                   .)
 (start-proof .)
 (on 1 use strat generalized-mutex . generalized-mutex .)
-(step .)
+(auto .)
 quit .

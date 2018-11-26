@@ -32,7 +32,7 @@ load ../../rltool.maude
 (on 8  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
 (on 9  use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
 (on 10 use strat mutex#1 mutex#2 mutex#3 mutex#4 mutex#5 mutex#6 mutex#7 mutex#8 mutex#9 mutex#10 .)
-(step .)
+(auto .)
 --- TODO: add symbolic auto-split command that can be added to the default strategy
 ---       language so that these problems can be handled just by providing patterns
 ---       and so that the proof becomes totally agnostic towards the goal numbering
@@ -55,5 +55,5 @@ load ../../rltool.maude
 --- split on D <= B
 (subsume 435 by 440 .)
 (split 440 by (&224:Nat <= &220:Nat) = (true) .)
-(step .)
+(auto .)
 quit

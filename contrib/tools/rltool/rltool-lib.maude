@@ -176,9 +176,9 @@ fmod META-RLTL-COMMAND is
    op inv_to_with_on_.       : @Token@ Qid @TermSet@ @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
    op inv_to_on_.            : @Token@ Qid @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
    op def-term-set_.         : @NeQFCTermSet@ -> MetaRLTLCommand [ctor] .
-   op step_.                 : Nat -> MetaRLTLCommand [ctor] .
-   op step*`.                : -> MetaRLTLCommand [ctor] .
-   op step`.                 : -> MetaRLTLCommand [ctor] .
+   op auto_.                 : Nat -> MetaRLTLCommand [ctor] .
+   op auto*`.                : -> MetaRLTLCommand [ctor] .
+   op auto`.                 : -> MetaRLTLCommand [ctor] .
    op case_on_by_.           : Nat @Token@ @TermSet@ -> MetaRLTLCommand [ctor] .
    op split_by_.             : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
    op replace_by_.           : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
@@ -212,7 +212,7 @@ fmod RLTL-COMMAND is
    op declare-vars      : QidSet -> RLTLCommand  [ctor] .
    op inv               : Qid Qid QidSet QFCTermSet -> RLTLCommand [ctor] .
    op def-term-set      : NeQFCTermSet   -> RLTLCommand [ctor] .
-   op step              : Bound -> RLTLCommand [ctor] .
+   op auto              : Bound -> RLTLCommand [ctor] .
    op case              : Nat Variable TermSet -> RLTLCommand  [ctor] .
    op split             : Nat Bool EqQFForm? QFForm? -> RLTLCommand [ctor] .
    op subsumeby         : Nat Nat -> RLTLCommand [ctor] .
@@ -256,9 +256,9 @@ fmod PARSE-RLTLCOMMAND is
    eq rltl-parse((M,S),'add-axiom_.[T1])               = add-axiom(parse-labeltrans((M,S),true,T1)) .
    eq rltl-parse((M,S),'inv_to_with_on_.[T1,T2,T3,T4]) = inv(parse-token(T1),downQid(T2),parse-varset((M,S),T3),parse-matchform((M,S),true,T4)) .
    eq rltl-parse((M,S),'inv_to_on_.[T1,T2,T3])         = inv(parse-token(T1),downQid(T2),none,                  parse-matchform((M,S),true,T3)) .
-   eq rltl-parse((M,S),'step_.[T1])                    = step(downNat(T1)) .
-   eq rltl-parse((M,S),'step`..MetaRLTLCommand)        = step(1) .
-   eq rltl-parse((M,S),'step*`..MetaRLTLCommand)       = step(unbounded) .
+   eq rltl-parse((M,S),'auto_.[T1])                    = auto(downNat(T1)) .
+   eq rltl-parse((M,S),'auto`..MetaRLTLCommand)        = auto(1) .
+   eq rltl-parse((M,S),'auto*`..MetaRLTLCommand)       = auto(unbounded) .
 
    --- run in ON mode
    eq rltl-parse((M,S),'case_on_by_.[T1,T2,T3])          = case(downNat(T1),parse-token(T2),parse-termset((M,S),true,T3)) .
@@ -389,7 +389,7 @@ mod RLTL-ACTION-IMPL is
     proof : [flipPaused(clear(PM))],
     if goalsByStatus(paused,get-prf(PM)) == mt
       then mode : off, output : (L 'Proof 'Completed.)
-      else mode : off, output : (L 'Step 'Results: '\n printSpaces(8) printGoals(get-mod(PM),goalsByStatus(paused,get-prf(PM))))
+      else mode : off, output : (L 'Auto 'Results: '\n printSpaces(8) printGoals(get-mod(PM),goalsByStatus(paused,get-prf(PM))))
     fi .
 
   eq run-cycle((AS, output : L),NBD,[PM]) =
@@ -440,7 +440,7 @@ fmod RLTL-PROC-CMD is
   pr TRANSITION-MATCH .             --- ReachForm matches() command
 
   op proc    : RLTLCommand ProofMetadata                            -> RLTLAction .
-  op step    : ProofMetadata                                        -> RLTLAction .
+  op auto    : ProofMetadata                                        -> RLTLAction .
   op mod1    : ProofMetadata Module Qid                             -> RLTLAction .
   op inv1    : ProofMetadata Qid QFCTermSet QidSet Qid              -> RLTLAction .
   op inv2    : ProofMetadata LabelReachFormEx                       -> RLTLAction .
@@ -503,7 +503,7 @@ fmod RLTL-PROC-CMD is
                                      else write('Goal 'Names: '\n printSpaces(8) printGoalIds(get-prf(R)))
                                 fi .
   eq proc(continue,        R) = continue .
-  eq proc(step(BD),        R) = set-mode(active(BD)) ; continue .
+  eq proc(auto(BD),        R) = set-mode(active(BD)) ; continue .
   eq proc(focus(NS),       R) = if getgl!(get-prf(R),NS) :: ProofGoalSet
                                  then prf(getgl!(get-prf(R),NS)) & write('Successfully 'focused 'on 'target 'goal/goals)
                                  else write('Some 'target 'goal/goals 'not 'found: '\n printSpaces(8) printNatSet(NS))

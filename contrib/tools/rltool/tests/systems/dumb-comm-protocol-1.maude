@@ -17,6 +17,6 @@ load ../../rltool.maude
 (on 2 use strat end-loop-1  .)
 
 (start-proof .)
-(step .)
-(step .)
+(auto .)
+(auto .)
 quit

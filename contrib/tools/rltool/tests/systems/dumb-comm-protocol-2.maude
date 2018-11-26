@@ -2,7 +2,7 @@ load ../../systems/dumb-comm-protocol.maude
 load ../../rltool.maude
 
 (select DUMB-COMM-PROTOCOL .)
-(use tool impsimp for validity on DUMB-COMM-PROTOCOL with FOFORMSIMPLIFY .)
+(use tool impsimp for validity on DUMB-COMM-PROTOCOL with FOFORMSIMPLIFY-IMPL .)
 
 (declare-vars (NS:NeDataList) U (NR:NeDataList) U (S:DataList) U (R:DataList) U 
               (M:Nat)         U (N:Nat)         U (N':Nat) .)
@@ -12,9 +12,9 @@ load ../../rltool.maude
 (add-goal end-loop-with-seqnum : (< NS , NR , M >) | (len(NR)) = (M) => (< nil , NS NR , N >) | (N) = (len(NS NR)) .)
 
 (start-proof .)
-(step .)
+(auto .)
 (continue .)
 (continue .)
-(step .)
+(auto .)
 (list-goals .)
 quit
