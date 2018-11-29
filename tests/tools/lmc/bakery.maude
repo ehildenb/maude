@@ -3,8 +3,8 @@ set show timing off .
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
-fmod RENAMED-FVP-NARROWING-GRAPH is
-    including ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
+fmod RENAMED-NARROWING-GRAPH is
+    including ( NARROWING-GRAPH + GRAPH-ANALYSIS )
             * ( sort   Nat to   NatP
               , sort NzNat to NzNatP
               ) .
@@ -16,7 +16,7 @@ endfm
 
 mod BAKERY-NARROWING-GRAPH is
    protecting BAKERY .
-    extending RENAMED-FVP-NARROWING-GRAPH .
+    extending RENAMED-NARROWING-GRAPH .
 
     eq #M = upModule('BAKERY, true) .
 
@@ -63,7 +63,7 @@ reduce state(confManyWait) =>[10] state(confBad) .
 fmod FVP-BAKERY-INIT is
    protecting META-TERM .
    protecting UNCONDITIONALIZE-FVP-BOOL .
-    including FVP-CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    including CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
 
     var N : Nat . vars NeNS NeNS' : NeNodeSet .
 
@@ -132,7 +132,7 @@ reduce (state(inj(5)) ; state(inj(6))) =>* state(inj(9)) .
 
 mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
    protecting FVP-BAKERY-INIT .
-    including FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    including NARROWING-GRAPH + GRAPH-ANALYSIS .
 
     eq #M = upModule('BAKERY-FVP-CTOR, true) .
 endm

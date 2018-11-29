@@ -31,8 +31,8 @@ Conditional Model Checking
 
 ```maude
 fmod META-CONDITIONAL-LMC-PARAMETERS is
-   protecting META-LMC-PARAMETERS .
    protecting UNCONDITIONALIZE .
+    including META-LMC-PARAMETERS .
 
     op #MO : -> [SModule] [memo] .
     ------------------------------

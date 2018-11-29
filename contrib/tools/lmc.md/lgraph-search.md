@@ -279,10 +279,10 @@ endfm
 Instantiation to Narrowing
 --------------------------
 
-### Unconditional Narrowing
+### Common Narrowing
 
 ```maude
-fmod FVP-NARROWING-GRAPH is
+fmod NARROWING-GRAPH-COMMON is
    protecting NARROWING .
    protecting RENAME-METAVARS .
    protecting SUBSTITUTION-SET .
@@ -307,6 +307,16 @@ fmod FVP-NARROWING-GRAPH is
     ---------------------------------
     eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
+endfm
+```
+
+### Unconditional Narrowing
+
+```maude
+fmod NARROWING-GRAPH is
+    including NARROWING-GRAPH-COMMON .
+
+    vars T T' : Term .
 
    ceq intersect(state(T), state(T')) = .NodeSet
     if noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
@@ -316,17 +326,19 @@ endfm
 ### Conditional Narrowing
 
 ```maude
-fmod FVP-CONDITIONAL-NARROWING-GRAPH is
-   protecting FVP-NARROWING-GRAPH .
-   protecting META-CONDITIONAL-LMC-PARAMETERS .
+fmod CONDITIONAL-NARROWING-GRAPH is
+    including NARROWING-GRAPH-COMMON
+            + META-CONDITIONAL-LMC-PARAMETERS .
 
-    vars ND ND' : Node . vars T T' C C' : Term .
-    var Q : Qid . var SUB : Substitution . var N : Nat .
+    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold .
+    vars Q RL : Qid . var SUB : Substitution . var SUB? : Substitution? . var N : Nat .
+    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults .
+
+   ceq fold(ND, ND') = F if F := foldAny(ND, ND', 0) .
+   ---------------------------------------------------
 
     op foldAny : Node Node Nat -> [Fold] .
     --------------------------------------
-    eq fold(ND, ND') = foldAny(ND, ND', 0) [owise] .
-
    ceq foldAny(ND, ND', N) = if implies?(C << SUB, C' << SUB) then fold(SUB) else foldAny(ND, ND', s N) fi
                           if state(Q[T  , C ]) := ND  /\ Q == #cTerm
                           /\ state(Q[T' , C']) := ND' /\ Q == #cTerm
