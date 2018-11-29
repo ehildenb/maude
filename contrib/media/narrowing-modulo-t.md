@@ -108,6 +108,29 @@ In [@skeirik-stefanescu-meseguer-constructor-reachability-logic] several importa
 Methodology
 ===========
 
+Overview
+--------
+
+-   Unconditionalize conditional rewrite theory $(\Sigma, E, R, T)$.
+-   Build abstract model checker which subsorts user-defined step relation, subsumption, and path pruning.
+-   Instantiated abstract model checker to unconditionalized rewrite theory, prune based on satisfiability in $T$.
+
+### Unconditionalize
+
+-   Theory transformation `unconditionalize` (turn narrowing modulo $T$ into normal narrowing with constraint accumulation).
+-   Requires a topmost theory, produces a topmost theory.
+
+### Abstract Model Checker
+
+-   Built as labeled-graph exploration algorithm (returns a labeled graph and a set of nodes which are the current "frontier").
+-   Supports user-defined step relation (for generating the next states from a given state).
+-   Supports user-defined prune operation (for removing infeasible/uninteresting branches).
+-   Supports user-defined subsumption relation (for folding a new state into an already seen more general state).
+
+-   Instantiated to use Maude's narrowing as step relation.
+-   Instantiated to the particular condition theory $T$ to do state pruning.
+-   Instantiated to check for a matching and side-condition implication in $T$ for subsumption.
+
 Module Transformations
 ----------------------
 
