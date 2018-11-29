@@ -20,6 +20,14 @@ header-includes:
 Abstract
 --------
 
+Rewriting modulo T [@munoz-meseguer-rewriting-modulo-smt] has proven useful for increasing the expressiveness of the Maude model checker [@clavel-duran-eker-lincoln-marti-oliet-meseguer-talcott-all-about-maude].
+This allows for complete and sound ground execution where side-conditions to transitions may not be decidable directly by Maude, but rather by some SMT theory $T$.
+Symbolic model checking requires more care, however, as the unification process may instantiate terms which have subterms in theory $T$.
+
+This thesis presents *narrowing modulo $T$*, which allows using side-conditions on rules from a specified theory $T$ while using Maude's narrowing capabilities.
+A tunable symbolic model-checker is developed, which allows the user to specify many of the components, including (i) defining how to generate transitions, (ii) how to prune infeasible states, and (iii) how to subsume less general states into more general ones.
+Conditional Maude rewrite theories are transformed into unconditional ones via a simple theory transformation, and then the model-checker is instantiated on the unconditionalized theory.
+
 Introduction
 ============
 
