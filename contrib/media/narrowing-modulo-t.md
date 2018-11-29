@@ -1,7 +1,16 @@
 ---
 title: Narrowing Modulo T
 geometry: margin=2.5cm
+csl: ieee.csl
+header-includes:
+-   \usepackage{pgf}
+-   \usepackage{tikz}
+-   \usetikzlibrary{positioning,arrows,automata,shapes.geometric}
 ---
+
+\newcommand{\R}{\ensuremath{\mathcal{R}}}
+
+\newpage
 
 Abstract
 --------
@@ -1012,5 +1021,8 @@ Equipped with our recursive predicate barring ill-formed bakeries, we are able t
 \end{tikzpicture}
 
 Conclusion
+==========
+
+References
 ==========
 
