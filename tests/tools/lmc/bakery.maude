@@ -8,11 +8,13 @@ load ../../../contrib/tools/lmc/lgraph-search.maude
 fmod BAKERY-NARROWING-GRAPH-COMMON is
     including UNCONDITIONALIZE-FVP-BOOL .
     including ( CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH ) .
+    including FOLDING-LABELED-GRAPH-RENDER-TIKZ + LEXICAL .
 
     eq #tSort = 'Conf .
     -------------------
 
-    vars T T' T'' : Term .
+    vars T T' T'' : Term . var TL : TermList . var Q : Qid . var QL : QidList .
+    var SUB : Substitution . vars STR STR' : String .
 
     op upIdle : -> [Term] .
     -----------------------
@@ -53,6 +55,47 @@ fmod BAKERY-NARROWING-GRAPH-COMMON is
     op conf2Crit : -> [Term] .
     --------------------------
     eq conf2Crit = #cTerm['_;_;_['N:Name, 'M:Name, '__['`[_`]['MC1:ModeCrit], '`[_`]['MC2:ModeCrit], 'PS:ProcSet]], #cTrue] .
+
+    op stripVarTypes : QidList -> [QidList] .
+    -----------------------------------------
+    eq stripVarTypes(nil)  = nil .
+    eq stripVarTypes(Q QL) = if (Q :: Variable) or (Q :: Constant) then getName(Q) else Q fi stripVarTypes(QL) .
+
+    op renamingSubst : -> Substitution .
+    ------------------------------------
+    eq renamingSubst = '@1:Name <- 'X:Name ; '%1:Name <- 'N:Name
+                     ; '@2:Name <- 'Y:Name ; '%2:Name <- 'M:Name
+                     ; '@3:Name <- 'Z:Name
+                     ; '@2:NzNat <- 'NzN:NzNat
+                     ; '@2:ProcIdleSet <- 'PIS:ProcIdleSet
+                     ; '@2:ProcWaitSet <- 'PWS2:ProcWaitSet
+                     ; '@3:ProcWaitSet <- 'PWS3:ProcWaitSet .
+
+    op renderDirect : Term -> String .
+    ------------------------------------
+    eq renderDirect(T) = printTokens(stripVarTypes(metaPrettyPrint(#M, T << renamingSubst))) .
+
+    eq renderTikZLabel(label(Q , SUB)) = string(Q) .
+
+    op renderTikZState : Term -> String .
+    -------------------------------------
+    eq renderTikZState(T) = "\texttt{" + renderDirect(T) + "}" .
+
+    op renderTikZConstraint : Term -> String .
+    ------------------------------------------
+    eq renderTikZConstraint('_<=_[T, T']) = "\texttt{" + renderDirect(T) + "} \\le \texttt{" + renderDirect(T') + "}" .
+    eq renderTikZConstraint('_<_ [T, T']) = "\texttt{" + renderDirect(T) + "} \\lt \texttt{" + renderDirect(T') + "}" .
+
+    eq renderTikZConstraint('_?=_['true.Bool, T]) = renderTikZConstraint(T) .
+    eq renderTikZConstraint('_?=_[T, 'true.Bool]) = renderTikZConstraint(T) .
+
+   ceq renderTikZConstraint(T) = "" if T  := #cTrue .
+    eq renderTikZConstraint(T) = "\texttt{" + renderDirect(T) + "}" [owise] .
+
+   ceq renderTikZNode(state(Q[T,T'])) = "$" + renderTikZState(T) + STR' + "$"
+                                     if Q := #cTerm
+                                     /\ STR  := renderTikZConstraint(T')
+                                     /\ STR' := if STR == "" then "" else "\\ st \\ " + STR fi .
 endfm
 
 reduce wellFormed(upModule('BAKERY, false), conf2Idle   ('X:Name, 'Y:Name)) .
