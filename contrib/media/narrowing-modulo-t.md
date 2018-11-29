@@ -408,6 +408,21 @@ For conditional narrowing, we additionally define:
 Evaluation
 ==========
 
+We will demonstrate how we can discharge three different classes of queries, and return useful results in case of failure:
+
+-   Stability: a given state remains within a larger set of safe states.
+-   Coinvariants: a bad state is never reached.
+
+### Forwards Search
+
+-   Demonstrate on both thermostats and bakery.
+-   Show example "good" and "bad" states.
+
+### Backwards Search
+
+-   Demonstrate backwards search from "bad" state to initial state (bakery).
+-   Demonstrate no backwards reach-path from "bad" state to smaller initial state.
+
 Thermostat
 ----------
 
