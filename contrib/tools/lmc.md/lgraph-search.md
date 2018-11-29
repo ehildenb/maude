@@ -282,7 +282,7 @@ Instantiation to Narrowing
 ```maude
 fmod FVP-NARROWING-GRAPH is
    protecting NARROWING .
-   protecting VARIABLE-NUMBERS .
+   protecting RENAME-METAVARS .
    protecting SUBSTITUTION-SET .
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
@@ -306,8 +306,8 @@ fmod FVP-NARROWING-GRAPH is
     eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
 
-    --- Unification based intersection
-    eq intersect(state(T), state(T')) = metaVariantDisjointUnify(#M, T =? T', empty, metaHighestVar((T, T')), 0) :: UnificationTriple .
+   ceq intersect(state(T), state(T')) = false
+    if noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
 endfm
 ```
 
@@ -338,5 +338,8 @@ fmod FVP-CONDITIONAL-NARROWING-GRAPH is
     --- Probably theory specific, maybe best to leave the choice of `memo` to each individual theory.
     op implies? : Term Term -> [Bool] .
     -----------------------------------
+
+   ceq intersect(state(Q[T,C]), state(Q[T',C'])) = false
+    if Q = #cTerm /\ noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
 endfm
 ```

@@ -8,6 +8,11 @@ fmod RENAMED-FVP-NARROWING-GRAPH is
             * ( sort   Nat to   NatP
               , sort NzNat to NzNatP
               ) .
+
+    vars ND ND' : Node .
+
+    eq intersect(ND, ND') = true [owise] .
+    --------------------------------------
 endfm
 
 --- ### Bakery Search Instantiation

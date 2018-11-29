@@ -124,7 +124,7 @@ result FoldedLabeledGraph?: (0 -[label('crit,
 | 6 ; 8 ; 10 ; 12 ; 14
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : state(conf2Idle) =>[10]state(confBad) .
-rewrites: 6253
+rewrites: 7973
 result [Bool]: (0 -[label('wake, none)]-> 2
 2 -[label('crit, none)]-> 4
 2 -[label('wake, none)]-> 6
@@ -197,10 +197,10 @@ result [Bool]: (0 -[label('wake, none)]-> 2
     'N:Name]],'`[_`]['crit['M:Name]],'PS:ProcSet]])
 ==========================================
 reduce in BAKERY-NARROWING-GRAPH : state(confManyWait) =>[10]state(confBad) .
-rewrites: 1617
+rewrites: 2560
 result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 40 sort tuples. First such tuple is (Type).
+    on 6 out of 48 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out
@@ -228,7 +228,7 @@ result NeNodeSet: state('_st_['<_`,_`,_`,_>['PC:Mode,'Y1:Nat,'QNC:NcMode,
 ==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : (state(inj(1)) ; state(inj(
     2))) =>* state(inj(9)) .
-rewrites: 2131
+rewrites: 6831
 result Bool: true
 ==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : bfs(state(inj(1)) ; state(
@@ -652,7 +652,7 @@ result FoldedLabeledGraph?: (0 -[label('p1_crit,
 ==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : state(inj(4)) =>* state(inj(
     9)) .
-rewrites: 49640
+rewrites: 55187
 result Bool: false
 ==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : nodes(bfs(state(inj(4)))) <=
@@ -1121,10 +1121,10 @@ result FoldedLabeledGraph: (0 -[label('p1_sleep,
 ==========================================
 reduce in BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH : (state(inj(5)) ; state(inj(
     6))) =>* state(inj(9)) .
-rewrites: 2307
+rewrites: 5481
 result Bool: true
 Warning: sort declarations for operator resolveNames failed preregularity check
-    on 6 out of 40 sort tuples. First such tuple is (Type).
+    on 6 out of 48 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 1 out of 26 sort tuples. First such tuple is (NullDeclSet).
 Warning: ctor declarations for associative operator __ are conflict on 138 out
@@ -1357,7 +1357,7 @@ result Bool: true
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : intersect(state('<_`,_`,_`,_>[
     'V1:Mode,'0.Nat,'crit.Mode,'V2:Nat]), state('<_`,_`,_`,_>['V1:Mode,'_+_[
     'V2:Nat,'V3:NzNat],'crit.Mode,'V2:Nat])) .
-rewrites: 151
+rewrites: 283
 result Bool: false
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : bfs(states(1)) .
@@ -2224,10 +2224,10 @@ result [Bool]: ((((state('<_`,_`,_`,_>['crit.Mode,'@2:Nat,'@1:Mode,'_+_[
     state('<_`,_`,_`,_>['PNC:NcMode,'X1:Nat,'QC:Mode,'X2:Nat]))
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(3) =>* states(9) .
-rewrites: 7133
+rewrites: 9399
 result Bool: false
 ==========================================
 reduce in BAKERY-FVP-CTOR-NARROWING-GRAPH : states(1 ; 2) =>* states(9) .
-rewrites: 1419
+rewrites: 3463
 result Bool: true
 Bye.
