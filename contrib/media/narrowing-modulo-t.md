@@ -31,6 +31,33 @@ Conditional Maude rewrite theories are transformed into unconditional ones via a
 Introduction
 ============
 
+Rewriting logic specifications have a long history as an expressive and effective semantic framework [@meseguer-20-years-rewriting].
+In particular, the Maude rewriting system [@clavel-duran-eker-lincoln-marti-oliet-meseguer-talcott-all-about-maude] has been used to model and make accurate predictions about a wide variety of systems, to name a few:
+
+-   Cryptographic communication protocols [@escobar-meadows-meseguer-maude-nrl;@fang-escobar-meadows-meseguer-narendran-homomorphic-encryption-unification-fvp],
+-   Server synchronization protocols [@liu-rahman-skeirik-gupta-meseguer-cassandra-db-maude;@liu-olveczky-rahman-ganhotra-gupta-meseguer-ramp-transaction-protocol],
+-   Real-time scheduling algorithms [@olveczky-caccamo-real-time-maude-cash-protocol],
+-   Protein production in cells [@eker-knapp-laderoute-lincoln-talcott-pathway-logic], and
+-   Real-world programming langugaes [@serbanuta-rosu-k-maude].
+
+After defining a system in Maude, many different analysis can be performed over it.
+Counterexamples to invariants can be found simply by executing the system from a given ground state and looking for states which violate the given property.
+*Narrowing* [@escobar-meseguer-thati-narrowing] (symbolic rewriting) can be used to explore much larger (even infinitely so!) chunks of the state-space.
+In the narrowing setting, a single execution trace captures an entire set of ground states (potentially of infinite size!), meaning that narrowing can achieve *exhaustive* model-checking.
+This has been used to automatically *prove* that given systems satisfy temporal logic properties [@bae-escobar-meseguer-abstract-model-checking], for example.
+
+Rewriting logic also admits reflective meta-reasoning [@basin-clavel-meseguer-rewriting-metalogical-framework], which Maude takes advantage of via a reflective interface for adding decision procedures as Maude libraries [@duran-olveczky-full-maude].
+An example of this is the meta-level variant-satisfiability algorithms developed in [@skeirik-meseguer-metalevel-variant-satisfiability], which produces an automated first-order quantifier-free satisfiability decision procedure for many theories with the finite variant property [@comon-lundh-dulaune-finite-variant-property].
+In addition, Maude has been extended with two SMT solvers, CVC4 [@barrett-conway-deters-hadarean-jovanovic-king-reynolds-tinelli-cvc4] and Yices2 [@roderick-yices2], for deciding satisfiability of first-order quantifier-free formula in the theories supported by those solvers.
+As yet another example of meta-level extensibility of Maude, the Nelson-Oppen theory combination technique [@nelson-oppen-cooperating-decision-procedures] was implemented in Maude [@rodrigues-rewriting-nelson-oppen-thesis], admitting decidability of theories combining both Yices2 and variant satisfiability.
+
+Rewriting modulo SMT [@munoz-meseguer-rewriting-modulo-smt] demonstrates this integration and develops the theory of model-checking using rewriting when portions of the underlying system's theory fall into the external solvers purview.
+This work lifts rewriting modulo SMT to *narrowing* modulo $T$, where $T$ is pluggable.
+As a demonstration, we instantiate $T$ to both SMT (in this case Yices2 [@roderick-yices2]), as well as to the meta-level variant satisfiability [@meseguer-variant-satisfiability].
+Two example systems are studied, including the bakery protocol examined in [@bae-escobar-meseguer-abstract-model-checking], and a new thermostat model which is instantiated to a linear integer temperature law and a cubic real temperature law.
+
+\newpage
+
 Background
 ==========
 
