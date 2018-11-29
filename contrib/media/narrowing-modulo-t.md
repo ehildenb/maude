@@ -61,6 +61,33 @@ Two example systems are studied, including the bakery protocol examined in [@bae
 Background
 ==========
 
+The notion of a *generalized rewrite theory* is developed in [@meseguer-generalized-rewrite-coherence-completion]; here a similar notion will be adopted.
+Generalized rewrite theories are rewrite theories which may or may not be executable; none-the-less they may be subjected to extensive logical analysis.
+
+Specifically, we will use rewrite theories of the form $\R = (\Sigma, B, E, T, R)$ such that:
+
+-   $\Sigma = (S, <)$ is an order-sorted signature of function symbols over sort $S$ with subsort relation $<$,
+-   $B$ is a set of equational axioms with finitary matching and unification algorithms,
+-   $E$ is a set of $B$-convergent *state simplification* rules for $\R$,
+-   $T$ is an order-sorted first-order theory over subsignature $\Sigma_T \subseteq \Sigma$ for which quantifier-free satsifiability is decidable, and
+-   $R = \{ l_i \to r_i \ st\ \varphi_i \}_{i \in I}$ is a set of $E, B$-coherent *transition* rules for $\R$ with $\varphi_i$ a quantifier-free formula in $T$ (for some finite set $I$).
+
+Maude rewrite theories are examples of generalized rewrite theories; the side-condition theory $T$ is that of equalities decidable using rewriting by Maude in $(\Sigma, B, E)$ (and can even have $\Sigma$ contain membership axioms and $E$ contain conditional equations).
+This makes for rewrite theories $\R = (\Sigma, B, E, E, R)$.
+
+As a variation, rewriting modulo SMT [@munoz-meseguer-rewriting-modulo-smt] allows queries about satisfiability in $T$ to be delegated to an SMT solver.
+This was used to model the CASH real-time scheduling algorithm by delegating reasoning about constraints on deadline and execution times to SMT solver CVC3.
+This makes for rewrite theories $\R = (\Sigma, B, E, \textrm{CVC3}, R)$.
+
+More recently, [@meseguer-generalized-rewrite-coherence-completion] demonstrates a broad class of theories $\R$ which have *constructor* and *finite-variant-property* decompositions $(\Sigma_{\Omega}, B_{\Omega}, E_{\Omega}) \subseteq (\Sigma_{1}, B_{1}, E_{1}) \subseteq (\Sigma, B, E)$ (resp.).
+Such theories admit a reduction map to a theory $\R^{\Omega}_{1}$ of only *constructor* terms, making executing them concretely and symbolically very efficient.
+In the case where theory $T \subseteq (\Sigma_{1}, B_{1}, E_{1})$ has only two constructors $\top$ and $\bot$, the theory $\R^{\Omega}_{1}$ even becomes *unconditional* (**true?**).
+
+In addition, we'll restict that:
+
+-   $\R$ is *topmost*: a unique sort $s \in S$ exists which every $l_i \to r_i$ rule types correctly as, and
+-   the left-hand-sides $l_i$ of the rules $R$ contain no function symbols from sub-signature $\Sigma_T$ (**needed?**).
+
 Methodology
 ===========
 
@@ -667,7 +694,7 @@ An implementation which allows multiple processes into the critical section simu
 
 ### Arbitrary Processes Bakery
 
-This version comes from the book *All About Maude* [@all-about-maude].
+This version comes from the book *All About Maude* [@clavel-duran-eker-lincoln-marti-oliet-meseguer-talcott-all-about-maude].
 
 ``` {.maude}
 fmod BAKERY-SYNTAX is
