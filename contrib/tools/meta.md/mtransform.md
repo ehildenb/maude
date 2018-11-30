@@ -6,10 +6,13 @@ sload purification.maude
 sload mconstruction.maude
 ```
 
-\newcommand{\R}{\mathcal{R}}
+\newcommand{\R}{\ensuremath{\mathcal{R}}}
+\newcommand{\rto}{\ensuremath{\Rightarrow}}
+\newcommand{\rif}{\ensuremath{\ \texttt{if}\ }}
+\newcommand{\st}{\ensuremath{\ st\ }}
 
 Theory transformations take advantage of Maude's *reflective* nature.
-Assume throughout a rewrite theory $\R = (\Sigma, B \cup E, R)$.
+Assume throughout a rewrite theory $\R = (\Sigma, B, E, T, R)$ with $\Sigma = (S, <)$ the signature.
 
 Subtheory Abstraction
 ---------------------
@@ -84,9 +87,6 @@ endfm
 Reversing Rules
 ---------------
 
-This transformation will reverse both conditional and unconditional rules by swapping the LHS and the RHS.
-It leaves conditions *unchanged* on conditional rules.
-
 ```maude
 fmod REVERSE-RULES is
    protecting MODULE-TEMPLATE .
@@ -102,7 +102,13 @@ fmod REVERSE-RULES is
     ----------------------------------------------------
     eq reverseRules(IDS SDS SSDS OPDS MAS EQS) = IDS SDS SSDS OPDS MAS EQS .
     eq reverseRules(NeMDS NeMDS')              = reverseRules(NeMDS) reverseRules(NeMDS') .
+```
 
+This transformation allows execution and/or analysis in the reversed theory $\overleftarrow{\R} = (\Sigma, B, E, T, R')$.
+Each rule $l_i \to r_i \rif \varphi_i \in R$ is transformed into the rule $r_i \to l_i \rif \varphi_i \in R'$.
+It leaves conditions *unchanged* on conditional rules.
+
+```maude
     eq reverseRules(  rl T => T'      [ AS ] . ) = (  rl T' => T      [ AS ] . ) .
     eq reverseRules( crl T => T' if C [ AS ] . ) = ( crl T' => T if C [ AS ] . ) .
 
@@ -153,11 +159,6 @@ endfm
 Unconditionalize Transformation
 -------------------------------
 
-This operation will "internalize" the conditions of the rules in a conditional theory.
-It assumes that the theory is topmost to begin with, and augments it with a new operator which allows storing a constraint as well as the original state.
-Conditions are added to the right-hand-side of the rule as accumulated constraints.
-This transformation is parametric in several operators and sorts (prefixed below with `#`) about the module which the conditions will be translated into.
-
 ```maude
 fmod UNCONDITIONALIZE is
    protecting META-LEVEL .
@@ -168,7 +169,15 @@ fmod UNCONDITIONALIZE is
     var IDS : ImportDeclSet . var SDS : SortDeclSet . var SSDS : SubsortDeclSet .
     var OPDS : OpDeclSet . var MAS : MembAxSet . var EQS : EquationSet .
     vars NeRLS NeRLS' : NeRuleSet . var RLS : RuleSet .
+```
 
+Given a topmost conditional theory $(\Sigma, B, E, T, R)$, this transformation produces the unconditional theory $\R' = (\Sigma', B, E, \varnothing, R')$ over pattern predicates.
+This transformation preserves executability, both concretely and symbolically.
+
+The new signature $\Sigma' = (S \cup \{s'\}, < \cup \{s < s'\})$ adds a new supersort $s'$ of the top sort $s$ of rules $R$.
+Another operator $\_ \st \_ : s b \to s'$ is added, conjoining an element of $s$ with a constraint from $T$.
+
+```maude
     op unconditionalize : ModuleDeclSet -> [ModuleDeclSet] .
     --------------------------------------------------------
    ceq unconditionalize(IDS SDS SSDS OPDS MAS EQS RLS)
@@ -184,7 +193,18 @@ fmod UNCONDITIONALIZE is
     op unconditionalize : Module -> [Module] .
     ------------------------------------------
     eq unconditionalize(M) = fromTemplate(getName(M), unconditionalize(asTemplate(M))) .
+```
 
+Each rule $l_i \to r_i \rif \varphi_i \in R$ is replaced with the rule $l_i \st V \to r_i \st V \land \varphi_i$ (for $V : b$ fresh) over pattern predicates.
+This transformation preserves executability.
+
+**Theorem** (Completeness): If an execution step $t \rto t'$ is possible in $\R$, then a corresponding execution step $t \st \top \rto t' \st \phi$ is possible in $\R'$.
+
+**Proof**: If $\R \proves t \rto t'$, then for some $l_i \rto r_i \st \varphi_i \in R$ we have that $l_i \alpha =_{E/B} t \alpha$ (with $\alpha$ the *unifier*) such that $T \models \varphi_i \alpha$.
+In this case, the generated rule $l_i \st V \rto r_i \st V \land \varphi_i$ can be applied, as $(l_i \st V) \alpha' =_{E/B} (t \st \top) \alpha'$ (with unifier $\alpha' = \alpha \cup \{ V \mapsto \top \}$).
+Thus, $\R' \proves t \st \top \rto t' \st \varphi_i \alpha$.
+
+```maude
     op unconditionalizeRules : RuleSet -> [RuleSet] .
     -------------------------------------------------
     eq unconditionalizeRules(none)         = none .
@@ -205,14 +225,13 @@ fmod UNCONDITIONALIZE is
 
 The parameters of the transformation are as follows:
 
--   `#tSort`: topmost sort of the rules from the conditional theory.
--   `#cModule`: module that the conditions (of sort `#cSort`) come from.
--   `#cSort`: sort of the conditions from the conditional theory.
--   `#cTrue`: true/top element of the conditional sort `#cSort`.
--   `#cFalse`: false/bottom element of the conditional sort `#cSort`.
--   `#cConjunct`: conjunction operator in condition module `#cModule`.
--   `#cTerm`: operator to join the a `#tSort` and a `#cSort` together (currently set to `_st_`).
--   `#mkCondition`: translation from an `EqCondition` atom to a term of sort `#cSort`.
+-   $s$ (`#tSort`): top sort of the rules from the conditional theory.
+-   $T$ (`#cModule`): module that the conditions (of sort `#cSort`) come from.
+-   $b$ (`#cSort`): top sort of the conditions from the conditional theory.
+-   $\top$ (`#cTrue`): true/top element of the conditional sort `#cSort`.
+-   $\bot$ (`#cFalse`): false/bottom element of the conditional sort `#cSort`.
+-   $\land$ (`#cConjunct`): conjunction operator in condition module `#cModule`.
+-   $\st$ (`#cTerm`): operator to conjoin a `#tSort` a `#cSort` together with (currently set to `_st_`).
 
 ```maude
     op #tSort : -> Sort .
@@ -228,7 +247,12 @@ The parameters of the transformation are as follows:
     op #cTerm : -> Qid .
     --------------------
     eq #cTerm = '_st_ .
+```
 
+`#mkCondition` is a book-keeping operator to make it possible to use Maude's built-in boolean side-conditions as stand-in for the theory $T$.
+You must provide translation from an `EqCondition` atom to a term of sort `#cSort`.
+
+```maude
     op #mkCondition : EqCondition -> Term .
     ---------------------------------------
     eq #mkCondition(nil)         = #cTrue .
