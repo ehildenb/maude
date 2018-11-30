@@ -70,7 +70,7 @@ Specifically, we will use rewrite theories of the form $\R = (\Sigma, B, E, T, R
 -   $B$ is a set of equational axioms with finitary matching and unification algorithms,
 -   $E$ is a set of $B$-convergent *state simplification* rules for $\R$,
 -   $T$ is an order-sorted first-order theory over subsignature $\Sigma_T \subseteq \Sigma$ for which quantifier-free satsifiability is decidable, and
--   $R = \{ l_i \to r_i \ st\ \varphi_i \}_{i \in I}$ is a set of $E, B$-coherent *transition* rules for $\R$ with $\varphi_i$ a quantifier-free formula in $T$ (for some finite set $I$).
+-   $R = \{ l_i \rto r_i \rif \varphi_i \}_{i \in I}$ is a set of $E, B$-coherent *transition* rules for $\R$ with $\varphi_i$ a quantifier-free formula in $T$ (for some finite set $I$).
 
 Maude rewrite theories are examples of generalized rewrite theories; the side-condition theory $T$ is that of equalities decidable using rewriting by Maude in $(\Sigma, B, E)$ (and can even have $\Sigma$ contain membership axioms and $E$ contain conditional equations).
 This makes for rewrite theories $\R = (\Sigma, B, E, E, R)$.
@@ -81,12 +81,8 @@ This makes for rewrite theories $\R = (\Sigma, B, E, \textrm{CVC3}, R)$.
 
 More recently, [@meseguer-generalized-rewrite-coherence-completion] demonstrates a broad class of theories $\R$ which have *constructor* and *finite-variant-property* decompositions $(\Sigma_{\Omega}, B_{\Omega}, E_{\Omega}) \subseteq (\Sigma_{1}, B_{1}, E_{1}) \subseteq (\Sigma, B, E)$ (resp.).
 Such theories admit a reduction map to a theory $\R^{\Omega}_{1}$ of only *constructor* terms, making executing them concretely and symbolically very efficient.
-In the case where theory $T \subseteq (\Sigma_{1}, B_{1}, E_{1})$ has only two constructors $\top$ and $\bot$, the theory $\R^{\Omega}_{1}$ even becomes *unconditional* (**true?**).
 
-In addition, we'll restict that:
-
--   $\R$ is *topmost*: a unique sort $s \in S$ exists which every $l_i \to r_i$ rule types correctly as, and
--   the left-hand-sides $l_i$ of the rules $R$ contain no function symbols from sub-signature $\Sigma_T$ (**needed?**).
+$\R$ is *topmost* if a unique sort $s \in S$ exists such that $l_i : s$ and $r_i : s$ holds for every rule $l_i \rto r_i \rif \varphi_i$.
 
 Methodology
 ===========
