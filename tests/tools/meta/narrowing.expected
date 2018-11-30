@@ -217,14 +217,14 @@ result NeNarrowStepResults: {'a-enter : '`{_`}['`[_`,crit`]['a.Name]],
 reduce in NARROWING : narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,
     'N:Name,'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]]) .
 rewrites: 8
-result NarrowStepResult: {'wake : '_;_;_['__['s.Name,'@1:Name],'@1:Name,'__[
+result NarrowStepResult: {'wake : '_;_;_['__['s.NzNat,'@1:Name],'@1:Name,'__[
     '`[_`]['idle.ModeIdle],'`[_`]['wait['@1:Name]]]],
   'N:Name <- '@1:Name}
 ==========================================
 reduce in NARROWING : narrowSteps(upModule('BAKERY, true), '_;_;_['N:Name,
     'M:Name,'IS:ProcIdleSet]) .
 rewrites: 8
-result NarrowStepResult: {'wake : '_;_;_['__['s.Name,'@1:Name],'@2:Name,'__[
+result NarrowStepResult: {'wake : '_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__[
     '@3:ProcIdleSet,'`[_`]['wait['@1:Name]]]],
   'IS:ProcIdleSet <- '__['@3:ProcIdleSet,'`[_`]['idle.ModeIdle]] ; 
   'M:Name <- '@2:Name ; 
@@ -238,7 +238,7 @@ result NeNarrowStepResults: {'crit : '_;_;_['@1:Name,'@2:Name,'__[
   'M:Name <- '@2:Name ; 
   'N:Name <- '@1:Name ; 
   'WS:ProcWaitSet <- '__['@3:ProcWaitSet,'`[_`]['wait['@2:Name]]]} || {'wake :
-    '_;_;_['__['s.Name,'@1:Name],'@2:Name,'__['@3:ProcWaitSet,'`[_`]['wait[
+    '_;_;_['__['s.NzNat,'@1:Name],'@2:Name,'__['@3:ProcWaitSet,'`[_`]['wait[
     '@1:Name]]]],
   'M:Name <- '@2:Name ; 
   'N:Name <- '@1:Name ; 

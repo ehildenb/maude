@@ -2,7 +2,6 @@ set show timing off .
 
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
-load ../../../contrib/tools/meta/narrowing.maude
 
 fmod RENAMED-FVP-NARROWING-GRAPH is
    protecting ( FVP-NARROWING-GRAPH + GRAPH-ANALYSIS )
@@ -20,17 +19,24 @@ mod BAKERY-NARROWING-GRAPH is
 
     eq #M = upModule('BAKERY, true) .
 
+    var T : Term .
+
     op upIdle : -> [Term] .
     -----------------------
-    eq upIdle = upTerm([idle]) .
+    eq upIdle = '`[_`]['idle.ModeIdle] .
+
+    op upCrit : Term -> [Term] .
+    ----------------------------
+    eq upCrit(T) = '`[_`]['crit[T]] .
 
     op init : NatP -> [Term] .
     --------------------------
     eq init((0).NatP) = upTerm(0 ; 0 ; [idle] [idle]) .
     eq init((1).NatP) = '_;_;_['X:Name,'X:Name,'__[upIdle,upIdle]] .
     eq init((2).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,'PWS:ProcWaitSet]] .
-    eq init((3).NatP) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__['`[_`]['crit['__['s.Name,'X:Name]]], upIdle, upIdle, 'PWS:ProcWaitSet]] .
+    eq init((3).NatP) = '_;_;_['__['s.Name,'X:Name],'Y:Name,'__[upCrit('__['s.Name,'X:Name]), upIdle, upIdle, 'PWS:ProcWaitSet]] .
     eq init((4).NatP) = '_;_;_['X:Name,'Y:Name,'__[upIdle,upIdle]] .
+    eq init((5).NatP) = '_;_;_['X:Name,'Y:Name,'__[upCrit('X:Name), upCrit('Y:Name),'PS:ProcSet]] .
 endm
 
 --- Low-level functions
@@ -43,6 +49,7 @@ reduce wellFormed(#M, init(1)) .
 reduce wellFormed(#M, init(2)) .
 reduce wellFormed(#M, init(3)) .
 reduce wellFormed(#M, init(4)) .
+reduce wellFormed(#M, init(5)) .
 
 --- ### Function `step`
 
@@ -53,7 +60,7 @@ reduce step(state(init(3))) .
 
 --- ### Function `fold`
 
-reduce fold ( state('_;_;_['__['s.Name,'@1:Name],'__['s.Name,'@1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
+reduce fold ( state('_;_;_['__['s.Name,'V1:Name],'__['s.Name,'V1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             , state('_;_;_['X:Name,              'Y:Name,              '__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
             ) .
 reduce fold(state(init(1)), state(init(2))) .
@@ -78,14 +85,17 @@ reduce bfs(state(init(1))) .
 
 reduce bfs(state(init(4)), 10) .
 
---- Module BAKERY-FVP-CTOR-NARROWING-GRAPH
---- ======================================
+reduce state(init(1)) =>* state(init(5)) .
 
-mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
-   protecting BAKERY-FVP-CTOR .
-    extending RENAMED-FVP-NARROWING-GRAPH .
+--- Module FVP-BAKERY
+--- =================
 
-    var N : NatP . vars NeNS NeNS' : NeNodeSet .
+fmod FVP-BAKERY-INIT is
+   protecting META-TERM .
+   protecting UNCONDITIONALIZE-FVP-BOOL .
+    including FVP-CONDITIONAL-NARROWING-GRAPH + GRAPH-ANALYSIS .
+
+    var N : Nat . vars NeNS NeNS' : NeNodeSet .
 
     op states : NodeSet -> [NodeSet] .
     ----------------------------------
@@ -94,10 +104,8 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     eq states(.NodeSet)     = .NodeSet .
     eq states(NeNS ; NeNS') = states(NeNS) ; states(NeNS') .
 
-    eq #M = upModule('BAKERY-FVP-CTOR, true) .
-
-    op init : NatP -> [Term] .
-    --------------------------
+    op init : Nat -> [Term] .
+    -------------------------
     eq init(0) = '<_`,_`,_`,_>['sleep.NcMode ,'_+_['1.NzNat,'1.NzNat,'1.NzNat],'wait.NcMode,'_+_['1.NzNat,'1.NzNat]] .
     eq init(1) = '<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:Nat   ] .
     eq init(2) = '<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:Nat   , 'QNC:NcMode   , 'Y2:Nat   ] .
@@ -108,6 +116,60 @@ mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
     eq init(7) = '<_`,_`,_`,_>[ 'wait.NcMode  , 'Y1:Nat   , 'QC:Mode      , 'Y2:NzNat ] .
     eq init(8) = '<_`,_`,_`,_>[ 'QC:Mode      , 'Y1:NzNat , 'wait.NcMode  , 'Y2:Nat   ] .
     eq init(9) = '<_`,_`,_`,_>[ 'crit.Mode    , 'X2:Nat   , 'crit.Mode    , 'X3:Nat   ] .
+
+    vars T T' : Term .
+
+    eq intersect(state(T), state(T')) = true [owise] .
+    --------------------------------------------------
+endfm
+
+--- FVP-CONDITIONAL-NARROWING-GRAPH
+
+mod BAKERY-FVP-CONDITIONAL-NARROWING-GRAPH is
+    including FVP-BAKERY-INIT .
+
+    var N : Nat . vars T T' : Term .
+
+    eq #tSort = 'BState .
+    eq #MO    = upModule('BAKERY-FVP, true) .
+
+    op fvpTT : -> Term .
+    --------------------
+    eq fvpTT = 'tt.TrueLit`{Bool`} .
+
+    op inj : Nat -> Term .
+    ----------------------
+    eq inj(N) = '_st_[init(N), fvpTT] .
+
+    op neq : Term Term -> Term .
+    ----------------------------
+endm
+
+reduce wellFormed(#M) .
+reduce wellFormed(#M, inj(1)) .
+reduce wellFormed(#M, inj(2)) .
+
+--- proposed invariant:
+reduce state(inj(1)) ; state(inj(2)) .
+
+--- actually can produce a double-crit mode in 2 steps:
+reduce (state(inj(1)) ; state(inj(2))) =>* state(inj(9)) .
+reduce bfs((state(inj(1)) ; state(inj(2))), 2) .
+
+--- perhaps we can start from a smaller initial state:
+reduce state(inj(4)) =>* state(inj(9)) .
+
+--- Is this execution in our proposed invariant?
+reduce nodes(bfs(state(inj(4)))) <= (state(inj(1)) ; state(inj(2))) .
+reduce bfs(state(inj(4))) .
+
+reduce (state(inj(5)) ; state(inj(6))) =>* state(inj(9)) .
+
+mod BAKERY-FVP-CTOR-NARROWING-GRAPH is
+   protecting FVP-BAKERY-INIT .
+    including FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
+
+    eq #M = upModule('BAKERY-FVP-CTOR, true) .
 endm
 
 ***(Desired initial states and invariant:
@@ -143,33 +205,35 @@ reduce states(1) <= states(1 ; 2) .
 reduce states(2) <= states(1) .
 
 reduce state('wait.NcMode)           <= state('PC:Mode) .
-reduce state('_+_['1.NzNat,'@3:Nat]) <= state('Y1:NzNat) .
---- reduce state('Y1:NzNat)             <= state('_+_['1.NzNat,'@3:Nat]) .
-reduce state('@2:NcMode)             <= state('QNC:NcMode) .
-reduce state('@3:Nat)                <= state('Y2:Nat) .
+reduce state('_+_['1.NzNat,'V3:Nat]) <= state('Y1:NzNat) .
+reduce state('V2:NcMode)             <= state('QNC:NcMode) .
+reduce state('V3:Nat)                <= state('Y2:Nat) .
 
-reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'@3:Nat] ,  '@2:NcMode , '@3:Nat ])
-   <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat               , 'QNC:NcMode , 'Y2:Nat ]) .
+--- TODO: It would be nice to be able to prove the following
+reduce state('Y1:NzNat) <= state('_+_['1.NzNat,'V3:Nat]) .
+
+reduce state('<_`,_`,_`,_>[ 'wait.NcMode , '_+_['1.NzNat,'V3:Nat] ,  'V2:NcMode , 'V3:Nat ])
+    <= state('<_`,_`,_`,_>[ 'PC:Mode     , 'Y1:NzNat              , 'QNC:NcMode , 'Y2:Nat ]) .
 
 
 reduce state('sleep.NcMode) <= state('PNC:NcMode) .
 reduce state('0.Nat)        <= state('X1:Nat) .
-reduce state('@2:NcMode)    <= state('QC:Mode) .
-reduce state('@3:Nat)       <= state('X2:NzNat) .
+reduce state('V2:NcMode)    <= state('QC:Mode) .
+reduce state('V3:Nat)       <= state('X2:NzNat) .
 
-reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat  , '@2:NcMode , '@3:Nat   ])
-   <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat , 'QC:Mode   , 'X2:NzNat ]) .
+reduce state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat  , 'V2:NcMode , 'V3:Nat   ])
+    <= state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat , 'QC:Mode   , 'X2:NzNat ]) .
 
-reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , '@2:NcMode    , '@3:Nat   ])
-   <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ])
+reduce   state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'V2:NcMode    , 'V3:Nat   ])
+    <= ( state('<_`,_`,_`,_>[ 'PC:Mode      , 'Y1:NzNat , 'QNC:NcMode   , 'Y2:Nat   ])
        ; state('<_`,_`,_`,_>[ 'PNC:NcMode   , 'X1:Nat   , 'QC:Mode      , 'X2:NzNat ])
        ; state('<_`,_`,_`,_>[ 'sleep.NcMode , '0.Nat    , 'sleep.NcMode , '0.Nat    ])
        ) .
 
-reduce intersect(state('@2:NzNat), state('@3:Nat)) .
-reduce intersect(state('@2:NzNat), state('@3:Nat)) .
-reduce intersect( state('<_`,_`,_`,_>['@1:Mode,'0.Nat,'crit.Mode,'@2:Nat])
-                , state('<_`,_`,_`,_>['@1:Mode,'_+_['@2:Nat,'@3:NzNat],'crit.Mode,'@2:Nat])
+reduce intersect(state('V2:NzNat), state('V3:Nat)) .
+reduce intersect(state('V2:NzNat), state('V3:Nat)) .
+reduce intersect( state('<_`,_`,_`,_>['V1:Mode,'0.Nat,'crit.Mode,'V2:Nat])
+                , state('<_`,_`,_`,_>['V1:Mode,'_+_['V2:Nat,'V3:NzNat],'crit.Mode,'V2:Nat])
                 ) .
 
 --- both initial states yield finite state-graphs
