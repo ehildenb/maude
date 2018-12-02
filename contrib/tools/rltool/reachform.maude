@@ -697,7 +697,11 @@ fmod LCCRULE-NARROWING is
   --- PRE: Arguments are well-defined with respect to Module
   --- OUT: All unifiers between the term and any rule that also satisfies
   ---      the conditions on both the term and that rule
-  --- NB:  Renaming here is unsafe/shared vars between form/unifier are lost
+  --- NB:  Variable safety here is achieved by two conditions:
+  ---      1. safeUnify() ensures that the rule and formula LHS share no variables
+  ----     2. the variables in the formula LHS have no temporary variables
+  ---         in them --- otherwise they could conflict with those produced
+  ---         by the unification routine
   op top-narrow : Module LabelLCCRuleSet Term ~> LabelLCCRuleSubstPairSet .
   eq top-narrow(U,AR | ARS,T) = $top-narrow1(U,AR,safeUnify(U,lhs(trans(AR)),T)) | top-narrow(U,ARS,T) .
   eq top-narrow(U,empty,T) = empty .

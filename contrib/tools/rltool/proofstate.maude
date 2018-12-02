@@ -193,6 +193,7 @@ fmod REACH-PROOF-GOALSET is
   pr SUBSTITUTIONSET .
   pr SUBSTITUTION-AUX .
   pr TRANSITION-TUPLES .
+  pr TRANSITION-MATCH .
 
   var P P' : Parent .
   var N N' M : Nat .
@@ -210,6 +211,7 @@ fmod REACH-PROOF-GOALSET is
   var T : Term .
   var D : NeQFCTermSet .
   var S : Substitution .
+  var SS : SubstitutionSet .
 
   sort NeProofGoalSet MaybeProofGoal ProofGoalSet .
   subsort ProofGoal < MaybeProofGoal NeProofGoalSet < ProofGoalSet .
@@ -292,6 +294,8 @@ fmod REACH-PROOF-GOALSET is
 
   --- PRE: Goals are well-formed in module
   --- OUT: Consistently renamed and ACU-normalized goals
+  ---  NB: Parameter field and body variables are consistently renamed
+  ---      because they are part of the same metaterm that is renamed
   op renameNormalizeGoal : Module FindResult ProofGoalSet -> ProofGoalSet .
   eq renameNormalizeGoal(U,Idx,G && GS) =
      renameNormalizeGoal2(U,Idx,#renameAllVar(U,none,Idx,upTerm(getbody(G))),G) &&
@@ -309,6 +313,30 @@ fmod REACH-PROOF-GOALSET is
   eq deleteDuplGoals([P,N,CN,PS,VS,F] && [P',N',CN',PS',VS',F] && GS) =
     deleteDuplGoals(if N < N' then [P,N,CN,PS,VS,F] else [P',N',CN',PS',VS',F] fi && GS) .
   eq deleteDuplGoals(GS) = GS [owise] .
+
+  --- OUT: delete goals that are subsumed by matching
+  op deleteGoalsByMatch : Module ProofGoalSet -> ProofGoalSet .
+  eq deleteGoalsByMatch(U,GS) = deleteGoalsByMatch(U,GS,mt) .
+
+  op deleteGoalsByMatch : Module ProofGoalSet ProofGoalSet -> ProofGoalSet .
+  eq deleteGoalsByMatch(U,G && GS,GS') = deleteGoalsByMatch(U,deleteGoalByMatch(U,G,GS),G && deleteGoalByMatch(U,G,GS')) .
+  eq deleteGoalsByMatch(U,mt,GS') = GS' .
+
+  --- NB: check that the body of goal G matches that of G'
+  op deleteGoalByMatch : Module ProofGoal ProofGoalSet -> ProofGoalSet .
+  eq deleteGoalByMatch(U,G,G' && GS') =
+    deleteGoalByMatch(matches(U,getbody(G),getbody(G')),G,G') &&
+    deleteGoalByMatch(U,G,GS') .
+  eq deleteGoalByMatch(U,G,mt) = mt .
+
+  --- NB: check that the parameters of goal G cover those of G'
+  op deleteGoalByMatch : SubstitutionSet ProofGoal ProofGoal -> MaybeProofGoal .
+  eq deleteGoalByMatch(S | SS,G,G') =
+    if getvars(G') subset captureNewVars(getvars(G),S)
+      then mt
+      else deleteGoalByMatch(SS,G,G')
+    fi .
+  eq deleteGoalByMatch(empty,G,G') = G' .
 
   --- OUT: Extracts a subset of ProofGoals whose IDs match those in the NatListSet
   ---      The function getgl!() is strict; it will error out when it cannot find
