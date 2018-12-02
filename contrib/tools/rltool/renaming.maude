@@ -566,11 +566,8 @@ fmod SUBSTITUTION-RENAME is
   var I : FindResult .
   var SS : SubstitutionSet .
 
-  op renameTmpVar : Module Term SubstitutionSet -> SubstitutionSet .
-  eq renameTmpVar(M,L,SS) = renameTmpVar(highestSVar(M,L),SS) .
-
-  op renameTmpVar : FindResult SubstitutionSet -> SubstitutionSet .
-  eq renameTmpVar(I,SS) = downTerm(renameTmpVar(#renameTmpVar(upModule('META-LEVEL,true),I,upTerm(SS))),(empty).SubstitutionSet) .
+  op renameTmpVar : Module GTermList SubstitutionSet -> SubstitutionSet .
+  eq renameTmpVar(M,L,SS) = downTerm(renameTmpVar(#renameTmpVar(M,L,upTerm(SS))),(empty).SubstitutionSet) .
 endfm
 
 eof
