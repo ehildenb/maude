@@ -1,0 +1,15 @@
+#!/bin/bash
+
+version=$1
+if [ -z "$1" ]; then
+  echo "usage: cut-rltool <git commitish>"
+  exit 1
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+echo
+git archive --output="rltool-$version.tgz" --prefix="rltool/" "$version" "contrib/tools/rltool"
+if [ ! $? ]; then
+  echo "Archive failed. Cleaning up..."
+  rm -f "rltool-$version.tgz"
+fi
