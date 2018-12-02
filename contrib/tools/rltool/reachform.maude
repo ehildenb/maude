@@ -630,11 +630,11 @@ fmod VAR-UNIF-SIMPLIFY is
 
   op varunif-simp : Module ReachFormSubstPair FOFormPair -> ReachFormSubstPairSet .
   eq varunif-simp(M,((T | C) => D,S),(PC /\ NC,C?)) =
-    varunif-simp( ( ((T | NC /\ C?) => D), S ), ctor-unifiers(M,toUnifProb(PC))) .
+    varunif-simp(M, ( ((T | NC /\ C?) => D), S ), ctor-unifiers(M,toUnifProb(PC))) .
   eq varunif-simp(M,(F,S),(C?,C'?)) = (F,S) [owise] .
 
-  op varunif-simp : ReachFormSubstPair SubstitutionSet -> ReachFormSubstPairSet .
-  eq varunif-simp((F,S),SS) = (F,S) << renameTmpVar(upModule('TRANSITION,true),upTerm(F),SS) .
+  op varunif-simp : Module ReachFormSubstPair SubstitutionSet -> ReachFormSubstPairSet .
+  eq varunif-simp(M,(F,S),SS) = (F,S) << renameTmpVar(M,upTerm(F),SS) .
 endfm
 
 --- TODO:
