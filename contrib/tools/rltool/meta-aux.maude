@@ -1770,6 +1770,7 @@ fmod MOD-EXTRA is
   --- OUT: Set of rules which are labelled with any Qid in QidList
   eq setRls(M,QL) = setRls(M,setRls(QL,getRls(M),none)) .
   eq setRls(Q QL,rl L => R [label(Q) A]. RS,RS') = setRls(Q QL,RS,rl L => R [label(Q) A]. RS') .
+  eq setRls(Q QL,crl L => R if C [label(Q) A]. RS,RS') = setRls(Q QL,RS,crl L => R if C [label(Q) A]. RS') .
   eq setRls(Q QL,RS,RL RS') = setRls(QL,RS,none) RL RS' [owise] .
   eq setRls(nil,RS,none) = none .
 
