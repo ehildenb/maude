@@ -129,6 +129,10 @@ fmod GRAPH-FOLDING-SEARCH is
     --- TODO: Sometimes this may speed things up? Check performance.
    ceq intersect(ND, ND') = true if ND <= ND' .
 
+    op isEmpty? : NodeSet -> [Bool] .
+    ---------------------------------
+    eq isEmpty?(.NodeSet) = true .
+
     op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
     --------------------------------------------------------
    ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .

@@ -82,6 +82,14 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : (B ; D) <= E .
 rewrites: 7
 result Bool: false
 ==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : isEmpty?(.NodeSet) .
+rewrites: 1
+result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : isEmpty?(A ; B) .
+rewrites: 1
+result Bool: false
+==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A) .
 rewrites: 1
 result Bool: true

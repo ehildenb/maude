@@ -24,6 +24,7 @@ fmod GRAPH-FOLDING-SEARCH-TEST is
     vars NeNS NeNS' : NeNodeSet .
     eq NeNS <= NeNS'          = false [owise] .
     eq intersect(NeNS, NeNS') = false [owise] .
+    eq isEmpty?(NeNS) = false .
 
     eq step(A) = < x , B > , < y , D > , < z , D > .
     eq step(B) = < y , B > .
@@ -65,6 +66,9 @@ reduce B       <= (A ; B) .
 reduce D       <= E .
 reduce (D ; B) <= (E ; B) .
 reduce (D ; B) <= E .
+
+reduce isEmpty?(.NodeSet) .
+reduce isEmpty?(A ; B) .
 
 reduce intersect(A, A) .
 reduce intersect(.NodeSet, A) .
