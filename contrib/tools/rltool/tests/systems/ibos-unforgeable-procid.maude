@@ -6,12 +6,11 @@ load ../../rltool.maude
 (def-term-set ([C]) | true .)
 --- NOTE: allowing arbitrary extra attributes allows attributes to be repeated which
 ---       causes us to lose control of the special numbers nextWAN/NetworkProc
-(inv upi to '`[_`] on ({C < webappmgr | nextWAN(N) > < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS), weblabels(WPIS), displayedTopBar(L), nextNetworkProc(M) > }) 
-               |  (dupl(C < webappmgr | nextWAN(N) > < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS), weblabels(WPIS), displayedTopBar(L), nextNetworkProc(M) >)) =/= (tt) 
-               /\ (N wa<= C) =/= (tt) 
+(inv upi to '`[_`] on ({C < webappmgr | nextWAN(N) > < kernel | handledCurrently(MSG), msgPolicy(PS), networklabels(NPIS), weblabels(WPIS), displayedTopBar(L), nextNetworkProc(M) > })
+               |  (dupl(C < webappmgr | none > < kernel | none >)) =/= (tt)
+               /\ (N wa<= C) =/= (tt)
                /\ (M np<= C) =/= (tt) .)
 (start-proof .)
 (auto .)
 (auto .)
-(auto .)
-(auto .)
+quit
