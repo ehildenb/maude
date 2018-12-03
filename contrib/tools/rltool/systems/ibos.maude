@@ -15,7 +15,7 @@ endfm
 
 fmod PRED is pr BOOL-NO-BUILTIN .
   sort Pred .
-  op tt : -> Pred [ctor] .
+  ops tt ff : -> Pred [ctor] .
   op _==_   : Pred Pred -> Bool [ctor] .
   op _=/=_  : Pred Pred -> Bool [ctor] .
   op _andP_ : Pred Pred -> Pred [ctor assoc comm] .
