@@ -817,12 +817,12 @@ crl [change-display] :
 crl [kernelReceivesOPMessage-pa7-cc1b] :
     {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(msg(ORG,webapp(N'),MT,L''); ML)>}
     => {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(ML)>}
-    if (networkproc(N,NPIS)andP webapp(N',WPIS))=/= tt = true .
+    if (networkproc(N,NPIS) andP webapp(N',WPIS))=/= tt = true .
 
 crl [kernelReceivesOPMessage-pa7-cc1b] :
     {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(msg(ORG,webapp(N'),MT,L''))>}
     => {Cnf < kernel | Att,handledCurrently(none),msgPolicy(MP,policy(network,webapp,MT)),networklabels(NPIS),weblabels(WPIS)> < network(N)| Att2,toKernel(mt)>}
-    if (networkproc(N,NPIS)andP webapp(N',WPIS))=/= tt = true .
+    if (networkproc(N,NPIS) andP webapp(N',WPIS))=/= tt = true .
 
  rl [new-url] :
     {Cnf < display | Att2,activeWebapp(WI),displayedContent(L')> < kernel | Att,displayedTopBar(L),handledCurrently(kernelDo(msg(ui,webapp,MSG-NEW-URL,URL))),weblabels(WPIS)> < webappmgr | Att3,nextWAN(NewWA)>}
