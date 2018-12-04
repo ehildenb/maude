@@ -1,19 +1,22 @@
-load ../../modules/ibos.maude
+load ../../systems/ibos.maude
 
 fmod IBOS-NONFVP is
   pr IBOS-FVP .
 
   var C : Configuration .
-  var W N : Nat* .
+  var W N O : Nat* .
   var P : NzNat* .
   var A : AttributeSet .
+  var NA : NeAttributeSet .
   var WIS : WebappProcInfoSet .
   var NIS : NetworkProcInfoSet .
   var ML : MessageList .
   var NNPI : NonNetProcId .
   var NWAI : NonWebAppId .
+  var NI NI2 : NetProcId .
+  var WI WI2 : WebAppId .
   var PI PI' : ProcessId .
-  var IN OUT : Label .
+  var IN OUT OUT2 : Label .
   var MT : MsgType .
 
   --- Holds true if every RETURN-URL message sent to every webapp object
@@ -27,105 +30,105 @@ fmod IBOS-NONFVP is
   --- model, all three sets grow monotonically, so if we wish to reduce
   --- our predicate over a new state to an assumption, we must pare
   --- the other process info sets as well
-  op sop-p4 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+  op sop-p4 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred .
 
   --- [I] induct on Configuration
   --- handle webapp processes with a MSG-RETURN-URL message
   --- case 1: process has 2 or more messages enqueued (continue processing remaining messages)
-  eq sop-p4(C < webapp(W) | fromKernel(msg(network(N), webapp(W), MSG-RETURN-URL, OUT) ; ML), A >,
-            (pi(webapp(W),IN),WIS),
-	    (pi(network(N),IN,OUT),NIS))
-   = sop-p4(C < webapp(W) | fromKernel(ML), A >,
-            (pi(webapp(W),IN),WIS),
-	    (pi(network(N),IN,OUT),NIS)) .
+    eq sop-p4(C < webapp(W) | fromKernel(msg(network(N), webapp(W), MSG-RETURN-URL, OUT) ; ML), A >,
+              (pi(webapp(W),IN),WIS),
+  	    (pi(network(N),IN,OUT),NIS))
+     = sop-p4(C < webapp(W) | fromKernel(ML), A >,
+              (pi(webapp(W),IN),WIS),
+  	    (pi(network(N),IN,OUT),NIS)) .
+  
+    --- case 2: process has only one message enqueued (done processing this webapp object)
+    eq sop-p4(C < webapp(W) | fromKernel(msg(network(N), webapp(W), MSG-RETURN-URL, OUT)), A >,
+              (pi(webapp(W),IN),WIS),
+  	    (pi(network(N),IN,OUT),NIS))
+     = sop-p4(C, (pi(webapp(W),IN),WIS), (pi(network(N),IN,OUT),NIS)) .
+  
+    --- handle webapp process with a different message enqueued at head
+    --- NOTE: because messages may be dynamically added to the list, we need to ensure
+    ---       that the metadata in the kernel WIS/NIS has the correct shape so that when
+    ---       this webapp receives a message of the form that we care about, we know the
+    ---       metadata will look like what we need to complete the proof
+    --- NOTE: since the only way the message list can increase is by the rule
+    ---       kernelForwardsOPMessage, it SHOULD be enough to require:
+    ---       [1] kernel's currentlyHandled() attribute to be correct
+    ---       [2] kernel's message policy is locked down to the minimum necessary
+    ---           (this way we can't instantiate the message policy with weird connections
+    ---            and send MSG-FETCH/RETURN-URLs down those connections) ---
+    ---           thus, we choose the default initial policy:
+    ---           (webapp,network,MSG-FETCH-URL)
+    ---           (network,webapp,MSG-RETURN-URL)
+    ---           (ui,webapp,MSG-SWITCH-TAB)
+    ---           (ui,webapp,MSG-NEW-URL)
+    ---        However, requiring the webapps to always be reflected properly in the
+    ---        kernel metadata just means that we will never have a terminating state
+    ---        where the kernel tried to send a message and could not because no webapp
+    ---        was there to receive it.
+    ---        Also, probably the narrowing time is similar... maybe.
+    --- case 1: process has 2 or more messages enqueued (continue processing remaining messages)
+   ceq sop-p4(C < webapp(W) | fromKernel(msg(PI,PI',MT,OUT) ; ML), A >,
+              (pi(webapp(W),IN),WIS), 
+  	    (pi(network(N),IN,OUT),NIS))
+     = sop-p4(C < webapp(W) | fromKernel(ML), A >, 
+              (pi(webapp(W),IN),WIS), 
+  	    (pi(network(N),IN,OUT),NIS))
+     if MT ~ MSG-RETURN-URL = false .
+  
+    --- case 2: process has only one message enqueued (done processing this webapp object)
+   ceq sop-p4(C < webapp(W) | fromKernel(msg(PI,PI',MT,OUT)), A >,
+              (pi(webapp(W),IN),WIS), 
+              (pi(network(N),IN,OUT),NIS)) 
+     = sop-p4(C,
+              (pi(webapp(W),IN),WIS), 
+              (pi(network(N),IN,OUT),NIS)) 
+     if MT ~ MSG-RETURN-URL = false .
+  
+    --- handle webapp process with no messages
+    eq sop-p4(C < webapp(W) | fromKernel(mt), A >, 
+              (pi(webapp(W),IN),WIS), 
+              (pi(network(N),IN,OUT),NIS)) 
+     = sop-p4(C, 
+              (pi(webapp(W),IN),WIS), 
+              (pi(network(N),IN,OUT),NIS)) .
+  
+    --- handle all other kinds of processes
+    eq sop-p4(C < webapp | A >, WIS, NIS) = sop-p4(C, WIS, NIS) .
+    eq sop-p4(C < NWAI   | A >, WIS, NIS) = sop-p4(C, WIS, NIS) .
+  
+    --- base case, return tt
+    eq sop-p4(none, WIS, NIS) = tt .
+  
+    --- [II] Induct on WebappProcInfoSet/NetworkProcInfoSet (because these sets also grow)
+    --- handle case when a new webapp was added to our weblabel set
+    --- if this webapp is greater than all of those in our soup, remove it
+   ceq sop-p4(C,(pi(webapp(W),IN),WIS),NIS) = sop-p4(C,WIS,NIS)
+    if W wa<= C =/= tt .
+  
+    --- handle case when a new newtork process was added to our networklabels set
+    --- if this network process id is greater than all of those in our soup, remove it
+   ceq sop-p4(C,WIS,(pi(network(N),IN,OUT),NIS)) = sop-p4(C,WIS,NIS)
+    if N np<= C =/= tt .
 
-  --- case 2: process has only one message enqueued (done processing this webapp object)
-  eq sop-p4(C < webapp(W) | fromKernel(msg(network(N), webapp(W), MSG-RETURN-URL, OUT)), A >,
-            (pi(webapp(W),IN),WIS),
-	    (pi(network(N),IN,OUT),NIS))
-   = sop-p4(C, (pi(webapp(W),IN),WIS), (pi(network(N),IN,OUT),NIS)) .
-
-  --- handle webapp process with a different message enqueued at head
-  --- NOTE: because messages may be dynamically added to the list, we need to ensure
-  ---       that the metadata in the kernel WIS/NIS has the correct shape so that when
-  ---       this webapp receives a message of the form that we care about, we know the
-  ---       metadata will look like what we need to complete the proof
-  --- NOTE: since the only way the message list can increase is by the rule
-  ---       kernelForwardsOPMessage, it SHOULD be enough to require:
-  ---       [1] kernel's currentlyHandled() attribute to be correct
-  ---       [2] kernel's message policy is locked down to the minimum necessary
-  ---           (this way we can't instantiate the message policy with weird connections
-  ---            and send MSG-FETCH/RETURN-URLs down those connections) ---
-  ---           thus, we choose the default initial policy:
-  ---           (webapp,network,MSG-FETCH-URL)
-  ---           (network,webapp,MSG-RETURN-URL)
-  ---           (ui,webapp,MSG-SWITCH-TAB)
-  ---           (ui,webapp,MSG-NEW-URL)
-  ---        However, requiring the webapps to always be reflected properly in the
-  ---        kernel metadata just means that we will never have a terminating state
-  ---        where the kernel tried to send a message and could not because no webapp
-  ---        was there to receive it.
-  ---        Also, probably the narrowing time is similar... maybe.
-  --- case 1: process has 2 or more messages enqueued (continue processing remaining messages)
- ceq sop-p4(C < webapp(W) | fromKernel(msg(PI,PI',MT,OUT) ; ML), A >,
-            (pi(webapp(W),IN),WIS), 
-	    (pi(network(N),IN,OUT),NIS))
-   = sop-p4(C < webapp(W) | fromKernel(ML), A >, 
-            (pi(webapp(W),IN),WIS), 
-	    (pi(network(N),IN,OUT),NIS))
-   if MT ~ MSG-RETURN-URL = false .
-
-  --- case 2: process has only one message enqueued (done this processing this webapp object)
- ceq sop-p4(C < webapp(W) | fromKernel(msg(PI,PI',MT,OUT)), A >,
-            (pi(webapp(W),IN),WIS), 
-            (pi(network(N),IN,OUT),NIS)) 
-   = sop-p4(C,
-            (pi(webapp(W),IN),WIS), 
-            (pi(network(N),IN,OUT),NIS)) 
-   if MT ~ MSG-RETURN-URL = false .
-
-  --- handle webapp process with no messages
-  eq sop-p4(C < webapp(W) | fromKernel(mt), A >, 
-            (pi(webapp(W),IN),WIS), 
-            (pi(network(N),IN,OUT),NIS)) 
-   = sop-p4(C, 
-            (pi(webapp(W),IN),WIS), 
-            (pi(network(N),IN,OUT),NIS)) .
-
-  --- handle all other kinds of processes
-  eq sop-p4(C < webapp | A >, WIS, NIS) = sop-p4(C, WIS, NIS) .
-  eq sop-p4(C < NWAI   | A >, WIS, NIS) = sop-p4(C, WIS, NIS) .
-
-  --- base case, return tt
-  eq sop-p4(none, WIS, NIS) = tt .
-
-  --- [II] Induct on WebappProcInfoSet/NetworkProcInfoSet (because these sets also grow)
-  --- handle case when a new webapp was added to our weblabel set
-  --- if this webapp is greater than all of those in our soup, remove it
- ceq sop-p4(C,(pi(webapp(W),IN),WIS),NIS) = sop-p4(C,WIS,NIS)
-  if W wa<= C =/= tt .
-
-  --- handle case when a new newtork process was added to our networklabels set
-  --- if this network process id is greater than all of those in our soup, remove it
- ceq sop-p4(C,WIS,(pi(network(N),IN,OUT),NIS)) = sop-p4(C,WIS,NIS)
-  if N np<= C =/= tt .
-
-  op handledCurrently-p4 : Message WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+  op handledCurrently-p4 : Message WebappProcInfoSet NetworkProcInfoSet -> Pred .
   --- kernel handledCurrently attribute is consistent
   --- NOTE: if handledCurrently contains some message addressed to non-existent processes,
   ---       we don't care---that is a weird state, but it doesn't concern us---what concerns
   ---       us is that if the message is received by a real webapp, then it will satisfy the
   ---       conditions above
-  eq handledCurrently-p4(msg(network(N),webapp(W),MSG-RETURN-URL,OUT),
-                         (pi(webapp(W),IN),WIS),
-			 (pi(network(N),IN,OUT),NIS))
-   = tt .
+  eq handledCurrently-p4(msg(NI,WI,MSG-RETURN-URL,OUT),
+                          (pi(WI,IN),WIS),
+  			  (pi(NI,IN,OUT2),NIS))
+     = pred(OUT ~ OUT2) .
 
-  ceq handledCurrently-p4(msg(PI,PI',MT,OUT),WIS,NIS) = tt
-   if MT ~ MSG-RETURN-URL = false .
+ ceq handledCurrently-p4(msg(PI,PI',MT,OUT),WIS,NIS) = tt
+  if MT ~ MSG-RETURN-URL = false .
 
   --- if we aren't processing any messages currently, that's fine too
-   eq handledCurrently-p4(none,WIS,NIS) = tt .
+  eq handledCurrently-p4(none,WIS,NIS) = tt .
 
   **** equality predicate for message types
   op _~_ : MsgType MsgType -> Bool [comm] .
@@ -139,6 +142,15 @@ fmod IBOS-NONFVP is
   eq MSG-FETCH-URL  ~ MSG-SWITCH-TAB = false .
   --- return-url
   eq MSG-RETURN-URL ~ MSG-SWITCH-TAB = false .
+
+  **** for simplified case analysis
+  sort NonRetMsg .
+  subsort NonRetMsg < MsgType .
+  op MSG-FETCH-URL  : -> NonRetMsg [ctor ditto] .
+  op MSG-NEW-URL    : -> NonRetMsg [ctor ditto] .
+  op MSG-SWITCH-TAB : -> NonRetMsg [ctor ditto] .
+  ****
+  eq MSG-RETURN-URL ~ M:NonRetMsg = false .
 
   --- PROBLEM:
   --- local simplifications in formula structure are unsound when shared variables
@@ -155,9 +167,7 @@ fmod IBOS-NONFVP is
   --- [4] record each reduction step so we keep around the set of all true facts that
   ---     we can assume --- then give our other reductions access to that set
   --- NON-FVP predicate extensions
-  ---(
   op _=/=_ : AttributeSet AttributeSet -> Bool .
-  op ff : -> Pred [ctor] .
 
   --- can throw out all non-conforming objects
   eq N np<= C < NNPI | A > = N np<= C .
@@ -168,42 +178,53 @@ fmod IBOS-NONFVP is
   --- can't be less than something if there is nothing
   eq N np<= none = ff .
   eq W wa<= none = ff .
+  --- can remove attributes from all objects that we don't throw out
+  eq N np<= C < PI | NA > = N np<= C < PI | none > .
+  eq W wa<= C < PI | NA > = W wa<= C < PI | none > .
 
   --- duplicates can ignore attributes
-  eq dupl(< PI | NA:NeAttributeSet > C) = dupl(< PI | none > C) .
+  eq dupl(< PI | NA > C) = dupl(< PI | none > C) .
   --- duplicates can be split if two processes are not equal
- ceq dupl(< PI | none > < PI' | none > C) = dupl(< PI | none > C) andP dupl(< PI' | none > C) if PI ~ PI' = false .
+  --- ceq dupl(< PI | none > < PI' | none > C) = dupl(< PI | none > C) andP dupl(< PI' | none > C) if PI ~ PI' = false .
   --- can't be a duplicate with less than two elements
   eq dupl(< PI | none >) = ff .
   eq dupl(none) = ff .
-  ---)
 endfm
 
 mod IBOS-NONFVP-STOP is pr IBOS-STOP . pr IBOS-NONFVP . endm
 
-load ../../../rltool.maude
-(select     IBOS-NONFVP-STOP .)
+set show advisories off .
+set print attribute on .
+set print with parentheses on .
+
+load ../../rltool.maude
+(select IBOS-NONFVP-STOP .)
+
+--- Solved:
+--- 1. kernelReceivesOPMessage-pa7-cc1b .)
+
 --- rules that handle webapps directly include:
 --- [1] kernelReceivesOPMessage-pa6-cc2b
 --- [2] kernelReceivesOPMessage-pa7-cc1b
 ---(select-rls kernelReceivesOPMessage-pa6-cc2b .)
----(select-rls kernelReceivesOPMessage-pa7-cc1b .)
 ---(select-rls! kernelReceivesOPMessage-pa6-cc2b kernelReceivesOPMessage-pa7-cc1b .)
 ---(select-rls new-url .)
 ---(select-rls stop .)
 ---(select-rls kernelForwardsOPMessage .)
+
 (select-rls kernelReceivesOPMessage-pa7-cc1a .)
-(select-fvp IBOS-NONFVP .)
-(declare-vars (C:Configuration) U (WPIS:WebappProcInfoSet) U (NPIS:NetworkProcInfoSet) U (URL:Label) U (MSG:Message) U (PS:PolicySet) U (NNP:Nat*) U
-              (NWA:Nat*) .)
+
+(use tool impsimp for validity on IBOS-NONFVP-STOP with FOFORMSIMPLIFY-IMP-IMPL .)
+(use tool varsat for unsatisfiability on IBOS-FVP .)
+(declare-vars (C:Configuration) U (WPIS:WebappProcInfoSet) U (NPIS:NetworkProcInfoSet) U (MSG:Message) U (PS:PolicySet) U (NNP:Nat*) U (NWA:Nat*) U (U:Label) .)
 (def-term-set ([C]) | true .)
 --- INV is a generalized multiset equality between:
 --- [1] set of fromKernel messages at the beginning of a list in a netproc
 --- [2] labels in WebappInfoSet and NetworkProcInfoSet
-(inv to '`[_`] on
+(inv sop4 to '`[_`] on
 ({ C
    < webappmgr | nextWAN(NWA) >
-   < kernel | weblabels(WPIS), networklabels(NPIS), displayedTopBar(URL), handledCurrently(MSG), msgPolicy(PS), nextNetworkProc(NNP) > } ) |
+   < kernel | weblabels(WPIS), networklabels(NPIS), displayedTopBar(U), handledCurrently(MSG), msgPolicy(PS), nextNetworkProc(NNP) > } ) |
    (sop-p4(C,WPIS,NPIS)) = (tt)                              /\
    (handledCurrently-p4(MSG,WPIS,NPIS)) = (tt)               /\
    --- these are strengthenings of the invariant above that allow the simplification rules to apply more often
@@ -213,10 +234,85 @@ load ../../../rltool.maude
    (NWA wa<= C) =/= (tt)
 .)
 (start-proof .)
---- take first step
 (auto .)
---- we want to see all of the info about if our reductions succeeded
-print reveal _;_ .
-set print attribute on .
---- do the axiom step here
+
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(continue .)
+(focus 517,580 .)
+(case 517 on &53:MsgType by (MSG-RETURN-URL) U (&53:NonRetMsg) .)
+(case 580 on &54:MsgType by (MSG-RETURN-URL) U (&54:NonRetMsg) .)
 (auto .)
+
+---(continue .)
+---(list-goals .)
+---quit
