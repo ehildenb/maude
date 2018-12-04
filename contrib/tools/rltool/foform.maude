@@ -1345,27 +1345,49 @@ endfm
 ---     constructors that we invent here.
 fmod FOFORM-CORE-PRETTYPRINT is
   pr FOFORM .
+  pr NNF .
 
   --- syntax for (respectively):
   ---  positive predicates
   ---  negative predicates
   ---  implications
-  op ##_   : Term          -> QFForm [ctor format(g o o)] .
-  op !!_   : Term          -> QFForm [ctor format(g o o)] .
-  op _==>_ : QFForm QFForm -> QFForm [ctor format(o rn on d)] .
+  op ##_   : Term           -> QFForm [ctor format(g o o)] .
+  op !!_   : Term           -> QFForm [ctor format(g o o)] .
+  op _===>_ : QFForm QFForm -> QFForm [ctor format(o rn on d)] .
+  op _AND_ : QFForm QFForm  -> QFForm [ctor format(d n n d)] .
 
   var F F' : QFForm . var Q : Qid . var T : Term .
-  var TA : TruthAtom . var E : EqAtom .
+  var TA : TruthAtom . var E : EqAtom . var D : Disj .
+  var P : PosDisj . var N : NegDisj .
 
   op prettyPrint : Qid QFForm -> QFForm .
   eq prettyPrint(Q,F /\ F')     = prettyPrint(Q,F) /\ prettyPrint(Q,F') .
-  eq prettyPrint(Q,(~ F) \/ F') = prettyPrint(Q,F) ==> prettyPrint(Q,F') .
+  eq prettyPrint(Q,(~ F) \/ F') = prettyPrint(Q,F) ===> prettyPrint(Q,F') .
   eq prettyPrint(Q,F \/ F')     = prettyPrint(Q,F) \/ prettyPrint(Q,F') [owise] .
   eq prettyPrint(Q,~ F)         = ~ prettyPrint(Q,F) .
   eq prettyPrint(Q,TA)          = TA .
   eq prettyPrint(Q,Q != T)      = !! T .
   eq prettyPrint(Q,Q ?= T)      = ## T .
   eq prettyPrint(Q,E)           = E [owise] .
+
+  op ppCNF : Qid QFForm -> QFForm .
+  eq ppCNF(Q,D /\ F) = ppCNF'(Q,D) AND ppCNF(Q,F) .
+  eq ppCNF(Q,D) = ppCNF'(Q,D) .
+
+  op ppCNF' : Qid Disj -> QFForm .
+  eq ppCNF'(Q,N \/ P) = prettyPrint(Q,toNNF(~ N)) ===> prettyPrint(Q,P) .
+  eq ppCNF'(Q,N) = prettyPrint(Q,toNNF(~ N)) ===> ff .
+  eq ppCNF'(Q,P) = prettyPrint(Q,P) .
+
+  op @ppCNF : Bool Qid QFForm -> QFForm .
+  eq @ppCNF(true,Q,F) = ppCNF(Q,F) .
+  eq @ppCNF(false,Q,F) = F .
+
+  op @ppCNF : Qid QFForm -> QFForm .
+  eq @ppCNF(Q,F) = @ppCNF(ppCNF(Q,F),F) .
+
+  op @ppCNF : QFForm QFForm -> QFForm .
+  eq @ppCNF(F,F') = F' [print "CNF: " F] .
 endfm
 
 fmod RENAME-FORM is
