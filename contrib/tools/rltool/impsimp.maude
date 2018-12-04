@@ -75,6 +75,7 @@ fmod IMP-SIMP is
   pr FOFORMSET-OPERATIONS .       --- provides DisjSet data structure and conversion in DisjSet
   pr CNF .                        --- provides toCNF()
   pr FIXF{imp-simp-impl} * (op FixF to imp-simp-impl) .
+  pr FOFORM-CORE-PRETTYPRINT .
 
   --- OUT: returns a simplified conjunction of disjunctions
   op imp-simp : Module Module Module QFForm -> QFForm .
@@ -83,9 +84,10 @@ fmod IMP-SIMP is
 
   var RewMod VSMod SimpMod : Module .
   var F : QFForm .
+  var F? G? : QFForm .
   var D : Disj .
   var TA : TruthAtom .
-  var P : PosDisj . var N : NegDisj .
+  var P : PosDisj . var N? : NegDisj? . var N : NegDisj .
 
   eq imp-simp(RewMod,VSMod,SimpMod,F) = simplify(imp-simp-conj(RewMod,VSMod,SimpMod,simplify(toCNF(F)))) .
 
@@ -115,7 +117,8 @@ fmod IMP-SIMP-BACKEND-IMPL is
 
   eq checkVal((M,'impsimp,ModArgs),MQL,D,F) =
     if ModArgs :: Module then
-      if imp-simp(get-mod(D),getbackend('validity,'varsat,get-reg(D)),ModArgs,F) == tt then true else nobool fi
+      --- FIXME: set output back to false when we are done
+      if @ppCNF(true,'tt.Pred,imp-simp(get-mod(D),getbackend('validity,'varsat,get-reg(D)),ModArgs,F)) == tt then true else nobool fi
       else errb('impsimp 'requires 'single 'module 'argument)
     fi .
   eq checkUnsat((M,'impsimp,ModArgs),MQL,D,F) = nobool .
