@@ -395,8 +395,8 @@ mod RLTL-ACTION-IMPL is
   eq run-cycle((AS, output : L),NBD,[PM]) =
     if goalsByStatus(active,get-prf(PM)) && goalsByStatus(paused,get-prf(PM)) == mt
       then proof : [clear(PM)], mode : off, output : (L get-out(PM) 'Proof 'Completed.)
-      else if get-out(PM) == nil and get-err(PM) == false
-        then run-cycle((AS, output : L),if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi,{PM})
+      else if (get-out(PM) == nil or hideNonErrors) and get-err(PM) == false
+        then run-cycle((AS, output : L),if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi,{clear(PM)})
         else proof : [clear(PM)], mode : active(if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi),
          output : (L get-out(PM)
                   (if get-err(PM) then 'ERROR! else nil fi)
