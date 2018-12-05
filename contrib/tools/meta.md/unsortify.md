@@ -21,11 +21,10 @@ load ../base/full-maude.maude
 
 fmod UNSORTIFY is
   pr META-LEVEL .
-  pr UNIT .
   pr ATTR-EXTRA .
 
-  op unsortify       : FModule           -> FModule .
-  op unsortify       : OpDeclSet         -> OpDeclSet .
+  op unsortify       : FModule           -> [FModule] .
+  op unsortify       : OpDeclSet         -> [OpDeclSet] .
   op unsortify       : EquationSet       -> EquationSet .
   op unsortify       : TypeList          -> TypeList .
   op unsortify       : Term              -> Term .
@@ -42,7 +41,6 @@ fmod UNSORTIFY is
 
   eq unsortify(fmod H is nil sorts SS . SDS OS none ES endfm) =
     fmod H is nil sorts 'U . none unsortify(OS) none unsortify(ES) endfm .
-  eq unsortify(M) = noModule [owise] .
 
  ceq unsortify(op Q : TYL -> TY [AS]. OS) = op Q : unsortify(TYL) -> 'U [AS]. unsortify(OS) if unsortify-safe(AS) .
   eq unsortify((none).OpDeclSet)          = (none).OpDeclSet .
@@ -74,15 +72,17 @@ fmod SORTIFY is
   pr OPDECLSET-EXTRA .
   pr QIDTUPLESET .
 
-  op sortify      : Term              QidTripleSet -> Term .
-  op sortify'     : Term              QidTripleSet -> Term .
-  op sortify'     : TermList TermList QidTripleSet -> Term .
-  op sortify''    : Qid               QidTripleSet -> Term .
+  op sortify        : Term              QidTripleSet -> Term .
+  op sortify'       : Term              QidTripleSet -> Term .
+  op sortify'       : TermList TermList QidTripleSet -> Term .
+  op sortify''      : Qid               QidTripleSet -> Term .
+
   --- create qidpairset from module for use with sortify
-  op constsToQTS  : Module                       -> QidTripleSet .
-  op constsToQTS  : OpDeclSet                    -> QidTripleSet .
-  op varsToQTS    : QidSet                       -> QidTripleSet .
-  op varsToQTS    : QidSet                       -> QidTripleSet .
+  op constsToQTS    : Module    -> QidTripleSet .
+  op constsToQTS    : OpDeclSet -> QidTripleSet .
+  op varsToQTS      : QidSet    -> QidTripleSet .
+  op varsToQTS      : QidSet    -> QidTripleSet .
+  op varsToConstQTS : QidSet    -> QidTripleSet .
 
   var T  : Term . var NL   : NeTermList . var TL TL' : TermList . var TQ : TermQid .
   var Q K : Qid  . var C C' : Constant   . var V      : Variable .
@@ -103,5 +103,17 @@ fmod SORTIFY is
   eq constsToQTS(none)       = none .
   eq varsToQTS(Q ; VS)       = qt(getName(Q),':,getType(Q)) | varsToQTS(VS) .
   eq varsToQTS(none)         = none .
+  eq varsToConstQTS(Q ; VS)  = qt(getName(Q),'.,getType(Q)) | varsToQTS(VS) .
+  eq varsToConstQTS(none)    = none .
+endfm
+
+fmod SORTIFY-AUX is
+   pr SORTIFY .
+   pr META-LEVEL .
+
+   op sortify : EquationSet QidTripleSet -> EquationSet .
+   var T T' : Term . var AS : AttrSet . var ES : EquationSet . var QTS : QidTripleSet .
+   eq sortify(eq T = T' [AS]. ES,QTS) = (eq sortify(T,QTS) = sortify(T',QTS) [AS].) sortify(ES,QTS) .
+   eq sortify((none).EquationSet,QTS) = (none).EquationSet .
 endfm
 ```
