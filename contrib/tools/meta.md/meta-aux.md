@@ -467,34 +467,6 @@ fmod MOD-EXTRA is
   eq getModQid(extending Q .) = Q .
 endfm
 
-fmod MODQIDPAIR is
-  pr META-LEVEL .
-  sort ModQidPair .
-  op ((_,_)) : Module Qid -> ModQidPair [ctor] .
-endfm
-
-view ModQidPair from TRIV to MODQIDPAIR is sort Elt to ModQidPair . endv
-
-fmod MODQIDLIST is
-  pr LIST{ModQidPair} * (sort List{ModQidPair} to ModQidList) .
-endfm
-
-view ModQidList from TRIV to MODQIDLIST is sort Elt to ModQidList . endv
-
-fmod SCOPED-REGISTRY is
-  pr MAP-EXTRA{Qid,ModQidList} * (sort Map{Qid,ModQidList} to ScopedRegistry) .
-  pr MOD-OPS .
-
-  var Task Impl : Qid .
-  var ImplMod : Module .
-  var ImplList ImplList' : ModQidList .
-  var Registry : ScopedRegistry .
-
-  op getbackend : Qid Qid ScopedRegistry -> Module .
-  eq getbackend(Task,Impl,(Task |-> (ImplList (ImplMod,Impl) ImplList'),Registry)) = ImplMod .
-  eq getbackend(Task,Impl,Registry) = noModule [owise] .
-endfm
-
 view Module from TRIV to META-MODULE is sort Elt to Module . endv
 
 fmod MODULE-LIST is
