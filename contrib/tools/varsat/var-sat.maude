@@ -44,7 +44,7 @@ fmod VSWF-CHECK is
 endfm
 
 fmod WRAPPED-TERMS is
-  pr TERMSET-FM .
+  pr TERM-SET .
   sort WrapTerm WrapTermList .
   subsort WrapTerm < WrapTermList .
   op _;_ : WrapTermList WrapTermList -> WrapTermList [ctor assoc id: tlnil] .

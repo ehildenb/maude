@@ -21,7 +21,7 @@ load mgci.maude           --- most general constructor instance operation
 fmod CTOR-VARIANT is
   pr META-LEVEL .
   pr MGCI .
-  pr TERMSET-FM .
+  pr TERM-SET .
   pr EQ-VARIANT .
   pr UNIFICATION-PROBLEM-AUX . --- UnifProbLHSToTL
   pr HETEROGENEOUS-LIST-FUNCTOR . --- toHL, hl-func

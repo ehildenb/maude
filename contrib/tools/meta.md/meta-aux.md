@@ -117,11 +117,6 @@ fmod GTERMLIST-REFINEMENT is
   op _,_ : GTermList NeGTermList -> NeGTermList [ctor ditto] .
 endfm
 
-fmod TERMSET-FM is
-  pr META-LEVEL .
-  pr TERM-SET .
-endfm
-
 fmod QIDSET-REFINEMENT is
   pr META-MODULE .
   ---
@@ -517,7 +512,9 @@ Substitution, Substitution Sets, and Refinements
 ```maude
 fmod SUBSTITUTION-HANDLING is
   protecting META-LEVEL .
+  protecting SUBSTITUTION-SET .
 
+  vars SS SS' : SubstitutionSet .
   var S S' Subst Subst' : Substitution .
   var V V' : Variable .
   var C C' : Constant .
@@ -533,32 +530,12 @@ fmod SUBSTITUTION-HANDLING is
   var NeTL : NeTermList .
   var CtL : NeCTermList .
 
-  --- Apply Substitution to Term --------------------------------------------
-  op _<<_ : Term Substitution -> Term .
-  eq TL << none = TL .
-  eq C << Subst = C .
-  eq V << ((V <- T) ; Subst) = T .
-  eq V << Subst = V [owise] .
-  eq F[TL] << Subst = F[TL << Subst] .
-
-  op _<<_ : TermList Substitution -> TermList .
-  eq (T, NeTL) << Subst = (T << Subst, NeTL << Subst) .
-  eq empty << Subst = empty .
-
   op _<<_ : Context Substitution -> Context .
   eq Ct << none = Ct .
   eq [] << Subst = [] .
   eq F[CtL,NeTL] << Subst = F[CtL << Subst,NeTL << Subst] .
   eq F[NeTL,CtL] << Subst = F[NeTL << Subst, CtL << Subst] .
   eq F[Ct] << Subst = F[Ct << Subst] .
-
-  op _<<_ : Substitution Substitution -> Substitution .
-  eq S << (none).Substitution = S .
-  eq (none).Substitution << S = (none).Substitution .
-  eq ((V' <- T) ; S') <<  S
-   = (V' <- (T << S))
-     ;
-     (S' << S) .
 
   --- Combine Substitutions -------------------------------------------------
   op _.._ : Substitution Substitution -> Substitution .
@@ -679,19 +656,6 @@ fmod SUBSTITUTION-HANDLING is
   op extract-bindings : Substitution -> TermList .
   eq extract-bindings(none) = empty .
   eq extract-bindings(V <- T ; Subst) = (T,extract-bindings(Subst)) .
-endfm
-
-fmod SUBSTITUTIONSET is
-  protecting SUBSTITUTION-SET .
-  protecting SUBSTITUTION-HANDLING .
-  protecting TERMSET-FM .
-
-  vars SS SS' : SubstitutionSet .
-  vars S S' Subst : Substitution .
-  vars T T' : Term .
-  vars TL TL' : TermList .
-  vars N N' : Nat .
-  var V : Variable .
 
   op _..._ : SubstitutionSet [SubstitutionSet]
           -> SubstitutionSet [strat (1) gather (e E)] .
@@ -741,7 +705,7 @@ fmod SUBSTITUTION-REFINEMENT is
 endfm
 
 fmod SUBSTITUTIONPAIR is
-  pr SUBSTITUTION-REFINEMENT .
+  pr META-LEVEL .
   sort SubstitutionPair .
   op ((_,_)) : Substitution Substitution -> SubstitutionPair .
   ops p1 p2 : SubstitutionPair -> Substitution .
@@ -763,7 +727,7 @@ fmod SUBSTITUTIONPAIRSET is
 endfm
 
 fmod SUBSTITUTION-AUX is
-  pr SUBSTITUTIONSET         .
+  pr SUBSTITUTION-SET        .
   pr SUBSTITUTION-REFINEMENT .
   pr TERM-EXTRA              . --- defines vars()
   op idsub       : VariableSet               -> VarSubstitution .
@@ -820,8 +784,7 @@ endfm
 
 fmod SUBSTITUTIONSET-AUX is
   pr SUBSTITUTION-AUX .
-  pr SUBSTITUTIONSET .
-  pr TERMSET-FM .
+  pr TERM-SET .
 
   var S S' S2 : Substitution . var VS : VarSubstitution .
   var T : Term . var V V' : Variable . var QS : VariableSet .
@@ -883,7 +846,6 @@ function which will "reuse" user-provided variables as often as possible
 ```maude
 fmod RECLAIM-VARS is
   pr SUBSTITUTION-REFINEMENT .
-  pr SUBSTITUTIONSET .
   pr SUBSTITUTION-AUX .
   op reclaim  : VariableSet SubstitutionSet           -> SubstitutionSet .
   op reclaim' : VariableSet Substitution              -> [Substitution] .
@@ -919,7 +881,7 @@ view Substitution from TRIV to META-LEVEL is sort Elt to Substitution . endv
 --- useful for representing the solutions to a unification problem, etc...
 fmod SUBSTITUTION-STREAM is
   pr STREAM{Substitution} .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   op set : Stream{Substitution} -> SubstitutionSet .
   var X : Substitution . var S : [Stream{Substitution}] .
   eq set(X & S) = X | set(S) .
@@ -939,7 +901,7 @@ endfm
 
 fmod TERMSUBSTSETPAIR is
   pr TERMSUBSTPAIR .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   sort TermSubstSetPair .
   subsort TermSubstPair < TermSubstSetPair .
   op ((_,_)) : Term SubstitutionSet -> TermSubstSetPair .
@@ -947,8 +909,8 @@ endfm
 
 fmod TERMSUBSTPAIRSET is
   pr TERMSUBSTPAIR .
-  pr TERMSET-FM .
-  pr SUBSTITUTIONSET .
+  pr TERM-SET .
+  pr SUBSTITUTION-SET .
   sort TermSubstPairSet .
   subsort TermSubstPair < TermSubstPairSet .
   op _|_      : TermSubstPairSet TermSubstPairSet -> TermSubstPairSet [ctor assoc comm id: emptyTPS] .
@@ -977,7 +939,7 @@ Variants
 
 ```maude
 fmod VARIANT is
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr META-LEVEL .
 
   var M : Module .
@@ -1753,7 +1715,7 @@ fmod VARIABLES-TO-CONSTANTS is
   pr QID-JOIN .                --- for join()
   pr UNIQUE-PREFIX .           --- for opPrefix()
   pr SUBSTITUTION-REFINEMENT . --- for sort ConstSubstitution
-  pr SUBSTITUTIONSET .         --- for sort SubstitutionSet
+  pr SUBSTITUTION-SET .        --- for sort SubstitutionSet
   pr OPDECLSET-EXTRA .         --- for qid()
 
   sort ModuleSubstPair .
@@ -2141,7 +2103,7 @@ endfm
 fmod GENERIC-PRINTER is
   pr META-LEVEL .
   pr CONVERSION .
-  pr TERMSET-FM .
+  pr TERM-SET .
   pr MAYBE-QID .
 
   var A A' : Assignment .
@@ -2227,8 +2189,8 @@ Unification
 ```maude
 fmod UNIFIERS is
   pr VARIABLES-TO-CONSTANTS .
-  pr SUBSTITUTIONSET        .
-  pr TERMSET-FM             .
+  pr SUBSTITUTION-SET       .
+  pr TERM-SET               .
   pr SUBSTITUTION-STREAM    .
   ---
   op  unifiers   : Module UnificationProblem                      -> SubstitutionSet .
@@ -2299,7 +2261,7 @@ endfm
 
 fmod EQ-VARIANT is
   pr VARIANT .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
 
   --- sort to collect variant unifier results
   sort SubstSetNatPair .

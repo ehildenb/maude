@@ -8,8 +8,8 @@ load renaming.maude       --- next-gen renaming library
 
 fmod UNIFIERS is
   pr VARIABLES-TO-CONSTANTS .
-  pr SUBSTITUTIONSET        .
-  pr TERMSET-FM             .
+  pr SUBSTITUTION-SET       .
+  pr TERM-SET               .
   pr TERMSET-RENAME         .
   pr TERMSUBSTSETPAIR       .
   pr SUBSTITUTION-STREAM    .
@@ -97,7 +97,7 @@ endfm
 fmod EQ-VARIANT is
   --- renaming needed to avoid a billion conflicts later...
   pr VARIANT * (op addOps to MHaddOps, op addEqs to MHaddEqs, op addSorts to MHaddSorts) .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
 
   --- sort to collect variant unifier results
   sort SubstSetNatPair .

@@ -98,7 +98,7 @@ endfm
 fmod CTOR-LIFT is
   pr META-LEVEL .
   pr QID-JOIN .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr UNIQUE-PREFIX .
 
   op lift-sort : Module Sort -> Sort .
@@ -137,7 +137,7 @@ endfm
 --- analyzed should make any use of kinds!
 fmod MGCI is
   pr META-LEVEL .
-  pr SUBSTITUTIONSET .
+  pr SUBSTITUTION-SET .
   pr CTOR-REFINE .
   pr CTOR-LIFT .
   pr QID-JOIN .

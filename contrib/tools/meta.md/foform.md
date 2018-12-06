@@ -799,7 +799,7 @@ endfm
 
 fmod QFFOFORM-SUBSTITUTIONSET is
   pr META-LEVEL .
-  pr SUBSTITUTIONSET . --- from full-maude
+  pr SUBSTITUTION-SET .
   pr QFFOFORMSET .
   pr QFFOFORM-SUBSTITUTION .
   op _<<_  : QFForm? SubstitutionSet -> QFForm?Set .

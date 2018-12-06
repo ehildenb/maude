@@ -622,10 +622,11 @@ fmod RENAME-METAVARS is
 endfm
 
 fmod TERMSET-RENAME is
-  pr TERMSET-FM        .
+  pr TERM-SET          .
   pr RENAME-METAVARS   .
   pr TERMSUBSTPAIRSET  .
   pr TERM-EXTRA        . --- defines varsToTermList()
+  pr SUBSTITUTION-HANDLING .
   op #renameAllExcept : Module QidSet TermSet                                   -> TermSubstPairSet .
   op #renameAllExcept : Module QidSet Substitution Nat TermSet TermSubstPairSet -> TermSubstPairSet .
 
