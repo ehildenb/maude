@@ -12,61 +12,100 @@ load terms.maude
 
 fmod TERM-EXTRA is
   pr META-LEVEL .
-  op vars            : Term                 -> QidSet .
-  op vars            : TermList             -> QidSet .
-  op  getName        : QidSet               -> [QidSet] .
-  op  getType        : QidSet               -> [QidSet] .
-  op  filterByType   : QidSet TypeSet       -> [QidSet] .
-  op  varsToTermList : QidSet               -> [TermList] .
-  op  subterms       : Term                 -> TermList .
-  op  repeatedNames  : QidSet               -> QidSet .
-  op $repeatedNames  : QidSet QidSet QidSet -> QidSet .
 
   var TQ : TermQid . var Q : Qid . var QS QS' QS'' : QidSet . var V : Variable .
-  var T : Term . var NTL : NeTermList . var C : Constant . var TS : TypeSet .
-  var M : Module . var TL : TermList .
+  var T T' : Term . var NTL : NeTermList . var C : Constant . var TS : TypeSet .
+  var M : Module . var TL : TermList . var X Y : Type .
 
+  --- OUT: The set of variables in a term
+  op vars : TermList -> QidSet .
   eq vars(V) = V .
   eq vars(C) = none .
   eq vars(Q[NTL]) = vars(NTL) .
   eq vars(empty) = none .
   eq vars((T, TL)) = vars(T) ; vars(TL) .
 
-  --- INP: QidSet
+  --- OUT: true iff the QidSet is a TermQid set and all names are unique
+  op uniqueNames : QidSet ~> Bool .
+  op uniqueNames : QidSet QidSet ~> Bool .
+  eq uniqueNames(QS') = uniqueNames(none,QS') .
+  eq uniqueNames(QS,Q ; QS') = (not getName(Q) in QS) and-then uniqueNames(QS ; getName(Q),QS') .
+  eq uniqueNames(QS,none) = true .
+
   --- PRE: Each Qid in QidSet is a TermQid
   --- OUT: QidSet composed of the name/sort of each TermQid
-  eq getName(TQ ; Q ; QS)   = getName(TQ) ; getName(Q ; QS) .
-  eq getName(none)          = none .
-  eq getType(TQ ; Q ; QS)   = getType(TQ) ; getType(Q ; QS) .
-  eq getType(none)          = none .
+  op getName : QidSet -> [QidSet] .
+  eq getName(TQ ; Q ; QS) = getName(TQ) ; getName(Q ; QS) .
+  eq getName(none) = none .
 
-  --- INP: QidSet
+  op getType : QidSet -> [QidSet] .
+  eq getType(TQ ; Q ; QS) = getType(TQ) ; getType(Q ; QS) .
+  eq getType(none) = none .
+
   --- PRE: Each Qid in QidSet is a TermQid
   --- OUT: Set of names (obtained by getName) which are not unique
-  eq  repeatedNames(QS)               = $repeatedNames(QS,none,none) .
-  eq $repeatedNames(TQ ; QS,QS',QS'') = if getName(TQ) in QS' then $repeatedNames(QS,QS',QS'' ; getName(TQ))
-                                                              else $repeatedNames(QS,QS' ; getName(TQ),QS'') fi .
-  eq $repeatedNames(none,QS',QS'')    = QS'' .
+  op repeatedNames : QidSet -> QidSet .
+  eq repeatedNames(QS) = $repeatedNames(QS,none,none) .
 
-  --- INP: QidSet
+  op $repeatedNames : QidSet QidSet QidSet -> QidSet .
+  eq $repeatedNames(TQ ; QS,QS',QS'') =
+    if getName(TQ) in QS'
+      then $repeatedNames(QS,QS',QS'' ; getName(TQ))
+      else $repeatedNames(QS,QS' ; getName(TQ),QS'')
+    fi .
+  eq $repeatedNames(none,QS',QS'') = QS'' .
+
   --- PRE: Each Qid in QidSet is a TermQid
   --- OUT: QidSet composed of only those TermQids who Type is in TypeSet
+  op filterByType : QidSet TypeSet -> [QidSet] .
   eq filterByType(TQ ; QS,TS) =
     if getType(TQ) in TS then TQ else none fi ; filterByType(QS,TS) .
   eq filterByType(none,TS)    = none .
 
-  --- INP: QidSet
   --- PRE: Each Qid in QidSet is a Variable
   --- OUT: A TermList where each Variable occurs in an undefined order
+  op varsToTermList : QidSet -> [TermList] .
   eq varsToTermList(V ; QS) = V,varsToTermList(QS) .
   eq varsToTermList(none)   = empty .
 
-  --- INP: Term
   --- PRE: None
   --- OUT: The list of subterms from this term
+  op subterms : Term -> TermList .
   eq subterms(Q[NTL]) = NTL .
-  eq subterms(C)      = empty .
-  eq subterms(V)      = empty .
+  eq subterms(C) = empty .
+  eq subterms(V) = empty .
+
+  --- OUT: the head Qid of the term
+  op head : Term -> Qid .
+  eq head(Q[NTL]) = Q .
+  eq head(TQ) = TQ .
+
+  --- PRE: [1] both input terms are constructor terms
+  ---      [2] the module is sort-decreasing
+  --- OUT: true iff one of the terms is provably not equal to other
+  ---      to the other because either: one is a ground constructor
+  ---      and its least sort is greater than the least sort of the
+  ---      other term; guaranteeing the two terms are not equal
+  --- NB:  The two terms MUST have distinct sorts to infer that are
+  ---      not equal; we need sort-decreasingness to tell us that
+  ---      one term is in normal form and the other can only decrease
+  ---      so that it must be different
+  op groundCtorLeastSortGreater : Module Term Term ~> Bool .
+  eq groundCtorLeastSortGreater(M,T,T') =
+    groundCtorLeastSortGreater(M,
+      T, completeName(M,leastSort(M,T )),
+      T',completeName(M,leastSort(M,T'))) .
+
+  op groundCtorLeastSortGreater : Module Term Type Term Type ~> Bool .
+  eq groundCtorLeastSortGreater(M,T,X,T',Y) =
+     X =/= Y and-then
+    (vars(T)  == none and-then sortLeq(M,Y,X) or-else
+     vars(T') == none and-then sortLeq(M,X,Y)) .
+
+  --- PRE: Term is well-formed in Module
+  --- OUT: The reduced term in the module
+  op metaReduce2 : Module Term ~> Term .
+  eq metaReduce2(M,T) = getTerm(metaReduce(M,T)) .
 endfm
 
 fmod GTERMLIST-REFINEMENT is
@@ -129,6 +168,8 @@ fmod UNIT-FM is
 
   op getName : Module -> Header .
   op getPars : Module -> ParameterDeclList .
+  op getCtorSig : Module -> Module .
+  op ctors : OpDeclSet -> OpDeclSet .
 
   op setName : Module ModuleExpression -> Module .
   op setName : Module ParameterDecl -> Module .
@@ -168,6 +209,10 @@ fmod UNIT-FM is
   vars PD PD' : ParameterDecl .
   vars PDL PDL' : ParameterDeclList .
   var  H H' : Header .
+  var  Q : Qid .
+  var  TYL : TypeList .
+  var  TY : Type .
+  var  AS : AttrSet .
 
   eq getName(noModule) = ' .
   eq getName(mod ME is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = ME .
@@ -177,12 +222,6 @@ fmod UNIT-FM is
   eq getName(fmod ME{PDL} is IL sorts SS . SSDS OPDS MAS EqS endfm) = ME .
   eq getName(fth H is IL sorts SS . SSDS OPDS MAS EqS endfth) = H .
 
-  eq getImports(noModule) = nil .
-  eq getImports(mod H is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = IL .
-  eq getImports(th H is IL sorts SS . SSDS OPDS MAS EqS RlS endth) = IL .
-  eq getImports(fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm) = IL .
-  eq getImports(fth H is IL sorts SS . SSDS OPDS MAS EqS endfth) = IL .
-
   eq getPars(noModule) = nil .
   eq getPars(mod ME is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = nil .
   eq getPars(mod ME{PDL} is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = PDL .
@@ -191,6 +230,16 @@ fmod UNIT-FM is
   eq getPars(fmod ME is IL sorts SS . SSDS OPDS MAS EqS endfm) = nil .
   eq getPars(fmod ME{PDL} is IL sorts SS . SSDS OPDS MAS EqS endfm) = PDL .
   eq getPars(fth H is IL sorts SS . SSDS OPDS MAS EqS endfth) = nil .
+
+  eq getCtorSig(M) = setRls(setEqs(setMbs(setOps(M,ctors(getOps(M))),none),none),none) .
+  eq ctors(op Q : TYL -> TY [ctor AS]. OPDS) = op Q : TYL -> TY [ctor AS]. ctors(OPDS) .
+  eq ctors(OPDS) = none [owise] .
+
+  eq getImports(noModule) = nil .
+  eq getImports(mod H is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = IL .
+  eq getImports(th H is IL sorts SS . SSDS OPDS MAS EqS RlS endth) = IL .
+  eq getImports(fmod H is IL sorts SS . SSDS OPDS MAS EqS endfm) = IL .
+  eq getImports(fth H is IL sorts SS . SSDS OPDS MAS EqS endfth) = IL .
 
   eq getSorts(noModule) = none .
   eq getSorts(mod H is IL sorts SS . SSDS OPDS MAS EqS RlS endm) = SS .
@@ -379,12 +428,12 @@ fmod MOD-EXTRA is
   op setRls      : QidList RuleSet RuleSet -> [RuleSet] .
   op getModQid   : Import -> Qid .
   op getImports2 : Module -> [ImportList] .
-  op getImports2 : Qid -> [ImportList] .
+  op getImports2 : Module Qid -> [ImportList] .
   op getImports2 : ImportList ImportList -> [ImportList] .
   op getImports2 : Module ImportList ImportList -> [ImportList] .
 
   var ME ME' : ModuleExpression . var M M' : Module . var I : Import .
-  var Q : Qid . var QL : QidList . var L R : Term . var A : AttrSet .
+  var Q : Qid . var QK : [Qid] . var QL : QidList . var L R : Term . var A : AttrSet .
   var RL : Rule . var RS RS' : RuleSet . var C : Condition .
   var IL IL1 IL2 : ImportList .
 
@@ -400,14 +449,16 @@ fmod MOD-EXTRA is
   --- OUT: Set of rules which are labelled with any Qid in QidList
   eq setRls(M,QL) = setRls(M,setRls(QL,getRls(M),none)) .
   eq setRls(Q QL,rl L => R [label(Q) A]. RS,RS') = setRls(Q QL,RS,rl L => R [label(Q) A]. RS') .
+  eq setRls(Q QL,crl L => R if C [label(Q) A]. RS,RS') = setRls(Q QL,RS,crl L => R if C [label(Q) A]. RS') .
   eq setRls(Q QL,RS,RL RS') = setRls(QL,RS,none) RL RS' [owise] .
   eq setRls(nil,RS,none) = none .
 
   --- INP: Module/Qid (name of Module)
   --- PRE: Module (and all of its recursive imports) have names that are Qids
   --- OUT: ImportList that contains imports of this module and its dependencies
-  eq getImports2(M) = getImports2(getName(M)) .
-  eq getImports2(Q) = getImports2(getImports(upModule(Q,false)),nil) .
+  eq getImports2(M) = getImports2(M,getName(M)) .
+  eq getImports2(M,Q) = getImports2(getImports(upModule(Q,false)),nil) .
+  eq getImports2(M,QK) = getImports(M) . --- fallback case
   eq getImports2(I IL,IL1 I IL2) = getImports2(IL,IL1 I IL2) .
   eq getImports2(nil,IL2) = IL2 .
   eq getImports2(I IL,IL2) = getImports2(upModule(getModQid(I),false),IL,IL2 I) [owise] .
@@ -519,7 +570,6 @@ fmod SUBSTITUTION-HANDLING is
   eq Subst |> TL = Subst |>* Vars(TL) .
 
   op _|>*_ : Substitution TermList -> Substitution .
----   eq noMatch |>* TL = noMatch .
   eq Subst |>* TL = Subst |>** TL [none] .
 
   op _|>**_[_] : Substitution TermList
@@ -713,6 +763,7 @@ fmod SUBSTITUTIONPAIRSET is
 endfm
 
 fmod SUBSTITUTION-AUX is
+  pr SUBSTITUTIONSET         .
   pr SUBSTITUTION-REFINEMENT .
   pr TERM-EXTRA              . --- defines vars()
   op idsub       : VariableSet               -> VarSubstitution .
@@ -760,6 +811,11 @@ fmod SUBSTITUTION-AUX is
   --- OUT: a new Substitution identical to Substiution1 but where any assignment in Substitution2 has been removed
   eq remove(S ; A,A ; S') = remove(S,A ; S') .
   eq remove(S,S')         = S [owise] .
+
+  --- OUT: Generate range of variables as generated by the substitution.
+  op captureNewVars : VariableSet Substitution  -> VariableSet .
+  eq captureNewVars(V ; VS,S) = vars(V << S) ; captureNewVars(VS,S) .
+  eq captureNewVars(none,S) = none .
 endfm
 
 fmod SUBSTITUTIONSET-AUX is
@@ -767,9 +823,10 @@ fmod SUBSTITUTIONSET-AUX is
   pr SUBSTITUTIONSET .
   pr TERMSET-FM .
 
-  var S S' S2 : Substitution . var SS : SubstitutionSet .
-  var T : Term . var V : Variable . var QS : VariableSet .
-  var SSK : [SubstitutionSet] .
+  var S S' S2 : Substitution . var VS : VarSubstitution .
+  var T : Term . var V V' : Variable . var QS : VariableSet .
+  var TS : TermSet . var U : Module .
+  var SS : SubstitutionSet . var SSK : [SubstitutionSet] .
 
   --- OUT: QidSet composed of domain() of each substitution
   op domain : SubstitutionSet -> VariableSet .
@@ -800,6 +857,21 @@ fmod SUBSTITUTIONSET-AUX is
 
   --- OUT: Get first error from SubstitutionSet
   eq errsubMsg(errsub(QL:QidList) | SSK) = QL:QidList .
+
+  --- OUT: A set of assignments mapping Variable to each Term
+  op assignments : Variable TermSet -> SubstitutionSet .
+  eq assignments(V,T | TS) = (V <- T) | assignments(V,TS) .
+  eq assignments(V,.TermSet) = .SubstitutionSet .
+
+  --- OUT: true iff all Substitutions are well-formed
+  op wellFormedSet : Module SubstitutionSet -> Bool .
+  eq wellFormedSet(U,S | SS) = wellFormed(U,S) and-then wellFormedSet(U,SS) .
+  eq wellFormedSet(U,.SubstitutionSet) = true .
+
+  --- OUT: invert a substitution mapping variables to variables
+  op invert : VarSubstitution -> VarSubstitution .
+  eq invert(V <- V' ; VS) = 'V <- V ; invert(VS) .
+  eq invert(none) = none .
 endfm
 ```
 
@@ -1145,16 +1217,17 @@ fmod TYPE-EXTRA is
   eq termListTypes(M,(T, TL))  = leastSort(M,T) termListTypes(M,TL) .
   eq termListTypes(M,empty) = nil .
 
-  op maxSortAbove : Module Sort ~> Sort .
-  op maxSortAbove : Module Sort SortSet ~> Sort .
-  eq maxSortAbove(M,S) = maxSortAbove(M,S,maximalSorts(M,getKind(M,S))) .
-  eq maxSortAbove(M,S,S' ; SS) =
-    if sortLeq(M,S,S') then
-      if maxSortAbove(M,S,SS) :: Sort then
-        maxSortAbove(M,S,none) else
-        S'
-      fi else
-      maxSortAbove(M,S,SS)
+  --- OUT: return a maximal sort above the given sort
+  ---  NB: output is not guaranteed to be stable across executions
+  op maximalSortAbove : Module Sort ~> Sort .
+  op maximalSortAbove : Module Sort SortSet ~> Sort .
+  eq maximalSortAbove(M,S) = maximalSortAbove(M,S,maximalSorts(M,getKind(M,S))) .
+  eq maximalSortAbove(M,S,S' ; SS) =
+    if sortLeq(M,S,S')
+      then ---if maximalSortAbove(M,S,SS) :: Sort
+        ---then maximalSortAbove(M,S,none)
+        S' ---else S' fi
+      else maximalSortAbove(M,S,SS)
     fi .
 endfm
 ```
@@ -1265,7 +1338,6 @@ fmod OPDECLSET-EXTRA is
   op $resTypeSet : OpDeclSet TypeSet -> TypeListSet .
   op constants   : OpDeclSet -> OpDeclSet .
   op $constants  : OpDeclSet OpDeclSet -> OpDeclSet .
-  op ctors       : OpDeclSet -> OpDeclSet .
   op stripAttrs  : OpDeclSet -> OpDeclSet .
   ---
   op qid         : OpDeclSet -> QidSet .
@@ -1326,15 +1398,6 @@ fmod OPDECLSET-EXTRA is
   eq $constants(OD OS,OS') =
     $constants(OS,if argTypes(OD) == nil then OD else none fi OS') .
   eq $constants(none,OS') = OS' .
-
-  --- INP: OpDeclSet
-  --- PRE: None
-  --- OUT: Extracts all ctors
-  op $ctors      : OpDeclSet OpDeclSet -> OpDeclSet .
-  eq ctors(OS) = $ctors(OS,none) .
-  eq $ctors(op Q : TYL -> TY [ctor AS]. OS,OS') =
-     $ctors(OS,op Q : TYL -> TY [ctor AS]. OS') .
-  eq $ctors(OS,OS') = OS' [owise] .
 
   --- INP: OpDeclSet
   --- PRE: None
@@ -1560,6 +1623,7 @@ endfm
 
 fmod OP-FAMILY-AUX is
   pr OP-FAMILY .
+  pr UNIT-FM .
 
   op ctorsPreregularBelow : Module -> Bool .
   op ctorsPreregularBelow : Module OpFamilyMap -> Bool .
@@ -1690,11 +1754,12 @@ fmod VARIABLES-TO-CONSTANTS is
   pr UNIQUE-PREFIX .           --- for opPrefix()
   pr SUBSTITUTION-REFINEMENT . --- for sort ConstSubstitution
   pr SUBSTITUTIONSET .         --- for sort SubstitutionSet
+  pr OPDECLSET-EXTRA .         --- for qid()
 
   sort ModuleSubstPair .
   op ((_,_)) : Module Substitution -> ModuleSubstPair [ctor] .
-  op mod : ModuleSubstPair -> Module .
-  op sub : ModuleSubstPair -> Substitution .
+  op mod : ModuleSubstPair ~> Module .
+  op sub : ModuleSubstPair ~> Substitution .
 
   sort ConstGenStrategy .
   ops simple prefix full : -> ConstGenStrategy [ctor] .
@@ -1712,17 +1777,29 @@ fmod VARIABLES-TO-CONSTANTS is
   var S S' : Substitution . var P : Qid . var O : OpDeclSet . var CG : ConstGenStrategy .
   var TQ : TermQid . var CS : ConstSubstitution .
 
-  --- INP: Module QidSet (Variables)
-  --- PRE: QidSet should be a set of variables
+  --- INP: Module ConstGenStrategy QidSet (Variables)
+  --- PRE: [1] QidSet should be a set of variables
+  ---      [2] if strategy is simple, variable names should be
+  ---          disjoint from all constant operator names
   --- OUT: A new module where variables have been added as constants
   eq mod((M,CS)) = M .
   eq sub((M,CS)) = CS .
-  eq varsToConsts(M,CG,QS)                 = mod(varsToConsts#(M,CG,QS)) .
-  eq varsToConsts#(M,CG,QS)                = varsToConsts#(M,CG,QS,qid(opPrefix(M)),none,none) .
-  eq varsToConsts#(M,simple,V ; QS,P,O,CS) = varsToConsts#(M,simple,QS,P,O op getName(V)                       : nil -> getType(V) [none].,CS ; V <- join(getName(V) '. getType(V))) .
-  eq varsToConsts#(M,prefix,V ; QS,P,O,CS) = varsToConsts#(M,prefix,QS,P,O op join(P getName(V))               : nil -> getType(V) [none].,CS ; V <- join(P getName(V) '. getType(V))) .
-  eq varsToConsts#(M,full,  V ; QS,P,O,CS) = varsToConsts#(M,full,  QS,P,O op join(P getName(V) '| getType(V)) : nil -> getType(V) [none].,CS ; V <- join(P getName(V) '| getType(V) '. getType(V))) .
-  eq varsToConsts#(M,CG,none,P,O,CS)       = (addOps(O,M),CS) .
+  eq varsToConsts(M,CG,QS)             = mod(varsToConsts#(M,CG,QS)) .
+  eq varsToConsts#(M,CG,QS)            = varsToConsts#(M,CG,QS,qid(opPrefix(M)),none,none) .
+  eq varsToConsts#(M,CG,V ; QS,P,O,CS) = varsToConsts#(M,CG,QS,P,O newConstOp(CG,P,V),CS ; V <- newConstSym(CG,P,V)) .
+ ceq varsToConsts#(M,CG,none,P,O,CS)   = (addOps(O,M),CS)
+  if CG =/= simple or-else intersection(qid(O),qid(getOps(M))) == none .
+
+  op newConstName : ConstGenStrategy Qid Variable -> Qid .
+  eq newConstName(simple,P,V) = getName(V) .
+  eq newConstName(prefix,P,V) = join(P getName(V)) .
+  eq newConstName(full,P,V) = join(P getName(V) '| getType(V)) .
+
+  op newConstOp : ConstGenStrategy Qid Variable -> OpDecl .
+  eq newConstOp(CG,P,V) = (op newConstName(CG,P,V) : nil -> getType(V) [none] .) .
+
+  op newConstSym : ConstGenStrategy Qid Variable -> Constant .
+  eq newConstSym(CG,P,V) = join(newConstName(CG,P,V) '. getType(V)) .
 
   --- INP: Substitution (Variables to fresh Constants) Term/SubstitutionSet
   --- PRE: None
@@ -1739,10 +1816,10 @@ fmod VARIABLES-TO-CONSTANTS is
   eq constsToVars(CS,Q,(T,TL),TL')       = constsToVars(CS,Q,TL,(TL',constsToVars(CS,T))) .
   eq constsToVars(CS,Q,empty,TL')        = Q[TL'] .
   ---
-  eq constsToVars(CS,S | S' | SS)         = constsToVars(CS,S) | constsToVars(CS,S' | SS) .
-  eq constsToVars(CS,.SubstitutionSet)    = .SubstitutionSet .
-  eq constsToVars(CS,V <- T ; S)          = V <- constsToVars(CS,T) ; constsToVars(CS,S) .
-  eq constsToVars(CS,(none).Substitution) = (none).Substitution .
+  eq constsToVars(CS,S | S' | SS)             = constsToVars(CS,S) | constsToVars(CS,S' | SS) .
+  eq constsToVars(CS,.SubstitutionSet)        = .SubstitutionSet .
+  eq constsToVars(CS,V <- T ; S)              = V <- constsToVars(CS,T) ; constsToVars(CS,S) .
+  eq constsToVars(CS,(none).Substitution)     = (none).Substitution .
 endfm
 
 --- Module checks if all the rules in the module we are analyzing in the same kind.
@@ -1930,7 +2007,7 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
   pr META-LEVEL .
   pr UNIT-FM .
   pr UNIQUE-PREFIX . --- for opPrefix/sortPrefix
-  pr TYPE-EXTRA . --- for maxSortAbove
+  pr TYPE-EXTRA . --- for maximalSortAbove
 
   var M : Module .
   var S : Sort . var SS : SortSet .
@@ -1959,9 +2036,9 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
   --- Define Free Heterogenous List Fuctor over Terms in the Module
   op toHL : Module NeTermList -> Term .
   op $toHL : Module TermList -> TermList .
-  eq toHL(M,T) = 'singleton[hl-inj(M,maxSortAbove(M,leastSort(M,T)))[T]] .
+  eq toHL(M,T) = 'singleton[hl-inj(M,maximalSortAbove(M,leastSort(M,T)))[T]] .
   eq toHL(M,(T,NTL)) = '_|_[$toHL(M,(T,NTL))] .
-  eq $toHL(M,(T,TL)) = hl-inj(M,maxSortAbove(M,leastSort(M,T)))[T], $toHL(M,TL) .
+  eq $toHL(M,(T,TL)) = hl-inj(M,maximalSortAbove(M,leastSort(M,T)))[T], $toHL(M,TL) .
   eq $toHL(M,empty) = empty .
 
   --- Define Forgetful Functor over Heterogeneous Lists
@@ -1980,6 +2057,39 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
   --- [3] terms T of sort HeterogeneousList in HL[M]
   eq toTL(toHL(M,NTL)) = NTL [nonexec] .
   eq toHL(M,toTL(T)) = T [nonexec] .
+endfm
+
+fmod EQUALITY-FUNCTOR is
+  pr UNIT-FM .
+
+  var M : Module . var OS : OpDeclSet .
+
+  --- PRE: Module does not have sorts/ops with the prefix/suffix @##/##@
+  --- OUT: A module with an universal equality operator
+  op equal-func : FModule -> FModule [memo] .
+  eq equal-func(M) =
+    setEqs(addOps((op '##/\## : '@##Bool##@ '@##Bool##@ -> '@##Bool##@ [none] .
+     op '##unequal## : 'Universal 'Universal -> '@##Bool##@ [poly(1 2) special(
+      id-hook('EqualitySymbol, nil)
+      term-hook('equalTerm, '##false##.@##Bool##@)
+      term-hook('notEqualTerm, '##true##.@##Bool##@))] .
+     op '##false## : nil -> '@##Bool##@ [ctor special(
+      id-hook('SystemFalse, nil))] .
+     op '##true## : nil -> '@##Bool##@ [ctor special(
+      id-hook('SystemTrue, nil))] .),
+    addSorts('@##Bool##@,setOps(M,pruneBool(getOps(getCtorSig(M)))))),
+    eq '##/\##['##true##.@##Bool##@,'B:@##Bool##@] = 'B:@##Bool##@ [none].
+    eq '##/\##['##false##.@##Bool##@,'B:@##Bool##@] = '##false##.@##Bool##@ [none].) .
+
+  --- TODO: deal with non-empty hooklists
+  --- PRE: None
+  --- OUT: An OpDeclSet with all SystemTrue/False attributes removed
+  op pruneBool : OpDeclSet -> OpDeclSet .
+  eq pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet special(id-hook('SystemTrue,nil))]. OS) =
+     pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet]. OS) .
+  eq pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet special(id-hook('SystemFalse,nil))]. OS) =
+     pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet]. OS) .
+  eq pruneBool(OS) = OS [owise] .
 endfm
 
 fmod UNIFICATION-PROBLEM-AUX is
@@ -2032,39 +2142,56 @@ fmod GENERIC-PRINTER is
   pr META-LEVEL .
   pr CONVERSION .
   pr TERMSET-FM .
+  pr MAYBE-QID .
 
-  ops &mt &sp  :                     -> Qid     . --- constants for nothing/space
-  op  pad      : Qid Nat             -> QidList . --- add padding upto length
-  op  addsp    : Nat                 -> QidList .
-  op  print    : Module TermSet      -> QidList . --- printing fuctions below
-  op  printSub : Module Substitution -> QidList .
-  op  print    : NatList QidList     -> QidList .
-  op  printNL  : NatList QidList     -> QidList .
+  var A A' : Assignment .
+  var B : Bool .
+  var M : Module  .
+  var N : Nat .
+  var NL : NatList .
+  var Q Q' : Qid .
+  var QL : QidList .
+  var RP RP' : ResultPair .
+  var RP? : [ResultPair] .
+  var SB : Substitution .
+  var T T' : Term .
+  var TS : TermSet .
+  var V : Variable .
 
-  var M  : Module  . var SB : Substitution . var T T' : Term . var Q : Qid .
-  var TS : TermSet . var A A' : Assignment . var NL : NatList .
-  var QL : QidList . var V : Variable      . var N : Nat .
-  var RP RP' : ResultPair . var RP? : [ResultPair] .
+  op &mt : -> Qid .
+  op &sp : -> Qid .
+  eq &mt = qid("")  .
+  eq &sp = qid(" ") .
 
-  eq addsp(s(N))               = &sp addsp(N) .
-  eq addsp(0)                  = nil .
-  eq pad(Q,N)                  = Q if length(string(Q)) >= N then nil else addsp(sd(length(string(Q)),N)) fi .
-  eq &sp                       = qid(" ") .
-  eq &mt                       = qid("")  .
-  --- print termsets
-  eq print(M,T | T' | TS)      = metaPrettyPrint(M,T) '`, print(M,T' | TS) .
-  eq print(M,T)                = metaPrettyPrint(M,T) .
-  eq print(M,.TermSet)         = &mt .
-  --- print substitutions
-  eq printSub(M,V <- T)        = metaPrettyPrint(M,V) '<- metaPrettyPrint(M,T) .
-  eq printSub(M,A ; A' ; SB)   = printSub(M,A) '; printSub(M,A' ; SB) .
-  eq printSub(M,none)          = 'empty 'substitution .
-  --- print natlist
-  eq print(NL,QL)              = printNL(NL,QL) .
-  eq printNL(N NL,QL)          = printNL(NL,QL qid(string(N,10))) .
-  eq printNL((nil).NatList,QL) = QL .
+  op printSpaces : Nat -> QidList .
+  eq printSpaces(s(N)) = &sp printSpaces(N) .
+  eq printSpaces(0) = nil .
 
-  op printN : Nat QidList -> QidList .  *** first N qid's in a qidList
+  op printPad : Qid Nat -> QidList .
+  eq printPad(Q,N) = Q if length(string(Q)) >= N then nil else printSpaces(sd(length(string(Q)),N)) fi .
+
+  op printTerm : Module Term -> QidList .
+  eq printTerm(M,T) = metaPrettyPrint(M,T) .
+
+  op printTermSet : Module TermSet -> QidList .
+  eq printTermSet(M,T | T' | TS) = printTerm(M,T) '`, printTermSet(M,T' | TS) .
+  eq printTermSet(M,T) = metaPrettyPrint(M,T) .
+  eq printTermSet(M,.TermSet) = &mt .
+
+  op printSub : Module Substitution -> QidList .
+  eq printSub(M,V <- T) = metaPrettyPrint(M,V) '<- metaPrettyPrint(M,T) .
+  eq printSub(M,A ; A' ; SB) = printSub(M,A) '; printSub(M,A' ; SB) .
+  eq printSub(M,none) = 'identity .
+
+  op printMaybeQid : MaybeQid Qid -> Qid .
+  eq printMaybeQid(noqid,Q') = Q' .
+  eq printMaybeQid(Q,Q') = Q .
+
+  op printNatList : NatList QidList -> QidList .
+  eq printNatList(N NL,QL) = printNatList(NL,QL qid(string(N,10))) .
+  eq printNatList((nil).NatList,QL) = QL .
+
+  op printN : Nat QidList -> QidList .
   eq printN(N, nil) = nil .
   eq printN(0, QL) = nil .
   eq printN(s N, Q QL) = Q printN(N, QL) .
@@ -2075,5 +2202,140 @@ fmod GENERIC-PRINTER is
   eq printSyntaxError(ambiguity(RP, RP'), QL)
     = '\r 'Ambiguous 'parsing 'for '\o '\s QL '\o .
   eq printSyntaxError(RP?, QL) = QL [owise] .
+
+  --- print meta representation of terms
+  op printMeta : Term -> QidList .
+  eq printMeta(T) = metaPrettyPrint(['META-TERM],upTerm(T)) .
+
+  op printMeta : Bool -> Qid .
+  eq printMeta(true) = 'true .
+  eq printMeta(false) = 'false .
+
+  op printMeta : Qid -> Qid .
+  eq printMeta(Q) = qid("'" + string(Q)) .
+
+  op printMeta : Module Bool -> QidList .
+ ceq printMeta(M,B) = 'upModule '`( printMeta(getName(M)) '`, printMeta(B) '`)
+  if getName(M) :: Qid .
+  eq printMeta(M,B) = '`( 'Error: 'printMeta 'module 'failure '`) [owise] .
+endfm
+```
+
+Unification
+-----------
+
+```maude
+fmod UNIFIERS is
+  pr VARIABLES-TO-CONSTANTS .
+  pr SUBSTITUTIONSET        .
+  pr TERMSET-FM             .
+  pr SUBSTITUTION-STREAM    .
+  ---
+  op  unifiers   : Module UnificationProblem                      -> SubstitutionSet .
+  op #unifiers   : Module UnificationProblem Nat UnificationPair? -> Stream{Substitution} .
+  ---
+  op  matches    : Module Term Term                   -> SubstitutionSet .
+  op #matches    : Module Term Term Nat Substitution? -> Stream{Substitution} .
+  ---
+  op  toUnifProb : NeTermSet      -> UnificationProblem .
+  op  toUnifProb : Term NeTermSet -> UnificationProblem .
+
+  var M    : Module .
+  var UP   : UnificationProblem .
+  var I J  : Nat .
+  var S S' : Substitution .
+  var SS   : SubstitutionSet .
+  var T T' : Term .
+  var NTS  : NeTermSet .
+  var SharedVars : VariableSet .
+
+  --- INP: Module UnificationProblem
+  --- PRE: Unification problem is well-formed in Module
+  --- OUT: A complete set of unifiers
+  --- NB:  #unifiers returns a stream of unifiers (useful for applications where the
+  ---      process may take a long time)
+  eq  unifiers(M,UP)             = set(#unifiers(M,UP,0,metaUnify(M,UP,0,0))) .
+  eq #unifiers(M,UP,I,{S,J})     = S & #unifiers(M,UP,s(I),metaUnify(M,UP,s(J),s(I))) .
+  eq #unifiers(M,UP,I,noUnifier) = end .
+
+  --- INP: Module Term1 Term2
+  --- PRE: Terms are well-formed in Module
+  --- OUT: A complete set of matching substitutions from Term1 to Term2
+  --- NB:  #matches returns a stream of matches (useful for applications where the
+  ---      process may take a long time)
+  eq  matches(M,T,T')            = set(#matches(M,T,T',0,metaMatch(M,T,T',nil,0))) .
+  eq #matches(M,T,T',I,S)        = S & #matches(M,T,T',s(I),metaMatch(M,T,T',nil,s(I))) .
+  eq #matches(M,T,T',I,noMatch)  = end .
+
+  --- INP: NeTermSet
+  --- PRE: NeTermSet has at least two elements
+  --- OUT: A unification problem unifying all of the terms in the TermSet
+  eq toUnifProb(T | NTS)         = toUnifProb(T,NTS) .
+  eq toUnifProb(T,T' | NTS)      = T =? T' /\ toUnifProb(T,NTS) .
+  eq toUnifProb(T,T')            = T =? T' .
+
+  --- PRE: [1] Terms are well-defined in module
+  ---      [2] Terms have disjoint variables, ignoring variables passed in as optional argument
+  --- OUT: The standard unification/matching results
+  op safeUnify : Module Term Term -> SubstitutionSet .
+  op safeUnify : Module VariableSet Term Term -> SubstitutionSet .
+ ceq safeUnify(M,SharedVars,T,T') = unifiers(M,T =? T') if intersection(vars(T),vars(T')) \ SharedVars == none .
+  eq safeUnify(M,SharedVars,T,T') = errsub('Unification 'unexpected 'shared 'variable) [owise print "Safe Unify Variable Error"] .
+  eq safeUnify(M,T,T')            = safeUnify(M,none,T,T') .
+
+  op safeMatch : Module Term Term -> SubstitutionSet .
+  op safeMatch : Module VariableSet Term Term -> SubstitutionSet .
+ ceq safeMatch(M,SharedVars,T,T') = matches(M,T,T') if intersection(vars(T),vars(T')) \ SharedVars == none .
+  eq safeMatch(M,SharedVars,T,T') = errsub('Match 'unexpected 'shared 'variable) [owise print "Safe Match Variable Error"] .
+  eq safeMatch(M,T,T')            = safeMatch(M,none,T,T') .
+
+  --- PRE: [1] Terms are well-defined in module
+  ---      [2] Terms have no shared variables except for shared variables
+  op sharedMatch : Module VariableSet Term Term -> SubstitutionSet .
+  op sharedMatch : ModuleSubstPair Term Term -> SubstitutionSet .
+ ceq sharedMatch(M,SharedVars,T,T') = sharedMatch(varsToConsts#(M,prefix,SharedVars),T,T') if intersection(vars(T),vars(T')) \ SharedVars == none .
+  eq sharedMatch((M,S),T,T') = constsToVars(S,matches(M,T << S,T' << S)) .
+endfm
+
+fmod EQ-VARIANT is
+  pr VARIANT .
+  pr SUBSTITUTIONSET .
+
+  --- sort to collect variant unifier results
+  sort SubstSetNatPair .
+  op  ssnp : SubstitutionSet Nat -> SubstSetNatPair [ctor] .
+
+  --- copmute variants
+  op  variants     : Module Term -> VariantTripleSet .
+  op $variants     : Module Term Nat Variant? VariantTripleSet -> VariantTripleSet .
+  --- compute variant unifiers
+  op  var-unifiers : Module UnificationProblem -> SubstitutionSet .
+  op #var-unifiers : Module UnificationProblem -> SubstSetNatPair .
+  op $var-unifiers : Module UnificationProblem Nat Nat UnificationPair SubstitutionSet -> SubstSetNatPair .
+  --- helper functions for variant/variant unifier generation
+  op  applySubs : Variant SubstitutionSet -> VariantTripleSet .
+  op  getSubs   : VariantTripleSet -> SubstitutionSet .
+  op  getTerms  : VariantTripleSet -> TermSet .
+  op  getss     : SubstSetNatPair -> SubstitutionSet .
+
+  var M : Module . var T T' : Term . var I J J' : Nat . var P : Parent . var B : Bool .
+  var S S' : Substitution . var SS : SubstitutionSet . var VS : VariantTripleSet . var UP : UnificationProblem .
+
+  eq  variants(M,T)                       = $variants(M,T,0,metaGetVariant(M,T,empty,0,0),empty) .
+  eq $variants(M,T,I,noVariant,VS)        = VS .
+  eq $variants(M,T,I,{T',S,J,P,B},VS)     = $variants(M,T,s(I),metaGetVariant(M,T,empty,s(J),s(I)),{T',S,J,P,B} | VS) .
+  eq  var-unifiers(M,UP)                  = getss(#var-unifiers(M,UP)) .
+  eq #var-unifiers(M,UP)                  = $var-unifiers(M,UP,0,0,metaVariantUnify(M,UP,empty,0,0),.SubstitutionSet) .
+  eq $var-unifiers(M,UP,I,J,noUnifier,SS) = ssnp(SS,J) .
+  eq $var-unifiers(M,UP,I,J,{S,J'},SS)    = $var-unifiers(M,UP,s(I),s(J'),metaVariantUnify(M,UP,empty,s(J'),s(I)),SS | S) .
+
+  eq applySubs({T,S,I,P,B},S' | SS) = {T << S',S << S',I,P,B} | applySubs({T,S,I,P,B},SS) .
+  eq applySubs({T,S,I,P,B},.SubstitutionSet) = empty .
+
+  eq getSubs({T,S,I,P,B} | VS)  = S | getSubs(VS) .
+  eq getSubs(empty)             = .SubstitutionSet .
+  eq getTerms({T,S,I,P,B} | VS) = T | getTerms(VS) .
+  eq getTerms(empty)            = .TermSet .
+  eq getss(ssnp(SS,I))          = SS .
 endfm
 ```

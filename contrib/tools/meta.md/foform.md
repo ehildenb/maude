@@ -1393,8 +1393,8 @@ fmod FOFORM-PRINTER is pr FOFORM . pr GENERIC-PRINTER .
   --- print formulas
   eq print(M,F /\ F')          = '`( print(M,F) '/\ print(M,F') '`) .
   eq print(M,F \/ F')          = '`( print(M,F) '\/ print(M,F') '`) .
-  eq print(M,T ?= T')          = print(M,T) '=   print(M,T') .
-  eq print(M,T != T')          = print(M,T) '=/= print(M,T') .
+  eq print(M,T ?= T')          = printTerm(M,T) '=   printTerm(M,T') .
+  eq print(M,T != T')          = printTerm(M,T) '=/= printTerm(M,T') .
   eq print(M,~ F)              = '~ print(M,F) .
   eq print(M,mtForm)           = 'true .
   eq print(M,tt)               = 'true .
