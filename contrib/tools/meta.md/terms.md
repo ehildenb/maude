@@ -6,13 +6,13 @@ Term Sets
 
 ```maude
 fmod TERM-SET is
-   protecting META-TERM .
+   protecting META-LEVEL .
 
     sorts NeTermSet TermSet .
     -------------------------
     subsort Term < NeTermSet < TermSet .
 
-    var T : Term . var TS : TermSet . var NeTL : NeTermList .
+    var T : Term . var TS : TermSet . var NeTL : NeTermList . var M : Module .
 
     op .TermSet : -> TermSet [ctor] .
     op _|_ : TermSet   TermSet ->   TermSet [ctor assoc comm id: .TermSet] .
@@ -30,6 +30,11 @@ fmod TERM-SET is
     eq asSet(empty)    = .TermSet .
     eq asSet(T)        = T .
     eq asSet((T,NeTL)) = T | asSet(NeTL) .
+
+    op wellFormedSet : Module TermSet ~> Bool .
+    -------------------------------------------
+    eq wellFormedSet(M,T | TS) = wellFormed(M,T) and-then wellFormedSet(M,TS) .
+    eq wellFormedSet(M,.TermSet) = true .
 endfm
 ```
 
@@ -78,7 +83,7 @@ fmod SUBSTITUTION-SET is
 
     op _<<_ : SubstitutionSet SubstitutionSet -> SubstitutionSet .
     --------------------------------------------------------------
-    eq none             << SUB' = none .
+    eq (none).Substitution << SUB' = none .
     eq ((V <- T) ; SUB) << SUB' = (V <- (T << SUB')) ; (SUB << SUB') .
 
     eq .SubstitutionSet   << SUB = .SubstitutionSet .
