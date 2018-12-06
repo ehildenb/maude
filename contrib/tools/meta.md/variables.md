@@ -2,7 +2,7 @@ Variable Handling
 =================
 
 ```maude
-load ../meta/meta-aux.maude
+load meta-aux.maude
 load terms.maude
 ```
 
