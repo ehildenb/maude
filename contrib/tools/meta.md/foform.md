@@ -13,7 +13,7 @@ load variables.maude      --- next-gen renaming library
 
 fmod REFLECT is
   pr META-LEVEL .
-  pr UNIT-FM .
+  pr MOD-OPS .
   op modReduce   : Module Term   -> [Term] .
   op redReflect  : Qid Term      -> [Term] .
   op sortReflect : Qid Term Type -> [Bool] .
@@ -1185,7 +1185,7 @@ endfm
 
 fmod FOFORM-DESCENT-MAP is
   pr FOFORM .
-  pr UNIT-FM .
+  pr MOD-OPS .
   op descent-map : Module Module QFForm? -> QFForm? .
   op check-map?  : QFForm? ~> QFForm? .
   ---

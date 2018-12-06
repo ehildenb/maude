@@ -17,7 +17,7 @@ load renaming.maude       --- next-gen renaming library
 fmod CTOR-REFINE is
   pr META-LEVEL .
   pr KIND-CHECK .    --- for kind checks
-  pr UNIT-FM .       --- for module operations
+  pr MOD-OPS .       --- for module operations
   pr UNIQUE-PREFIX . --- to generate unique prefixes for sorts
 
   op ctor-refine    : Module ~> Module [memo] .

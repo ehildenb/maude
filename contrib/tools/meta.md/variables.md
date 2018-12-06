@@ -535,7 +535,7 @@ fmod RENAME-METAVARS is
   pr CONVERSION   .
   pr GET-TYPES    .
   pr GEN-VARNAMES .
-  pr UNIT-FM      .
+  pr MOD-OPS      .
   pr RENAME-DATA  .
 
   --- auxiliary function that adds a types equation to a module

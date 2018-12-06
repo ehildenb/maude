@@ -152,7 +152,7 @@ Module Operations
 -----------------
 
 ```maude
-fmod UNIT-FM is
+fmod MOD-OPS is
   inc META-LEVEL .
 
   op noModule : -> Module [ctor] .
@@ -422,7 +422,7 @@ fmod UNIT-FM is
 endfm
 
 fmod MOD-EXTRA is
-  pr UNIT-FM .
+  pr MOD-OPS .
   op protecting? : ModuleExpression ImportList -> Bool .
   op setRls      : Module QidList -> [Module] .
   op setRls      : QidList RuleSet RuleSet -> [RuleSet] .
@@ -488,7 +488,7 @@ view ModQidList from TRIV to MODQIDLIST is sort Elt to ModQidList . endv
 
 fmod SCOPED-REGISTRY is
   pr MAP-EXTRA{Qid,ModQidList} * (sort Map{Qid,ModQidList} to ScopedRegistry) .
-  pr UNIT-FM .
+  pr MOD-OPS .
 
   var Task Impl : Qid .
   var ImplMod : Module .
@@ -516,7 +516,7 @@ Substitution, Substitution Sets, and Refinements
 
 ```maude
 fmod SUBSTITUTION-HANDLING is
-  protecting META-MODULE .
+  protecting META-LEVEL .
 
   var S S' Subst Subst' : Substitution .
   var V V' : Variable .
@@ -1623,7 +1623,7 @@ endfm
 
 fmod OP-FAMILY-AUX is
   pr OP-FAMILY .
-  pr UNIT-FM .
+  pr MOD-OPS .
 
   op ctorsPreregularBelow : Module -> Bool .
   op ctorsPreregularBelow : Module OpFamilyMap -> Bool .
@@ -1749,7 +1749,7 @@ endfm
 --- back into its original form
 fmod VARIABLES-TO-CONSTANTS is
   pr TERM-EXTRA .              --- for getName()/repeatedNames()
-  pr UNIT-FM .                 --- for addOps()
+  pr MOD-OPS .                 --- for addOps()
   pr QID-JOIN .                --- for join()
   pr UNIQUE-PREFIX .           --- for opPrefix()
   pr SUBSTITUTION-REFINEMENT . --- for sort ConstSubstitution
@@ -2005,7 +2005,7 @@ Meta-Level Functors
 ```maude
 fmod HETEROGENEOUS-LIST-FUNCTOR is
   pr META-LEVEL .
-  pr UNIT-FM .
+  pr MOD-OPS .
   pr UNIQUE-PREFIX . --- for opPrefix/sortPrefix
   pr TYPE-EXTRA . --- for maximalSortAbove
 
@@ -2060,7 +2060,7 @@ fmod HETEROGENEOUS-LIST-FUNCTOR is
 endfm
 
 fmod EQUALITY-FUNCTOR is
-  pr UNIT-FM .
+  pr MOD-OPS .
 
   var M : Module . var OS : OpDeclSet .
 

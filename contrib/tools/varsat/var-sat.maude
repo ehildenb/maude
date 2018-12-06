@@ -102,7 +102,7 @@ fmod FIN-SORT-SUBST is
 endfm
 
 fmod CTOR-SIG is
-  pr UNIT-FM .
+  pr MOD-OPS .
   pr OPDECLSET-EXTRA .
   op ctor-sig : Module -> Module [memo] .
   var M : Module .
@@ -111,7 +111,7 @@ fmod CTOR-SIG is
 endfm
 
 fmod EQUALITY-INJECTION is
-  pr UNIT-FM .
+  pr MOD-OPS .
   pr EQFORM .
   pr CTOR-SIG .
   op equalExt   : FModule -> FModule [memo] .
@@ -161,7 +161,7 @@ endfm
 fmod VAR-SAT is
   --- module operations
   pr CTOR-VARIANT .
-  pr UNIT-FM .
+  pr MOD-OPS .
   pr EQUALITY-INJECTION .
   --- formula handling
   pr EQFORM-SET-OPERATIONS .
