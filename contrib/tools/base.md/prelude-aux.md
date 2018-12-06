@@ -24,7 +24,7 @@ fmod MAYBE-BOOL is
   op _and-then_ : MaybeBool MaybeBool -> MaybeBool [strat (1 0) gather (e E) prec 55] .
   op _or-else_  : MaybeBool MaybeBool -> MaybeBool [strat (1 0) gather (e E) prec 59] .
 
-  var A : MaybeBool . var QL : QidList .
+  var A : MaybeBool . var BK : [Bool] . var B : Bool . var QL : QidList .
 
   eq nobool and A = nobool .
   eq nobool xor A = nobool .
@@ -35,6 +35,13 @@ fmod MAYBE-BOOL is
   eq nobool and-then A = nobool .
   eq nobool or-else A = nobool .
 
+  op strict-and : MaybeBool MaybeBool -> MaybeBool .
+  eq strict-and(false,A) = false .
+  eq strict-and(A,false) = false .
+  eq strict-and(nobool,true) = nobool .
+  eq strict-and(nobool,nobool) = nobool .
+  eq strict-and(true,true) = true .
+
   op maybeTrue? : MaybeBool -> Bool .
   eq maybeTrue?(true)     = true .
   eq maybeTrue?(nobool)   = true .
@@ -43,6 +50,9 @@ fmod MAYBE-BOOL is
   op boolErrMsg : [Bool] -> QidList .
   eq boolErrMsg(errb(QL)) = QL .
   eq boolErrMsg(B:[Bool]) = nil [owise] .
+
+  op coerceBool : [Bool] Bool -> Bool .
+  eq coerceBool(BK,B) = if BK :: Bool then BK else B fi .
 endfm
 
 fmod BOUND-REFINEMENT is
