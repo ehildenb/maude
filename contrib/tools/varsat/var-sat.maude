@@ -101,60 +101,6 @@ fmod FIN-SORT-SUBST is
   if getType(V) == S .
 endfm
 
-fmod CTOR-SIG is
-  pr MOD-OPS .
-  pr OPDECLSET-EXTRA .
-  op ctor-sig : Module -> Module [memo] .
-  var M : Module .
-  eq ctor-sig(M) =
-    setRls(setEqs(setMbs(setOps(M,ctors(getOps(M))),none),none),none) .
-endfm
-
-fmod EQUALITY-INJECTION is
-  pr MOD-OPS .
-  pr EQFORM .
-  pr CTOR-SIG .
-  op equalExt   : FModule -> FModule [memo] .
-  op unequal    : FModule NegEqConj -> Bool .
-  op liftdiseqs : NegEqConj -> Term .
-  op $unequal   : ResultPair NegEqConj -> Bool .
-  op pruneBool  : OpDeclSet -> OpDeclSet .
-  var M : Module .
-  var T T' : Term .
-  var NC : NegEqConj .
-  var OS : OpDeclSet .
-  --- INP: Module
-  --- PRE: Module does not have sorts/ops with the prefix/suffix @##/##@
-  --- OUT: A module with an universal equality operator
-  eq equalExt(M) =
-    setEqs(addOps((op '##/\## : '@##Bool##@ '@##Bool##@ -> '@##Bool##@ [none] .
-     op '##unequal## : 'Universal 'Universal -> '@##Bool##@ [poly(1 2) special(
-      id-hook('EqualitySymbol, nil)
-      term-hook('equalTerm, '##false##.@##Bool##@)
-      term-hook('notEqualTerm, '##true##.@##Bool##@))] .
-     op '##false## : nil -> '@##Bool##@ [ctor special(
-      id-hook('SystemFalse, nil))] .
-     op '##true## : nil -> '@##Bool##@ [ctor special(
-      id-hook('SystemTrue, nil))] .),
-    addSorts('@##Bool##@,setOps(M,pruneBool(getOps(ctor-sig(M)))))),
-    eq '##/\##['##true##.@##Bool##@,'B:@##Bool##@] = 'B:@##Bool##@ [none].
-    eq '##/\##['##false##.@##Bool##@,'B:@##Bool##@] = '##false##.@##Bool##@ [none].) .
-  eq unequal(M,NC) = $unequal(metaReduce(equalExt(M),liftdiseqs(NC)),NC) .
-  eq liftdiseqs(T != T' /\ NC) = '##/\##['##unequal##[T,T'],liftdiseqs(NC)] .
-  eq liftdiseqs(T != T') = '##unequal##[T,T'] .
-  eq $unequal({'##true##.@##Bool##@,TY:Type}, NC) = true  [label valid-fail] .
-  eq $unequal({'##false##.@##Bool##@,TY:Type},NC) = false .
-  --- TODO: deal with non-empty hooklists
-  --- INP: OpDeclSet
-  --- PRE: None
-  --- OUT: An OpDeclSet with all SystemTrue/False attributes removed
-  eq pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet special(id-hook('SystemTrue,nil))]. OS) =
-     pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet]. OS) .
-  eq pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet special(id-hook('SystemFalse,nil))]. OS) =
-     pruneBool(op Q:Qid : L:TypeList -> T:Type [A:AttrSet]. OS) .
-  eq pruneBool(OS) = OS [owise] .
-endfm
-
 --- TODO: update this to return substitutions
 --- TODO: update this to make use of substitution functors
 --- TOOD: update this to use proof witnesses?
@@ -162,7 +108,7 @@ fmod VAR-SAT is
   --- module operations
   pr CTOR-VARIANT .
   pr MOD-OPS .
-  pr EQUALITY-INJECTION .
+  pr EQUALITY-FUNCTOR .
   --- formula handling
   pr EQFORM-SET-OPERATIONS .
   pr EQFORM-DNF .
@@ -203,7 +149,7 @@ fmod VAR-SAT is
   --- PRE: [1] Sorts and Form are well-defined in Module
   ---      [2] The Module represents an OS-Compact theory
   --- OUT: This function takes a Module (optionally two finite/infinite sort sets)
-  ---      and a QFFORM and returns true iff the Form is valid/satisfiable in
+  ---      and a Form and returns true iff the Form is valid/satisfiable in
   ---      the given Module. It proceeds by:
   ---      [1] (negating the formula in, converting to NNF, in case of validity) and computing the finite sort set [eqs 1-4]
   ---      [2] recognizing certain patterns which can be optimized and then doing DNF conversion
@@ -249,7 +195,7 @@ fmod VAR-SAT is
   eq  consistent?(FM,FSS,ff | NFS) = consistent?(FM,FSS,NFS) .
   ceq consistent?(FM,FSS,NC | NCS) =
     if QL =/= nil then
-      fin-consistent?(FM,QL,finite-subs(QL,sorts-gen(ctor-sig(FM),FSS)),NC)
+      fin-consistent?(FM,QL,finite-subs(QL,sorts-gen(getCtorSig(FM),FSS)),NC)
     else
       inf-consistent?(FM,NC)
     fi or-else consistent?(FM,FSS,NCS)
@@ -263,7 +209,7 @@ fmod VAR-SAT is
 
   --- Auxiliary functions
   op fin-sorts : Module Form SortSet SortSet -> SortSet .
-  eq fin-sorts(FM,QF,FSS,ISS) = FSS ; get-finite-sorts(ctor-sig(FM),getType(vars(QF)) - (FSS ; ISS)) .
+  eq fin-sorts(FM,QF,FSS,ISS) = FSS ; get-finite-sorts(getCtorSig(FM),getType(vars(QF)) - (FSS ; ISS)) .
 
   op not-empty? : SubstitutionSet -> Bool .
   eq not-empty?(SBS) = SBS =/= .SubstitutionSet .
@@ -277,4 +223,15 @@ fmod VAR-SAT is
   op toDUPs : TermSet -> [NegEqConjSet] .
   eq toDUPs(T | TS) = TLToNegEqConj((toTL(T))) | toDUPs(TS) .
   eq toDUPs(.TermSet) = mtFormSet .
+
+  op liftdiseqs : NegEqConj -> Term .
+  eq liftdiseqs(T != T' /\ NC) = '##/\##['##unequal##[T,T'],liftdiseqs(NC)] .
+  eq liftdiseqs(T != T') = '##unequal##[T,T'] .
+
+  op unequal : FModule NegEqConj -> Bool .
+  eq unequal(M,NC) = $unequal(metaReduce(equal-func(M),liftdiseqs(NC)),NC) .
+
+  op $unequal : ResultPair NegEqConj -> Bool .
+  eq $unequal({'##true##.@##Bool##@,TY:Type}, NC) = true  [label valid-fail] .
+  eq $unequal({'##false##.@##Bool##@,TY:Type},NC) = false .
 endfm
