@@ -13,6 +13,7 @@ header-includes:
 \newcommand{\rif}{\ensuremath{\ \texttt{if}\ }}
 \newcommand{\rto}{\ensuremath{\Rightarrow}}
 \newcommand{\subsumes}{\ensuremath{\sqsubseteq}}
+\newcommand{\proves}{\ensuremath{\vdash}}
 
 \newpage
 
