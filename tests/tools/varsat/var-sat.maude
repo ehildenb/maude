@@ -12,6 +12,7 @@ fmod TEST-NAT is
 endfm
 
 reduce addDecls(emptyFModule, setRls(nat, none)) == nat .
+reduce getCtorSig(nat) .
 reduce fin-sorts(nat, 'true.Bool != '_<_['X:Nat,'Y:Nat], none, none) .
 
 reduce var-sat-disj(nat, none, 'true.Bool != '_<_['X:Nat,'Y:Nat]) .

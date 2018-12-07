@@ -3,6 +3,24 @@ reduce in TEST-NAT : addDecls(emptyFModule, setRls(nat, none)) == nat .
 rewrites: 39
 result Bool: false
 ==========================================
+reduce in TEST-NAT : getCtorSig(nat) .
+rewrites: 17
+result FModule: fmod 'FVP-NAT-PRED is
+  nil
+  sorts 'Bool ; 'Nat ; 'NzNat .
+  subsort 'NzNat < 'Nat .
+  op '0 : nil -> 'Nat [ctor] .
+  op '1 : nil -> 'NzNat [ctor] .
+  op '_+_ : 'Nat 'Nat -> 'Nat [assoc comm ctor id('0.Nat)] .
+  op '_+_ : 'Nat 'NzNat -> 'NzNat [assoc comm ctor id('0.Nat)] .
+  op 'false : nil -> 'Bool [ctor special(
+    id-hook('SystemFalse, nil))] .
+  op 'true : nil -> 'Bool [ctor special(
+    id-hook('SystemTrue, nil))] .
+  none
+  none
+endfm
+==========================================
 reduce in TEST-NAT : fin-sorts(nat, 'true.Bool != '_<_['X:Nat,'Y:Nat], none,
     none) .
 rewrites: 700
