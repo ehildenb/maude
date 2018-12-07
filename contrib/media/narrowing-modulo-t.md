@@ -61,10 +61,13 @@ Two example systems are studied, including the bakery protocol examined in [@bae
 Background
 ==========
 
-The notion of a *generalized rewrite theory* is developed in [@meseguer-generalized-rewrite-coherence-completion]; here a similar notion will be adopted.
-Generalized rewrite theories are rewrite theories which may or may not be executable; none-the-less they may be subjected to extensive logical analysis.
+Rewrite Theories
+----------------
 
-Specifically, we will use rewrite theories of the form $\R = (\Sigma, B, E, T, R)$ such that:
+The notion of a *generalized rewrite theory* developed in [@meseguer-generalized-rewrite-coherence-completion] is adopted here.
+Generalized rewrite theories are rewrite theories which may or may not be executable; none-the-less they may be subjected to logical analysis.
+
+Specifically, a generalized rewrite theory is $\R = (\Sigma, B, E, T, R)$ such that:
 
 -   $\Sigma = (S, <)$ is an order-sorted signature of function symbols over sort $S$ with subsort relation $<$,
 -   $B$ is a set of equational axioms with finitary matching and unification algorithms,
@@ -83,6 +86,23 @@ More recently, [@meseguer-generalized-rewrite-coherence-completion] demonstrates
 Such theories admit a reduction map to a theory $\R^{\Omega}_{1}$ of only *constructor* terms, making executing them concretely and symbolically very efficient.
 
 $\R$ is *topmost* if a unique sort $s \in S$ exists such that $l_i : s$ and $r_i : s$ holds for every rule $l_i \rto r_i \rif \varphi_i$.
+
+State Predicates
+----------------
+
+To facilitate model-theoretic reasoning about generalized rewrite theories, *pattern predicates* [@skeirik-stefanescu-meseguer-constructor-reachability-logic] or *state predicates* [@ciobaca-lucanu-coinductive-reachability-proofs-constrained-rewriting] are used.
+Syntactically, sets of states will be represented as *constrained terms* $t(\vec{x}) \st \varphi(\vec{x}, \vec{y})$.
+Semantically, this will denote the set of ground instances $t' = t(\vec{x}) \alpha$ (for $\alpha$ an assignment to $\vec{x}$) such that $\varphi(\vec{x}, \vec{y}) \alpha$ is satisfiable, that is:
+
+$$
+    [\![ t(\vec{x}) \st \varphi(\vec{x}, \vec{y}) ]\!] = \{ t(\vec{x}) \alpha | T \models \varphi(\vec{x}, \vec{y}) \alpha , \alpha \in [ \vec{x} \to \Sigma ] \}
+$$
+
+In [@skeirik-stefanescu-meseguer-constructor-reachability-logic] several important operators are defined over pattern predicates; for pattern predicates $\psi$ and $\phi$:
+
+-   Disjunction: $[\![ \psi \lor \phi ]\!] = [\![ \psi ]\!] \cup [\![ \phi ]\!]$,
+-   Conjunction: $[\![ \psi \land \phi ]\!] = [\![ \psi ]\!] \cap [\![ \phi ]\!]$, and
+-   Subsumption: $\psi \subsumes \phi \iff [\![ \psi ]\!] \supseteq [\![ \phi ]\!]$.
 
 Methodology
 ===========
