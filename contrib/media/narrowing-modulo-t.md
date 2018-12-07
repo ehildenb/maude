@@ -9,9 +9,10 @@ header-includes:
 ---
 
 \newcommand{\R}{\ensuremath{\mathcal{R}}}
-\newcommand{\st}\ensuremath{\ st\ }
+\newcommand{\st}{\ensuremath{\ st\ }}
 \newcommand{\rif}{\ensuremath{\ \texttt{if}\ }}
 \newcommand{\rto}{\ensuremath{\Rightarrow}}
+\newcommand{\subsumes}{\ensuremath{\sqsubseteq}}
 
 \newpage
 
