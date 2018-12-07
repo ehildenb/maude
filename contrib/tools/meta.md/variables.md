@@ -638,4 +638,22 @@ fmod TERMSET-RENAME is
   if (S',T',J) := #renameAllVar(M,S |>* varsToTermList(QS),I,T) .
   eq #renameAllExcept(M,QS,S,I,.TermSet,TPS) = TPS .
 endfm
+
+--- NOTE: this is useful for directly renaming the substitutions that result from
+---       a metaUnify call when we only need to track variables in the term it is
+---       being applied to --- we can just rename all tmp variables to be fresh
+---       with respect to all std variables in whatever object the substitution
+---       will eventually map
+fmod SUBSTITUTION-RENAME is
+  pr RENAME-METAVARS .
+  pr SUBSTITUTIONSET-AUX .
+
+  var M : Module .
+  var L : GTermList .
+  var I : FindResult .
+  var SS : SubstitutionSet .
+
+  op renameTmpVar : Module GTermList SubstitutionSet -> SubstitutionSet .
+  eq renameTmpVar(M,L,SS) = downTerm(renameTmpVar(#renameTmpVar(M,L,upTerm(SS))),.SubstitutionSet) .
+endfm
 ```
