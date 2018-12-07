@@ -86,6 +86,7 @@ More recently, [@meseguer-generalized-rewrite-coherence-completion] demonstrates
 Such theories admit a reduction map to a theory $\R^{\Omega}_{1}$ of only *constructor* terms, making executing them concretely and symbolically very efficient.
 
 $\R$ is *topmost* if a unique sort $s \in S$ exists such that $l_i : s$ and $r_i : s$ holds for every rule $l_i \rto r_i \rif \varphi_i$.
+When convenient, both conditional and unconditional rules will be referred to as $l_i \rto r_i \rif \varphi_i$, wich $\varphi_i = \top$ in the unconditional case.
 
 State Predicates
 ----------------
