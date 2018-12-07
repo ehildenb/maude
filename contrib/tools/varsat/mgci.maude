@@ -141,29 +141,68 @@ fmod MGCI is
   pr CTOR-REFINE .
   pr CTOR-LIFT .
   pr QID-JOIN .
+  pr SUBSTITUTIONPAIR .
 
   var M CM : Module .
   var I J N : Nat .
-  var S S' : Substitution .
+  var S S' S1 S2 : Substitution .
   var SS : SubstitutionSet .
   var T : Term .
   var UP : UnificationProblem .
+  var V : Variable .
 
-  op mgci       : Module Term -> SubstitutionSet .
-  op mgci       : Module Term Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat -> SubstitutionSet .
-  op $mgci      : Module Module UnificationProblem Nat UnificationTriple SubstitutionSet -> SubstitutionSet .
-  op ctor-term? : Module Term -> Bool .
-  op ctrm       : Module Term Nat -> SubstitutionSet .
+  --- OUT: generate a set of most general constructor instances
+  ---      where there are no bad variables in the initial term
+  op mgci : Module Term -> SubstitutionSet .
+  eq mgci(M,T) = mgci(M,T,0) .
 
-  eq mgci(M,T)                     = mgci(M,T,0) .
-  eq mgci(M,T,I)                   = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
-  eq $mgci(M,CM,UP,I)              = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),.SubstitutionSet) .
+  --- OUT: generate a set of most general constructor instances
+  ---      where Nat is greater than the index of all bad variables
+  ---      inside of the term to be analyzed
+  op mgci : Module Term Nat -> SubstitutionSet .
+  eq mgci(M,T,I) = $mgci(M,ctor-refine(M),T =? join('X ': ctor-sort(M,leastSort(M,T))),I) .
+
+  --- PRE: [1] CM is the constructor refinement of M
+  ---      [2] UP is a unification problem in the signature CM
+  --- OUT: the solutions of the unification problem in CM lifted up
+  ---      into corresponding substitutions in M
+  op $mgci : Module Module UnificationProblem Nat -> SubstitutionSet .
+  eq $mgci(M,CM,UP,I) = $mgci(M,CM,UP,0,metaDisjointUnify(CM,UP,I,0),.SubstitutionSet) .
+
+  ---  NB: this implements the function above, looping over each
+  ---      generated unifier in the signature in CM
+  op $mgci : Module Module UnificationProblem Nat UnificationTriple SubstitutionSet -> SubstitutionSet .
   eq $mgci(M,CM,UP,N,noUnifier,SS) = lift-sub(M,SS) .
   eq $mgci(M,CM,UP,N,{S,S',I},SS)  = $mgci(M,CM,UP,s(N),metaDisjointUnify(CM,UP,s(I),s(N)),SS | S) .
 
-  eq ctrm(M,T,N) = metaMatch(ctor-refine(M),join('X ': ctor-sort(M,leastSort(M,T))),ctor-term(M,T),nil,N) .
-  eq ctor-term?(M,T) = ctrm(M,T,0) :: Substitution .
+  --- OUT: return true iff the term is a constructor term
+  op ctor-term? : Module Term -> Bool .
+  eq ctor-term?(M,T) = metaMatch(ctor-refine(M),
+                         join('X ': ctor-sort(M,leastSort(M,T))),
+                         ctor-term(M,T),
+                         nil,
+                         0) :: Substitution .
+
+  --- OUT: a SubstitutionSetPair where the constructor assignments
+  ---      are in the first slot, and the non-constructors are in the
+  ---      second slot
+  op ctor-split-sub : Module Substitution ~> SubstitutionPair .
+  eq ctor-split-sub(M,S) = ctor-split-sub(M,S,none,none) .
+
+  op ctor-split-sub : Module Substitution Substitution Substitution -> SubstitutionPair .
+  eq ctor-split-sub(M,V <- T ; S,S1,S2) = if ctor-term?(M,T)
+                                            then ctor-split-sub(M,S,V <- T ; S1,S2)
+                                            else ctor-split-sub(M,S,S1,V <- T ; S2)
+                                          fi .
+  eq ctor-split-sub(M,none,S1,S2) = (S1,S2) .
+
+  --- OUT: return the subset of a substitution that is constructor terms
+  op ctor-sub : Module Substitution -> Substitution .
+  eq ctor-sub(M,S) = p1(ctor-split-sub(M,S)) .
+
+  --- OUT: return true iff a substitution is only constructor terms
+  op ctor-sub? : Module Substitution -> Bool .
+  eq ctor-sub?(M,S) = p2(ctor-split-sub(M,S)) == none .
 endfm
 
 --- this module uses functionality above to compute defined subterms of terms
