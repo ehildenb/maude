@@ -159,6 +159,8 @@ fmod REACH-PROOF-RULES-AUX is
   var SRS : StepResultSet .
   var AXL : LabelReachFormList .
   var AX : LabelReachForm .
+  var PU : [ProofUpdate] .
+  var STR : String .
 
   var MG  : MaybeProofGoal .
   var MGK : [MaybeProofGoal] .
@@ -281,16 +283,20 @@ fmod REACH-PROOF-RULES-AUX is
   op apply-proof-strat : ProofMetadata ProofGoal -> ProofMetadata? .
   eq apply-proof-strat(D,G) = lift-result(G,getstrat(G),D,apply-proof-action(D,nextaction(getstrat(G)),G)) .
 
+  op printStep : Bool String [ProofUpdate] -> ProofUpdate [strat (1 0)] .
+  eq printStep(true,STR,PU) = PU [print STR] .
+  eq printStep(false,STR,PU) = PU .
+
   op apply-proof-action : ProofMetadata ProofStrat ProofGoal -> ProofUpdate .
-  eq apply-proof-action(D,simplify,G)   = simp-action(D,get-mod(D),G) [print "simp-action"] .
-  eq apply-proof-action(D,subsume,G)    = sub-action(D,get-mod(D),G) [print "sub-action"] .
-  eq apply-proof-action(D,termcheck,G)  = termcheck-action(D,get-mod(D),get-tst(D),G) [print "termcheck-action"] .
-  eq apply-proof-action(D,step,G)       = step-action(D,get-mod(D),get-rls(D),G) [print "step-action"] .
-  eq apply-proof-action(D,axiom(AX),G)  = ax-action(D,get-mod(D),AX,G) [print "ax-action"] .
-  eq apply-proof-action(D,case(V,TS),G) = case-action(D,get-mod(D),V,TS,G) [print "case-action"] .
-  eq apply-proof-action(D,split(B,QF,QF'),G) = split-action(D,get-mod(D),B,QF,QF',G) [print "split-action"] .
-  eq apply-proof-action(D,pause,G)      = (none || newChildGoalWithStrat(G,getstrat(G),paused,getbody(G))) [print "pause-action"] .
-  eq apply-proof-action(D,giveup,G)     = (none || newChildGoalWithStrat(G,getstrat(G),inactive,getbody(G))) [print "giveup-action"] .
+  eq apply-proof-action(D,simplify,G)   = printStep(printStepName,"simp-action",simp-action(D,get-mod(D),G)) .
+  eq apply-proof-action(D,subsume,G)    = printStep(printStepName,"sub-action",sub-action(D,get-mod(D),G)) .
+  eq apply-proof-action(D,termcheck,G)  = printStep(printStepName,"term-action",termcheck-action(D,get-mod(D),get-tst(D),G)) .
+  eq apply-proof-action(D,step,G)       = printStep(printStepName,"step-action",step-action(D,get-mod(D),get-rls(D),G)) .
+  eq apply-proof-action(D,axiom(AX),G)  = printStep(printStepName,"ax-action",ax-action(D,get-mod(D),AX,G)) .
+  eq apply-proof-action(D,case(V,TS),G) = printStep(printStepName,"case-action",case-action(D,get-mod(D),V,TS,G)) .
+  eq apply-proof-action(D,split(B,QF,QF'),G) = printStep(printStepName,"split-action",split-action(D,get-mod(D),B,QF,QF',G)) .
+  eq apply-proof-action(D,pause,G)      = printStep(printStepName,"pause-action",(none || newChildGoalWithStrat(G,getstrat(G),paused,getbody(G)))) .
+  eq apply-proof-action(D,giveup,G)     = printStep(printStepName,"giveup-action",(none || newChildGoalWithStrat(G,getstrat(G),inactive,getbody(G)))) .
 
   op lift-result : ProofGoal ProofStrat ProofMetadata ProofUpdate -> ProofMetadata? .
   eq lift-result(G,CN,D,(D')) =

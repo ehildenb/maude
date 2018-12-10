@@ -5,15 +5,17 @@ fmod RLTOOL-SWITCHES is
   op skipQuantifierCheck : -> Bool .
   op enableVarUnifSimp : -> Bool .
   op hideNonErrors : -> Bool .
+  op printStepName : -> Bool .
 endfm
 
 fmod RLTOOL-DEFAULT-CONFIG is
   pr RLTOOL-SWITCHES .
   eq printStatusOnContinue = false .
-  eq printAxiomFailures = false .
+  eq printAxiomFailures = true .
   eq skipQuantifierCheck = true .
   eq enableVarUnifSimp = true .
   eq hideNonErrors = true .
+  eq printStepName = true .
 endfm
 
 fmod RLTOOL-DEFAULT-CONFIG-NOVU is
@@ -23,6 +25,7 @@ fmod RLTOOL-DEFAULT-CONFIG-NOVU is
   eq skipQuantifierCheck = true .
   eq enableVarUnifSimp = false .
   eq hideNonErrors = true .
+  eq printStepName = false .
 endfm
 
 fmod RLTOOL-DEBUG-CONFIG is
@@ -32,4 +35,5 @@ fmod RLTOOL-DEBUG-CONFIG is
   eq skipQuantifierCheck = true .
   eq enableVarUnifSimp = true .
   eq hideNonErrors = false .
+  eq printStepName = true .
 endfm
