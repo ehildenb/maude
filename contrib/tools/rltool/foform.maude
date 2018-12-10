@@ -1380,7 +1380,7 @@ fmod FOFORM-CORE-PRETTYPRINT is
   eq ppCNF'(Q,P) = prettyPrint(Q,P) .
 
   op @ppCNF : Bool Qid QFForm -> QFForm .
-  eq @ppCNF(true,Q,F) = ppCNF(Q,F) .
+  eq @ppCNF(true,Q,F) = @ppCNF(Q,F) .
   eq @ppCNF(false,Q,F) = F .
 
   op @ppCNF : Qid QFForm -> QFForm .
