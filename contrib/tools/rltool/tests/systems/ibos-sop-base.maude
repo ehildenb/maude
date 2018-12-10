@@ -1,0 +1,221 @@
+load ../../systems/ibos.maude
+
+--- NOTES:
+--- [1] local simplifications in formula structure are unsound when shared variables
+---     are present which exist outside of the fragment that are lost --- this is
+---     because the information regarding the variables is lost when the constraint
+---     is solved --- some possibilities:
+---     a. make variables into constants, do reductions, and then lift reduced items
+---        into my theory so they can be used in later reduction steps
+---     b. do reductions over formula-functor lifted algebras --- here we can express
+---        express constraints about variables directly in our rules
+---     c. make two copies of the formula --- one non-reduced version and one reduced
+---        version --- then be careful to always allow reductions for each goal locally
+---        have access to the unreduced parts that were assumed (or something like that)
+---     d. record each reduction step so we keep around the set of all true facts that
+---        we can assume --- then give our other reductions access to that set
+--- [2] because messages may be dynamically added to the list, we need to ensure
+---     that the metadata in the kernel WIS/NIS has the correct shape so that when
+---     this webapp receives a message of the form that we care about, we know the
+---     metadata will look like what we need to complete the proof
+--- [3] since the only way the message list can increase is by the rule
+---     kernelForwardsOPMessage, it SHOULD be enough to require:
+---     a. kernel's currentlyHandled() attribute to be correct
+---     b. kernel's message policy is locked down to the minimum necessary
+---        (this way we can't instantiate the message policy with weird connections
+---         and send MSG-FETCH/RETURN-URLs down those connections) ---
+---        thus, we choose the default initial policy:
+---        (webapp,network,MSG-FETCH-URL)
+---        (network,webapp,MSG-RETURN-URL)
+---        (ui,webapp,MSG-SWITCH-TAB)
+---        (ui,webapp,MSG-NEW-URL)
+---     However, requiring the webapps to always be reflected properly in the
+---     kernel metadata just means that we will never have a terminating state
+---     where the kernel tried to send a message and could not because no webapp
+---     was there to receive it.
+---     Also, probably the narrowing time is similar... maybe.
+--- [4] if handledCurrently contains some message addressed to non-existent processes,
+---     we don't care---that is a weird state, but it doesn't concern us---what concerns
+---     us is that if the message is received by a real webapp, then it will satisfy the
+---     conditions above
+
+fmod IBOS-FVP-PRED-EXT is
+  pr IBOS-FVP .
+
+  var C : Configuration .
+  var W N : Nat* .
+  var P : NzNat* .
+  var A : AttributeSet .
+  var NA : NeAttributeSet .
+  var NNPI : NonNetProcId .
+  var NWAI : NonWebAppId .
+  var PI : ProcessId .
+
+  --- equality predicate for message types
+  op _~_ : MsgType MsgType -> Bool [comm] .
+  eq X:MsgType      ~ X:MsgType      = true .
+  eq MSG-NEW-URL    ~ MSG-FETCH-URL  = false .
+  eq MSG-NEW-URL    ~ MSG-RETURN-URL = false .
+  eq MSG-NEW-URL    ~ MSG-SWITCH-TAB = false .
+  eq MSG-FETCH-URL  ~ MSG-RETURN-URL = false .
+  eq MSG-FETCH-URL  ~ MSG-SWITCH-TAB = false .
+  eq MSG-RETURN-URL ~ MSG-SWITCH-TAB = false .
+
+  --- for simplified case analysis
+  sort NonRetFetchMsg NonRetMsg NonFetchMsg .
+  subsort NonRetFetchMsg < NonRetMsg NonFetchMsg < MsgType .
+  op MSG-FETCH-URL  : -> NonRetMsg      [ctor ditto] .
+  op MSG-RETURN-URL : -> NonFetchMsg    [ctor ditto] .
+  op MSG-NEW-URL    : -> NonRetFetchMsg [ctor ditto] .
+  op MSG-SWITCH-TAB : -> NonRetFetchMsg [ctor ditto] .
+  ----------------------------------------------------
+  eq MSG-RETURN-URL ~ M:NonRetMsg   = false .
+  eq MSG-FETCH-URL  ~ M:NonFetchMsg = false .
+
+  --- can throw out all non-conforming objects
+  eq N np<= C < NNPI | A > = N np<= C .
+  eq W wa<= C < NWAI | A > = W wa<= C .
+  --- can throw out all objects which are smaller than me
+  eq N + P np<= C < network(N) | A > = N np<= C .
+  eq W + P wa<= C < webapp(W)  | A > = W wa<= C .
+  --- can remove attributes from all objects that we don't throw out
+  eq N np<= C < PI | NA > = N np<= C < PI | none > .
+  eq W wa<= C < PI | NA > = W wa<= C < PI | none > .
+  --- can't be less than something if there is nothing
+  eq N np<= none = ff .
+  eq W wa<= none = ff .
+
+  --- duplicates can ignore attributes
+  eq dupl(< PI | NA > C) = dupl(< PI | none > C) .
+  eq dupl(< PI | none >) = ff .
+  eq dupl(none) = ff .
+  --- ceq dupl(< PI | none > < PI' | none > C) =
+  ---   dupl(< PI | none > C) andP dupl(< PI' | none > C)
+  --- if PI ~ PI' = false .
+endfm
+
+fmod IBOS-SOP-PRED is
+  pr IBOS-FVP-PRED-EXT .
+
+  var C : Configuration .
+  var W N : Nat* .
+  var A : AttributeSet .
+  var WIS : WebappProcInfoSet .
+  var NIS : NetworkProcInfoSet .
+  var ML : MessageList .
+  var NNPI : NonNetProcId .
+  var NWAI : NonWebAppId .
+  var NI : NetProcId .
+  var WI : WebAppId .
+  var PI PI' : PipeId .
+  var IN OUT : Label .
+  var MT : MsgType .
+  var NonFetchMT : NonFetchMsg .
+  var NonRetMT : NonRetMsg .
+
+  ---
+  --- Here, we prove two kinds of invariants:
+  --- 1. check that the messages in an object's message queue are
+  ---    consistent with our security policy
+  --- 2. check that any message in the kernel's currentlyHandled()
+  ---    attribute is consistent with our security policy
+  ---
+  --- Where our security policy is specified by the kernel's
+  --- hardwired message policy object as well as:
+  --- a. network process metadata
+  --- b. webapp process metadata
+  ---
+  --- Note to prove properties (1)-(2) actually requires a quadruple
+  --- induction, i.e. we induct over:
+  --- i. every network/webapp process in the soup
+  --- ii. every message in the message queue of such a process
+  --- iii. every network process metadatum in the kernel info set
+  --- iv. every webapp process metadatum in the kernel info set
+  ---
+  --- One feature of this specification is that processes are
+  --- never deleted --- so that the process set/process info sets
+  --- always grow monotonically. This simplifies the proof procedure.
+  ---
+
+  -----------------------------------------------------------------------
+  --- True if every FETCH-URL sent to every network process is consistent
+  op p1 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+  ---------------------------------------------------------------------------
+
+  eq [p1-1] : p1(C < NI | fromKernel(msg(WI, NI, MSG-FETCH-URL, OUT) ; ML), A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p1(C < NI | fromKernel(ML),                                   A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+
+  eq [p1-2] : p1(C < NI | fromKernel(msg(WI, NI, MSG-FETCH-URL, OUT)),      A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p1(C,                                                              (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+
+  eq [p1-3] : p1(C < NI | fromKernel(msg(PI,PI',NonFetchMT,OUT) ; ML), A >, WIS, NIS)
+            = p1(C < NI | fromKernel(ML),                              A >, WIS, NIS) .
+  eq [p1-4] : p1(C < NI | fromKernel(msg(PI,PI',NonFetchMT,OUT)),      A >, WIS, NIS)
+            = p1(C,                                                         WIS, NIS) .
+
+  eq [p1-5] : p1(C < NI      | fromKernel(mt), A >, WIS, NIS) = p1(C, WIS, NIS) .
+  eq [p1-6] : p1(C < network |                 A >, WIS, NIS) = p1(C, WIS, NIS) .
+  eq [p1-7] : p1(C < NNPI    |                 A >, WIS, NIS) = p1(C, WIS, NIS) .
+
+  eq [p1-8] : p1(none, WIS, NIS) = tt .
+
+ ceq [p1-9] : p1(C,(pi(webapp(W),IN),WIS),                       NIS ) = p1(C,WIS,NIS) if W wa<= C =/= tt .
+ ceq [p1-A] : p1(C,                  WIS ,(pi(network(N),IN,OUT),NIS)) = p1(C,WIS,NIS) if N np<= C =/= tt .
+
+  -----------------------------------------------------------------------
+  --- True if every RETURN-URL message sent to every webapp is consistent
+  op p4 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred [ctor] .
+  ---------------------------------------------------------------------------
+
+  eq [p4-1] : p4(C < WI | fromKernel(msg(NI, WI, MSG-RETURN-URL, OUT) ; ML), A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p4(C < WI | fromKernel(ML),                                    A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+  eq [p4-2] : p4(C < WI | fromKernel(msg(NI, WI, MSG-RETURN-URL, OUT)),      A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p4(C,                                                               (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+
+  eq [p4-3] : p4(C < WI | fromKernel(msg(PI,PI',NonRetMT,OUT) ; ML), A >, WIS, NIS) = p4(C < WI | fromKernel(ML), A >, WIS, NIS) .
+  eq [p4-4] : p4(C < WI | fromKernel(msg(PI,PI',NonRetMT,OUT)),      A >, WIS, NIS) = p4(C,                            WIS, NIS) .
+
+  eq [p4-5] : p4(C < WI     | fromKernel(mt), A >, WIS, NIS) = p4(C, WIS, NIS) .
+  eq [p4-6] : p4(C < webapp |                 A >, WIS, NIS) = p4(C, WIS, NIS) .
+  eq [p4-7] : p4(C < NWAI   |                 A >, WIS, NIS) = p4(C, WIS, NIS) .
+
+  eq [p4-8] : p4(none, WIS, NIS) = tt .
+
+ ceq [p4-9] : p4(C,(pi(webapp(W),IN),WIS),                       NIS ) = p4(C,WIS,NIS) if W wa<= C =/= tt .
+ ceq [p4-A] : p4(C,                  WIS ,(pi(network(N),IN,OUT),NIS)) = p4(C,WIS,NIS) if N np<= C =/= tt .
+
+  -------------------------------------------------------------------------
+  --- True if every RETURN-URL sent from every network object is consistent
+  --- NB: toKernel doesn't require sender match, since kernel will rewrite
+  --- NB: cc1a rule doesn't require the OUT labels match!!!!
+  op p5 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred .
+  --------------------------------------------------------------------
+
+  eq [p5-1] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT) ; ML), A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p5(C < NI | toKernel(ML),                                    A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+  eq [p5-2] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT)),      A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p5(C,                                                             (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+
+  eq [p5-3] : p5(C < NI | toKernel(msg(PI,PI',NonRetMT,OUT) ; ML), A >, WIS, NIS) = p5(C < NI | toKernel(ML), A >, WIS, NIS) .
+  eq [p5-4] : p5(C < NI | toKernel(msg(PI,PI',NonRetMT,OUT)),      A >, WIS, NIS) = p5(C,                          WIS, NIS) .
+
+  eq [p5-5] : p5(C < NI      | toKernel(mt), A >, WIS, NIS) = p5(C, WIS, NIS) .
+  eq [p5-6] : p5(C < network |               A >, WIS, NIS) = p5(C, WIS, NIS) .
+  eq [p5-7] : p5(C < NNPI    |               A >, WIS, NIS) = p5(C, WIS, NIS) .
+
+  eq [p5-8] : p5(none, WIS, NIS) = tt .
+
+ ceq [p5-9] : p5(C,(pi(webapp(W),IN),WIS),                       NIS ) = p5(C,WIS,NIS) if W wa<= C =/= tt .
+ ceq [p5-A] : p5(C,                  WIS ,(pi(network(N),IN,OUT),NIS)) = p5(C,WIS,NIS) if N np<= C =/= tt .
+
+  ------------------------------------------------------------------------------
+  --- True if every RETURN-URL message currently handled by kernel is consistent
+  op ch-p4 : Message WebappProcInfoSet NetworkProcInfoSet -> Pred .
+  -----------------------------------------------------------------
+
+  eq ch-p4(msg(NI,WI,MSG-RETURN-URL,OUT), (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) = tt .
+  eq ch-p4(msg(PI,PI',NonRetMT,OUT),WIS,NIS) = tt .
+  eq ch-p4(none,WIS,NIS) = tt .
+endfm
+
+mod IBOS-NONFVP-STOP is pr IBOS-STOP . pr IBOS-SOP-PRED . endm
