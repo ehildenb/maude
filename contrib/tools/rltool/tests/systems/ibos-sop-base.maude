@@ -108,7 +108,7 @@ fmod IBOS-SOP-PRED is
   var NI : NetProcId .
   var WI : WebAppId .
   var PI PI' : PipeId .
-  var IN OUT : Label .
+  var IN OUT OUT2 : Label .
   var MT : MsgType .
   var NonFetchMT : NonFetchMsg .
   var NonRetMT : NonRetMsg .
@@ -187,14 +187,14 @@ fmod IBOS-SOP-PRED is
   -------------------------------------------------------------------------
   --- True if every RETURN-URL sent from every network object is consistent
   --- NB: toKernel doesn't require sender match, since kernel will rewrite
-  --- NB: cc1a rule doesn't require the OUT labels match!!!!
+  --- NB: cc1a/2a rule doesn't require the OUT labels match!!!!
   op p5 : Configuration WebappProcInfoSet NetworkProcInfoSet -> Pred .
   --------------------------------------------------------------------
 
-  eq [p5-1] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT) ; ML), A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
-            = p5(C < NI | toKernel(ML),                                    A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
-  eq [p5-2] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT)),      A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
-            = p5(C,                                                             (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+  eq [p5-1] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT2) ; ML), A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p5(C < NI | toKernel(ML),                                     A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
+  eq [p5-2] : p5(C < NI | toKernel(msg(PI, WI, MSG-RETURN-URL, OUT2)),      A >, (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS))
+            = p5(C,                                                              (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) .
 
   eq [p5-3] : p5(C < NI | toKernel(msg(PI,PI',NonRetMT,OUT) ; ML), A >, WIS, NIS) = p5(C < NI | toKernel(ML), A >, WIS, NIS) .
   eq [p5-4] : p5(C < NI | toKernel(msg(PI,PI',NonRetMT,OUT)),      A >, WIS, NIS) = p5(C,                          WIS, NIS) .
@@ -210,10 +210,11 @@ fmod IBOS-SOP-PRED is
 
   ------------------------------------------------------------------------------
   --- True if every RETURN-URL message currently handled by kernel is consistent
+  --- NB: since message is headed towards a webapp, we don't need the OUT label to be consistent
   op ch-p4 : Message WebappProcInfoSet NetworkProcInfoSet -> Pred .
   -----------------------------------------------------------------
 
-  eq ch-p4(msg(NI,WI,MSG-RETURN-URL,OUT), (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) = tt .
+  eq ch-p4(msg(NI,WI,MSG-RETURN-URL,OUT2), (pi(WI,IN),WIS), (pi(NI,IN,OUT),NIS)) = tt .
   eq ch-p4(msg(PI,PI',NonRetMT,OUT),WIS,NIS) = tt .
   eq ch-p4(none,WIS,NIS) = tt .
 endfm
