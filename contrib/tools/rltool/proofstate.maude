@@ -266,6 +266,16 @@ fmod REACH-PROOF-GOALSET is
     getdescendants((N,M,NS),GS,[N,M,CN,PS,VS,F] && GS') .
   eq getdescendants(NS,GS,GS') = GS' [owise] .
 
+  op getleaves : ProofGoalSet -> ProofGoalSet .
+  eq getleaves([N',N,CN,PS,VS,F] && [N,M,CN',PS',VS',F'] && GS) = getleaves([N,M,CN',PS',VS',F'] && GS) .
+  eq getleaves(GS) = GS [owise] .
+
+  ---# Id
+
+  op getid : ProofGoalSet -> Set{Nat} .
+  eq getid(G && G' && GS) = getid(G), getid(G' && GS) .
+  eq getid(mt) = empty .
+
   ---# Proof Strategy
 
   op setstrat : ProofGoalSet ProofStrat -> ProofGoalSet .
