@@ -197,6 +197,7 @@ fmod META-RLTL-COMMAND is
    op auto*`.                : -> MetaRLTLCommand [ctor] .
    op auto`.                 : -> MetaRLTLCommand [ctor] .
    op case_on_by_.           : Nat @Token@ @TermSet@ -> MetaRLTLCommand [ctor] .
+   op cases_on_by_.          : @Term@ @Token@ @TermSet@ -> MetaRLTLCommand [ctor] .
    op split_by_.             : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
    op replace_by_.           : Nat @QFForm@ -> MetaRLTLCommand [ctor] .
    op split_by_and_.         : Nat @QFForm@ @QFForm@ -> MetaRLTLCommand [ctor] .
@@ -231,6 +232,7 @@ fmod RLTL-COMMAND is
    op def-term-set      : NeQFCTermSet   -> RLTLCommand [ctor] .
    op auto              : Bound -> RLTLCommand [ctor] .
    op case              : Nat Variable TermSet -> RLTLCommand  [ctor] .
+   op cases             : Term Variable TermSet -> RLTLCommand [ctor] .
    op split             : Nat Bool EqQFForm? QFForm? -> RLTLCommand [ctor] .
    op subsumeby         : Nat Nat -> RLTLCommand [ctor] .
    op select-rls        : QidList -> RLTLCommand [ctor] .
@@ -279,6 +281,7 @@ fmod PARSE-RLTLCOMMAND is
 
    --- run in ON mode
    eq rltl-parse((M,S),'case_on_by_.[T1,T2,T3])          = case(downNat(T1),parse-token(T2),parse-termset((M,S),true,T3)) .
+   eq rltl-parse((M,S),'cases_on_by_.[T1,T2,T3])         = cases(parse-pattern((M,S),false,T1),parse-token(T2),parse-termset((M,S),true,T3)) .
    eq rltl-parse((M,S),'split_by_.[T1,T2])               = split(downNat(T1),true,parse-qfform((M,S),true,T2),toNNF(~ parse-qfform((M,S),true,T2))) .
    eq rltl-parse((M,S),'replace_by_.[T1,T2])             = split(downNat(T1),false,parse-qfform((M,S),true,T2),ff) .
    eq rltl-parse((M,S),'split_by_and_.[T1,T2,T3])        = split(downNat(T1),false,parse-qfform((M,S),true,T2),parse-qfform((M,S),true,T3)) .
@@ -505,15 +508,19 @@ mod RLTL-PROC-CMD is
   op $addgls : Module ProofMetadata LabelReachFormList Bool         -> ProofMetadata .
   op $addgls : Module LabelReachFormList Nat                        -> ProofGoalSet .
   op $renrf  : Module ReachForm                                     ~> ReachForm .
+  op $cases  : Module Term Variable TermSet ProofGoalSet            ~> ProofGoalSet .
+  op $cases1 : Module TermData ProofGoalSet                         ~> ProofGoalSet .
+  op $cases2 : Variable TermSet ProofGoalSet                        ~> ProofGoalSet .
 
-  var BD : Bound . var NS : Set{Nat} . var N M : Nat . var B : Bool .
-  var T : Term . var TS : TermSet .
+  var BD : Bound . var NS : Set{Nat} . var N M : Nat . var B : Bool . var S : Substitution .
+  var T : Term . var TS : TermSet . var TL : TermList .
   var ID Q Q' : Qid . var QS : QidSet . var L L' : QidList . var V  : Variable . var QK : [Qid] .
   var U : Module . var US : ModuleList .
   var QF QF' : QFForm? . var MF MF' : QFCTermSet .
   var F : ReachForm .
   var LX : LabelReachFormEx . var LF LF' : LabelReachForm . var LS : LabelReachFormList . var LK : [LabelReachFormEx] .
-  var G : ProofGoal . var GK : [ProofGoalSet] . var R : ProofMetadata .
+  var G : ProofGoal . var GS : ProofGoalSet . var GK : [ProofGoalSet] . var R : ProofMetadata .
+  var Idx : FindResult .
 
   eq inv1(R,ID,MF,QS,Q) = inv2(R,(ID : wrap-term(get-mod(R),mk-inv(get-mod(R),QS,MF),Q))) .
   eq inv2(R,LX)         = proc(add-goal(LX,true),R) .
@@ -527,6 +534,17 @@ mod RLTL-PROC-CMD is
   eq $pall(U,LF)            = print(U,LF) .
   eq $pall(U,LF ; LF' ; LS) = print(U,LF) '\n printSpaces(8) $pall(U,LF' ; LS) .
   eq $pall(U,nil)           = &mt .
+
+  --- PRE: Goals should be all current goals that pattern term T matches
+  --- OUT: Goal set GS such that:
+  ---        1. GS has been generalized by a pattern term T
+  ---        2. The strategy for GS has been prefixed by a case(V,TS)
+  ---      where T,V,TS have been alpha-renamed by the same substitution to
+  ---      avoid conflicts with any variables already in goals GS
+  eq $cases (U,T,V,TS,GS) = $cases1(U,#renameAllVar(U,upTerm(GS),(T,V,TermList(TS))),GS) .
+  eq $cases1(U,termdata((T,V,TL),Idx),GS) = $cases2(V,TermSet(TL),generalizeGoals(U,T,GS)) .
+  eq $cases2(V,TS,G && GS) = prestrat(G,case(V,TS) ;; simplify ;; subsume ;; termcheck ;; pause) && $cases2(V,TS,GS) .
+  eq $cases2(V,TS,mt) = mt .
 
   --- commands to be typed BEFORE starting the proof
   eq proc(add-goal(LX,B),    R) = $addgls(get-mod(R),R,divide(LX),B) &
@@ -550,6 +568,14 @@ mod RLTL-PROC-CMD is
                                     (write('Case 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
                                   else write('Goal: qid(string(N,10)) 'not 'found)
                                 fi .
+  eq proc(cases(T,V,TS),   R) = if checkType(get-mod(R),getRuleType(get-mod(R)),T) :: Term
+                                  then if goalsByMatch(get-mod(R),T,goalsByStatus(active,get-prf(R))) :: NeProofGoalSet
+                                    then atomic-run(R,$cases(get-mod(R),T,V,TS,goalsByMatch(get-mod(R),T,goalsByStatus(active,get-prf(R))))) &
+				      (write('Cases 'rule 'generated: '\n printSpaces(8)) ;
+				        write-branch(getid(goalsByMatch(get-mod(R),T,goalsByStatus(active,get-prf(R))))))
+				    else write('Error: 'case 'pattern 'failed 'to 'match 'any 'goals)
+				  fi else write('Error: 'case 'pattern 'has 'wrong 'type)
+				fi .
   eq proc(split(N,B,QF,QF'), R) = if getgl!(R,N) :: ProofGoal
                                   then merge(delgl(R,getgl!(R,N)),apply-proof-strat(R,prestrat(getgl!(R,N),split(B,QF,QF') ;; simplify ;; subsume ;; termcheck))) &
                                     (write('Split 'rule 'generated: '\n printSpaces(8)) ; write-branch(N))
