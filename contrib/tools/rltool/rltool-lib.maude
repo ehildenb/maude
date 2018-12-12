@@ -356,7 +356,7 @@ mod RLTL-ACTION-IMPL is
   var U : Module .
   var P : Proof .
   var GS : ProofGoalSet .
-  var PM : ProofMetadata .
+  var PM PM' : ProofMetadata .
   var L L' : QidList .
   var A A' : RLTLAction .
   var M M' : RLTLMode .
@@ -375,11 +375,9 @@ mod RLTL-ACTION-IMPL is
   eq process-action(set-mode(M'), (mode : M, AS)) = mode : M', AS .
   eq process-action(continue, (proof : [PM], mode : M, output : L, AS)) =
      if active-mode?(M)
-       then run-cycle((AS,output : L),get-bound(M),{PM})
-       else proof : [PM],
-            mode : M,
-            output : (L 'Error: 'continue 'can 'only 'be 'used 'while 'taking 'proof 'steps)
-     fi, AS .
+       then do-ui(run-cycle(proof : {PM}, mode : M, output : L, AS))
+       else proof : [PM], mode : M, output : (L 'Error: 'continue 'can 'only 'be 'used 'while 'taking 'proof 'steps), AS
+     fi .
   eq process-action(PM & AK,AS) =
     if get-err(PM) == true
       then process-action(write(get-out(PM)),AS)
@@ -391,30 +389,57 @@ mod RLTL-ACTION-IMPL is
      process-action(write('Internal 'Error: 'Action 'Ill-defined),AS)
    if not AK :: RLTLAction .
 
-  --- auxiliary functions
-  --- TODO: reorganize these to make them less ugly
-  --- TODO: add config option to print state after every internal loop
-  --- TODO: write expect script to automate this looping behavior
-  op run-cycle : AttributeSet Bound Proof -> AttributeSet .
-  eq run-cycle((AS, output : L),0,[PM]) =
-    proof : [flipPaused(clear(PM))],
-    if goalsByStatus(paused,get-prf(PM)) == mt
-      then mode : off, output : (L 'Proof 'Completed.)
-      else mode : off, output : (L 'Auto 'Results: '\n printSpaces(8) printGoals(get-mod(PM),goalsByStatus(paused,get-prf(PM))))
-    fi .
+  --- do work until we need to output sth
+  ---------------------------------------------
+  op run-cycle : AttributeSet ~> AttributeSet .
+  eq run-cycle(mode : active(BD), proof : [PM], AS) =
+    if pause-for-output(PM) then
+      mode : active(BD), proof : [PM], AS
+    else if proof-completed(PM) then
+      mode : off, proof : [PM], AS
+    else if strat-step-done(PM) and BD == 0 then
+      mode : on, proof : [PM], AS
+    else
+      run-cycle(mode : active(if strat-step-done(PM) then dec(BD) else BD fi), proof : {PM}, AS)
+    fi fi fi .
 
-  eq run-cycle((AS, output : L),NBD,[PM]) =
-    if goalsByStatus(active,get-prf(PM)) && goalsByStatus(paused,get-prf(PM)) == mt
-      then proof : [clear(PM)], mode : off, output : (L get-out(PM) 'Proof 'Completed.)
-      else if (get-out(PM) == nil or hideNonErrors) and get-err(PM) == false
-        then run-cycle((AS, output : L),if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi,{clear(PM)})
-        else proof : [clear(PM)], mode : active(if goalsByStatus(active,get-prf(PM)) == mt then dec(NBD) else NBD fi),
-         output : (L get-out(PM)
-                  (if get-err(PM) then 'ERROR! else nil fi)
-                  (if printStatusOnContinue then printSpaces(8) printStatusGoals(get-mod(PM),get-prf(PM)) '\n else nil fi)
-                  'CONTINUE> 'type &sp '`( 'continue '. '`) &sp 'to 'continue)
-    fi fi .
+  --- perform UI output actions
+  -----------------------------------------
+  op do-ui : AttributeSet ~> AttributeSet .
+  eq do-ui(mode : M, proof : [PM], output : L, AS) =
+    mode : M, proof : [flipPaused(clear(PM))], output : (L get-out(PM) handle-output(M,PM)), AS .
 
+  op handle-output : RLTLMode ProofMetadata -> QidList .
+  eq handle-output(M,PM) =
+    if active-mode?(M) then
+      if printStatusOnContinue then printSpaces(8) printStatusGoals(get-mod(PM),get-prf(PM)) '\n else nil fi
+     'CONTINUE> 'type &sp '`( 'continue '. '`) &sp 'to 'continue
+    else if M == on then
+     'Auto 'Results: '\n printSpaces(8) printGoals(get-mod(PM),goalsByStatus(paused,get-prf(PM)))
+    else if M == off then
+     'Proof 'Completed.
+    else
+     'Internal 'Error: 'unknown 'mode
+    fi fi fi .
+
+  --- control flow predicates
+  ---------------------------------------------------------------------
+  --- OUT: true iff a big step was compeleted according to our strategy
+  op strat-step-done : ProofMetadata -> Bool .
+  eq strat-step-done(PM) = goalsByStatus(active,get-prf(PM)) == mt .
+
+  --- OUT: true iff the proof is completed
+  op proof-completed : ProofMetadata -> Bool .
+  eq proof-completed(PM) = goalsByStatus(active,get-prf(PM)) && goalsByStatus(paused,get-prf(PM)) == mt .
+
+  --- OUT: true iff we need to stop for output
+  op pause-for-output : ProofMetadata -> Bool .
+  eq pause-for-output(PM) =
+    (get-out(PM) =/= nil and not hideNonErrors) or
+    get-err(PM) .
+
+  --- mode operators
+  ----------------------------------
   op get-bound : RLTLMode ~> Bound .
   eq get-bound(active(BD)) = BD .
 
