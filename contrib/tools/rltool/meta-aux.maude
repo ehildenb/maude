@@ -168,6 +168,10 @@ fmod TERMSET-FM is
   op wellFormedSet : Module TermSet ~> Bool .
   eq wellFormedSet(U,T | TS) = wellFormed(U,T) and-then wellFormedSet(U,TS) .
   eq wellFormedSet(U,emptyTermSet) = true .
+
+  op TermList : TermSet -> TermList .
+  eq TermList(T | TS) = T,TermList(TS) .
+  eq TermList(emptyTermSet) = empty .
 endfm
 
 --- copy of code in FULL-MAUDE (fortunately, interpreter does not complain)
@@ -2036,7 +2040,7 @@ fmod SUBSTITUTIONSET-AUX is
   pr TERMSET-FM .
 
   var S S' S2 : Substitution . var SS : SubstitutionSet .
-  var T : Term . var TS : TermSet .
+  var T T' : Term . var TS : TermSet .
   var V V' : Variable . var QS : VariableSet . var VS : VarSubstitution .
   var SSK : [SubstitutionSet] . var U : Module .
 
@@ -2052,9 +2056,11 @@ fmod SUBSTITUTIONSET-AUX is
   eq filterNotIn(empty,QS)       = empty .
 
   --- OUT: A TermSet of instances of Term by application with each Substitution in SubstitutionSet
-  op _<<_ : Term SubstitutionSet -> TermSet .
-  eq T << (S | S' | SS) = (T << S) | (T << (S' | SS)) .
-  eq T << empty         = emptyTermSet .
+  op _<<_ : TermSet SubstitutionSet -> TermSet .
+  eq T << (S | S' | SS)  = (T << S) | (T << (S' | SS)) .
+  eq T << empty          = emptyTermSet .
+  eq (T | T' | TS) << SS = (T << SS) | ((T' | TS) << SS) .
+  eq emptyTermSet << SS  = emptyTermSet .
 
 
   --- OUT: A SubstitutionSet identical to input but where each assignment in Substitution is removed
