@@ -194,6 +194,8 @@ fmod REACH-PROOF-GOALSET is
   pr SUBSTITUTION-AUX .
   pr TRANSITION-TUPLES .
   pr TRANSITION-MATCH .
+  pr TRANSITIONSET-PROJECTIONS .
+  pr FOFORMSET-OPERATIONS .
 
   var P P' : Parent .
   var N N' M : Nat .
@@ -400,6 +402,17 @@ fmod REACH-PROOF-GOALSET is
 
   op goalsByMatch : Module Term ProofGoalSet -> ProofGoalSet .
   eq goalsByMatch(U,T,GS) = toGoalSet(#goalsByMatch(U,T,GS)) .
+
+  --- OUT: Replace as many goals as possible by their generalizations
+  ---      specified by the given pattern
+  op generalizeGoals : Module Term ProofGoalSet -> ProofGoalSet .
+  eq generalizeGoals(U,T,GS) = generalizeGoals2(T,#goalsByMatch(U,T,GS)) .
+
+  op generalizeGoals2 : Term ProofGoalSubstPairSet -> ProofGoalSet .
+  eq generalizeGoals2(T,(G,S) && GSS) =
+    setbody(G,set-conj-antc(getbody(G),(T | conj-join(toPosEqAtoms(S))))) &&
+    generalizeGoals2(T,GSS) .
+  eq generalizeGoals2(T,.ProofGoalSubstPairSet) = mt .
 
   ---# Goal set creation
 
