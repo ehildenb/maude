@@ -22,8 +22,9 @@ fmod GRAPH-FOLDING-SEARCH-TEST is
 
     --- Add the following equation to reduce _<=_ to constructors
     vars NeNS NeNS' : NeNodeSet .
-    eq NeNS <= NeNS'          = false [owise] .
-    eq intersect(NeNS, NeNS') = false [owise] .
+    eq intersect(NeNS, NeNS') = .NodeSet [owise] .
+    eq NeNS <= NeNS' = false [owise] .
+    eq isEmpty?(NeNS) = false .
 
     eq step(A) = < x , B > , < y , D > , < z , D > .
     eq step(B) = < y , B > .
@@ -47,15 +48,6 @@ reduce B -> < x , A > , < y , D > .
 --- Test Module GRAPH-FOLDING-SEARCH
 --- --------------------------------
 
-reduce 3 [ .Fold ] < 4 [ .Fold ] .
-reduce 4 [ .Fold ] < 3 [ .Fold ] .
-reduce 3 [ < ] < 4 .
-reduce 4 [ < ] < 3 .
-reduce 3 < 4 [ < ] .
-reduce 4 < 3 [ < ] .
-reduce 3 [ < ] < 4 [ < ] .
-reduce 4 [ < ] < 3 [ < ] .
-
 reduce fold(A, A) .
 reduce fold(D, E) .
 reduce fold(E, D) .
@@ -65,6 +57,12 @@ reduce B       <= (A ; B) .
 reduce D       <= E .
 reduce (D ; B) <= (E ; B) .
 reduce (D ; B) <= E .
+
+reduce isEmpty?(.NodeSet) .
+reduce isEmpty?(A ; B) .
+
+reduce intersect(1 ; 3 ; 5 , 3    ; 5 ; 7) .
+reduce intersect(1 ; 3 ; 5 , 3[<] ; 5 ; 7) .
 
 reduce intersect(A, A) .
 reduce intersect(.NodeSet, A) .

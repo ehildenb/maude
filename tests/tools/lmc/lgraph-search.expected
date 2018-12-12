@@ -18,38 +18,6 @@ rewrites: 3
 result NeLabeledGraph: B -[x]-> A
 B -[y]-> D
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3 < 4 .
-rewrites: 1
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4 < 3 .
-rewrites: 1
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3[<] < 4 .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4[<] < 3 .
-rewrites: 12
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3 < 4[<] .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4 < 3[<] .
-rewrites: 12
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3[<] < 4[<] .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4[<] < 3[<] .
-rewrites: 12
-result Bool: false
-==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : fold(A, A) .
 rewrites: 1
 result Fold: .Fold
@@ -82,37 +50,53 @@ reduce in GRAPH-FOLDING-SEARCH-TEST : (B ; D) <= E .
 rewrites: 7
 result Bool: false
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A) .
+reduce in GRAPH-FOLDING-SEARCH-TEST : isEmpty?(.NodeSet) .
 rewrites: 1
 result Bool: true
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : isEmpty?(A ; B) .
+rewrites: 1
+result Bool: false
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(1 ; 3 ; 5, 3 ; 5 ; 7) .
+rewrites: 35
+result NeNodeSet: 3 ; 5
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(1 ; 3 ; 5, (5 ; 7) ; 3[<]) .
+rewrites: 35
+result NeNodeSet: 5 ; 3[<]
+==========================================
+reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A) .
+rewrites: 10
+result Node: A
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(.NodeSet, A) .
 rewrites: 1
-result Bool: false
+result NodeSet: .NodeSet
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, C) .
-rewrites: 4
-result Bool: true
+rewrites: 10
+result Node: B
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, A ; C) .
-rewrites: 14
-result Bool: true
+rewrites: 28
+result Node: B
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(B, C ; A ; E) .
-rewrites: 24
-result Bool: true
+rewrites: 46
+result Node: B
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(D, A ; B ; C) .
-rewrites: 25
-result Bool: false
+rewrites: 53
+result NodeSet: .NodeSet
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A, A ; B ; D) .
-rewrites: 21
-result Bool: true
+rewrites: 46
+result Node: A
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : intersect(A ; E, E ; G) .
-rewrites: 31
-result Bool: true
+rewrites: 64
+result Node: E
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : step(E) .
 rewrites: 1
@@ -745,7 +729,7 @@ rewrites: 9
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(E) .
-rewrites: 28
+rewrites: 30
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C) .
@@ -753,7 +737,7 @@ rewrites: 174
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : invariant(A ; B ; C ; D ; E ; F ; G) .
-rewrites: 517
+rewrites: 570
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check .NodeSet stable in .NodeSet .
@@ -765,7 +749,7 @@ rewrites: 3
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A stable in A .
-rewrites: 80
+rewrites: 82
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B stable in A .
@@ -773,64 +757,64 @@ rewrites: 6
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C .
-rewrites: 177
+rewrites: 192
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : check A ; B ; C stable in A ; B ; C ; D ;
     E ; F ; G .
-rewrites: 535
+rewrites: 588
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* A .
-rewrites: 4
+rewrites: 16
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* D ; E .
-rewrites: 132
+rewrites: 186
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* E .
-rewrites: 106
+rewrites: 138
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* F .
-rewrites: 338
+rewrites: 399
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>* G .
-rewrites: 246
+rewrites: 304
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : E =>* D .
-rewrites: 7
+rewrites: 16
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : D =>* E .
-rewrites: 7
+rewrites: 16
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : .NodeSet =>* .NodeSet .
-rewrites: 11
+rewrites: 14
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : .NodeSet =>* A ; B ; C .
-rewrites: 11
+rewrites: 14
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C) =>* .NodeSet .
-rewrites: 161
+rewrites: 164
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C) =>* A .
-rewrites: 24
+rewrites: 52
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : (A ; B ; C ; D ; E ; G) =>* F .
-rewrites: 466
+rewrites: 521
 result Bool: false
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>[0]E .
-rewrites: 71
+rewrites: 86
 result [Bool]: (0 -[x]-> 2
 0 -[y]-> 4
 0 -[z]-> 4)
@@ -841,15 +825,15 @@ result [Bool]: (0 -[x]-> 2
 | 2 ; 4 =>[decrement(0)]E
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : A =>[1]E .
-rewrites: 105
+rewrites: 137
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : D =>[1]C .
-rewrites: 81
+rewrites: 116
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[1]D .
-rewrites: 114
+rewrites: 144
 result [Bool]: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -861,15 +845,15 @@ result [Bool]: (0 -[x]-> 2
 | 6 =>[decrement(0)]D
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]D .
-rewrites: 128
+rewrites: 170
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]E .
-rewrites: 131
+rewrites: 170
 result Bool: true
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[2]G .
-rewrites: 188
+rewrites: 233
 result [Bool]: (0 -[x]-> 2
 2 -[x]-> 0[<]
 2 -[y]-> 6
@@ -884,6 +868,6 @@ result [Bool]: (0 -[x]-> 2
 | 12 =>[decrement(0)]G
 ==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : C =>[3]G .
-rewrites: 205
+rewrites: 262
 result Bool: true
 Bye.

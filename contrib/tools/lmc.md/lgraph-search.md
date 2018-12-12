@@ -114,24 +114,25 @@ fmod GRAPH-FOLDING-SEARCH is
     op _<=_ : NodeSet NodeSet -> [Bool] [ditto] .
     ---------------------------------------------
     eq NS             <  NS'        = NS =/= NS' and-then NS <= NS' .
-    eq NS             <= NS         = true .
-    eq .NodeSet       <= NeNS       = true .
+    eq .NodeSet       <= NS         = true .
     eq NeNS           <= .NodeSet   = false .
     eq (NeNS ; NeNS') <= NeNS''     = NeNS <= NeNS'' and-then NeNS' <= NeNS'' .
    ceq ND             <= (ND' ; NS) = true if fold(ND, ND') :: Fold .
 
-    op intersect : NodeSet NodeSet -> Bool [comm] .
-    -----------------------------------------------
-    eq intersect(ND, ND)           = true .
-    eq intersect(.NodeSet, NS)     = false .
-    eq intersect(NeNS ; NeNS', NS) = intersect(NeNS, NS) or intersect(NeNS', NS) .
+    op intersect : NodeSet NodeSet -> [NodeSet] [comm] .
+    ----------------------------------------------------
+    eq intersect(N[F], N') = if N == N' then N[F] else .NodeSet fi .
+   ceq intersect(ND, ND')  = ND if not (ND :: NodeId) /\ not (ND' :: NodeId) /\ ND <= ND' .
 
-    --- TODO: Sometimes this may speed things up? Check performance.
-   ceq intersect(ND, ND') = true if ND <= ND' .
+    eq intersect(.NodeSet    , NS) = .NodeSet .
+    eq intersect(NeNS ; NeNS', NS) = intersect(NeNS, NS) ; intersect(NeNS', NS) .
+
+    op isEmpty? : NodeSet -> [Bool] .
+    ---------------------------------
+    eq isEmpty?(.NodeSet) = true .
 
     op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
     --------------------------------------------------------
-   ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .
 
     sorts NodeAlias NeNodeMap NodeMap NodeMap? .
     --------------------------------------------
@@ -266,23 +267,23 @@ fmod GRAPH-ANALYSIS is
     op _=>[_]_ : FoldedLabeledGraph Bound NodeSet -> Bool .
     -------------------------------------------------------
     eq NS =>*     NS' = NS =>[ unbounded ] NS' .
-    eq NS =>[ B ] NS' = intersect(NS, NS') or-else extend(NS) =>[ decrement(B) ] NS' .
+    eq NS =>[ B ] NS' = (not isEmpty?(intersect(NS, NS'))) or-else extend(NS) =>[ decrement(B) ] NS' .
 
     eq  FLG?        =>[ B ] .NodeSet = false .
     eq  FLG         =>[ B ] NeNS'    = false .
-    eq (FLG | NeNS) =>[ B ] NeNS'    = intersect(NeNS', frontier(FLG | NeNS)) or-else extend(FLG | NeNS) =>[ decrement(B) ] NeNS' .
+    eq (FLG | NeNS) =>[ B ] NeNS'    = (not isEmpty?(intersect(NeNS', frontier(FLG | NeNS)))) or-else extend(FLG | NeNS) =>[ decrement(B) ] NeNS' .
 endfm
 ```
 
 Instantiation to Narrowing
 --------------------------
 
-### Unconditional Narrowing
+### Common Narrowing
 
 ```maude
-fmod FVP-NARROWING-GRAPH is
+fmod NARROWING-GRAPH-COMMON is
    protecting NARROWING .
-   protecting VARIABLE-NUMBERS .
+   protecting RENAME-METAVARS .
    protecting SUBSTITUTION-SET .
     extending GRAPH-FOLDING-SEARCH .
     extending META-LMC-PARAMETERS .
@@ -305,26 +306,38 @@ fmod FVP-NARROWING-GRAPH is
     ---------------------------------
     eq step(state(T))            = transition(narrowSteps(#M, T)) .
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
+endfm
+```
 
-    --- Unification based intersection
-    eq intersect(state(T), state(T')) = metaVariantDisjointUnify(#M, T =? T', empty, metaHighestVar((T, T')), 0) :: UnificationTriple .
+### Unconditional Narrowing
+
+```maude
+fmod NARROWING-GRAPH is
+    including NARROWING-GRAPH-COMMON .
+
+    vars T T' : Term .
+
+   ceq intersect(state(T), state(T')) = .NodeSet
+    if noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
 endfm
 ```
 
 ### Conditional Narrowing
 
 ```maude
-fmod FVP-CONDITIONAL-NARROWING-GRAPH is
-   protecting FVP-NARROWING-GRAPH .
-   protecting META-CONDITIONAL-LMC-PARAMETERS .
+fmod CONDITIONAL-NARROWING-GRAPH is
+    including NARROWING-GRAPH-COMMON
+            + META-CONDITIONAL-LMC-PARAMETERS .
 
-    vars ND ND' : Node . vars T T' C C' : Term .
-    var Q : Qid . var SUB : Substitution . var N : Nat .
+    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold .
+    vars Q RL : Qid . var SUB : Substitution . var SUB? : Substitution? . var N : Nat .
+    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults .
+
+   ceq fold(ND, ND') = F if F := foldAny(ND, ND', 0) .
+   ---------------------------------------------------
 
     op foldAny : Node Node Nat -> [Fold] .
     --------------------------------------
-    eq fold(ND, ND') = foldAny(ND, ND', 0) [owise] .
-
    ceq foldAny(ND, ND', N) = if implies?(C << SUB, C' << SUB) then fold(SUB) else foldAny(ND, ND', s N) fi
                           if state(Q[T  , C ]) := ND  /\ Q == #cTerm
                           /\ state(Q[T' , C']) := ND' /\ Q == #cTerm
@@ -338,5 +351,8 @@ fmod FVP-CONDITIONAL-NARROWING-GRAPH is
     --- Probably theory specific, maybe best to leave the choice of `memo` to each individual theory.
     op implies? : Term Term -> [Bool] .
     -----------------------------------
+
+   ceq intersect(state(Q[T,C]), state(Q[T',C'])) = .NodeSet
+    if Q = #cTerm /\ noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
 endfm
 ```

@@ -9,7 +9,7 @@ load ../../../contrib/tools/meta/narrowing.maude
 
 mod NARROW-SEARCH-2TOKEN is
     protecting 2TOKEN .
-    including FVP-NARROWING-GRAPH + GRAPH-ANALYSIS .
+    including NARROWING-GRAPH + GRAPH-ANALYSIS .
 
     eq #M = upModule('2TOKEN, true) .
 
