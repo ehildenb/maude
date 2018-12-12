@@ -212,12 +212,24 @@ fmod REACH-PROOF-GOALSET is
   var D : NeQFCTermSet .
   var S : Substitution .
   var SS : SubstitutionSet .
+  var GSS : ProofGoalSubstPairSet .
 
   sort NeProofGoalSet MaybeProofGoal ProofGoalSet .
   subsort ProofGoal < MaybeProofGoal NeProofGoalSet < ProofGoalSet .
   op _&&_ : ProofGoalSet ProofGoalSet -> ProofGoalSet [ctor assoc comm id: mt format (d d nn d)] .
   op _&&_ : ProofGoalSet NeProofGoalSet -> NeProofGoalSet [ctor ditto] .
   op mt : -> MaybeProofGoal [ctor] .
+
+  sort ProofGoalSubstPair ProofGoalSubstPairSet .
+  subsort ProofGoalSubstPair < ProofGoalSubstPairSet .
+  op ((_,_)) : ProofGoal Substitution -> ProofGoalSubstPair [ctor] .
+  op _&&_ : ProofGoalSubstPairSet ProofGoalSubstPairSet -> ProofGoalSubstPairSet [ctor assoc comm id: .ProofGoalSubstPairSet] .
+  op .ProofGoalSubstPairSet : -> ProofGoalSubstPairSet [ctor] .
+
+  ---# extract goals out
+  op toGoalSet : ProofGoalSubstPairSet ~> ProofGoalSet .
+  eq toGoalSet((G,S) && GSS) = G && toGoalSet(GSS) .
+  eq toGoalSet(.ProofGoalSubstPairSet) = mt .
 
   ---# Parents
   op getparents : ProofGoalSet -> Set{Nat} .
@@ -376,6 +388,19 @@ fmod REACH-PROOF-GOALSET is
   op getActiveGoal : ProofGoalSet ~> ProofGoal .
   eq getActiveGoal([P,N,CN,active,VS,F] && GS) = [P,N,CN,active,VS,F] .
 
+  --- OUT: Get a set of goals whose LHS matches the pattern plus the
+  ---      witnessing substitutions
+  op #goalsByMatch : Module Term ProofGoalSet -> ProofGoalSubstPairSet .
+  eq #goalsByMatch(U,T,G && GS) =
+    if metaMatch(U,T,lhs(getbody(G)),nil,0) :: Substitution
+      then (G,metaMatch(U,T,lhs(getbody(G)),nil,0))
+      else .ProofGoalSubstPairSet
+    fi && #goalsByMatch(U,T,GS) .
+  eq #goalsByMatch(U,T,mt) = .ProofGoalSubstPairSet .
+
+  op goalsByMatch : Module Term ProofGoalSet -> ProofGoalSet .
+  eq goalsByMatch(U,T,GS) = toGoalSet(#goalsByMatch(U,T,GS)) .
+
   ---# Goal set creation
 
   --- OUT: build a set of goals using the supplied set of sequents;
@@ -412,11 +437,6 @@ fmod REACH-PROOF-GOALSET is
   op renumberGoals : Nat ProofGoalSet -> ProofGoalSet .
   eq renumberGoals(N,G && GS) = addid(G,N) && renumberGoals(N,GS) .
   eq renumberGoals(N,mt) = mt .
-endfm
-
-fmod REACH-PROOF-GOAL-SUBSTSET is
-  pr REACH-PROOF-GOALSET .
-  sort ProofGoalSubstPair ProofGoalSubstPairSet .
 endfm
 
 fmod AXIOM-RESULT is
