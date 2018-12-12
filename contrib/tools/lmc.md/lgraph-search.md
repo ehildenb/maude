@@ -133,7 +133,6 @@ fmod GRAPH-FOLDING-SEARCH is
 
     op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
     --------------------------------------------------------
-   ceq N[F] <= N'[F'] = N <= N' if F =/= .Fold or F' =/= .Fold .
 
     sorts NodeAlias NeNodeMap NodeMap NodeMap? .
     --------------------------------------------

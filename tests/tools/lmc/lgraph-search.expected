@@ -18,38 +18,6 @@ rewrites: 3
 result NeLabeledGraph: B -[x]-> A
 B -[y]-> D
 ==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3 < 4 .
-rewrites: 1
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4 < 3 .
-rewrites: 1
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3[<] < 4 .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4[<] < 3 .
-rewrites: 12
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3 < 4[<] .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4 < 3[<] .
-rewrites: 12
-result Bool: false
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 3[<] < 4[<] .
-rewrites: 12
-result Bool: true
-==========================================
-reduce in GRAPH-FOLDING-SEARCH-TEST : 4[<] < 3[<] .
-rewrites: 12
-result Bool: false
-==========================================
 reduce in GRAPH-FOLDING-SEARCH-TEST : fold(A, A) .
 rewrites: 1
 result Fold: .Fold

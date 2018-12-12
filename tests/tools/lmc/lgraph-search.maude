@@ -48,15 +48,6 @@ reduce B -> < x , A > , < y , D > .
 --- Test Module GRAPH-FOLDING-SEARCH
 --- --------------------------------
 
-reduce 3 [ .Fold ] < 4 [ .Fold ] .
-reduce 4 [ .Fold ] < 3 [ .Fold ] .
-reduce 3 [ < ] < 4 .
-reduce 4 [ < ] < 3 .
-reduce 3 < 4 [ < ] .
-reduce 4 < 3 [ < ] .
-reduce 3 [ < ] < 4 [ < ] .
-reduce 4 [ < ] < 3 [ < ] .
-
 reduce fold(A, A) .
 reduce fold(D, E) .
 reduce fold(E, D) .
