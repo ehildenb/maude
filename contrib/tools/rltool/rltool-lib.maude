@@ -64,11 +64,22 @@ fmod PRINT-COMMAND is
   eq printMeta(nilmod,B) = 'nilmod .
 endfm
 
+--- TODO: 1. unify different notions of goal identification
+---       2. generalize commands to accept this sort
+fmod GOAL-IDENTIFIER is
+  pr SET{Nat} .
+
+  op _--_ : Nat Nat -> NeSet{Nat} .
+  var N M : Nat .
+ ceq N -- M = M -- N if N > M .
+  eq N -- M = if N == M then N else M , (N -- sd(M,1)) fi .
+endfm
+
 fmod PARSE-FORM is
   pr META-LEVEL .
   pr LABEL-TRANSITION .
   pr VARIABLES-TO-CONSTANTS .
-  pr SET{Nat} .
+  pr GOAL-IDENTIFIER .
   pr MODULE-LIST .
   op parse-labeltrans : ModuleSubstPair Bool Term -> [LabelReachFormEx] .
   op parse-reachform  : ModuleSubstPair Bool Term -> [ReachFormEx] .
@@ -135,7 +146,7 @@ endfm
 
 fmod META-RLTL-COMMAND is
    pr SET{Nat} .
-   pr NAT-RANGE .
+   pr GOAL-IDENTIFIER .
    pr BUBBLES .
    pr META-LEVEL .
 

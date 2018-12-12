@@ -2,13 +2,6 @@
 --- reqs: prelude, full-maude, prelude-aux, var-sat (plus dependencies), reachform (plus dependencies)
 --- info: models the state of a reachability logic proof
 
-fmod NAT-RANGE is pr SET{Nat} .
-  op _--_ : Nat Nat -> NeSet{Nat} .
-  var N M : Nat .
- ceq N -- M = M -- N if N > M .
-  eq N -- M = if N == M then N else M , (N -- sd(M,1)) fi .
-endfm
-
 fmod REACH-PROOF-STRATEGY is
   pr LABEL-TRANSITION-LIST .
   pr TERMSET-FM .
@@ -118,7 +111,7 @@ fmod REACH-PROOF-GOAL is
   pr TRANSITION-PROJECTIONS .
   pr TRANSITIONSET-OPERATIONS .
   pr CONSTRAINED-TERM-OPERATIONS .
-  pr NAT-RANGE .
+  pr SET{Nat} .
   pr TRANSITIONSET-RENAME .
   pr REACH-PROOF-STRATEGY .
   pr TRANSITION-SUBSTITUTION .
