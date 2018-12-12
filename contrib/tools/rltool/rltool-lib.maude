@@ -81,6 +81,7 @@ fmod PARSE-FORM is
   pr VARIABLES-TO-CONSTANTS .
   pr GOAL-IDENTIFIER .
   pr MODULE-LIST .
+  pr RULES-SHARE-KIND .
   op parse-labeltrans : ModuleSubstPair Bool Term -> [LabelReachFormEx] .
   op parse-reachform  : ModuleSubstPair Bool Term -> [ReachFormEx] .
   op parse-matchform  : ModuleSubstPair Bool Term -> [QFCTermSet] .
@@ -90,6 +91,7 @@ fmod PARSE-FORM is
   op parse-termset    : ModuleSubstPair Bool Term -> [TermSet] .
   op parse-varset     : ModuleSubstPair Term      -> [QidSet] .
   op parse-varset2    : TermSet -> [QidSet] .
+  op parse-pattern    : ModuleSubstPair Bool Term -> [Term] .
   op parse-term       : ModuleSubstPair Bool Term -> [Term] .
   op parse-term2      : ModuleSubstPair Bool Term -> [Term] .
   op parse-modlist    : Term -> [ModuleList] .
@@ -127,6 +129,7 @@ fmod PARSE-FORM is
   eq parse-varset2(V | TS)       = V ; parse-varset2(TS) .
   eq parse-varset2(emptyTermSet) = none .
   ---
+  eq parse-pattern((M,S),B,'`(_`)[T]) = parse-term((M,S),B,T) .
  ceq parse-term((M,S),B,'bubble[T]) = parse-term2((M,S),B,constsToVars(S,getTerm(metaParse(M,downTerm(T,(nil).QidList),anyType))))
   if metaParse(M,downTerm(T,(nil).QidList),anyType) :: ResultPair .
  ceq parse-term2((M,S),true,T) = getTerm(metaReduce(M,T)) if metaReduce(M,T) :: ResultPair .
@@ -142,6 +145,9 @@ fmod PARSE-FORM is
  ceq downNat(T) = downTerm(T,(none).Parent) if downTerm(T,(none).Parent) :: Nat .
  ceq downBound(T) = downTerm(T,(none).Parent) if downTerm(T,(none).Parent) :: Bound .
  ceq downNeNatSet(T) = downTerm(T,(empty).Set{Nat}) if downTerm(T,(empty).Set{Nat}) :: NeSet{Nat} .
+ ---
+ op checkType : Module Type Term -> [Term] .
+ceq checkType(M,TY:Type,T) = T if sortLeq(M,leastSort(M,T),TY:Type) .
 endfm
 
 fmod META-RLTL-COMMAND is
