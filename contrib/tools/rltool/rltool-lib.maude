@@ -457,6 +457,17 @@ mod RLTL-ACTION-IMPL is
   op printGoalsOrSuccess : Module ProofGoalSet -> QidList .
   eq printGoalsOrSuccess(U,mt) = ('Proof 'Completed.) .
   eq printGoalsOrSuccess(U,GS) = printGoals(U,GS) .
+
+  --- take goal set, evaluate to completion or return original state with error message
+  op atomic-run : ProofMetadata ProofGoalSet ~> ProofMetadata .
+  eq atomic-run(PM,GS) = atomic-run(PM,GS,run-cycle(mode : active(0), proof : {raw-set(PM,prf(GS))})) .
+
+  op atomic-run : ProofMetadata ProofGoalSet AttributeSet ~> ProofMetadata .
+  eq atomic-run(PM,GS,(mode : M, proof : [PM'])) =
+    if active-mode?(M)
+      then raw-set(PM,out(get-out(PM')))
+      else merge(PM,prf(get-prf(PM')))
+    fi .
 endm
 
 --- This module defines a state machine for command processing
