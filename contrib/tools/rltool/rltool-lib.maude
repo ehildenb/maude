@@ -473,7 +473,7 @@ mod RLTL-ACTION-IMPL is
 endm
 
 --- This module defines a state machine for command processing
-fmod RLTL-PROC-CMD is
+mod RLTL-PROC-CMD is
   --- backend
   pr REACH-PROOF-STATE-PRINTER .    --- printer for proof state
   pr REACH-PROOF-RULES-AUX .        --- proof rule actions
@@ -487,6 +487,7 @@ fmod RLTL-PROC-CMD is
   pr RLTL-COMMAND .                 --- tool commands
   pr PRINT-COMMAND .                --- debug printing stuff
   pr TRANSITION-MATCH .             --- ReachForm matches() command
+  pr RLTL-ACTION-IMPL .
 
   op proc    : RLTLCommand ProofMetadata                            -> RLTLAction .
   op auto    : ProofMetadata                                        -> RLTLAction .
@@ -593,7 +594,7 @@ fmod RLTL-PROC-CMD is
                                      then 'Parents: printNatSet(getparentsR(get-prf(R),NS,BD))
 				     else 'One 'or 'more 'goals 'not 'found
 				   fi) .
-endfm
+endm
 
 mod RLTL-UI is
   inc LOOP-MODE .
