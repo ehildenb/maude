@@ -447,8 +447,10 @@ mod RLTL-ACTION-IMPL is
   eq active-mode?(active(BD)) = true .
   eq active-mode?(M) = false [owise] .
 
+  --- goal printing operators
+  -------------------------------------------------
   op printDescendants : Proof Set{Nat} -> QidList .
-  eq printDescendants(P,NS) = printGoals(get-mod(data(P)),getdescendants(NS,get-prf(data(P)))) .
+  eq printDescendants(P,NS) = printGoals(get-mod(data(P)),getleaves(getdescendants(NS,get-prf(data(P))))) .
 
   op printGoalsOrSuccess : Proof -> QidList .
   eq printGoalsOrSuccess(P) =
