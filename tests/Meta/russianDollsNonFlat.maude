@@ -38,7 +38,7 @@ mod RUSSIAN-DOLLS is
 
   op problem : Nat -> Term .
   eq problem(s N) =
-  '__['<>.Portal,'createInterpreter['interpreterManager.Oid,'me.Oid],
+  '__['<>.Portal,'createInterpreter['interpreterManager.Oid,'me.Oid,'none.InterpreterOptionSet],
     '<_:_|_>['me.Oid,'User.Cid, '_`,_[
                                       'pending:_['predef.Seq],
                                       'level:_[upTerm(N)]
@@ -69,20 +69,20 @@ endm
 
 erew in RUSSIAN-DOLLS : <> 
 < me : User | pending: predef, level: 0 > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 erew in RUSSIAN-DOLLS : <> 
 < me : User | pending: predef, level: 1 > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 erew in RUSSIAN-DOLLS : <> 
 < me : User | pending: predef, level: 2 > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 erew in RUSSIAN-DOLLS : <> 
 < me : User | pending: predef, level: 3 > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 erew in RUSSIAN-DOLLS : <> 
 < me : User | pending: predef, level: 4 > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .

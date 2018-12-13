@@ -2,7 +2,7 @@
 
     This file is part of the Maude 2 interpreter.
 
-    Copyright 1997-2003 SRI International, Menlo Park, CA 94025, USA.
+    Copyright 1997-2018 SRI International, Menlo Park, CA 94025, USA.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 //	The format is:
 //		MACRO(symbols name, symbols C++ class, number of args)
 //
-  MACRO(succSymbol, SuccSymbol, 1)
+  MACRO(emptyInterpereterOptionSetSymbol, FreeSymbol, 0)
   MACRO(interpreterOidSymbol, FreeSymbol, 1)
-  MACRO(createInterpreterMsg, FreeSymbol, 2)
+  MACRO(createInterpreterMsg, FreeSymbol, 3)
   MACRO(createdInterpreterMsg, FreeSymbol, 3)
   MACRO(insertModuleMsg, FreeSymbol, 3)
   MACRO(insertedModuleMsg, FreeSymbol, 2)
@@ -40,6 +40,20 @@
   MACRO(insertedViewMsg, FreeSymbol, 2)
   MACRO(showViewMsg, FreeSymbol, 3)
   MACRO(showingViewMsg, FreeSymbol, 3)
+  MACRO(getLesserSortsMsg, FreeSymbol, 4)
+  MACRO(gotLesserSortsMsg, FreeSymbol, 3)
+  MACRO(getMaximalSortsMsg, FreeSymbol, 4)
+  MACRO(gotMaximalSortsMsg, FreeSymbol, 3)
+  MACRO(getMinimalSortsMsg, FreeSymbol, 4)
+  MACRO(gotMinimalSortsMsg, FreeSymbol, 3)
+  MACRO(compareTypesMsg, FreeSymbol, 5)
+  MACRO(comparedTypesMsg, FreeSymbol, 5)
+  MACRO(getKindMsg, FreeSymbol, 4)
+  MACRO(gotKindMsg, FreeSymbol, 3)
+  MACRO(getKindsMsg, FreeSymbol, 3)
+  MACRO(gotKindsMsg, FreeSymbol, 3)
+  MACRO(getGlbTypesMsg, FreeSymbol, 4)
+  MACRO(gotGlbTypesMsg, FreeSymbol, 3)
   MACRO(reduceTermMsg, FreeSymbol, 4)
   MACRO(reducedTermMsg, FreeSymbol, 5)
   MACRO(rewriteTermMsg, FreeSymbol, 5)
@@ -48,6 +62,14 @@
   MACRO(frewroteTermMsg, FreeSymbol, 5)
   MACRO(erewriteTermMsg, FreeSymbol, 6)
   MACRO(erewroteTermMsg, FreeSymbol, 5)
-  MACRO(continueMsg, FreeSymbol, 3)
+  MACRO(getSearchResultMsg, FreeSymbol, 9)
+  MACRO(gotSearchResultMsg, FreeSymbol, 6)
+  MACRO(getSearchResultAndPathMsg, FreeSymbol, 9)
+  MACRO(gotSearchResultAndPathMsg, FreeSymbol, 7)
+  MACRO(getMatchMsg, FreeSymbol, 7)
+  MACRO(gotMatchMsg, FreeSymbol, 4)
+  MACRO(getXmatchMsg, FreeSymbol, 9)
+  MACRO(gotXmatchMsg, FreeSymbol, 5)
+  MACRO(noSuchResultMsg, FreeSymbol, 3)
   MACRO(quitMsg, FreeSymbol, 2)
   MACRO(byeMsg, FreeSymbol, 2)

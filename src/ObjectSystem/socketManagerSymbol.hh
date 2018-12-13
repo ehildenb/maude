@@ -66,7 +66,7 @@ public:
 private:
   enum Sizes
     {
-      READ_BUFFER_SIZE = 4096
+      READ_BUFFER_SIZE = 208 * 1024  // based on Linux default
     };
  
   enum SocketState

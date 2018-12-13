@@ -89,6 +89,17 @@
       return name != 0; \
     }
 
+#define BIND_SYMBOL2(purpose, symbol, name, type, nrArgs)	\
+  if (strcmp(purpose, #name) == 0) \
+    { \
+      if (name != 0) \
+	return name == symbol; \
+      if (symbol->arity() != nrArgs) \
+	return false; \
+      name = dynamic_cast<type>(symbol); \
+      return name != 0; \
+    }
+
 #define BIND_TERM(purpose, term, name) \
   if (strcmp(purpose, #name) == 0) \
     { \

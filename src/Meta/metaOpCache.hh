@@ -25,6 +25,7 @@
 //
 #ifndef _metaOpCache_hh_
 #define _metaOpCache_hh_
+#include "userLevelRewritingContext.hh"
 
 class MetaOpCache
 {
@@ -36,6 +37,13 @@ public:
 
   void insert(FreeDagNode* metaOp, CacheableState* state, Int64 lastSolutionNr);
   bool remove(FreeDagNode* metaOp, CacheableState*& state, Int64& lastSolutionNr);
+
+  template<class T>
+  bool getCachedStateObject(FreeDagNode* subject,
+			    RewritingContext& context,
+			    Int64 solutionNr,
+			    T*& state,
+			    Int64& lastSolutionNr);
 
 private:
   bool sameProblem(FreeDagNode* m1, DagNode* m2);
@@ -52,5 +60,34 @@ private:
   const int maxSize;
   Vector<Item> cache;
 };
+
+template<class T>
+inline bool
+MetaOpCache::getCachedStateObject(FreeDagNode* subject,
+				  RewritingContext& context,
+				  Int64 solutionNr,
+				  T*& state,
+				  Int64& lastSolutionNr)
+{
+  CacheableState* cachedState;
+  if (remove(subject, cachedState, lastSolutionNr))
+    {
+      DebugAdvisory("looking for solution #" << solutionNr << " and found cached solution #" << lastSolutionNr);
+      if (lastSolutionNr <= solutionNr)
+	{
+	  state = safeCast(T*, cachedState);
+	  //
+	  //	The parent context pointer of the root context in the
+	  //	state object is possibly stale.
+	  //	So we replace it with a pointer to the current context.
+	  //
+	  safeCast(UserLevelRewritingContext*, state->getContext())->
+	    beAdoptedBy(safeCast(UserLevelRewritingContext*, &context));
+	  return true;
+	}
+      delete cachedState;
+    }
+  return false;
+}
 
 #endif

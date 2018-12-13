@@ -41,4 +41,4 @@ endm
 *** second rewriteTerm returns different result from first.
 erew  <> 
 < me : User | none > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .

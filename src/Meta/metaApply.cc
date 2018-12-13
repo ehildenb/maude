@@ -38,7 +38,7 @@ MetaLevelOpSymbol::metaApply(FreeDagNode* subject, RewritingContext& context)
 	{
 	  RewriteSearchState* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {
@@ -151,7 +151,7 @@ MetaLevelOpSymbol::metaXapply(FreeDagNode* subject, RewritingContext& context)
 	{
 	  RewriteSearchState* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {

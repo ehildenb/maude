@@ -54,26 +54,26 @@ result FModule: fmod 'TEST is
   none
 endfm
 ==========================================
-erewrite in META2 : <> createInterpreter(interpreterManager, me) < me : User |
-    state: 1 > .
+erewrite in META2 : <> < me : User | state: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 17
 result Configuration: <> < me : User | state: 7 > reducedTerm(me, interpreter(
     0), 1, 'h['h['X:Foo]], 'Foo)
 ==========================================
-erewrite in META3 : <> createInterpreter(interpreterManager, me) < me : User |
-    state: 1 > .
+erewrite in META3 : <> < me : User | state: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 21
 result Configuration: <> < me : User | state: 9 > reducedTerm(me, interpreter(
     0), 1, 'h['h['h['X:Foo]]], 'Foo)
 ==========================================
-erewrite in META4 : <> createInterpreter(interpreterManager, me) < me : User |
-    state: 1 > .
+erewrite in META4 : <> < me : User | state: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 21
 result Configuration: <> < me : User | state: 9 > reducedTerm(me, interpreter(
     0), 1, 'h['h['X:Foo]], 'Foo)
 ==========================================
-erewrite in META5 : <> createInterpreter(interpreterManager, me) < me : User |
-    state: 1 > .
+erewrite in META5 : <> < me : User | state: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 23
 result Configuration: <> < me : User | state: 10 > reducedTerm(me, interpreter(
     0), 1, 'k['k['X:Bar]], 'Bar)

@@ -33,7 +33,10 @@ TESTS = \
 	metaIntReplace.maude \
 	metaIntReplace2.maude \
 	russianDollsFlat.maude \
-	russianDollsNonFlat.maude
+	russianDollsNonFlat.maude \
+	metaIntMatch.maude \
+	metaIntSearch.maude \
+	metaIntSort.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -70,6 +73,9 @@ RESULT_FILES = \
 	metaIntReplace.expected \
 	metaIntReplace2.expected \
 	russianDollsFlat.expected \
-	russianDollsNonFlat.expected
+	russianDollsNonFlat.expected \
+	metaIntMatch.expected \
+	metaIntSearch.expected \
+	metaIntSort.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

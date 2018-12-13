@@ -101,7 +101,7 @@ MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& co
 	{
 	  NarrowingSearchState2 *state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect(); 
 	  else if ((state = makeNarrowingSearchState2(m, subject, context)))
 	    lastSolutionNr = -1;

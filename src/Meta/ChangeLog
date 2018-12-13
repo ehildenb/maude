@@ -1,3 +1,227 @@
+2018-08-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getGlbTypesMsg
+
+	* interpreterSignature.cc: added getGlbTypesMsg/gotGlbTypesMsg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getGlbTypes()
+
+	* interpreterSort.cc (getGlbTypes): added
+
+	* metaLevel.hh (M): added decl for downTypeSet()
+
+	* metaDown.cc (downTypeSet): added
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for getKind()/getKinds()
+
+	* interpreterSort.cc (getKind, getKinds): added
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getKindMsg, gotKindMsg
+
+	* interpreterSignature.cc: added getKindMsg/gotKindMsg,
+	getKindsMsg/gotKindsMsg
+
+2018-08-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for compareTypes()
+
+	* interpreterSort.cc (compareTypes): added
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	compareTypesMsg
+
+	* interpreterSignature.cc: deleted succSymbol
+
+	* interpreterManagerSymbol.cc (getInterpreter): use
+	MetaLevel::downSignedInt() rather than SuccSymbol::getSignedInt()
+	(deleteInterpreter): use MetaLevel::downSignedInt() rather than
+	SuccSymbol::getSignedInt()
+
+	* metaLevel.hh (downSignedInt): added
+
+	* interpreterManagerSymbol.cc (createInterpreter): use
+	MetaLevel::upNat() rather than SuccSymbol::makeNatDag()
+	(quit): socketName -> interpreterName
+
+	* interpreterSignature.cc: added compareTypesMsg/comparedTypesMsg
+
+2018-08-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for getLesserSorts(), getMaximalSorts(), getMinimalSorts()
+
+	* interpreterSort.cc: created
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getInterpreterAndModule()
+
+	* interpreterManagerSymbol.cc (handleMessage): added dispatch
+	for getLesserSortsMsg, getMaximalSortsMsg, getMinimalSortsMsg
+	(getInterpreterAndModule): added
+
+2018-08-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added getLesserSortsMsg/gotLesserSortsMsg,
+	getMaximalSortsMsg/gotMaximalSortsMsg,
+	getMinimalSortsMsg/gotMinimalSortsMsg
+
+2018-08-10  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevelOpSymbol.hh (getCachedStateObject): deleted
+
+	* metaVariant.cc (metaGetVariant2, metaVariantUnify2): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaNewNarrow2.cc (metaNarrowingSearch)
+	(metaNarrowingSearchPath): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaNewNarrow.cc (metaNarrowingApply): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaNarrow.cc (metaNarrow, metaNarrow2): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaApply.cc (metaApply, metaXapply): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaMatch.cc (metaMatch, metaXmatch): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+	* metaSearch.cc (metaSmtSearch, metaSearch, metaSearchPath): use
+	MetaOpCache::getCachedStateObject() rather than
+	MetaLevelOpSymbol::getCachedStateObject()
+
+2018-08-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaMatch.cc (makeMatchSearchState2): deepSelfDestruct()
+	pattern and subject in error cases
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): updated
+	decl for createInterpreter()
+
+	* interpreterManagerSymbol.cc (createInterpreter): check option
+	arg and return bool
+	(handleManagerMessage): pass createInterpreter() return value
+
+	* interpreterSignature.cc: added emptyInterpereterOptionSetSymbol;
+	changed createInterpreterMsg arity to 3
+
+2018-08-08  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSearch.cc (getSearchResult): updated comments
+
+	* interpreterMatch.cc (makeMatchSearchState2): correct assumption
+	that pattern and subject are in the same kind
+
+2018-08-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for makeMatchSearchState2(), getXmatch()
+
+	* interpreterMatch.cc (getXmatch): added
+	(makeMatchSearchState2): adde
+
+	* metaMatch.cc (metaXmatch): RewriteSearchState::DagPair ->
+	PositionState::DagPair
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch getXmatch()
+
+	* interpreterSignature.cc: added getXmatchMsg/gotXmatchMsg
+
+2018-08-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added getMatchMsg/gotMatchMsg
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch getMatch()
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for makeMatchSearchState(), getMatch()
+
+	* interpreterMatch.cc: created
+
+2018-08-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (MACRO): use BIND_SYMBOL2 to check
+	nrArgs
+
+	* interpreterSignature.cc: noSuchResultMsg() now takes
+	3 arguments
+
+	* interpreterSearch.cc (getSearchResult): use upRewriteCount()
+	(getSearchResult): noSuchResult now returns a RewriteCount()
+
+	* interpreterManagerSymbol.cc (upRewriteCount): added
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for upRewriteCount()
+
+2018-08-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added getSearchResultAndPathMsg,
+	gotSearchResultAndPathMsg
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getSearchResultAndPathMsg
+
+	* interpreterSearch.cc (makeRewriteSequenceSearch)
+	(getSearchResult): moved here
+	(getSearchResult): handle getSearchResultAndPath as well
+
+	* interpreterRewrite.cc (reduceTerm, rewriteTerm, frewriteTerm)
+	(erewriteTerm): moved here
+
+2018-08-01  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (getSearchResult): support
+	state caching
+
+	* metaOpCache.hh (getCachedStateObject): added template
+
+2018-07-31  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: updated decl for gotSearchResultMsg
+
+	* interpreterManagerSymbol.cc (getSearchResult): pass
+	rewrite count through gotSearchResultMsg
+
+2018-07-20  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (term2RewritingContext): added
+
+	* metaLevel.hh (downSearchType): added
+
+	* interpreterSignature.cc: deleted continueMsg; added noSuchResultMsg
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for makeRewriteSequenceSearch()
+
+	* interpreterManagerSymbol.cc (getSearchResult): implemented
+	(makeRewriteSequenceSearch): added
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for getSearchResult()
+
+	* interpreterManagerSymbol.cc (handleMessage): handle
+	getSearchResultMsg
+	(getSearchResult): added stub
+
+	* interpreterSignature.cc: added getSearchResultMsg,
+	gotSearchResultMsg
+
+===================================Maude118===========================================
+
 2018-06-29  Steven Eker  <eker@install.csl.sri.com>
 
 	* metaPreModule.hh (PreModule): updated decl for getAutoImports()
@@ -1352,7 +1576,7 @@
 	* metaDown.cc (downMembAx): use StatementAttributeInfo
 	(downEquation): use StatementAttributeInfo
 	(downRule): use StatementAttributeInfo
-	(downStatementAttrSet, downStatementAttr, downStatementAttr) 
+	(downStatementAttrSet, downStatementAttr, downStatementAttr)
 	(downPrintList): use StatementAttributeInfo
 	(downStatementAttr): disallow multiple print attributes
 
@@ -1405,7 +1629,7 @@
 
 2008-01-21  Steven Eker  <eker@goo.csl.sri.com>
 
-	* metaNarrow.cc (makeNarrowingSequenceSearch) 
+	* metaNarrow.cc (makeNarrowingSequenceSearch)
 	(makeNarrowingSequenceSearch2): pass flags arg to
 	NarrowingSequenceSearch()
 
@@ -1414,7 +1638,7 @@
 2007-12-07  Steven Eker  <eker@goo.csl.sri.com>
 
 	* metaLevel.cc (MetaLevel): need to clear variableGenerator in
-	renaming version of constructor 
+	renaming version of constructor
 
 2007-12-05  Steven Eker  <eker@goo.csl.sri.com>
 
@@ -2211,7 +2435,7 @@
 	expression constructors
 
 	* metaUpModule.cc (upImports): use new getModuleName() semantics
-	
+
 ===================================Maude83a===========================================
 
 2003-11-10  Steven Eker  <eker@goo.csl.sri.com>
@@ -2468,7 +2692,7 @@
 	msgSymbol, nonexecSymbol
 
 	* descentFunctions.cc (metaApply): pass ALLOW_NONEXEC to
-	RewriteSearchState() 
+	RewriteSearchState()
 	(metaXapply): pass ALLOW_NONEXEC to RewriteSearchState()
 
 2003-05-22  Steven Eker  <eker@goo.csl.sri.com>
@@ -2555,7 +2779,7 @@
 	(bind): updated Assert() (both versions)
 
 	* metaLevel.hh: removed #pragma
-	
+
 ===================================Maude79===========================================
 
 2003-01-08  Steven Eker  <eker@goo.csl.sri.com>
@@ -2687,7 +2911,7 @@
 
 	* metaDownOps.cc (downOpDecl): pass dummy frozen arg to
 	addOpDeclaration() - must fix later
-	
+
 ===================================Maude76==================================================
 
 2002-09-08  Steven Eker  <eker@goo.csl.sri.com>
@@ -2698,7 +2922,7 @@
 2002-08-27  Steven Eker  <eker@goo.csl.sri.com>
 
 	* metaDownOps.cc (downAttr): handle ctor attribute
-	
+
 ===================================Maude75==================================================
 
 2002-07-25  Steven Eker  <eker@goo.csl.sri.com>
@@ -2708,7 +2932,7 @@
 
 	* metaDown.cc (downTerm): deleted SMALL_NAT, SMALL_NEG and ZERO
 	cases since we no longer have machine ints
-	
+
 ===================================Maude74==================================================
 
 2002-06-19  Steven Eker  <eker@goo.csl.sri.com>
@@ -2835,7 +3059,7 @@
 
 	* metaLevelSignature.cc (MACRO): replace machine int stuff with
 	succSymbol and natListSymbol
-	
+
 ===================================Maude73==================================================
 
 2002-05-31  Steven Eker  <eker@goo.csl.sri.com>
@@ -2869,7 +3093,7 @@
 
 	* metaDown.cc (downImport): use interpreter.getModule() in place
 	of PreModule::findModule()
-	
+
 ===================================Maude72==================================================
 
 2002-04-05  Steven Eker  <eker@goo.csl.sri.com>

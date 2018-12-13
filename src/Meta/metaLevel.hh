@@ -28,6 +28,8 @@
 #include "cachedDag.hh"
 #include "metaModuleCache.hh"
 #include "succSymbol.hh"
+#include "sequenceSearch.hh"
+
 class MetaLevel
 {
   NO_COPYING(MetaLevel);
@@ -200,6 +202,7 @@ public:
 			 const NatSet& chosenDecls,
 			 PointerMap& qidMap);
 
+  bool downSignedInt(DagNode* dag, int& number) const;
   bool downBound(DagNode* metaBound, int& bound) const;
   bool downSaturate(DagNode* metaBound, int& bound) const;
   bool downBound64(DagNode* metaBound, Int64& bound) const;
@@ -249,6 +252,7 @@ public:
   bool downType(DagNode* metaType, MixfixModule* m, Sort*& type);
   bool downQidList(DagNode* metaQidList, Vector<int>& ids);
   bool downTypeList(DagNode* metaTypeList, MixfixModule* m, Vector<Sort*>& typeList);
+  bool downTypeSet(DagNode* metaTypeSet, MixfixModule* m, Vector<Sort*>& typeSet);
   bool downComponent(DagNode* metaComponent,
 		     MixfixModule* m,
 		     ConnectedComponent*& component);
@@ -265,6 +269,8 @@ public:
 			  MixfixModule* toModule,
 			  Vector<Term*>& fromTerms,
 			  Vector<Term*>& toTerms);
+
+  bool downSearchType(DagNode* arg, SequenceSearch::SearchType& searchType);
 
 private:
   enum Implementation
@@ -598,6 +604,12 @@ MetaLevel::upNat(const mpz_class& nat)
   return succSymbol->makeNatDag(nat);
 }
 
+inline bool
+MetaLevel::downSignedInt(DagNode* dag, int& number) const
+{
+  return succSymbol->getSignedInt(dag, number);
+}
+
 inline void
 MetaLevel::startVariableMapping(int varBase, FreshVariableGenerator* varGenerator)
 {
@@ -609,6 +621,25 @@ inline void
 MetaLevel::stopVariableMapping()
 {
   variableGenerator = 0;
+}
+
+inline bool
+MetaLevel::downSearchType(DagNode* arg, SequenceSearch::SearchType& searchType)
+{
+  int qid;
+  if (downQid(arg, qid))
+    {
+      if (qid == Token::encode("+"))
+	searchType = SequenceSearch::AT_LEAST_ONE_STEP;
+      else if (qid == Token::encode("*"))
+	searchType = SequenceSearch::ANY_STEPS;
+      else if (qid == Token::encode("!"))
+	searchType = SequenceSearch::NORMAL_FORM;
+      else
+	return false;
+      return true;
+    }
+  return false;
 }
 
 #endif

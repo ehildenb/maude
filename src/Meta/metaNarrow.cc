@@ -67,7 +67,7 @@ MetaLevelOpSymbol::metaNarrow(FreeDagNode* subject, RewritingContext& context)
 	{
 	  NarrowingSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeNarrowingSequenceSearch(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -146,7 +146,7 @@ MetaLevelOpSymbol::metaNarrow2(FreeDagNode* subject, RewritingContext& context)
 	{
 	  NarrowingSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeNarrowingSequenceSearchAlt(m, subject, context)))
 	    lastSolutionNr = -1;

@@ -1,0 +1,167 @@
+==========================================
+erewrite in SORT-TEST : <> < me : User | type: 'Int > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotLesserSorts(me, interpreter(
+    0), 'Nat ; 'NzInt ; 'NzNat ; 'Zero)
+==========================================
+erewrite in SORT-TEST : <> < me : User | type: 'Rat > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotLesserSorts(me, interpreter(
+    0), 'Int ; 'Nat ; 'NzInt ; 'NzNat ; 'NzRat ; 'PosRat ; 'Zero)
+==========================================
+erewrite in SORT-TEST : <> < me : User | type: '`[Rat`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotLesserSorts(me, interpreter(
+    0), 'Int ; 'Nat ; 'NzInt ; 'NzNat ; 'NzRat ; 'PosRat ; 'Rat ; 'Zero)
+==========================================
+erewrite in SORT-TEST : <> < me : User | type: '`[Bool`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotLesserSorts(me, interpreter(
+    0), 'Bool)
+==========================================
+erewrite in SORT-TEST : <> < me : User | type: 'Bool > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotLesserSorts(me, interpreter(
+    0), none)
+==========================================
+erewrite in SORT-TEST2 : <> < me : User | kind: '`[Rat`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotMaximalSorts(me, interpreter(
+    0), 'Rat)
+==========================================
+erewrite in SORT-TEST2 : <> < me : User | kind: '`[Bool`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotMaximalSorts(me, interpreter(
+    0), 'Bool)
+==========================================
+erewrite in SORT-TEST3 : <> < me : User | kind: '`[Rat`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotMinimalSorts(me, interpreter(
+    0), 'NzNat ; 'Zero)
+==========================================
+erewrite in SORT-TEST3 : <> < me : User | kind: '`[Bool`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotMinimalSorts(me, interpreter(
+    0), 'Bool)
+==========================================
+erewrite in SORT-TEST4 : <> < me : User | typePair: 'Nat : 'Bool >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > comparedTypes(me, interpreter(0),
+    false, false, false)
+==========================================
+erewrite in SORT-TEST4 : <> < me : User | typePair: 'Nat : 'Rat >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > comparedTypes(me, interpreter(0),
+    true, true, false)
+==========================================
+erewrite in SORT-TEST4 : <> < me : User | typePair: 'Rat : 'Rat >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > comparedTypes(me, interpreter(0),
+    true, true, true)
+==========================================
+erewrite in SORT-TEST4 : <> < me : User | typePair: 'Rat : 'Int >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > comparedTypes(me, interpreter(0),
+    true, false, true)
+==========================================
+erewrite in SORT-TEST4 : <> < me : User | typePair: 'NzRat : 'Int >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > comparedTypes(me, interpreter(0),
+    true, false, false)
+==========================================
+erewrite in SORT-TEST5 : <> < me : User | type: 'Nat > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotKind(me, interpreter(0),
+    '`[Rat`])
+==========================================
+erewrite in SORT-TEST5 : <> < me : User | type: 'Bool > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotKind(me, interpreter(0),
+    '`[Bool`])
+==========================================
+erewrite in SORT-TEST6 : <> < me : User | module: 'RAT > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotKinds(me, interpreter(0),
+    '`[Bool`] ; '`[Rat`])
+==========================================
+erewrite in SORT-TEST6 : <> < me : User | module: 'META-LEVEL >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 4
+result Configuration: <> < me : User | none > gotKinds(me, interpreter(0),
+    '`[AttrSet`] ; '`[Bool`] ; '`[Condition`] ; '`[Depth`] ; '`[EquationSet`] ;
+    '`[FindResult`,NatList`,Parent`,Bound`] ; '`[GTermList`,Header`,ModuleExpression`,QidList`,TypeListSet`,QidSet`,Type?`,ParameterList`] ; '`[HookList`] ;
+    '`[ImportList`] ; '`[MatchPair?`] ; '`[MembAxSet`] ; '`[Module`] ;
+    '`[NarrowingApplyResult?`] ; '`[NarrowingSearchPathResult?`] ;
+    '`[NarrowingSearchResult?`] ; '`[NarrowingTrace`] ; '`[OpDeclSet`] ;
+    '`[OpMappingSet`] ; '`[ParameterDeclList`] ; '`[PrintOptionSet`] ;
+    '`[RenamingSet`] ; '`[Result4Tuple?`] ; '`[ResultPair?`] ;
+    '`[ResultTriple?`] ; '`[RuleSet`] ; '`[SmtResult?`] ; '`[SortMappingSet`] ;
+    '`[String`] ; '`[SubsortDeclSet`] ; '`[Substitution?`] ; '`[Trace?`] ;
+    '`[UnificationPair?`] ; '`[UnificationProblem`] ; '`[UnificationTriple?`] ;
+    '`[Variant?`] ; '`[View`])
+==========================================
+erewrite in SORT-TEST6 : <> < me : User | module: 'META-INTERPRETER >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 4
+result Configuration: <> < me : User | none > gotKinds(me, interpreter(0),
+    '`[AttrSet`] ; '`[AttributeSet`] ; '`[Bool`] ; '`[Cid`] ; '`[Condition`] ;
+    '`[Configuration`] ; '`[Depth`] ; '`[EquationSet`] ;
+    '`[FindResult`,NatList`,Parent`,RewriteCount`,Bound`] ; '`[GTermList`,Header`,ModuleExpression`,QidList`,TypeListSet`,QidSet`,Type?`,ParameterList`] ;
+    '`[HookList`] ; '`[ImportList`] ; '`[InterpreterOptionSet`] ;
+    '`[MatchPair?`] ; '`[MembAxSet`] ; '`[Module`] ; '`[NarrowingApplyResult?`]
+    ; '`[NarrowingSearchPathResult?`] ; '`[NarrowingSearchResult?`] ;
+    '`[NarrowingTrace`] ; '`[Oid`] ; '`[OpDeclSet`] ; '`[OpMappingSet`] ;
+    '`[ParameterDeclList`] ; '`[PrintOptionSet`] ; '`[RenamingSet`] ;
+    '`[Result4Tuple?`] ; '`[ResultPair?`] ; '`[ResultTriple?`] ; '`[RuleSet`] ;
+    '`[SmtResult?`] ; '`[SortMappingSet`] ; '`[String`] ; '`[SubsortDeclSet`] ;
+    '`[Substitution?`] ; '`[Trace?`] ; '`[UnificationPair?`] ;
+    '`[UnificationProblem`] ; '`[UnificationTriple?`] ; '`[Variant?`] ;
+    '`[View`])
+==========================================
+erewrite in SORT-TEST7 : <> < me : User | types: ('Nat ; 'NzRat) >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotGlbTypes(me, interpreter(0),
+    'NzNat)
+==========================================
+erewrite in SORT-TEST7 : <> < me : User | types: none > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotGlbTypes(me, interpreter(0),
+    none)
+==========================================
+erewrite in SORT-TEST7 : <> < me : User | types: '`[Nat`] > createInterpreter(
+    interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotGlbTypes(me, interpreter(0),
+    '`[Rat`])
+==========================================
+erewrite in SORT-TEST7 : <> < me : User | types: ('Nat ; 'NzRat ; 'Zero) >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotGlbTypes(me, interpreter(0),
+    none)
+==========================================
+erewrite in SORT-TEST7 : <> < me : User | types: ('Nat ; 'Int ; 'NzRat) >
+    createInterpreter(interpreterManager, me, none) .
+rewrites: 5
+result Configuration: <> < me : User | none > gotGlbTypes(me, interpreter(0),
+    'NzNat)
+Bye.

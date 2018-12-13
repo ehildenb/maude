@@ -1,6 +1,6 @@
 ==========================================
-erewrite in TEST : <> createInterpreter(interpreterManager, me) < me : User |
-    state: 1 > .
+erewrite in TEST : <> < me : User | state: 1 > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 5
 result Configuration: <> < me : User | state: 4 > showingModule(me,
     interpreter(0), fmod 'BAR is

@@ -1,3 +1,19 @@
+2018-08-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* stringOpSymbol.hh (FreeSymbol): added decls for upperCase(),
+	lowerCase()
+
+	* stringOpSymbol.cc (eqRewrite, getDataAttachments): added support
+	for upperCase() and lowerCase()
+	(upperCase, lowerCase): added
+
+===================================Maude118===========================================
+
+2018-08-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* bindingMacros.hh (BIND_SYMBOL2): added; this version
+	checks nrArgs
+
 2018-03-26  Steven Eker  <eker@install.csl.sri.com>
 
 	* floatOpSymbol.cc (safePow, eqRewrite):  use isNaN() macro to

@@ -24,7 +24,7 @@
 //	Code for metaMatch() and metaXmatch() descent functions.
 //
 
-local_inline MatchSearchState* 
+local_inline MatchSearchState*
 MetaLevelOpSymbol::makeMatchSearchState(MetaModule* m,
 					FreeDagNode* subject,
 					RewritingContext& context) const
@@ -67,7 +67,7 @@ MetaLevelOpSymbol::metaMatch(FreeDagNode* subject, RewritingContext& context)
 	{
 	  MatchSearchState* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeMatchSearchState(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -139,7 +139,9 @@ MetaLevelOpSymbol::makeMatchSearchState2(MetaModule* m,
 					      minDepth,
 					      maxDepth);
 		}
+	      s->deepSelfDestruct();
 	    }
+	  p->deepSelfDestruct();
 	}
     }
   return 0;
@@ -158,7 +160,7 @@ MetaLevelOpSymbol::metaXmatch(FreeDagNode* subject, RewritingContext& context)
 	{
 	  MatchSearchState* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeMatchSearchState2(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -185,7 +187,7 @@ MetaLevelOpSymbol::metaXmatch(FreeDagNode* subject, RewritingContext& context)
 	    Sort* sort = pattern->getLhs()->getSort();  // HACK
 	    VariableSymbol* vs = safeCast(VariableSymbol*, m->instantiateVariable(sort));
 	    DagNode* hole = new VariableDagNode(vs, 0, UNDEFINED);
-	    RewriteSearchState::DagPair top = state->rebuildDag(hole);
+	    PositionState::DagPair top = state->rebuildDag(hole);
 	    result = metaLevel->upMatchPair(*substitution,
 					    *pattern,
 					    top.first,

@@ -56,7 +56,19 @@ public:
   void cleanUp(DagNode* objectId);
 
 private:
+  static RewritingContext* term2RewritingContext(Term* term, RewritingContext& context);
+
   bool okToBind();
+
+  RewriteSequenceSearch* makeRewriteSequenceSearch(ImportModule* m,
+						   FreeDagNode* message,
+						   RewritingContext& context) const;
+  MatchSearchState* makeMatchSearchState(ImportModule* m,
+					 FreeDagNode* subject,
+					 RewritingContext& context) const;
+  MatchSearchState* makeMatchSearchState2(ImportModule* m,
+					  FreeDagNode* subject,
+					  RewritingContext& context) const;
 
   bool insertModule(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool showModule(FreeDagNode* message, ObjectSystemRewritingContext& context);
@@ -66,11 +78,28 @@ private:
   bool rewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool frewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool erewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getSearchResult(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getMatch(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getXmatch(FreeDagNode* message, ObjectSystemRewritingContext& context);
+
+  bool getLesserSorts(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getMaximalSorts(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getMinimalSorts(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool compareTypes(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getKind(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getKinds(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getGlbTypes(FreeDagNode* message, ObjectSystemRewritingContext& context);
+
   bool quit(FreeDagNode* message, ObjectSystemRewritingContext& context);
 
   bool getInterpreter(DagNode* interpreterArg, Interpreter*& interpreter);
+  bool getInterpreterAndModule(FreeDagNode* message,
+			       Interpreter*& interpreter,
+			       ImportModule*& module);
   bool deleteInterpreter(DagNode* interpreterArg);
-  void createInterpreter(FreeDagNode* originalMessage, ObjectSystemRewritingContext& context);
+  bool createInterpreter(FreeDagNode* originalMessage, ObjectSystemRewritingContext& context);
+
+  DagNode* upRewriteCount(const RewritingContext* context);
 
   static DagNode* term2Dag(Term* t);
 
@@ -84,5 +113,14 @@ private:
 
   Vector<Interpreter*> interpreters;
 };
+
+inline RewritingContext*
+InterpreterManagerSymbol::term2RewritingContext(Term* term, RewritingContext& context)
+{
+  term = term->normalize(false);
+  DagNode* d = term2Dag(term);
+  term->deepSelfDestruct();
+  return context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
+}
 
 #endif
