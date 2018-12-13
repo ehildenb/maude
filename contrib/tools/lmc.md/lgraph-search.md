@@ -7,11 +7,11 @@ Abstract Graph Search Algorithms
 --------------------------------
 
 ```maude
-load ../meta/narrowing.maude
-load ../meta/cterms.maude
-load ../meta/mtransform.maude
-load ../meta/variables.maude
-load lmc.maude
+sload ../meta/narrowing.maude
+sload ../meta/cterms.maude
+sload ../meta/mtransform.maude
+sload ../meta/variables.maude
+sload lmc.maude
 
 set include BOOL off .
 ```

@@ -12,9 +12,9 @@
 ---       [3] Checking that there exists an assignment such
 ---           that the disequalities are consistent modulo B
 
-load sort-ops.maude       --- empty and finite sort constructions
-load ctor-var-unif.maude  --- computing constructor variants and unifiers
-load ../meta/eqform.maude --- formula data structure
+sload sort-ops.maude       --- empty and finite sort constructions
+sload ctor-var-unif.maude  --- computing constructor variants and unifiers
+sload ../meta/eqform.maude --- formula data structure
 
 fmod FORMS-TERMS-AUX is
   pr EQFORM .

@@ -369,7 +369,7 @@ set include BOOL on .
 set include TRUTH-VALUE off .
 
 --- Include Santiago Escobar's Meta-Level Narrowing Code
-load ../meta/unification.maude
+sload ../meta/unification.maude
 
 fmod 2TUPLE{X :: TRIV, Y :: TRIV} is
   sorts Tuple{X, Y} .

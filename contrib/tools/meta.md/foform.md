@@ -8,8 +8,8 @@ in separate modules from FOFORM and are called through META-LEVEL reflection.
 This isolates the modules from one another and simplifies the algorithm design.
 
 ```maude
-load meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
-load variables.maude      --- next-gen renaming library
+sload meta-aux.maude       --- library of extensions to Maude's META-LEVEL module
+sload variables.maude      --- next-gen renaming library
 
 fmod REFLECT is
   pr META-LEVEL .

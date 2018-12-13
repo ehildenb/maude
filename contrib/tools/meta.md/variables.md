@@ -2,8 +2,8 @@ Variable Handling
 =================
 
 ```maude
-load ../meta/meta-aux.maude
-load terms.maude
+sload ../meta/meta-aux.maude
+sload terms.maude
 ```
 
 Determiistic Variables

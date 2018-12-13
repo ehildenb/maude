@@ -14,7 +14,7 @@
 ---       can be handled via a call to the CETA library.
 ---       At the moment, this case isn't handled yet.
 
-load ../base/prelude-aux.maude
+sload ../base/prelude-aux.maude
 
 fmod VSWF-AUX is
   pr TYPE-EXTRA .

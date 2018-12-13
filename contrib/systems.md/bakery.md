@@ -7,7 +7,7 @@ Processes wait for their turn to enter the critical section, synchronizing using
 An implementation which allows multiple processes into the critical section simultaneously is buggy.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 
 set include BOOL off .
 set include NAT  off .

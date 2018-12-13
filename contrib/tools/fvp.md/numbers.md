@@ -10,9 +10,9 @@ set include INT  off .
 For instantiating for formulae over FVP naturals, we'll use the `eqform` package.
 
 ```maude
-load ../meta/eqform.maude
-load ../meta/mtransform.maude
-load ../meta/variables.maude
+sload ../meta/eqform.maude
+sload ../meta/mtransform.maude
+sload ../meta/variables.maude
 ```
 
 FVP Booleans

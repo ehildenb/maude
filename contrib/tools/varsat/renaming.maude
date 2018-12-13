@@ -1,2 +1,2 @@
-load prelude-aux.maude
-load ../meta/variables.maude
+sload prelude-aux.maude
+sload ../meta/variables.maude

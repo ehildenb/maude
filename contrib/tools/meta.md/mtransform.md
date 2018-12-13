@@ -2,8 +2,8 @@ Module Transformations
 ======================
 
 ```maude
-load purification.maude
-load mconstruction.maude
+sload purification.maude
+sload mconstruction.maude
 ```
 
 \newcommand{\R}{\mathcal{R}}

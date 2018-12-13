@@ -15,8 +15,8 @@
 --- Since this module relies on ctor-refine, the target module should
 --- not rely on kinds anywhere in its defintion
 
-load var-unif.maude       --- computing variants/unifiers
-load mgci.maude           --- most general constructor instance operation
+sload var-unif.maude       --- computing variants/unifiers
+sload mgci.maude           --- most general constructor instance operation
 
 fmod CTOR-VARIANT is
   pr META-LEVEL .

@@ -4,7 +4,7 @@ IMP Language
 IMP is a simple imperative language with expression, variables assignment/lookup, and structured control flow.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 ```
 
 Data Structures
