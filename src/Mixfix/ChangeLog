@@ -1,3 +1,58 @@
+2018-10-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* userLevelRewritingContext.cc (tracePreRuleRewrite): add
+	handling for dummy rewrites
+
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* getVariants.cc (doGetVariants): pass variableFamily argument
+	to getNextVariant()
+	(doGetVariants): change unused arguments to getNextVariant()
+	into dummies to indicate we don't use these values
+
+2018-09-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* importModule.hh (User): added comment to explain why
+	protectCount exists
+
+	* importModule.cc (unprotect): add Assert() for decrementing
+	non-positive protectCount
+
+2018-09-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* freshVariableSource.hh (FreshVariableGenerator): updated
+	decl for variableNameConflict()
+
+	* freshVariableSource.cc (variableNameConflict): take
+	okFamily argument and don't report conflicts for
+	variables from this family
+
+2018-09-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* freshVariableSource.cc (getFamily): don't need to
+	call Token::unflaggedCode() since single characters
+	will not be variable names and therefore cannot be
+	flagged
+
+2018-09-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* top.yy (directive): added KW_SLOAD; implmented sload
+
+	* lexer.ll: added sload
+
+	* lexerAux.cc (includeFile): pass const string& rhat than char* to
+	DirectoryMangager::pushd()
+	(includeFile): call visitFile()
+
+	* global.cc (findFile): use directoryManager.getCwd() rather than
+	"." so we always have an absolute directory path
+
+2018-09-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* lexerAux.cc (MAX_IN_DEPTH): changed to 100
+
+===================================Maude119===========================================
+
 2018-07-27  Steven Eker  <eker@install.csl.sri.com>
 
 	* interact.cc (where): save, clear and restore ctrlC_Flag so

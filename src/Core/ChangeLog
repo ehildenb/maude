@@ -1,3 +1,27 @@
+2018-10-23  Steven Eker  <eker@install.csl.sri.com>
+
+	* run.cc (ruleRewrite): use stackPhysicalArguments()
+
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* rewritingContext.hh (transferCount): becomes
+	transferCountFrom()
+
+2018-09-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* freshVariableGenerator.hh (F): don't have a default family for
+	getFreshVariableName()
+
+	* unificationContext.hh (SimpleRootContainer): remove default
+	value for variableFamily
+
+2018-09-19  Steven Eker  <eker@install.csl.sri.com>
+
+	* freshVariableGenerator.hh (F): updated decl for
+	variableNameConflict()
+
+===================================Maude119===========================================
+
 2018-06-11  Steven Eker  <eker@install.csl.sri.com>
 
 	* module.cc (closeTheory): converted commented out print into

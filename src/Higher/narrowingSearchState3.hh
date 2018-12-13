@@ -22,6 +22,7 @@
 
 //
 //	Class for searching for single narrowing step using variant unification.
+//	This version is used for sequence search.
 //
 #ifndef _narrowingSearchState3_hh_
 #define _narrowingSearchState3_hh_

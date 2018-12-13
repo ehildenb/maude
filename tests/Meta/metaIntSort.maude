@@ -242,3 +242,69 @@ createInterpreter(interpreterManager, me, none) .
 erew in SORT-TEST7 : <> 
 < me : User | types: ('Nat ; 'NzRat ; 'Int) > 
 createInterpreter(interpreterManager, me, none) .
+
+
+mod SORT-TEST8 is
+  pr META-INTERPRETER .
+
+  op me : -> Oid .
+  op User : -> Cid .
+  op op:(_:_->_) : Qid TypeList Sort -> Attribute .
+
+  vars X Y Z : Oid .
+  var AS : AttributeSet .
+  var N : Nat .
+  var Q : Qid .
+  var TL : TypeList .
+  var S : Sort .
+
+  rl < X : User | AS > createdInterpreter(X, Y, Z) =>
+     < X : User | AS > insertModule(Z, X, upModule('RAT, true)) .
+
+  rl < X : User | AS, op:(Q : TL -> S) > insertedModule(X, Y) =>
+     < X : User | AS > getMaximalAritySet(Y, X, 'RAT, Q, TL, S) .
+endm
+
+erew in SORT-TEST8 : <> 
+< me : User | op: ('_+_ : 'Nat 'Nat -> 'Nat) > 
+createInterpreter(interpreterManager, me, none) .
+
+erew in SORT-TEST8 : <> 
+< me : User | op: ('_+_ : 'Nat 'Nat -> 'NzNat) > 
+createInterpreter(interpreterManager, me, none) .
+
+erew in SORT-TEST8 : <> 
+< me : User | op: ('_+_ : 'Nat 'Nat -> 'NzRat) > 
+createInterpreter(interpreterManager, me, none) .
+
+
+mod SORT-TEST9 is
+  pr META-INTERPRETER .
+
+  op me : -> Oid .
+  op User : -> Cid .
+  op term:_ : Term -> Attribute .
+
+  vars X Y Z : Oid .
+  var AS : AttributeSet .
+  var N : Nat .
+  var T : Term .
+
+  rl < X : User | AS > createdInterpreter(X, Y, Z) =>
+     < X : User | AS > insertModule(Z, X, upModule('RAT, true)) .
+
+  rl < X : User | AS, term: T > insertedModule(X, Y) =>
+     < X : User | AS > normalizeTerm(Y, X, 'RAT, T) .
+endm
+
+erew in SORT-TEST9 : <> 
+< me : User | term: ('_+_['X:Nat, '_+_['Y:Rat, 'X:Nat]]) > 
+createInterpreter(interpreterManager, me, none) .
+
+erew in SORT-TEST9 : <> 
+< me : User | term: ('_+_['_+_['X:Nat, 'Y:Rat], '_+_['Y:Rat, 'X:Nat]]) > 
+createInterpreter(interpreterManager, me, none) .
+
+erew in SORT-TEST9 : <> 
+< me : User | term: ('_+_['_+_['X:NzNat, 'Y:PosRat], '_+_['Y:PosRat, 'X:NzNat]]) > 
+createInterpreter(interpreterManager, me, none) .

@@ -1,3 +1,45 @@
+2018-10-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added parseQidList/parsedQidList
+
+2018-10-16  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added printTerm/printedTerm
+
+2018-10-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added gotVariantUnifier,
+	gotDisjointVariantUnifier
+
+2018-10-11  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getDisjointVariantUnifier,
+	getVariantUnifier
+
+2018-10-03  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added RewriteCount to gotVariant
+
+2018-09-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getVariant/gotVariant,
+	noSuchResult (4 arg version)
+
+2018-09-25  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getUnifier/gotUnifier,
+	getDisjointUnifier/gotDisjointUnifier, noSuchResult (Bool version)
+
+2018-09-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added normlizeTerm/normalizedTerm
+
+2018-09-14  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added getMaximalAritySet/gotMaximalAritySet
+
+===================================Maude119===========================================
+
 2018-08-17  Steven Eker  <eker@install.csl.sri.com>
 
 	* metaInterpreter.maude: added getKind/gotKind,

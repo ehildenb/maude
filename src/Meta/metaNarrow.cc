@@ -78,7 +78,7 @@ MetaLevelOpSymbol::metaNarrow(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  result = metaLevel->upFailureTriple(state->isIncomplete());
@@ -157,7 +157,7 @@ MetaLevelOpSymbol::metaNarrow2(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  delete state;
@@ -169,6 +169,8 @@ MetaLevelOpSymbol::metaNarrow2(FreeDagNode* subject, RewritingContext& context)
 	  m->insert(subject, state, solutionNr);
 	  //
 	  //	We up the dag using variable mapping so each result gets previously unused variables.
+	  //	This weirdness is an XG-specific feature implemented by the
+	  //	startVariableMapping()/stopVariableMapping() HACK.
 	  //
 	  metaLevel->startVariableMapping(state->getVariableTotalForPreviouslyReturnedStates() - m->getMinimumSubstitutionSize(),
 					  state->getFreshVariableGenerator());

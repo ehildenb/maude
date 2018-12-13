@@ -54,8 +54,8 @@
 //#include "matchSearchState.hh"
 #include "rewriteSequenceSearch.hh"
 //#include "narrowingSequenceSearch.hh"
-//#include "unificationProblem.hh"
-//#include "variantSearch.hh"
+#include "unificationProblem.hh"
+#include "variantSearch.hh"
 //#include "narrowingSearchState2.hh"
 //#include "narrowingSequenceSearch3.hh"
 
@@ -75,6 +75,7 @@
 #include "interpreter.hh"
 #include "userLevelRewritingContext.hh"
 #include "view.hh"
+#include "freshVariableSource.hh"
 
 //	metalevel class definitions
 #include "metaModule.hh"
@@ -84,9 +85,13 @@
 #include "interpreterManagerSymbol.hh"
 
 //	our stuff
+#include "interpreterPrint.cc"
 #include "interpreterRewrite.cc"
 #include "interpreterSearch.cc"
 #include "interpreterMatch.cc"
+#include "interpreterUnify.cc"
+#include "interpreterVariant.cc"
+#include "interpreterVariantUnify.cc"
 #include "interpreterSort.cc"
 
 InterpreterManagerSymbol::InterpreterManagerSymbol(int id)
@@ -259,6 +264,7 @@ InterpreterManagerSymbol::handleMessage(DagNode* message, ObjectSystemRewritingC
     return insertView(safeCast(FreeDagNode*, message), context);
   else if (s == showViewMsg)
     return showView(safeCast(FreeDagNode*, message), context);
+
   else if (s == reduceTermMsg)
     return reduceTerm(safeCast(FreeDagNode*, message), context);
   else if (s == rewriteTermMsg)
@@ -269,10 +275,27 @@ InterpreterManagerSymbol::handleMessage(DagNode* message, ObjectSystemRewritingC
     return erewriteTerm(safeCast(FreeDagNode*, message), context);
   else if (s == getSearchResultMsg || s == getSearchResultAndPathMsg)
     return getSearchResult(safeCast(FreeDagNode*, message), context);
+
+  else if (s == getUnifierMsg)
+    return getUnifier(safeCast(FreeDagNode*, message), context, false);
+  else if (s == getDisjointUnifierMsg)
+    return getUnifier(safeCast(FreeDagNode*, message), context, true);
+  else if (s == getVariantMsg)
+    return getVariant(safeCast(FreeDagNode*, message), context);
+  else if (s == getVariantUnifierMsg)
+    return getVariantUnifier(safeCast(FreeDagNode*, message), context, false);
+  else if (s == getDisjointVariantUnifierMsg)
+    return getVariantUnifier(safeCast(FreeDagNode*, message), context, true);
   else if (s == getMatchMsg)
     return getMatch(safeCast(FreeDagNode*, message), context);
   else if (s == getXmatchMsg)
     return getXmatch(safeCast(FreeDagNode*, message), context);
+
+  else if (s == printTermMsg)
+    return printTerm(safeCast(FreeDagNode*, message), context);
+  else if (s == parseQidListMsg)
+    return parseQidList(safeCast(FreeDagNode*, message), context);
+
   else if (s == getLesserSortsMsg)
     return getLesserSorts(safeCast(FreeDagNode*, message), context);
   else if (s == getMaximalSortsMsg)
@@ -287,6 +310,10 @@ InterpreterManagerSymbol::handleMessage(DagNode* message, ObjectSystemRewritingC
     return getKinds(safeCast(FreeDagNode*, message), context);
   else if (s == getGlbTypesMsg)
     return getGlbTypes(safeCast(FreeDagNode*, message), context);
+  else if (s == getMaximalAritySetMsg)
+    return getMaximalAritySet(safeCast(FreeDagNode*, message), context);
+  else if (s == normalizeTermMsg)
+    return normalizeTerm(safeCast(FreeDagNode*, message), context);
   else if (s == quitMsg)
     return quit(safeCast(FreeDagNode*, message), context);
   return false;

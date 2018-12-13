@@ -160,7 +160,7 @@ MetaLevel::upDagNode(DagNode* dagNode,
       {
 	VariableDagNode* v = safeCast(VariableDagNode*, dagNode);
 	int id = (variableGenerator == 0) ? v->id() :
-	  variableGenerator->getFreshVariableName(variableBase + v->getIndex());
+	  variableGenerator->getFreshVariableName(variableBase + v->getIndex(), 0 /* HACK */);
 	Sort* sort = safeCast(VariableSymbol*, dagNode->symbol())->getSort();
 	d = upVariable(id, sort, qidMap);
 	break;

@@ -185,11 +185,11 @@ VariantFolder::getNextSurvivingVariant(int& nrFreeVariables,
 
   currentVariantIndex = nextVariant->first;
   nrFreeVariables = nextVariant->second->nrFreeVariables;
+  variableFamily = nextVariant->second->variableFamily;
   //
   //	Optional information - non-null pointers means caller wants this information
   //	returned.
   //
-  variableFamily = nextVariant->second->variableFamily;
   if (variantNumber)
     *variantNumber = currentVariantIndex;  // internal number for current variant
   if (parentNumber)
@@ -211,11 +211,15 @@ VariantFolder::getNextSurvivingVariant(int& nrFreeVariables,
 }
 
 const Vector<DagNode*>*
-VariantFolder::getLastReturnedVariant(int& nrFreeVariables, int* parentNumber, bool* moreInLayer)
+VariantFolder::getLastReturnedVariant(int& nrFreeVariables,
+				      int& variableFamily,
+				      int* parentNumber,
+				      bool* moreInLayer)
 {
   RetainedVariantMap::const_iterator currentVariant = mostGeneralSoFar.find(currentVariantIndex);
   Assert(currentVariant != mostGeneralSoFar.end(), "current variant purged");
   nrFreeVariables = currentVariant->second->nrFreeVariables;
+  variableFamily = currentVariant->second->variableFamily;
   //
   //	Optional information - non-null pointers means caller wants this information
   //	returned.

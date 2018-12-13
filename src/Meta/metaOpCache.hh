@@ -40,6 +40,12 @@ public:
 
   template<class T>
   bool getCachedStateObject(FreeDagNode* subject,
+			    Int64 solutionNr,
+			    T*& state,
+			    Int64& lastSolutionNr);
+
+  template<class T>
+  bool getCachedStateObject(FreeDagNode* subject,
 			    RewritingContext& context,
 			    Int64 solutionNr,
 			    T*& state,
@@ -60,6 +66,28 @@ private:
   const int maxSize;
   Vector<Item> cache;
 };
+
+template<class T>
+inline bool
+MetaOpCache::getCachedStateObject(FreeDagNode* subject,
+				  Int64 solutionNr,
+				  T*& state,
+				  Int64& lastSolutionNr)
+{
+  CacheableState* cachedState;
+  if (remove(subject, cachedState, lastSolutionNr))
+    {
+      DebugAdvisory("looking for solution #" << solutionNr << " and found cached solution #" << lastSolutionNr);
+      if (lastSolutionNr <= solutionNr)
+	{
+	  state = safeCast(T*, cachedState);
+	  return true;
+	}
+      delete cachedState;
+    }
+  return false;
+}
+
 
 template<class T>
 inline bool

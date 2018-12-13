@@ -132,7 +132,8 @@ VariantNarrowingSearchState::VariantNarrowingSearchState(RewritingContext* conte
 	  int positionIndex = getPositionIndex();
 	  //cout << "has position " << positionIndex << endl;
 	  //
-	  //	If the top symbol is unstable, we need to consider all the equations, rather than just the ones indexed under the top symbol.
+	  //	If the top symbol is unstable, we need to consider all the equations,
+	  //	rather than just the ones indexed under the top symbol.
 	  //
 	  Symbol* s = d->symbol();
 	  const Vector<Equation*>& equations = s->isStable() ? s->getEquations() : module->getEquations();

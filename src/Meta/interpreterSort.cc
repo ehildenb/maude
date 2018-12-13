@@ -230,3 +230,83 @@ InterpreterManagerSymbol::getGlbTypes(FreeDagNode* message, ObjectSystemRewritin
     }
   return false;
 }
+
+bool
+InterpreterManagerSymbol::getMaximalAritySet(FreeDagNode* message, ObjectSystemRewritingContext& context)
+{
+  Interpreter* interpreter;
+  ImportModule* m;
+  if (getInterpreterAndModule(message, interpreter, m))
+    {
+      int id;
+      Vector<Sort*> arity;
+      Sort *targetSort;
+      if (metaLevel->downOpName(message->getArgument(3), id) &&
+	  metaLevel->downTypeList(message->getArgument(4), m, arity) &&
+	  metaLevel->downSimpleSort(message->getArgument(5), m, targetSort))
+	{
+	  //
+	  //	First we find the operator from its name and arity.
+	  //
+	  int nrArgs = arity.size();
+	  Vector<ConnectedComponent*> domain(nrArgs);
+	  for (int i = 0; i < nrArgs; i++)
+	    domain[i] = arity[i]->component();
+	  if (Symbol* s = m->findSymbol(id, domain, targetSort->component()))
+	    {
+	      //
+	      //	The answer is a subset of the set of declarations
+	      //	for the operator.
+	      //
+	      Vector<DagNode*> reply(3);
+	      PointerMap qidMap;
+	      DagNode* target = message->getArgument(1);
+	      reply[0] = target;
+	      reply[1] = message->getArgument(0);
+	      reply[2] = metaLevel->upTypeListSet(s->getOpDeclarations(),
+						  s->getMaximalOpDeclSet(targetSort),  // subset
+						  qidMap);
+	      context.bufferMessage(target, gotMaximalAritySetMsg->makeDagNode(reply));
+	      return true;
+	    }
+	}
+    }
+  return false;
+}
+
+bool
+InterpreterManagerSymbol::normalizeTerm(FreeDagNode* message, ObjectSystemRewritingContext& context)
+{
+  Interpreter* interpreter;
+  if (getInterpreter(message->getArgument(0), interpreter))
+    {
+      int id;
+      if (metaLevel->downQid(message->getArgument(2), id))
+	{
+	  if (PreModule* pm = interpreter->getModule(id))
+	    {
+	      if (ImportModule* m = pm->getFlatModule())
+		{
+		   if (Term* t = metaLevel->downTerm(message->getArgument(3), m))
+		     {
+		       t = t->normalize(true);
+		       t->symbol()->fillInSortInfo(t);
+
+		       Vector<DagNode*> reply(4);
+		       DagNode* target = message->getArgument(1);
+		       reply[0] = target;
+		       reply[1] = message->getArgument(0);
+
+		       PointerMap qidMap;
+		       reply[2] = metaLevel->upTerm(t, m, qidMap);
+		       reply[3] = metaLevel->upType(t->getSort(), qidMap);
+
+		       context.bufferMessage(target, normalizedTermMsg->makeDagNode(reply));
+		       return true;
+		     }
+		}
+	    }
+	}
+    }
+  return false;
+}

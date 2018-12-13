@@ -57,7 +57,11 @@ EXTRA_DIST = \
 	interpreterRewrite.cc \
 	interpreterSearch.cc \
 	interpreterMatch.cc \
-	interpreterSort.cc
+	interpreterUnify.cc \
+	interpreterVariant.cc \
+	interpreterVariantUnify.cc \
+	interpreterSort.cc \
+	interpreterPrint.cc
 
 noinst_HEADERS = \
 	meta.hh \

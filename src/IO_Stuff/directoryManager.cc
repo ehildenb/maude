@@ -226,8 +226,8 @@ DirectoryManager::pushd(const string& directory)
     {
       //
       //	If we didn't use a temporary we would have a really subtle
-      //	memory problem since both directoryStack[] returns a 
-      //	references which are might be invalidated by the append() call
+      //	memory problem since directoryStack[] returns a 
+      //	reference which might be invalidated by the append() call
       //	before it is dereferenced.
       //
       int cwd = directoryStack[oldLength - 1];
@@ -267,4 +267,39 @@ const char*
 DirectoryManager::getCwd()
 {
   return directoryNames.name(directoryStack[directoryStack.length() - 1]);
+}
+
+void
+DirectoryManager::visitFile(const string& fileName)
+{
+  //
+  //	Record a visit to a file, with the file's modification time.
+  //
+  struct stat buf;
+  if (stat(fileName.c_str(), &buf) == 0)
+    {
+      pair<int, ino_t> id(directoryStack[directoryStack.length() - 1], buf.st_ino);
+      visitedMap[id] = buf.st_mtime;
+    }
+}
+
+bool
+DirectoryManager::alreadySeen(const string& directory, const string& fileName)
+{
+  //
+  //	Check if we previous visited a file, and the file is unchanged.
+  //
+  string full(directory + '/' + fileName);
+  struct stat buf;
+  if (stat(full.c_str(), &buf) == 0)
+    {
+      pair<int, ino_t> id(directoryNames.encode(directory.c_str()), buf.st_ino);
+      VisitedMap::const_iterator i = visitedMap.find(id);
+      if (i != visitedMap.end() && i->second == buf.st_mtime)
+	{
+	  DebugAdvisory("already seen " << full);
+	  return true;
+	}
+    }
+  return false;
 }

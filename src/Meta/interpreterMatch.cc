@@ -40,7 +40,6 @@ InterpreterManagerSymbol::makeMatchSearchState(ImportModule* m,
 	  Pattern* pattern = new Pattern(p, false, condition);
 	  RewritingContext* subjectContext = term2RewritingContext(s, context);
 	  subjectContext->root()->computeTrueSort(*subjectContext);
-	  context.addInCount(*subjectContext);
 	  return new MatchSearchState(subjectContext,
 				      pattern,
 				      MatchSearchState::GC_PATTERN |
@@ -102,7 +101,7 @@ InterpreterManagerSymbol::getMatch(FreeDagNode* message, ObjectSystemRewritingCo
 			      args[2] = upRewriteCount(state->getContext());
 
 			      reply = noSuchResultMsg->makeDagNode(args);
-			      state->transferCount(context);
+			      context.addInCount(*(state->getContext()));  // account for any remaining rewrites
 			      delete state;
 			      goto done;
 			    }
@@ -132,7 +131,7 @@ InterpreterManagerSymbol::getMatch(FreeDagNode* message, ObjectSystemRewritingCo
 							    qidMap,
 							    dagNodeMap);
 			reply = gotMatchMsg->makeDagNode(args);
-			state->transferCount(context);
+			state->transferCountTo(context);
 		      }
 		    done:
 		      context.bufferMessage(target, reply);
@@ -173,7 +172,6 @@ InterpreterManagerSymbol::makeMatchSearchState2(ImportModule* m,
 		  Pattern* pattern = new Pattern(p, true, condition);
 		  RewritingContext* subjectContext = term2RewritingContext(s, context);
 		  subjectContext->root()->computeTrueSort(*subjectContext);
-		  context.addInCount(*subjectContext);
 		  return new MatchSearchState(subjectContext,
 					      pattern,
 					      MatchSearchState::GC_PATTERN |
@@ -239,7 +237,7 @@ InterpreterManagerSymbol::getXmatch(FreeDagNode* message, ObjectSystemRewritingC
 			      args[2] = upRewriteCount(state->getContext());
 
 			      reply = noSuchResultMsg->makeDagNode(args);
-			      state->transferCount(context);
+			      context.addInCount(*(state->getContext()));  // account for any remaining rewrites
 			      delete state;
 			      goto done;
 			    }
@@ -280,7 +278,7 @@ InterpreterManagerSymbol::getXmatch(FreeDagNode* message, ObjectSystemRewritingC
 			args[4] = metaLevel->upContext(top.first, m, hole, qidMap, dagNodeMap);
 
 			reply = gotXmatchMsg->makeDagNode(args);
-			state->transferCount(context);
+			state->transferCountTo(context);
 		      }
 		    done:
 		      context.bufferMessage(target, reply);

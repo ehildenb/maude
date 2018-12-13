@@ -341,11 +341,11 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
       remainder.multiplicities[0] == 1)
     {
       //
-      //	No left over rewrite, so if we're tracing
-      //	we need to fake a built-in rewrite.
+      //	No left over rewrite, so if we're tracing we
+      //	need to warn the trace system to ignore a fake rewrite.
       //
       if (RewritingContext::getTraceStatus())
-	context.tracePreRuleRewrite(subject, 0);
+	context.tracePreRuleRewrite(0, 0);
       return remainder.dagNodes[0];
     }
 
@@ -361,11 +361,11 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
       if (d == 0)
 	{
 	  //
-	  //	No left over rewrite, so if we're tracing
-	  //	we need to fake a built-in rewrite.
+	  //	No left over rewrite, so if we're tracing we
+	  //	need to warn the trace system to ignore a fake rewrite.
 	  //
 	  if (RewritingContext::getTraceStatus())
-	    context.tracePreRuleRewrite(subject, 0);
+	    context.tracePreRuleRewrite(0, 0);
 	}
       else
 	r = d;
@@ -373,11 +373,11 @@ ConfigSymbol::ruleRewrite(DagNode* subject, RewritingContext& context)
   else
     {
       //
-      //	No left over rewrite, so if we're tracing
-      //	we need to fake a built-in rewrite.
+      //	No left over rewrite, so if we're tracing we
+      //	need to warn the trace system to ignore a fake rewrite.
       //
       if (RewritingContext::getTraceStatus())
-	context.tracePreRuleRewrite(subject, 0);
+	context.tracePreRuleRewrite(0, 0);
     }
   context.addInCount(*t);
   delete t;

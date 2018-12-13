@@ -108,7 +108,7 @@ InterpreterManagerSymbol::getSearchResult(FreeDagNode* message, ObjectSystemRewr
 			      args[2] = upRewriteCount(state->getContext());
 
 			      reply = noSuchResultMsg->makeDagNode(args);
-			      state->transferCount(context);
+			      context.addInCount(*(state->getContext()));  // account for any remaining rewrites
 			      delete state;
 			      goto done;
 			    }
@@ -149,7 +149,7 @@ InterpreterManagerSymbol::getSearchResult(FreeDagNode* message, ObjectSystemRewr
 			  }
 			else
 			  reply = gotSearchResultMsg->makeDagNode(args);
-			state->transferCount(context);
+			state->transferCountTo(context);
 		      }
 		    done:
 		      context.bufferMessage(target, reply);

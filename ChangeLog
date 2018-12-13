@@ -1,3 +1,40 @@
+2018-10-23  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/physArgIndexOct2018.maude: added
+
+	* tests/Meta/metaIntParse.maude: added
+
+2018-10-22  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntPrint.maude: added
+
+2018-10-15  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntVariantUnify.maude: added
+
+2018-10-11  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/metaIntMatchOct2018.maude: added
+
+2018-10-10  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntVariant.maude: added
+
+2018-10-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/objectMessageOct2018.maude: added
+
+2018-09-26  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntUnify.maude: added
+
+2018-09-17  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntSort.maude: added tests for
+	getMaximalAritySet(); added tests for normalizeTerm()
+
+===================================Maude119===========================================
+
 2018-08-17  Steven Eker  <eker@install.csl.sri.com>
 
 	* tests/Meta/metaIntSort.maude: added

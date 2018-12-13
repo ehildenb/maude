@@ -53,24 +53,24 @@ public:
 		bool unificationMode,
 		bool irredundantMode,
 		bool deleteFreshVariableGenerator = true,
-		int disallowedVariableFamily = 2, /* default produces old behavior */
+		int incomingVariableFamily = NONE,
 		bool checkVariableNames = true);
   ~VariantSearch();
 
   bool getIrredundantMode() const;
   const NarrowingVariableInfo& getVariableInfo() const;
-  const Vector<DagNode*>* getNextVariant(int& nrFreeVariables, int& parentIndex, bool& moreInLayer);
+  const Vector<DagNode*>* getNextVariant(int& nrFreeVariables, int& variableFamily, int& parentIndex, bool& moreInLayer);
   const Vector<DagNode*>* getNextUnifier(int& nrFreeVariables, int& variableFamily);
   RewritingContext* getContext() const;
   bool isIncomplete() const;
   //
   //	Returns the last variant returned by getNextVariant().
   //
-  const Vector<DagNode*>* getLastReturnedVariant(int& nrFreeVariables, int& parentIndex, bool& moreInLayer);
+  const Vector<DagNode*>* getLastReturnedVariant(int& nrFreeVariables, int& variableFamily, int& parentIndex, bool& moreInLayer);
   //
   //	Returns the last unifier returned by getNextUnifier().
   //
-  const Vector<DagNode*>* getLastReturnedUnifier(int& nrFreeVariables);
+  const Vector<DagNode*>* getLastReturnedUnifier(int& nrFreeVariables, int& variableFamily);
 
 private:
   typedef map<int, int> IntMap;
@@ -129,9 +129,9 @@ VariantSearch::getContext() const
 }
 
 inline const Vector<DagNode*>*
-VariantSearch::getLastReturnedUnifier(int& nrFreeVariables)
+VariantSearch::getLastReturnedUnifier(int& nrFreeVariables, int& variableFamily)
 {
-  return variantCollection.getLastReturnedVariant(nrFreeVariables);
+  return variantCollection.getLastReturnedVariant(nrFreeVariables, variableFamily);
 }
 
 inline bool

@@ -87,7 +87,7 @@ RewriteConditionState::solve(bool findFirst, RewritingContext& solution)
   for(;;)
     {
       int stateNr = findNextState();
-      stateGraph.transferCount(solution);
+      stateGraph.transferCountTo(solution);
       if (stateNr == NONE)
 	break;
       if (matcher->match(stateGraph.getStateDag(stateNr), solution, subproblem))

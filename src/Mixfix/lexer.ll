@@ -143,6 +143,7 @@ th|fth|mod|fmod|smod|obj		RETURN(KW_MOD)  // need to know which one we saw
 omod					RETURN(KW_OMOD)
 view					RETURN(KW_VIEW);
 load					return KW_LOAD;
+sload					return KW_SLOAD;
 pwd					return KW_PWD;
 cd					return KW_CD;
 pushd					return KW_PUSHD;

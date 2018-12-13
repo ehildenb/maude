@@ -54,8 +54,10 @@
 
 UnificationProblem::UnificationProblem(Vector<Term*>& lhs,
 				       Vector<Term*>& rhs,
-				       FreshVariableGenerator* freshVariableGenerator)
-  : freshVariableGenerator(freshVariableGenerator)
+				       FreshVariableGenerator* freshVariableGenerator,
+				       int incomingVariableFamily)
+  : freshVariableGenerator(freshVariableGenerator),
+    variableFamilyToUse(incomingVariableFamily == 0)  // use 0 unless its the incoming family, then use 1
 {
 #ifndef NO_ASSERT
   if (globalAdvisoryFlag)
@@ -94,7 +96,7 @@ UnificationProblem::UnificationProblem(Vector<Term*>& lhs,
   for (int i = 0; i < nrOriginalVariables; ++i)
     {
       Term* v = variableInfo.index2Variable(i);
-      if (freshVariableGenerator->variableNameConflict(safeCast(VariableTerm*, v)->id()))
+      if (freshVariableGenerator->variableNameConflict(safeCast(VariableTerm*, v)->id(), incomingVariableFamily))
 	{
 	  IssueWarning("unsafe variable name " << QUOTE(v) << " in unification problem.");
 	  return;
@@ -120,7 +122,7 @@ UnificationProblem::UnificationProblem(Vector<Term*>& lhs,
   //
   orderSortedUnifiers = 0;
   sortedSolution = new Substitution(nrOriginalVariables);
-  unsortedSolution = new UnificationContext(freshVariableGenerator, nrOriginalVariables);
+  unsortedSolution = new UnificationContext(freshVariableGenerator, nrOriginalVariables, variableFamilyToUse);
   for (int i = 0; i < nrOriginalVariables; ++i)
     {
       sortedSolution->bind(i, 0);  // so GC doesn't barf
@@ -418,9 +420,9 @@ UnificationProblem::findOrderSortedUnifiers()
 	      Sort* sort = (i < nrOriginalVariables) ?
 		safeCast(VariableSymbol*, variableInfo.index2Variable(i)->symbol())->getSort() :
 		unsortedSolution->getFreshVariableSort(i);
-	      sortedSolution->bind(i, new VariableDagNode(freshVariableGenerator->getBaseVariableSymbol(sort),
-					  freshVariableGenerator->getFreshVariableName(freshVariableCount),
-					  i));
+	      Symbol* baseSymbol = freshVariableGenerator->getBaseVariableSymbol(sort);
+	      int newVariableName = freshVariableGenerator->getFreshVariableName(freshVariableCount, variableFamilyToUse);
+	      sortedSolution->bind(i, new VariableDagNode(baseSymbol, newVariableName, i));
 	      ++freshVariableCount;
 	    }
 	}

@@ -61,7 +61,7 @@ VariantSearch::VariantSearch(RewritingContext* context,
 			     bool unificationMode,
 			     bool irredundantMode,
 			     bool deleteFreshVariableGenerator,
-			     int disallowedVariableFamily,
+			     int incomingVariableFamily,
 			     bool checkVariableNames)
   : context(context),
     blockerDags(blockerDags),  // shallow copy
@@ -69,8 +69,8 @@ VariantSearch::VariantSearch(RewritingContext* context,
     unificationMode(unificationMode),
     irredundantMode(irredundantMode),
     deleteFreshVariableGenerator(deleteFreshVariableGenerator),
-    firstVariableFamily((disallowedVariableFamily == 0) ? 1 : 0),
-    secondVariableFamily((disallowedVariableFamily == 2) ? 1 : 2)
+    firstVariableFamily((incomingVariableFamily == 0) ? 1 : 0),
+    secondVariableFamily((incomingVariableFamily == 2 || incomingVariableFamily == NONE) ? 1 : 2)
 {
   incompleteFlag = false;
   nrVariantsReturned = 0;  // we only track this in variant mode
@@ -100,7 +100,7 @@ VariantSearch::VariantSearch(RewritingContext* context,
       for (int i = 0; i < nrVariantVariables; ++i)
 	{
 	  VariableDagNode* v = variableInfo.index2Variable(i);
-	  if (freshVariableGenerator->variableNameConflict(v->id()))
+	  if (freshVariableGenerator->variableNameConflict(v->id(), incomingVariableFamily))
 	    {
 	      DagNode* d = v;
 	      IssueWarning("unsafe variable name " << QUOTE(d) << " in variant " <<
@@ -246,24 +246,23 @@ VariantSearch::markReachableNodes()
 }
 
 const Vector<DagNode*>*
-VariantSearch::getNextVariant(int& nrFreeVariables, int& parentIndex, bool& moreInLayer)
+VariantSearch::getNextVariant(int& nrFreeVariables,  int& variableFamily, int& parentIndex, bool& moreInLayer)
 {
   if (context->traceAbort())
     return 0;
 
   int variantNumber;
   int parentNumber;
-  int dummy;
 
   const Vector<DagNode*>* v =
-    variantCollection.getNextSurvivingVariant(nrFreeVariables, dummy, &variantNumber, &parentNumber, &moreInLayer);
+    variantCollection.getNextSurvivingVariant(nrFreeVariables, variableFamily, &variantNumber, &parentNumber, &moreInLayer);
   if (v == 0 && !(frontier.empty()))
     {
       //
       //	Must be in incremental mode - try expanding current frontier.
       //
       expandLayer();
-      v = variantCollection.getNextSurvivingVariant(nrFreeVariables, dummy, &variantNumber, &parentNumber, &moreInLayer);
+      v = variantCollection.getNextSurvivingVariant(nrFreeVariables, variableFamily, &variantNumber, &parentNumber, &moreInLayer);
     }
   if (v != 0)
     {
@@ -280,10 +279,13 @@ VariantSearch::getNextVariant(int& nrFreeVariables, int& parentIndex, bool& more
 }
 
 const Vector<DagNode*>*
-VariantSearch::getLastReturnedVariant(int& nrFreeVariables, int& parentIndex, bool& moreInLayer)
+VariantSearch::getLastReturnedVariant(int& nrFreeVariables, int& variableFamily, int& parentIndex, bool& moreInLayer)
 {
   int parentNumber;
-  const Vector<DagNode*>* v = variantCollection.getLastReturnedVariant(nrFreeVariables, &parentNumber, &moreInLayer);
+  const Vector<DagNode*>* v = variantCollection.getLastReturnedVariant(nrFreeVariables,
+								       variableFamily,
+								       &parentNumber,
+								       &moreInLayer);
   Assert(v != 0, "shouldn't be asked for last returned variant, if last call didn't return a variant");
   parentIndex = (parentNumber == NONE) ? NONE : internalIndexToExternalIndex[parentNumber];
   return v;

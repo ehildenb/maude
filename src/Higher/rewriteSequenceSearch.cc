@@ -83,7 +83,7 @@ RewriteSequenceSearch::findNextMatch()
 					MatchSearchState::GC_CONTEXT);
     tryMatch:
       bool foundMatch = matchState->findNextMatch();
-      matchState->transferCount(*(getContext()));
+      matchState->transferCountTo(*(getContext()));
       if (foundMatch)
 	return true;
       delete matchState;

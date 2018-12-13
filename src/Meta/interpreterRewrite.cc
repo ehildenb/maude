@@ -21,7 +21,7 @@
 */
 
 //
-//	Code for reduceTerm()/rewriteTerm()/frewriteTerm()/erewrite() messages.
+//	Code for rewriteTerm()/frewriteTerm()/erewrite() messages.
 //
 
 bool
@@ -52,8 +52,7 @@ InterpreterManagerSymbol::reduceTerm(FreeDagNode* message, ObjectSystemRewriting
 		       DagNode* target = message->getArgument(1);
 		       reply[0] = target;
 		       reply[1] = message->getArgument(0);
-
-		       reply[2] = metaLevel->upNat((int) objectContext->getTotalCount());  // int cast is a hack for mac
+		       reply[2] = upRewriteCount(objectContext);
 
 		       PointerMap qidMap;
 		       PointerMap dagNodeMap;
@@ -105,7 +104,7 @@ InterpreterManagerSymbol::rewriteTerm(FreeDagNode* message, ObjectSystemRewritin
 			  DagNode* target = message->getArgument(1);
 			  reply[0] = target;
 			  reply[1] = message->getArgument(0);
-			  reply[2] = metaLevel->upNat((int) objectContext->getTotalCount());  // HACK
+			  reply[2] = upRewriteCount(objectContext);
 
 			  PointerMap qidMap;
 			  PointerMap dagNodeMap;
@@ -163,7 +162,7 @@ InterpreterManagerSymbol::frewriteTerm(FreeDagNode* message, ObjectSystemRewriti
 			  DagNode* target = message->getArgument(1);
 			  reply[0] = target;
 			  reply[1] = message->getArgument(0);
-			  reply[2] = metaLevel->upNat((int) objectContext->getTotalCount());  //HACK
+			  reply[2] = upRewriteCount(objectContext);
 
 			  PointerMap qidMap;
 			  PointerMap dagNodeMap;
@@ -224,7 +223,7 @@ InterpreterManagerSymbol::erewriteTerm(FreeDagNode* message, ObjectSystemRewriti
 			  DagNode* target = message->getArgument(1);
 			  reply[0] = target;
 			  reply[1] = message->getArgument(0);
-			  reply[2] = metaLevel->upNat((int) objectContext->getTotalCount());  //HACK
+			  reply[2] = upRewriteCount(objectContext);
 
 			  PointerMap qidMap;
 			  PointerMap dagNodeMap;
