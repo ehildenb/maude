@@ -44,7 +44,6 @@ MetaLevelOpSymbol::makeNarrowingSearchState2(MetaModule* m,
 	      t->deepSelfDestruct();
 	      return 0;
 	    }
-
 	  m->protect();
 
 	  RewritingContext* subjectContext = term2RewritingContext(t, context);

@@ -339,7 +339,10 @@ EXTRA_DIST = \
 	interpreterVariant.cc \
 	interpreterVariantUnify.cc \
 	interpreterSort.cc \
-	interpreterPrint.cc
+	interpreterPrint.cc \
+	interpreterApply.cc \
+	interpreterNewNarrow.cc \
+	interpreterNewNarrowSearch.cc
 
 noinst_HEADERS = \
 	meta.hh \

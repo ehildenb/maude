@@ -33,6 +33,7 @@ class SyntacticView : public View
 public:
   SyntacticView(Token viewName, Interpreter* owner);
   ~SyntacticView();
+  void addParameter2(Token name, ModuleExpression* theory);
   //
   //	We need to deal with variable declarations and op->term mappings.
   //

@@ -1,3 +1,202 @@
+2018-12-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterApply.cc (makeRewriteSearchState): deepSelfDestruct()
+	values in successful case
+
+	* interpreterSort.cc (normalizeTerm): need to deepSelfDestruct()
+	term rather than delete it
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getNarrowingSearchResultMsg, getNarrowingSearchResultAndPathMsg
+
+	* interpreterNewNarrowSearch.cc (getNarrowingSearchResult): rewritten
+	because the two return messages have quite different semantics despite
+	similar arugments; added comments to explain this
+
+2018-12-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevel.hh (M): made NarrowingVariableInfo version of
+	upSubstitution() public
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decl for makeNarrowingSearchPath()
+
+	* interpreterNewNarrowSearch.cc (makeNarrowingSearchPath): added
+
+	* metaLevel.hh (M): added decl for upNarrowingSearchPath()
+
+	* metaUp.cc (upNarrowingSearchPath): added
+	(upNarrowingSearchPathResult): use upNarrowingSearchPath()
+
+2018-12-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for makeNarrowingSequenceSearch3(), getNarrowingSearchResult()
+
+	* interpreterNewNarrowSearch.cc: created
+
+	* metaLevelOpSymbol.hh (FreeSymbol): delted decl for
+	downFoldType()
+
+	* metaLevel.hh (downFoldType): added
+
+	* metaNewNarrow2.cc (makeNarrowingSequenceSearch3): use
+	MetaLevel::downFoldType()
+	(downFoldType): deleted
+
+	* metaLevel.hh (M): added decl for downFoldType()
+
+	* interpreterSignature.cc: added
+	getNarrowingSearchResultMsg/gotNarrowingSearchResultMsg,
+	getNarrowingSearchResultAndPathMsg/gotNarrowingSearchResultAndPathMsg
+
+2018-11-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterNewNarrow.cc (makeNarrowingSearchState2): leave rewrite
+	counts in subjectContext
+	(getOneStepNarrowing): don't transfer rewrite counts from state context
+	inside loop
+	(getOneStepNarrowing): tranfer rewrite counts from state context
+	and the end of a success
+	(getOneStepNarrowing): do incrementNarrowingCount() on stateContext
+	rather than external context
+	(getOneStepNarrowing): return completeness flag in no such result
+	reply
+
+2018-11-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (handleMessage):
+	getOneStepNarrow() -> getOneStepNarrowing()
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol):
+	getOneStepNarrow() -> getOneStepNarrowing()
+
+	* interpreterNewNarrow.cc (getOneStepNarrow): becomes
+	getOneStepNarrowing()
+
+	* interpreterSignature.cc: getOneStepNarrowMsg/gotOneStepNarrowMsg ->
+	getOneStepNarrowingMsg/gotOneStepNarrowingMsg
+
+2018-11-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch
+	getOneStepNarrowMsg
+
+	* metaLevel.hh (M): made upPartialSubstitution() public
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for makeNarrowingSearchState2() and getOneStepNarrow()
+
+	* interpreterNewNarrow.cc: created
+
+	* interpreterMatch.cc (makeMatchSearchState): subject -> message
+
+	* interpreterSignature.cc: narrowWithRuleMsg/narrowedWithRuleMsg
+	-> getOneStepNarrowMsg/gotOneStepNarrowMsg
+
+2018-11-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added narrowWithRuleMsg,
+	narrowedWithRuleMsg
+
+2018-11-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaApply.cc (metaApply): only call transferCountTo() when
+	we exit the loop; don't addInCount() initial rewrites since
+	these would get double counted
+	(metaXapply): symmetric changes
+
+	* interpreterApply.cc (makeRewriteSearchState): don't do
+	context.addInCount() here since it leads to double counting of
+	initial equational rewriting.
+	(applyRule): don't do transferCountTo() in solution loop
+	(applyRule): add reduction count to stateContext rather than
+	context
+	(applyRule): increment stateContext rather than context
+
+2018-11-08  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterRewrite.cc (reduceTerm, rewriteTerm, frewriteTerm)
+	(erewriteTerm): use term2RewritingContext()
+
+2018-11-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaLevelOpSymbol.hh (FreeSymbol): deleted decl for
+	term2Dag()
+
+	* metaLevelOpSymbol.cc (term2Dag): deleted
+
+	* descentFunctions.cc (term2RewritingContext, metaLeastSort)
+	(metaReduce, metaRewrite, metaFrewrite, metaDownTerm): use
+	term2DagEagerLazyAware()
+
+	* interpreterManagerSymbol.hh (term2RewritingContext): use
+	term2DagEagerLazyAware()
+
+	* interpreterRewrite.cc (reduceTerm, rewriteTerm, frewriteTerm)
+	(erewriteTerm): use term2DagEagerLazyAware()
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): deleted
+	decl for term2Dag()
+
+	* interpreterManagerSymbol.cc (term2Dag): deleted
+
+	* metaDown.cc (dagifySubstitution): use term2DagEagerLazyAware()
+
+	* interpreterApply.cc (makeRewriteSearchState): use
+	MetaLevel::dagifySubstitution()
+
+	* metaLevelOpSymbol.hh (FreeSymbol): deleted decl for dagifySubstitution()
+
+	* metaLevel.hh (M): added decl for dagifySubstitution()
+
+	* metaApply.cc (metaXapply): use MetaLevel::dagifySubstitution()
+	(metaApply): use MetaLevel::dagifySubstitution()
+
+	* descentFunctions.cc (metaWellFormedSubstitution): use
+	MetaLevel::dagifySubstitution()
+
+	* metaDown.cc (dagifySubstitution): moved here from descentFunctions.cc
+
+	* interpreterApply.cc (makeRewriteSearchState): don't call
+	noDuplicates()
+
+	* metaLevelOpSymbol.hh (FreeSymbol): deleted decl for
+	noDuplicates()
+
+	* metaApply.cc (metaXapply): don't call noDuplicates()
+	(metaApply): don't call noDuplicates()
+
+	* descentFunctions.cc (noDuplicates): deleted
+	(metaWellFormedSubstitution): don't call noDuplicates()
+
+	* metaLevel.hh (M): added decl for duplicate()
+
+	* metaDown.cc (duplicate): added
+	(downAssignment): check for duplicate lhs variables
+
+	* interpreterManagerSymbol.cc (handleMessage): dispatch applyRuleMsg,
+	applyRule2Msg
+
+2018-11-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterManagerSymbol.hh (ExternalObjectManagerSymbol): added
+	decls for makeRewriteSearchState(), applyRule()
+
+	* interpreterApply.cc: created
+
+2018-11-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSignature.cc: added applyRuleMsg, appliedRuleMsg,
+	applyRule2Msg, appliedRule2Msg
+
+2018-11-01  Steven Eker  <eker@install.csl.sri.com>
+
+	* interpreterSort.cc (normalizeTerm): fix memory leak by
+	deleting term when we're done with it
+
+===================================Maude120===========================================
+
 2018-10-22  Steven Eker  <eker@install.csl.sri.com>
 
 	* interpreterManagerSymbol.cc (handleMessage): dispatch

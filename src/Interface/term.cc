@@ -72,6 +72,20 @@ Term::term2Dag(bool setSortInfo)
   return dagify();
 }
 
+DagNode*
+Term::term2DagEagerLazyAware(bool setSortInfo)
+{
+  //
+  //	This version marks eager paths first so we don't share identical
+  //	subterms between eager and lazy paths.
+  //
+  
+  NatSet eagerVariables;
+  Vector<int> problemVariables;
+  markEager(0, eagerVariables, problemVariables);
+  return term2Dag();
+}
+
 void
 Term::computeMatchIndices() const
 {

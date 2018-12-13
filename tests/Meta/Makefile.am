@@ -39,8 +39,10 @@ TESTS = \
 	metaIntVariant \
 	metaIntVariantUnify \
 	metaIntPrint \
-	metaIntParse
-
+	metaIntParse \
+	metaIntApply \
+	metaIntNewNarrow \
+	metaIntNewNarrowSearch
 
 MAUDE_FILES = \
 	metaApply.maude \
@@ -83,7 +85,10 @@ MAUDE_FILES = \
 	metaIntVariant.maude \
 	metaIntVariantUnify.maude \
 	metaIntPrint.maude \
-	metaIntParse.maude
+	metaIntParse.maude \
+	metaIntApply.maude \
+	metaIntNewNarrow.maude \
+	metaIntNewNarrowSearch.maude
 
 RESULT_FILES = \
 	metaApply.expected \
@@ -128,6 +133,9 @@ RESULT_FILES = \
 	metaIntVariant.expected \
 	metaIntVariantUnify.expected \
 	metaIntPrint.expected \
-	metaIntParse.expected
+	metaIntParse.expected \
+	metaIntApply.expected \
+	metaIntNewNarrow.expected \
+	metaIntNewNarrowSearch.expected
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)

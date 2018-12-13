@@ -11,7 +11,8 @@ TESTS = \
 	metaIntAscentJune2018 \
 	objectMessageOct2018 \
 	metaIntMatchOct2018 \
-	physArgIndexOct2018
+	physArgIndexOct2018 \
+	metaApplyNov2018
 
 
 MAUDE_FILES = \
@@ -27,7 +28,8 @@ MAUDE_FILES = \
 	metaIntAscentJune2018.maude \
 	objectMessageOct2018.maude \
 	metaIntMatchOct2018.maude \
-	physArgIndexOct2018.maude
+	physArgIndexOct2018.maude \
+	metaApplyNov2018.maude
 
 
 
@@ -44,7 +46,8 @@ RESULT_FILES = \
 	metaIntAscentJune2018.expected \
 	objectMessageOct2018.expected \
 	metaIntMatchOct2018.expected \
-	physArgIndexOct2018.expected
+	physArgIndexOct2018.expected \
+	metaApplyNov2018.expected
 
 
 EXTRA_DIST = $(TESTS) $(MAUDE_FILES) $(RESULT_FILES)

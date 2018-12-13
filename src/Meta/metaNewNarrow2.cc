@@ -24,23 +24,6 @@
 //	Code for metaNarrowingSearch() and metaNarrowingSearchPath() descent functions.
 //
 
-local_inline bool
-MetaLevelOpSymbol::downFoldType(DagNode* arg, bool& foldType) const
-{
-  int qid;
-  if (metaLevel->downQid(arg, qid))
-    {
-      if (qid == Token::encode("none"))
-	foldType = false;
-      else if (qid == Token::encode("match"))
-	foldType = true;
-      else
-	return false;
-      return true;
-    }
-  return false;
-}
-
 NarrowingSequenceSearch3*
 MetaLevelOpSymbol::makeNarrowingSequenceSearch3(MetaModule* m,
 						FreeDagNode* subject,
@@ -51,7 +34,7 @@ MetaLevelOpSymbol::makeNarrowingSequenceSearch3(MetaModule* m,
   bool fold;
   int maxDepth;
   if (downSearchType(subject->getArgument(3), searchType) &&
-      downFoldType(subject->getArgument(5), fold) &&
+      metaLevel->downFoldType(subject->getArgument(5), fold) &&
       metaLevel->downBound(subject->getArgument(4), maxDepth))
     {
       Term* s;
@@ -59,7 +42,7 @@ MetaLevelOpSymbol::makeNarrowingSequenceSearch3(MetaModule* m,
       if (metaLevel->downTermPair(subject->getArgument(1), subject->getArgument(2), s, g, m))
 	{
 	  m->protect();
-	  
+
 	  RewritingContext* subjectContext = term2RewritingContext(s, context);
 	  g = g->normalize(true);
 	  DagNode* goal = g->term2Dag();

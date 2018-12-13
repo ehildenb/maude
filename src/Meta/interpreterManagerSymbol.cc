@@ -50,14 +50,14 @@
 
 //	higher class definitions
 #include "pattern.hh"
-//#include "rewriteSearchState.hh"
-//#include "matchSearchState.hh"
+#include "rewriteSearchState.hh"
+#include "matchSearchState.hh"
 #include "rewriteSequenceSearch.hh"
 //#include "narrowingSequenceSearch.hh"
 #include "unificationProblem.hh"
 #include "variantSearch.hh"
-//#include "narrowingSearchState2.hh"
-//#include "narrowingSequenceSearch3.hh"
+#include "narrowingSearchState2.hh"
+#include "narrowingSequenceSearch3.hh"
 
 //	variable class definitions
 #include "variableDagNode.hh"
@@ -85,6 +85,7 @@
 #include "interpreterManagerSymbol.hh"
 
 //	our stuff
+#include "interpreterApply.cc"
 #include "interpreterPrint.cc"
 #include "interpreterRewrite.cc"
 #include "interpreterSearch.cc"
@@ -93,6 +94,8 @@
 #include "interpreterVariant.cc"
 #include "interpreterVariantUnify.cc"
 #include "interpreterSort.cc"
+#include "interpreterNewNarrow.cc"
+#include "interpreterNewNarrowSearch.cc"
 
 InterpreterManagerSymbol::InterpreterManagerSymbol(int id)
   : ExternalObjectManagerSymbol(id)
@@ -295,6 +298,18 @@ InterpreterManagerSymbol::handleMessage(DagNode* message, ObjectSystemRewritingC
     return printTerm(safeCast(FreeDagNode*, message), context);
   else if (s == parseQidListMsg)
     return parseQidList(safeCast(FreeDagNode*, message), context);
+
+  else if (s == applyRuleMsg)
+    return applyRule(safeCast(FreeDagNode*, message), context, true);
+  else if (s == applyRule2Msg)
+    return applyRule(safeCast(FreeDagNode*, message), context, false);
+
+  else if (s == getOneStepNarrowingMsg)
+    return getOneStepNarrowing(safeCast(FreeDagNode*, message), context);
+  else if (s == getNarrowingSearchResultMsg)
+    return getNarrowingSearchResult(safeCast(FreeDagNode*, message), context, false);
+  else if (s == getNarrowingSearchResultAndPathMsg)
+    return getNarrowingSearchResult(safeCast(FreeDagNode*, message), context, true);
 
   else if (s == getLesserSortsMsg)
     return getLesserSorts(safeCast(FreeDagNode*, message), context);
@@ -556,16 +571,6 @@ InterpreterManagerSymbol::createInterpreter(FreeDagNode* originalMessage, Object
   DebugAdvisory("createInterpreter() response: " << response);
   context.bufferMessage(target, response);
   return true;
-}
-
-DagNode*
-InterpreterManagerSymbol::term2Dag(Term* t)  // HACK - should share with MetaLevelOpSymbol
-{
-  NatSet eagerVariables;
-  Vector<int> problemVariables;
-  t->markEager(0, eagerVariables, problemVariables);
-  DagNode* r = t->term2Dag();
-  return r;
 }
 
 DagNode*

@@ -75,18 +75,15 @@ MetaLevelOpSymbol::metaWellFormedSubstitution(FreeDagNode* subject, RewritingCon
       Vector<Term*> values;
       if (metaLevel->downSubstitution(subject->getArgument(1), m, variables, values))
 	{
-	  if (noDuplicates(variables))
+	  Vector<DagRoot*> dags;
+	  m->protect();
+	  if (MetaLevel::dagifySubstitution(variables, values, dags, context))
 	    {
-	      Vector<DagRoot*> dags;
-	      m->protect();
-	      if (dagifySubstitution(variables, values, dags, context))
-		{
-		  result = true;
-		  for (int i = variables.length() - 1; i >= 0; i--)
-		    delete dags[i];
-		}
-	      (void) m->unprotect();
+	      result = true;
+	      for (int i = variables.length() - 1; i >= 0; i--)
+		delete dags[i];
 	    }
+	  (void) m->unprotect();
 	  for (int i = variables.length() - 1; i >= 0; i--)
 	    {
 	      variables[i]->deepSelfDestruct();
@@ -98,50 +95,11 @@ MetaLevelOpSymbol::metaWellFormedSubstitution(FreeDagNode* subject, RewritingCon
   return false;
 }
 
-bool
-MetaLevelOpSymbol::noDuplicates(const Vector<Term*>& terms)
-{
-  for (int i = terms.length() - 1; i >= 1; i--)
-    {
-      for (int j = i - 1; j >= 0; j--)
-	{
-	  if (terms[i]->equal(terms[j]))
-	    return false;
-	}
-    }
-  return true;
-}
-
-bool
-MetaLevelOpSymbol::dagifySubstitution(const Vector<Term*>& variables,
-				      Vector<Term*>& values,
-				      Vector<DagRoot*>& dags,
-				      RewritingContext& context)
-{
-  int nrVars = variables.length();
-  dags.resize(nrVars);
-  for (int i = 0; i < nrVars; i++)
-    {
-      values[i] = values[i]->normalize(false);
-      DagNode* d = term2Dag(values[i]);
-      dags[i] = new DagRoot(d);
-      d->computeTrueSort(context);
-      VariableTerm* v = static_cast<VariableTerm*>(variables[i]);
-      if (!(leq(d->getSortIndex(), v->getSort())))
-	{
-	  for (int j = 0; j <= i ; j++)
-	    delete dags[j];
-	  return false;
-	}
-    }
-  return true;
-}
-
 RewritingContext*
 MetaLevelOpSymbol::term2RewritingContext(Term* term, RewritingContext& context)
 {
   term = term->normalize(false);
-  DagNode* d = term2Dag(term);
+  DagNode* d = term->term2DagEagerLazyAware();
   term->deepSelfDestruct();
   return context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
 }
@@ -171,7 +129,7 @@ MetaLevelOpSymbol::metaLeastSort(FreeDagNode* subject, RewritingContext& context
       if (Term* t = metaLevel->downTerm(subject->getArgument(1), m))
 	{
 	  t = t->normalize(false);
-	  DagNode* d = term2Dag(t);
+	  DagNode* d = t->term2DagEagerLazyAware();
 	  t->deepSelfDestruct();
 	  RewritingContext* objectContext =
 	    context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
@@ -358,7 +316,7 @@ MetaLevelOpSymbol::metaReduce(FreeDagNode* subject, RewritingContext& context)
       if (Term* t = metaLevel->downTerm(subject->getArgument(1), m))
 	{
 	  t = t->normalize(false);
-	  DagNode* d = term2Dag(t);
+	  DagNode* d = t->term2DagEagerLazyAware();
 	  t->deepSelfDestruct();
 	  RewritingContext* objectContext =
 	    context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
@@ -402,7 +360,7 @@ MetaLevelOpSymbol::metaRewrite(FreeDagNode* subject, RewritingContext& context)
           if (Term* t = metaLevel->downTerm(subject->getArgument(1), m))
             {
               t = t->normalize(false);
-              DagNode* d = term2Dag(t);
+              DagNode* d = t->term2DagEagerLazyAware();
               t->deepSelfDestruct();
 	      //cerr << "before create\n"; RootContainer::dump(cerr);
               RewritingContext* objectContext =
@@ -451,7 +409,7 @@ MetaLevelOpSymbol::metaFrewrite(FreeDagNode* subject, RewritingContext& context)
 	  if (Term* t = metaLevel->downTerm(subject->getArgument(1), m))
 	    {
 	      t = t->normalize(false);
-	      DagNode* d = term2Dag(t);
+	      DagNode* d = t->term2DagEagerLazyAware();
 	      t->deepSelfDestruct();
 	      //cerr << "before create\n"; RootContainer::dump(cerr);
 	      RewritingContext* objectContext =
@@ -568,7 +526,7 @@ MetaLevelOpSymbol::metaDownTerm(FreeDagNode* subject, RewritingContext& context)
       if (tc == wc)
 	{
 	  t = t->normalize(false);
-	  d = term2Dag(t);
+	  d = t->term2DagEagerLazyAware();
 	}
       else
 	{

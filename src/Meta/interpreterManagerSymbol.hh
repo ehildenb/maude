@@ -64,11 +64,25 @@ private:
 						   FreeDagNode* message,
 						   RewritingContext& context) const;
   MatchSearchState* makeMatchSearchState(ImportModule* m,
-					 FreeDagNode* subject,
+					 FreeDagNode* message,
 					 RewritingContext& context) const;
   MatchSearchState* makeMatchSearchState2(ImportModule* m,
 					  FreeDagNode* subject,
 					  RewritingContext& context) const;
+
+  RewriteSearchState* makeRewriteSearchState(ImportModule* m,
+					     FreeDagNode* message,
+					     RewritingContext& context,
+					     bool atTop) const;
+  NarrowingSearchState2* makeNarrowingSearchState2(ImportModule* m,
+						   FreeDagNode* message,
+						   RewritingContext& context) const;
+  NarrowingSequenceSearch3* makeNarrowingSequenceSearch3(ImportModule* m,
+							 FreeDagNode* message,
+							 RewritingContext& context,
+							 bool keepHistory) const;
+
+  DagNode* makeNarrowingSearchPath(ImportModule* m, NarrowingSequenceSearch3* state) const;
 
   bool insertModule(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool showModule(FreeDagNode* message, ObjectSystemRewritingContext& context);
@@ -83,6 +97,7 @@ private:
   bool frewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool erewriteTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
 
+  bool applyRule(FreeDagNode* message, ObjectSystemRewritingContext& context, bool atTop);
   bool getSearchResult(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool getMatch(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool getXmatch(FreeDagNode* message, ObjectSystemRewritingContext& context);
@@ -98,6 +113,8 @@ private:
   bool getGlbTypes(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool getMaximalAritySet(FreeDagNode* message, ObjectSystemRewritingContext& context);
   bool normalizeTerm(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getOneStepNarrowing(FreeDagNode* message, ObjectSystemRewritingContext& context);
+  bool getNarrowingSearchResult(FreeDagNode* message, ObjectSystemRewritingContext& context, bool returnPath);
 
   bool quit(FreeDagNode* message, ObjectSystemRewritingContext& context);
 
@@ -109,8 +126,6 @@ private:
   bool createInterpreter(FreeDagNode* originalMessage, ObjectSystemRewritingContext& context);
 
   DagNode* upRewriteCount(const RewritingContext* context);
-
-  static DagNode* term2Dag(Term* t);
 
   MetaLevel* metaLevel;
   MetaLevelOpSymbol* shareWith;  // if this is nonzero then it points to the true owner of the MetaLevel object
@@ -127,7 +142,7 @@ inline RewritingContext*
 InterpreterManagerSymbol::term2RewritingContext(Term* term, RewritingContext& context)
 {
   term = term->normalize(false);
-  DagNode* d = term2Dag(term);
+  DagNode* d = term->term2DagEagerLazyAware();
   term->deepSelfDestruct();
   return context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
 }

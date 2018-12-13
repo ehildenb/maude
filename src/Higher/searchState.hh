@@ -58,6 +58,10 @@ public:
   RewritingContext* getContext() const;
   void transferCountTo(RewritingContext& recipient);
 
+  //
+  //	Takes responsibility for deleting the Term and DagRoot objects,
+  //	if instance was created with GC_SUBSTITUTION flag.
+  //
   void setInitialSubstitution(Vector<Term*>& variables, Vector<DagRoot*>& values);
 
 private:
