@@ -593,6 +593,12 @@ Renaming::addOpMapping(int code)
 }
 
 void
+Renaming::addParameter2(Token /* name */, ModuleExpression* /* theory */)
+{
+  CantHappen("renamings don't take parameters");
+}
+
+void
 Renaming::addVarDecl(Token /* varName */)
 {
   CantHappen("renamings don't take var decls");

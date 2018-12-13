@@ -1,5 +1,16 @@
-Overview of Changes in alpha119
+Overview of Changes in alpha120
 ===============================
+* fixed memory leak in normalizeTerm() message
+* fixed double counting of initial eq rewrites and mb
+  application in metaApply()/metaXapply()
+* added rule application to the meta-interpreter
+* added single step narrowing with variant unification
+  to the meta-interpreter
+* added narrowing search with variant unification, with
+  and without path, to the meta-interpreter
+
+* Overview of Changes in alpha119
+================================
 * smart load "sload" directive
 * more sort computation messages added to the meta-interpreter
 * unification and disjoint unification added to the meta-interpreter

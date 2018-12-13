@@ -13,7 +13,8 @@ TESTS = \
 	metaIntAscentJune2018.maude \
 	objectMessageOct2018.maude \
 	metaIntMatchOct2018.maude \
-	physArgIndexOct2018.maude
+	physArgIndexOct2018.maude \
+	metaApplyNov2018.maude
 
 RESULT_FILES = \
 	CUIbug12-22-09.expected \
@@ -28,7 +29,7 @@ RESULT_FILES = \
 	metaIntAscentJune2018.expected \
 	objectMessageOct2018.expected \
 	metaIntMatchOct2018.expected \
-	physArgIndexOct2018.expected
-
+	physArgIndexOct2018.expected \
+	metaApplyNov2018.expected
 
 EXTRA_DIST = $(TESTS) $(RESULT_FILES)

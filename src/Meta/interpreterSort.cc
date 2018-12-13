@@ -300,6 +300,7 @@ InterpreterManagerSymbol::normalizeTerm(FreeDagNode* message, ObjectSystemRewrit
 		       PointerMap qidMap;
 		       reply[2] = metaLevel->upTerm(t, m, qidMap);
 		       reply[3] = metaLevel->upType(t->getSort(), qidMap);
+		       t->deepSelfDestruct();
 
 		       context.bufferMessage(target, normalizedTermMsg->makeDagNode(reply));
 		       return true;

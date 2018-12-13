@@ -62,7 +62,6 @@ private:
   typedef bool (MetaLevelOpSymbol::*DescentFunctionPtr)
     (FreeDagNode* subject, RewritingContext& context);
 
-  static DagNode* term2Dag(Term* t);
   static RewritingContext* term2RewritingContext(Term* term, RewritingContext& context);
 
   PreModule* getPreModule(int name);
@@ -96,7 +95,6 @@ private:
 							  FreeDagNode* subject,
 							  RewritingContext& context) const;
 
-  bool downFoldType(DagNode* arg, bool& foldType) const;
   NarrowingSequenceSearch3* makeNarrowingSequenceSearch3(MetaModule* m,
 							 FreeDagNode* subject,
 							 RewritingContext& context,
@@ -113,7 +111,6 @@ private:
 #include "descentSignature.cc"
 #undef MACRO
 
-  bool noDuplicates(const Vector<Term*>& terms);
   bool dagifySubstitution(const Vector<Term*>& variables,
 			  Vector<Term*>& values,
 			  Vector<DagRoot*>& dags,

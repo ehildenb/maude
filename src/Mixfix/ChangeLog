@@ -1,3 +1,24 @@
+2018-11-21  Steven Eker  <eker@install.csl.sri.com>
+
+	* modules.yy (parameter): use currentSyntaxContainer->addParameter2()
+	(view): added syntax for parameterized views
+
+	* renaming.hh (SyntaxContainer): added decl for addParameter2()
+
+	* renaming.cc (addParameter2): added
+
+	* syntacticView.hh (View): added decl for addParameter2()
+
+	* syntacticView.cc (addParameter2): added
+
+	* syntacticPreModule.hh (SharedTokens): added decl for addParameter2()
+
+	* syntacticPreModule.cc (addParameter2): added
+
+	* syntaxContainer.hh (S): added decl for addParameter2()
+
+===================================Maude120===========================================
+
 2018-10-09  Steven Eker  <eker@install.csl.sri.com>
 
 	* userLevelRewritingContext.cc (tracePreRuleRewrite): add

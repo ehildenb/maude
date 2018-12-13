@@ -1158,6 +1158,15 @@ MetaLevel::upNarrowingStep(DagNode* root,
 }
 
 DagNode*
+MetaLevel::upNarrowingSearchPath(const Vector<DagNode*>& narrowingTrace)
+{
+  int traceSize = narrowingTrace.size();
+  return (traceSize == 1 ? narrowingTrace[0] :  // singleton
+	  (traceSize == 0 ? nilNarrowingTraceSymbol :  // empty
+	   narrowingTraceSymbol)->makeDagNode(narrowingTrace));  // associative list
+}
+
+DagNode*
 MetaLevel::upNarrowingSearchPathResult(DagNode* initialDag,
 				       const Substitution& initialRenaming,
 				       const NarrowingVariableInfo& initialVariableInfo,
@@ -1174,9 +1183,7 @@ MetaLevel::upNarrowingSearchPathResult(DagNode* initialDag,
   args[0] = upDagNode(initialDag, m, qidMap, dagNodeMap);
   args[1] = upType(initialDag->getSort(), qidMap);
   args[2] = upSubstitution(initialRenaming, initialVariableInfo, m, qidMap, dagNodeMap);
-  int traceSize = narrowingTrace.size();
-  args[3] = (traceSize == 1 ? narrowingTrace[0] :
-	     (traceSize == 0 ? nilNarrowingTraceSymbol : narrowingTraceSymbol)->makeDagNode(narrowingTrace));
+  args[3] = upNarrowingSearchPath(narrowingTrace);
   args[4] = upSubstitution(unifier, unifierVariableInfo, unifier.size(), m, qidMap, dagNodeMap);
   args[5] = upQid(unifierVariableFamilyName, qidMap);
   return narrowingSearchPathResultSymbol->makeDagNode(args);

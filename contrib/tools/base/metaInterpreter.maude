@@ -22,7 +22,7 @@
 
 ***
 ***	Maude meta-interpreters.
-***	Version alpha 119.
+***	Version alpha 120.
 ***
 
 mod META-INTERPRETER is
@@ -36,7 +36,7 @@ mod META-INTERPRETER is
 
   op none : -> InterpreterOptionSet [ctor] .
 
-  op interpreter : Nat -> Oid .
+  op interpreter : Nat -> Oid [ctor] .
 
   op createInterpreter : Oid Oid InterpreterOptionSet -> Msg [ctor msg format (b o)] .
   op createdInterpreter : Oid Oid Oid -> Msg [ctor msg format (m o)] .
@@ -108,6 +108,11 @@ mod META-INTERPRETER is
   op getXmatch : Oid Oid Qid Term Term Condition Nat Bound Nat -> Msg [ctor msg format (b o)] .
   op gotXmatch : Oid Oid RewriteCount Substitution Context -> Msg [ctor msg format (m o)] .
 
+  op applyRule : Oid Oid Qid Term Qid Substitution Nat -> Msg [ctor msg format (b o)] .
+  op appliedRule : Oid Oid RewriteCount Term Type Substitution -> Msg [ctor msg format (m o)] .
+  op applyRule : Oid Oid Qid Term Qid Substitution Nat Bound Nat -> Msg [ctor msg format (b o)] .
+  op appliedRule : Oid Oid RewriteCount Term Type Substitution Context -> Msg [ctor msg format (m o)] .
+
   op getUnifier : Oid Oid Qid UnificationProblem Qid Nat -> Msg [ctor msg format (b o)] .
   op gotUnifier : Oid Oid Substitution Qid -> Msg [ctor msg format (m o)] .
   op getDisjointUnifier : Oid Oid Qid UnificationProblem Qid Nat -> Msg [ctor msg format (b o)] .
@@ -120,6 +125,14 @@ mod META-INTERPRETER is
   op gotVariantUnifier : Oid Oid RewriteCount Substitution Qid -> Msg [ctor msg format (m o)] .
   op getDisjointVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat -> Msg [ctor msg format (b o)] .
   op gotDisjointVariantUnifier : Oid Oid RewriteCount Substitution Substitution Qid -> Msg [ctor msg format (m o)] .
+
+  op getOneStepNarrowing : Oid Oid Qid Term TermList Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotOneStepNarrowing : Oid Oid RewriteCount Term Type Context Qid Substitution Substitution Qid -> Msg [ctor msg format (m o)] .
+
+  op getNarrowingSearchResult : Oid Oid Qid Term Term Qid Bound Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotNarrowingSearchResult : Oid Oid RewriteCount Term Type Substitution Qid Substitution Qid -> Msg [ctor msg format (m o)] .
+  op getNarrowingSearchResultAndPath : Oid Oid Qid Term Term Qid Bound Qid Nat -> Msg [ctor msg format (b o)] .
+  op gotNarrowingSearchResultAndPath : Oid Oid RewriteCount Term Type Substitution NarrowingTrace Substitution Qid -> Msg [ctor msg format (m o)] .
 
   op noSuchResult : Oid Oid RewriteCount -> Msg [ctor msg format (m o)] .
   op noSuchResult : Oid Oid Bool -> Msg [ctor msg format (m o)] .
@@ -182,6 +195,12 @@ mod META-INTERPRETER is
            op-hook gotSearchResultMsg		(gotSearchResult : Oid Oid RewriteCount Term Type Substitution ~> Msg)
            op-hook getSearchResultAndPathMsg	(getSearchResultAndPath : Oid Oid Qid Term Term Condition Qid Bound Nat ~> Msg)
            op-hook gotSearchResultAndPathMsg	(gotSearchResultAndPath : Oid Oid RewriteCount Term Type Substitution Trace ~> Msg)
+
+           op-hook applyRuleMsg			(applyRule : Oid Oid Qid Term Qid Substitution Nat ~> Msg)
+           op-hook appliedRuleMsg		(appliedRule : Oid Oid RewriteCount Term Type Substitution ~> Msg)
+           op-hook applyRule2Msg		(applyRule : Oid Oid Qid Term Qid Substitution Nat Bound Nat ~> Msg)
+           op-hook appliedRule2Msg		(appliedRule : Oid Oid RewriteCount Term Type Substitution Context ~> Msg)
+
            op-hook getMatchMsg			(getMatch : Oid Oid Qid Term Term Condition Nat ~> Msg)
            op-hook gotMatchMsg			(gotMatch : Oid Oid RewriteCount Substitution ~> Msg)
            op-hook getXmatchMsg			(getXmatch : Oid Oid Qid Term Term Condition Nat Bound Nat ~> Msg)
@@ -200,6 +219,13 @@ mod META-INTERPRETER is
            op-hook gotVariantUnifierMsg		(gotVariantUnifier : Oid Oid RewriteCount Substitution Qid ~> Msg)
            op-hook getDisjointVariantUnifierMsg	(getDisjointVariantUnifier : Oid Oid Qid UnificationProblem TermList Qid Nat ~> Msg)
            op-hook gotDisjointVariantUnifierMsg	(gotDisjointVariantUnifier : Oid Oid RewriteCount Substitution Substitution Qid ~> Msg)
+
+	   op-hook getOneStepNarrowingMsg	(getOneStepNarrowing : Oid Oid Qid Term TermList Qid Nat ~> Msg)
+	   op-hook gotOneStepNarrowingMsg	(gotOneStepNarrowing : Oid Oid RewriteCount Term Type Context Qid Substitution Substitution Qid ~> Msg)
+  	   op-hook getNarrowingSearchResultMsg	(getNarrowingSearchResult : Oid Oid Qid Term Term Qid Bound Qid Nat ~> Msg)
+  	   op-hook gotNarrowingSearchResultMsg	(gotNarrowingSearchResult : Oid Oid RewriteCount Term Type Substitution Qid Substitution Qid ~> Msg)
+  	   op-hook getNarrowingSearchResultAndPathMsg	(getNarrowingSearchResultAndPath : Oid Oid Qid Term Term Qid Bound Qid Nat ~> Msg)
+  	   op-hook gotNarrowingSearchResultAndPathMsg	(gotNarrowingSearchResultAndPath : Oid Oid RewriteCount Term Type Substitution NarrowingTrace Substitution Qid ~> Msg)
 
 	   op-hook noSuchResultMsg		(noSuchResult : Oid Oid RewriteCount ~> Msg)
 	   op-hook noSuchResult2Msg		(noSuchResult : Oid Oid Bool ~> Msg)

@@ -1,3 +1,21 @@
+2018-12-07  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntNewNarrowSearch.maude: added
+
+2018-12-04  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntNewNarrow.maude: added
+
+2018-11-12  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/Meta/metaIntApply.maude: added
+
+2018-11-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* tests/ResolvedBugs/metaApplyNov2018.maude: added
+
+===================================Maude120===========================================
+
 2018-10-23  Steven Eker  <eker@install.csl.sri.com>
 
 	* tests/ResolvedBugs/physArgIndexOct2018.maude: added

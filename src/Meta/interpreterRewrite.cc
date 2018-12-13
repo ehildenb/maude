@@ -39,11 +39,7 @@ InterpreterManagerSymbol::reduceTerm(FreeDagNode* message, ObjectSystemRewriting
 		{
 		   if (Term* t = metaLevel->downTerm(message->getArgument(3), m))
 		     {
-		       t = t->normalize(false);
-		       DagNode* d = term2Dag(t);
-		       t->deepSelfDestruct();
-		       RewritingContext* objectContext =
-			 context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
+		       RewritingContext* objectContext = term2RewritingContext(t, context);
 		       m->protect();
 		       objectContext->reduce();
 		       context.addInCount(*objectContext);
@@ -90,11 +86,7 @@ InterpreterManagerSymbol::rewriteTerm(FreeDagNode* message, ObjectSystemRewritin
 		    {
 		      if (Term* t = metaLevel->downTerm(message->getArgument(4), m))
 			{
-			  t = t->normalize(false);
-			  DagNode* d = term2Dag(t);
-			  t->deepSelfDestruct();
-			  RewritingContext* objectContext =
-			    context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
+			  RewritingContext* objectContext = term2RewritingContext(t, context);
 			  m->protect();
 			  m->resetRules();
 			  objectContext->ruleRewrite(limit);
@@ -147,11 +139,7 @@ InterpreterManagerSymbol::frewriteTerm(FreeDagNode* message, ObjectSystemRewriti
 		    {
 		      if (Term* t = metaLevel->downTerm(message->getArgument(5), m))
 			{
-			  t = t->normalize(false);
-			  DagNode* d = term2Dag(t);
-			  t->deepSelfDestruct();
-			  RewritingContext* objectContext =
-			    context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
+			  RewritingContext* objectContext = term2RewritingContext(t, context);
 			  m->protect();
 			  m->resetRules();
 			  objectContext->fairRewrite(limit, gas);
@@ -205,12 +193,8 @@ InterpreterManagerSymbol::erewriteTerm(FreeDagNode* message, ObjectSystemRewriti
 		    {
 		      if (Term* t = metaLevel->downTerm(message->getArgument(5), m))
 			{
-			  t = t->normalize(false);
-			  DagNode* d = term2Dag(t);
-			  t->deepSelfDestruct();
-			  RewritingContext* subContext = context.makeSubcontext(d, UserLevelRewritingContext::META_EVAL);
+			  RewritingContext* subContext = term2RewritingContext(t, context);
 			  ObjectSystemRewritingContext* objectContext = safeCast(ObjectSystemRewritingContext*, subContext);
-			  DebugAdvisory("created context " << (void*) objectContext);
 			  objectContext->setObjectMode(ObjectSystemRewritingContext::EXTERNAL);
 			  m->protect();
 			  m->resetRules();

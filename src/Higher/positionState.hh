@@ -43,6 +43,11 @@ public:
   };
 
   typedef int PositionIndex;
+  //
+  //	For returning a pair of dags. First dag is the rebuilt dag up to the root,
+  //	second dag is the replacement, possibily extended by extension information
+  //	when only part of the redex is replaced (useful for tracing).
+  //
   typedef pair<DagNode*, DagNode*> DagPair;
 
   //

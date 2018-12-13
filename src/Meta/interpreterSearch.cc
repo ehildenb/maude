@@ -60,10 +60,10 @@ bool
 InterpreterManagerSymbol::getSearchResult(FreeDagNode* message, ObjectSystemRewritingContext& context)
 {
   //
-  //	op getSearchResult : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg  .
+  //	op getSearchResult : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg .
   //                          0   1   2   3    4       5      6    7    8
   //
-  //	op getSearchResultAndPath : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg  .
+  //	op getSearchResultAndPath : Oid Oid Qid Term Term Condition Qid Bound Nat -> Msg .
   //                                 0   1   2   3    4       5      6    7    8
   //
   Interpreter* interpreter;

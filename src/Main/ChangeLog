@@ -1,3 +1,35 @@
+2018-12-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added
+	getNarrowingSearchResult/gotNarrowingSearchResult,
+	getNarrowingSearchResultAndPath/gotNarrowingSearchResultAndPath
+
+2018-11-29  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: getOneStepNarrow/gotOneStepNarrow ->
+	getOneStepNarrowing/gotOneStepNarrowing
+
+2018-11-28  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: changed narrowWithRule/narrowedWithRule
+	to getOneStepNarrow/gotOneStepNarrow since we're not passing
+	the label of a specific rule
+
+2018-11-27  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added narrowWithRule, narrowedWithRule
+
+2018-11-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: make interpreter a ctor
+
+2018-11-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* metaInterpreter.maude: added applyRule/appliedRule (2
+	overloaded versions)
+
+===================================Maude120===========================================
+
 2018-10-22  Steven Eker  <eker@install.csl.sri.com>
 
 	* metaInterpreter.maude: added parseQidList/parsedQidList

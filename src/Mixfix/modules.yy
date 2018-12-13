@@ -168,11 +168,14 @@ toAttribute	:	KW_PREC IDENTIFIER	{ currentRenaming->setPrec($2); }
  *	Views.
  */
 view		:	KW_VIEW			{ lexerIdMode(); }
-			token KW_FROM moduleExpr
+			token
 			{
 			  fileTable.beginModule($1, $3);
 			  interpreter.setCurrentView(new SyntacticView($3, &interpreter));
 			  currentSyntaxContainer = CV;
+			}
+			parameters KW_FROM moduleExpr
+			{
 			  CV->addFrom(moduleExpressions.top());
 			  moduleExpressions.pop();
 			}
@@ -326,7 +329,7 @@ parameter	:	token colon2 moduleExpr
 			{
 			  ModuleExpression* me = moduleExpressions.top();
 			  moduleExpressions.pop();
-			  CM->addParameter($1, me);
+			  currentSyntaxContainer->addParameter2($1, me);
 			}
 		;
 

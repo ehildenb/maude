@@ -26,15 +26,15 @@
 
 MatchSearchState*
 InterpreterManagerSymbol::makeMatchSearchState(ImportModule* m,
-					       FreeDagNode* subject,
+					       FreeDagNode* message,
 					       RewritingContext& context) const
 {
   Term* p;
   Term* s;
-  if (metaLevel->downTermPair(subject->getArgument(3), subject->getArgument(4), p, s, m))
+  if (metaLevel->downTermPair(message->getArgument(3), message->getArgument(4), p, s, m))
     {
       Vector<ConditionFragment*> condition;
-      if (metaLevel->downCondition(subject->getArgument(5), m, condition))
+      if (metaLevel->downCondition(message->getArgument(5), m, condition))
 	{
 	  m->protect();
 	  Pattern* pattern = new Pattern(p, false, condition);

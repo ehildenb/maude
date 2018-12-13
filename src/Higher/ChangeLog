@@ -1,3 +1,14 @@
+2018-11-05  Steven Eker  <eker@install.csl.sri.com>
+
+	* searchState.hh (PositionState): added comment on
+	setInitialSubstitution() convention
+
+2018-11-02  Steven Eker  <eker@install.csl.sri.com>
+
+	* positionState.hh (P): added and explanation of why DagPair exists
+
+===================================Maude120===========================================
+
 2018-10-23  Steven Eker  <eker@install.csl.sri.com>
 
 	* positionState.cc (exploreNextPosition): use stackPhysicalArguments()
