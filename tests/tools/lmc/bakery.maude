@@ -3,24 +3,16 @@ set show timing off .
 load ../../../contrib/systems/bakery.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
-fmod RENAMED-NARROWING-GRAPH is
-    including NARROWING-GRAPH
-            * ( sort   Nat to   NatP
-              , sort NzNat to NzNatP
-              ) .
+--- ### Bakery System Instatiation
 
-    vars ND ND' : Node .
-endfm
+fmod BAKERY-NARROWING-GRAPH-COMMON is
+    including UNCONDITIONALIZE-FVP-BOOL .
+    including ( CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH ) .
 
---- ### Bakery Search Instantiation
+    eq #tSort = 'Conf .
+    -------------------
 
-mod BAKERY-NARROWING-GRAPH is
-   protecting BAKERY .
-    extending RENAMED-NARROWING-GRAPH .
-
-    eq #M = upModule('BAKERY, true) .
-
-    var T : Term .
+    vars T T' T'' : Term .
 
     op upIdle : -> [Term] .
     -----------------------
@@ -30,32 +22,94 @@ mod BAKERY-NARROWING-GRAPH is
     ----------------------------
     eq upCrit(T) = '`[_`]['crit[T]] .
 
-    op conf2Idle    : -> [Term] .
-    op confManyWait : -> [Term] .
-    op confBad      : -> [Term] .
-    -----------------------------
-    eq conf2Idle    = '_;_;_['0.Name, '0.Name, '__[upIdle, upIdle]]                                .
-    eq confManyWait = '_;_;_['0.Name, '0.Name, 'PWS:ProcWaitSet]                                   .
-    eq confBad      = '_;_;_['X:Name, 'Y:Name, '__[upCrit('N:Name), upCrit('M:Name), 'PS:ProcSet]] .
+   ops lt le : Term Term -> [Term] .
+   ---------------------------------
+    eq lt(T, T') = '_?=_[ '_<_[T, T'], 'true.Bool] .
+    eq le(T, T') = '_?=_['_<=_[T, T'], 'true.Bool] .
+
+    op conf : Term Term Term -> [Term] .
+    ------------------------------------
+    eq conf(T, T', T'') = '_;_;_[T, T', T''] .
+
+--- The following initial terms characterize our initialization and bad states.
+---
+--- -   `conf2Idle` has two idle processes.
+--- -   `confManyIdle` has an arbitrary set of `idle` processes.
+--- -   `confManyWait` has an arbitrary set of `wait` processes.
+--- -   `confManyProc` has an arbitrary set of any processes.
+
+    op conf2Idle    : Term Term -> [Term] .
+    op confManyIdle : Term Term -> [Term] .
+    op confManyWait : Term Term -> [Term] .
+    op confManyProc : Term Term -> [Term] .
+    ---------------------------------------
+    eq conf2Idle   (T, T') = conf(T, T', '__[upIdle, upIdle]) .
+    eq confManyIdle(T, T') = conf(T, T', 'PIS:ProcIdleSet)    .
+    eq confManyWait(T, T') = conf(T, T', 'PWS:ProcWaitSet)    .
+    eq confManyProc(T, T') = conf(T, T', 'PS:ProcSet)         .
+
+--- -   `conf2Crit` is any constrained configuration which contains two `crit` processes.
+
+    op conf2Crit : -> [Term] .
+    --------------------------
+    eq conf2Crit = #cTerm['_;_;_['N:Name, 'M:Name, '__['`[_`]['MC1:ModeCrit], '`[_`]['MC2:ModeCrit], 'PS:ProcSet]], #cTrue] .
+endfm
+
+reduce wellFormed(upModule('BAKERY, false), conf2Idle   ('X:Name, 'Y:Name)) .
+reduce wellFormed(upModule('BAKERY, false), confManyIdle('X:Name, 'Y:Name)) .
+reduce wellFormed(upModule('BAKERY, false), confManyWait('X:Name, 'Y:Name)) .
+reduce wellFormed(upModule('BAKERY, false), confManyProc('X:Name, 'Y:Name)) .
+
+--- ### Two Process Bakery
+
+--- #### With Equational Abstraction
+
+--- As a sanity check, results of section 3.1 of [@bae-escobar-meseguer-abstract-model-checking] are replicated.
+--- This required an equational abstraction which reduced all the names in the configuration uniformly when they are all non-`0`.
+
+mod BAKERY-2PROC-EQUATIONAL-ABSTRACTION is
+    including BAKERY .
+
+    vars N M K L : Name . var PIS : ProcIdleSet .
+
+    eq s N ; s M ; [idle]      [idle]      = N ; M ; [idle]    [idle] .
+    eq s N ; s M ; [wait(s K)] [idle]      = N ; M ; [wait(K)] [idle] .
+    eq s N ; s M ; [crit(s K)] [idle]      = N ; M ; [crit(K)] [idle] .
+    eq s N ; s M ; [wait(s K)] [wait(s L)] = N ; M ; [wait(K)] [wait(L)] .
+    eq s N ; s M ; [wait(s K)] [crit(s L)] = N ; M ; [wait(K)] [crit(L)] .
+    eq s N ; s M ; [crit(s K)] [crit(s L)] = N ; M ; [crit(K)] [crit(L)] .
 endm
 
-reduce wellFormed(#M, conf2Idle) .
-reduce wellFormed(#M, confManyWait) .
-reduce wellFormed(#M, confBad) .
+--- Here we instantiate to the abstracted theory:
 
-reduce step(state(conf2Idle)) .
-reduce step(state(confManyWait)) .
-reduce step(state(confBad)) .
+mod BAKERY-2PROC-EQUATIONAL-ABSTRACTION-NARROWING-GRAPH is
+    extending BAKERY-NARROWING-GRAPH-COMMON .
 
-reduce fold ( state('_;_;_['__['s.Name,'V1:Name],'__['s.Name,'V1:Name],'__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
-            , state('_;_;_['X:Name,              'Y:Name,              '__['`[_`]['idle.ModeIdle],'`[_`]['idle.ModeIdle]]])
-            ) .
+    eq #MO = upModule('BAKERY-2PROC-EQUATIONAL-ABSTRACTION, true) .
 
-reduce bfs(state(conf2Idle), 2) .
-reduce bfs(state(confManyWait), 2) .
+--- The initial state has two `idle` processes and both counters `N`:
 
-reduce state(conf2Idle)    =>[10] state(confBad) .
-reduce state(confManyWait) =>[10] state(confBad) .
+    op conf2IdleEq : -> [Term] .
+    ----------------------------
+    eq conf2IdleEq = #cTerm[conf2Idle('X:Name, 'X:Name), #cTrue] .
+endm
+
+reduce wellFormed(#M) .
+
+reduce wellFormed(#M, conf2Crit) .
+reduce wellFormed(#M, conf2IdleEq) .
+
+--- Under this assumption, a finite state graph is achieved.
+--- The resulting graph differs from [@bae-escobar-meseguer-abstract-model-checking] because here states which are $=_{B}$ are identified (with $B = AC$ for the process set).
+--- In addition, edges which take advantage of the equational abstraction to fold into a prior state are not identified.
+
+reduce bfs(state(conf2IdleEq)) .
+
+--- We can also search for a reach-path to a "bad" state in `conf2Crit`, and see that there is none:
+
+--- **TODO**: Fix bug in this query.
+
+reduce state(conf2IdleEq) =>* state(conf2Crit) .
 
 --- Module FVP-BAKERY
 --- =================
