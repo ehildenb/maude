@@ -206,6 +206,11 @@ fmod FOLDING-LABELED-GRAPH is
     op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
     --------------------------------------------------------
 
+    op nodes : LabeledGraph -> [NodeSet] .
+    --------------------------------------
+    eq nodes(.LabeledGraph)      = .NodeSet .
+    eq nodes(ND -[ L ]-> ND' LG) = ND ; ND' ; nodes(LG) .
+
     op withoutFolds : LabeledGraph -> [LabeledGraph] .
     --------------------------------------------------
     eq withoutFolds(.LabeledGraph)      = .LabeledGraph .
