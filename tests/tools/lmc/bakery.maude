@@ -111,6 +111,40 @@ reduce bfs(state(conf2IdleEq)) .
 
 reduce state(conf2IdleEq) =>* state(conf2Crit) .
 
+--- #### With Constrained Bakery
+
+--- Here the equational abstraction is avoided by taking advantage of constrained states.
+
+mod BAKERY-2PROC-NARROWING-GRAPH is
+    extending BAKERY-NARROWING-GRAPH-COMMON .
+
+--- Instead we instantiate to the original theory:
+
+    eq #MO = upModule('BAKERY, true) .
+
+--- The initial state `cConf2Idle` contains two idle states, but the counters are not made to be the same as in [@bae-escobar-meseguer-abstract-model-checking].
+--- Instead, the `crit` counter is constrained to be lower than the `wait` counter using side-conditions in the theory `FVP-INT-PRED`.
+
+    op cConf2Idle : -> [Term] .
+    ---------------------------
+    eq cConf2Idle = #cTerm[conf2Idle('X:Name, 'Y:Name), le('Y:Name, 'X:Name)] .
+endm
+
+reduce wellFormed(#M) .
+
+reduce wellFormed(#M, conf2Crit) .
+reduce wellFormed(#M, cConf2Idle) .
+
+--- Here we see that a finite state graph is achieved, where some of the states have additional constraints:
+
+reduce bfs(state(cConf2Idle)) .
+
+--- Indeed, the initial constrained state cannot reach an instance of our `bad` states:
+
+--- **TODO**: Fix bug in this query.
+
+reduce state(cConf2Idle) =>* state(conf2Crit) .
+
 --- Module FVP-BAKERY
 --- =================
 
