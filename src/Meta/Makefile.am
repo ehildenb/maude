@@ -53,7 +53,18 @@ EXTRA_DIST = \
 	metaUpView.cc \
 	metaDownView.cc \
 	metaVariant.cc \
-	metaDownSignature.cc
+	metaDownSignature.cc \
+	interpreterRewrite.cc \
+	interpreterSearch.cc \
+	interpreterMatch.cc \
+	interpreterUnify.cc \
+	interpreterVariant.cc \
+	interpreterVariantUnify.cc \
+	interpreterSort.cc \
+	interpreterPrint.cc \
+	interpreterApply.cc \
+	interpreterNewNarrow.cc \
+	interpreterNewNarrowSearch.cc
 
 noinst_HEADERS = \
 	meta.hh \

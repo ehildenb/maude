@@ -8,8 +8,8 @@ It has a boolean flag which controls how strictly it checks: if the flag is fals
 If true, it will check that all terms appearing in the program have a least type that is not a kind.
 
 ```maude
-load foform.maude
-load ../base/full-maude.maude
+sload foform.maude
+sload ../base/full-maude.maude
 
 fmod KIND-CHECK is
   pr META-LEVEL .

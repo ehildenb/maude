@@ -122,7 +122,7 @@ Thermostat Instantiation
 ### Instantiation to FVP-INT
 
  ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 
 view RingInt from UNITAL-ORDERED-RING to FVP-INT-PRED is
     sort RingBool to Bool .
@@ -172,7 +172,7 @@ endm
 ### Instantiation to REAL
 
 ```maude
-load ../tools/base/smt.maude
+sload ../tools/base/smt.maude
 
 view RingReal from UNITAL-ORDERED-RING to REAL is
     sort RingBool to Boolean .

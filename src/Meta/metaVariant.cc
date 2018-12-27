@@ -23,7 +23,6 @@
 //
 //	Code for variant narrowing descent functions.
 //
-#include "variantSearch.hh"
 
 bool
 MetaLevelOpSymbol::metaGetVariant2(FreeDagNode* subject, RewritingContext& context, bool irredundant)
@@ -42,28 +41,34 @@ MetaLevelOpSymbol::metaGetVariant2(FreeDagNode* subject, RewritingContext& conte
 	  const mpz_class& varIndex = metaLevel->getNat(metaVarIndex);
 	  VariantSearch* vs;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, vs, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, vs, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {
-	      Term* start;
-	      Vector<Term*> blockerTerms;
-	      if ((start = metaLevel->downTerm(subject->getArgument(1),  m)) &&
-		  metaLevel->downTermList(subject->getArgument(2), m, blockerTerms))
+	      if (Term* start = metaLevel->downTerm(subject->getArgument(1),  m))
 		{
-		  m->protect();
-		  RewritingContext* startContext = term2RewritingContext(start, context);
-
-		  Vector<DagNode*> blockerDags; 
-		  FOR_EACH_CONST(i, Vector<Term*>, blockerTerms)
+		  Vector<Term*> blockerTerms;
+		  if (metaLevel->downTermList(subject->getArgument(2), m, blockerTerms))
 		    {
-		      Term* t = *i;
-		      t = t->normalize(true);  // we don't really need to normalize but we do need to set hash values
-		      blockerDags.append(t->term2Dag());
-		      t->deepSelfDestruct();
+		      m->protect();
+		      RewritingContext* startContext = term2RewritingContext(start, context);
+
+		      Vector<DagNode*> blockerDags; 
+		      FOR_EACH_CONST(i, Vector<Term*>, blockerTerms)
+			{
+			  Term* t = *i;
+			  t = t->normalize(true);  // we don't really need to normalize but we do need to set hash values
+			  blockerDags.append(t->term2Dag());
+			  t->deepSelfDestruct();
+			}
+		      vs = new VariantSearch(startContext, blockerDags, new FreshVariableSource(m, varIndex), false, irredundant);
+		      lastSolutionNr = -1;
 		    }
-		  vs = new VariantSearch(startContext, blockerDags, new FreshVariableSource(m, varIndex), false, irredundant);
-		  lastSolutionNr = -1;
+		  else
+		    {
+		      delete start;
+		      return false;
+		    }
 		}
 	      else
 		return false;
@@ -81,13 +86,15 @@ MetaLevelOpSymbol::metaGetVariant2(FreeDagNode* subject, RewritingContext& conte
 	      //	So the user can ask for the same variant over and over again without
 	      //	a horrible loss of performance.
 	      //
-	      variant = vs->getLastReturnedVariant(nrFreeVariables, parentIndex, moreInLayer);
+	      int dummy;
+	      variant = vs->getLastReturnedVariant(nrFreeVariables, dummy, parentIndex, moreInLayer);
 	    }
 	  else
 	    {
 	      while (lastSolutionNr < solutionNr)
 		{
-		  variant = vs->getNextVariant(nrFreeVariables, parentIndex, moreInLayer);
+		  int dummy;
+		  variant = vs->getNextVariant(nrFreeVariables, dummy, parentIndex, moreInLayer);
 		  if (variant == 0)
 		    {
 		      bool incomplete = vs->isIncomplete();
@@ -96,7 +103,7 @@ MetaLevelOpSymbol::metaGetVariant2(FreeDagNode* subject, RewritingContext& conte
 		      goto fail;
 		    }
 		  
-		  context.transferCount(*(vs->getContext()));
+		  context.transferCountFrom(*(vs->getContext()));
 		  ++lastSolutionNr;
 		}
 	    }
@@ -149,7 +156,7 @@ MetaLevelOpSymbol::metaVariantUnify2(FreeDagNode* subject, RewritingContext& con
 	  const mpz_class& varIndex = metaLevel->getNat(metaVarIndex);
 	  VariantSearch* vs;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, vs, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, vs, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else
 	    {
@@ -193,7 +200,8 @@ MetaLevelOpSymbol::metaVariantUnify2(FreeDagNode* subject, RewritingContext& con
 	      //	So the user can ask for the same unifier over and over again without
 	      //	a horrible loss of performance.
 	      //
-	      unifier = vs->getLastReturnedUnifier(nrFreeVariables);
+	      int dummy;
+	      unifier = vs->getLastReturnedUnifier(nrFreeVariables, dummy);
 	    }
 	  else
 	    {
@@ -209,7 +217,7 @@ MetaLevelOpSymbol::metaVariantUnify2(FreeDagNode* subject, RewritingContext& con
 		      goto fail;
 		    }
 
-		  context.transferCount(*(vs->getContext()));
+		  context.transferCountFrom(*(vs->getContext()));
 		  ++lastSolutionNr;
 		}
 	    }

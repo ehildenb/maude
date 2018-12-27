@@ -4,7 +4,7 @@ Cycle
 These systems give very simple finite cycles for testing search algorithms with.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 
 mod CYCLE is
     sorts PreState State .

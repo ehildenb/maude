@@ -1,3 +1,19 @@
+2018-11-06  Steven Eker  <eker@install.csl.sri.com>
+
+	* term.hh (LineNumber): added decl for term2DagEagerLazyAware()
+
+	* term.cc (term2DagEagerLazyAware): added
+
+===================================Maude119==========================================
+
+2018-10-23  Steven Eker  <eker@install.csl.sri.com>
+
+	* symbol.hh (MemoTable): added decl for stackPhysicalArguments()
+
+	* symbol.cc (stackPhysicalArguments): added
+
+===================================Maude119==========================================
+
 2017-10-18  Steven Eker  <eker@install.csl.sri.com>
 
 	* associativeSymbol.hh (BinarySymbol): added decl for

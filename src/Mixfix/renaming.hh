@@ -39,6 +39,7 @@ public:
   void addSortMapping(Token from, Token to);
   void addLabelMapping(Token from, Token to);
   void addOpMapping(const Vector<Token>& tokens);
+  void addParameter2(Token name, ModuleExpression* theory);
   void addVarDecl(Token varName);
   void addType(bool kind, const Vector<Token>& tokens);
   void addOpTarget(const Vector<Token>& tokens);

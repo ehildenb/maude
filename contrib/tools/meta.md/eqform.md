@@ -105,8 +105,8 @@ sort which helps ensure preregularity in complex cases (this gives 29 sorts
 generated for both the list and set functor assuming the 14 above).
 
 ```maude
-load terms.maude
-load ../meta/meta-aux.maude
+sload terms.maude
+sload ../meta/meta-aux.maude
 
 set include BOOL off .
 

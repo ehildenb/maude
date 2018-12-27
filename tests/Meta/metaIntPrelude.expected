@@ -1,19 +1,19 @@
 ==========================================
-erewrite in RUN : <> createInterpreter(interpreterManager, me) < me : User |
-    pending(prelude) > .
+erewrite in RUN : <> < me : User | pending(prelude) > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 148
 result Configuration: <> < me : User | pending(nil) > reducedTerm(me,
     interpreter(0), 1, 's_^5['0.Zero], 'NzNat)
 ==========================================
-erewrite in RUN2 : <> createInterpreter(interpreterManager, me) < me : User |
-    pending(prelude) > .
+erewrite in RUN2 : <> < me : User | pending(prelude) > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 151
 result Configuration: <> < me : User | pending(nil) > reducedTerm(me,
     interpreter(0), 3, '`{_`,_`}['_`[_`][''s_^5.Sort,''0.Zero.Constant],
     ''NzNat.Sort], 'ResultPair)
 ==========================================
-erewrite in RUN3 : <> createInterpreter(interpreterManager, me) < me : User |
-    pending(prelude) > .
+erewrite in RUN3 : <> < me : User | pending(prelude) > createInterpreter(
+    interpreterManager, me, none) .
 rewrites: 149
 result Configuration: <> < me : User | pending(nil) > reducedTerm(me,
     interpreter(0), 1, 'fmod_is_sorts_.____endfm[''META-LEVEL.Sort,'__[

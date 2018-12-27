@@ -250,16 +250,6 @@ MetaLevelOpSymbol::reset()
     metaLevel->reset();
 }
 
-DagNode*
-MetaLevelOpSymbol::term2Dag(Term* t)
-{
-  NatSet eagerVariables;
-  Vector<int> problemVariables;
-  t->markEager(0, eagerVariables, problemVariables);
-  DagNode* r = t->term2Dag();
-  return r;
-}
-
 bool
 MetaLevelOpSymbol::eqRewrite(DagNode* subject, RewritingContext& context)
 {

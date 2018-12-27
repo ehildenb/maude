@@ -48,7 +48,7 @@ public:
   //	Stuff needed for search.
   //
   RewritingContext* getContext();
-  void transferCount(RewritingContext& recipient);
+  void transferCountTo(RewritingContext& recipient);
   int getStateParent(int stateNr) const;
 
 private:
@@ -106,10 +106,9 @@ StateTransitionGraph::getContext()
 }
 
 inline void
-StateTransitionGraph::transferCount(RewritingContext& recipient)
+StateTransitionGraph::transferCountTo(RewritingContext& recipient)
 {
-  recipient.addInCount(*initial);
-  initial->clearCount();
+  recipient.transferCountFrom(*initial);
 }
 
 inline int

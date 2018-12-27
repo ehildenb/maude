@@ -4,7 +4,7 @@ Narrowing
 Several narrowing utilities/wrappers are provided here.
 
 ```maude
-load terms.maude
+sload terms.maude
 ```
 
 Variant Sets

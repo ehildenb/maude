@@ -69,6 +69,12 @@ SyntacticView::~SyntacticView()
 }
 
 void
+SyntacticView::addParameter2(Token name, ModuleExpression* theory)
+{
+  IssueAdvisory("parameterized views not yet supported");
+}
+
+void
 SyntacticView::addVarDecl(Token varName)
 {
   varDecls.push_back(VarDecl());

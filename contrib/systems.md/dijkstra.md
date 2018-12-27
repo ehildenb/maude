@@ -5,7 +5,7 @@ Dijkstra's mutual exclusion algorithm is a simple token-ring algorithm for ensur
 Several implementations are provided.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 ```
 
 Version 1 - RL

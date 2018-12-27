@@ -193,6 +193,19 @@ Symbol::stackArguments(DagNode* /* subject */,
   //
 }
 
+void
+Symbol::stackPhysicalArguments(DagNode* subject,
+			       Vector<RedexPosition>& stack,
+			       int parentIndex,
+			       bool respectFrozen,
+			       bool eagerContext)
+{
+  //
+  //	Default version assumes that physical arguments correspond to notional arguments.
+  //
+  stackArguments(subject, stack, parentIndex, respectFrozen, eagerContext);
+}
+
 bool
 Symbol::interSymbolPass()
 {

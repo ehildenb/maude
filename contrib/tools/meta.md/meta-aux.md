@@ -7,8 +7,8 @@ TERMS, TERMSETS, QIDSETS, AND REFINEMENTS
 -----------------------------------------
 
 ```maude
-load ../base/prelude-aux.maude
-load terms.maude
+sload ../base/prelude-aux.maude
+sload terms.maude
 
 fmod TERM-EXTRA is
   pr META-LEVEL .

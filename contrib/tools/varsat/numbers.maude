@@ -1,4 +1,4 @@
-load ../meta/foform.maude
+sload ../meta/foform.maude
 
 set include BOOL off .
 

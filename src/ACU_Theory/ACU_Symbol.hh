@@ -49,6 +49,11 @@ public:
 		      int parentIndex,
 		      bool respectFrozen,
 		      bool eagerContext);
+  void stackPhysicalArguments(DagNode* subject,
+			      Vector<RedexPosition>& stack,
+			      int parentIndex,
+			      bool respectFrozen,
+			      bool eagerContext);
   Term* termify(DagNode* dagNode);
   //
   //	Member functions overiding default handling.

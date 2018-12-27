@@ -194,7 +194,7 @@ efficiently and expeditely share blocks, reaching a state where they no longer
 need any more blocks.
 
 ``` {.test pipe='cat > /dev/null'}
-load ../../contrib/systems/bitswap.maude
+sload ../../contrib/systems/bitswap.maude
 ```
 
 ``` {.test pipe='maude -no-banner -no-wrap root/systems/bitswap.maude | grep -v "========\\|rewrites: \\|Bye" ' }

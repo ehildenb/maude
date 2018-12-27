@@ -36,7 +36,7 @@ public:
 
   int getFreshVariableName(int index, int family);
   Symbol* getBaseVariableSymbol(Sort* sort);
-  bool variableNameConflict(int id);
+  bool variableNameConflict(int id, int okFamily);
   bool belongsToFamily(int id, int family);
 
   static int getBaseName(int index);

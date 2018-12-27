@@ -7,4 +7,4 @@
 ---       and are called through META-LEVEL reflection. This isolates the
 ---       modules from one another and simplifies the algorithm design.
 
-load ../meta/foform.maude
+sload ../meta/foform.maude

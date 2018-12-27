@@ -55,10 +55,10 @@ endfm ) .
 endm
 
 *** correct result
-erew  <> < me : User | state: 0 > createInterpreter(interpreterManager, me) .
+erew  <> < me : User | state: 0 > createInterpreter(interpreterManager, me, none) .
 
 *** put a fmod BAR with same meta-syntax but different semantics in cache
 red metaReduce(bar, 'a.Foo) .
 
 *** wrong result
-erew  <> < me : User | state: 0 > createInterpreter(interpreterManager, me) .
+erew  <> < me : User | state: 0 > createInterpreter(interpreterManager, me, none) .

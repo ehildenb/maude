@@ -22,6 +22,7 @@
 
 //
 //	Class for searching for single narrowing step using variant unification.
+//	This version is used for one step search
 //
 #ifndef _narrowingSearchState2_hh_
 #define _narrowingSearchState2_hh_
@@ -54,17 +55,6 @@ public:
 			const Vector<DagNode*>& blockerDagsArg,
 			FreshVariableGenerator* freshVariableGenerator,
 			int incomingVariableFamily,
-			int flags = ALLOW_NONEXEC | GC_VAR_GEN | PositionState::RESPECT_FROZEN,
-			int minDepth = 0,
-			int maxDepth = UNBOUNDED);
-  //
-  //	Simplified version that assumes variables are in-family and there are
-  //	no blocker dags.
-  //
-  NarrowingSearchState2(RewritingContext* context,
-			FreshVariableGenerator* freshVariableGenerator,
-			int incomingVariableFamily,
-			int label = UNDEFINED,
 			int flags = ALLOW_NONEXEC | GC_VAR_GEN | PositionState::RESPECT_FROZEN,
 			int minDepth = 0,
 			int maxDepth = UNBOUNDED);

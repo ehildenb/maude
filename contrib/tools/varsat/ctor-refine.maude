@@ -12,7 +12,7 @@
 ---       into one in the original signature---and then
 ---       lifts operation to substitutions.
 
-load ../meta/kind-ops.maude
+sload ../meta/kind-ops.maude
 
 fmod CTOR-REFINE is
   pr META-LEVEL .

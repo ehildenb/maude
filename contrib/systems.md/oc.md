@@ -27,7 +27,7 @@ Data Structures
 Here we extend FVP numbers with pairs and lists.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 
 fmod MAYBE-FVP-NAT is
    protecting FVP-NAT-PRED + TRUTH .

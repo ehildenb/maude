@@ -382,6 +382,41 @@ ACU_Symbol::stackArguments(DagNode* subject,
     }
 }
 
+void
+ACU_Symbol::stackPhysicalArguments(DagNode* subject,
+				   Vector<RedexPosition>& stack,
+				   int parentIndex,
+				   bool respectFrozen,
+				   bool eagerContext)
+{
+  if (respectFrozen && !(getFrozen().empty()))  // under AC, any frozen argument affects all
+    return;
+  bool eager = eagerContext & (getPermuteStrategy() == EAGER);
+  if (safeCast(ACU_BaseDagNode*, subject)->isTree())
+    {
+      int argNr = 0;
+      const ACU_Tree& tree = safeCast(ACU_TreeDagNode*, subject)->getTree();
+      for (ACU_FastIter i(tree); i.valid(); i.next())
+	{
+	  DagNode* d = i.getDagNode();
+	  if (!(d->isUnstackable()))
+	    stack.append(RedexPosition(d, parentIndex, argNr, eager));
+	  ++argNr;
+	}
+    }
+  else
+    {
+      ArgVec<ACU_Pair>& argArray = safeCast(ACU_DagNode*, subject)->argArray;
+      int nrArgs = argArray.length();
+      for (int i = 0; i < nrArgs; i++)
+	{
+	  DagNode* d = argArray[i].dagNode;
+	  if (!(d->isUnstackable()))
+	    stack.append(RedexPosition(d, parentIndex, i, eager));
+	}
+    }
+}
+
 Term*
 ACU_Symbol::termify(DagNode* dagNode)
 {

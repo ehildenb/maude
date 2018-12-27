@@ -199,6 +199,12 @@ SyntacticPreModule::finishModule(Token endToken)
 }
 
 void
+SyntacticPreModule::addParameter2(Token name, ModuleExpression* theory)
+{
+  PreModule::addParameter(name, theory);
+}
+
+void
 SyntacticPreModule::addImport(Token modeToken, ModuleExpression* expr)
 {
   ImportModule::ImportMode mode;

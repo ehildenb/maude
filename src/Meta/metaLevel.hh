@@ -28,6 +28,8 @@
 #include "cachedDag.hh"
 #include "metaModuleCache.hh"
 #include "succSymbol.hh"
+#include "sequenceSearch.hh"
+
 class MetaLevel
 {
   NO_COPYING(MetaLevel);
@@ -52,12 +54,23 @@ public:
   void startVariableMapping(int varCounter, FreshVariableGenerator* varGenerator);
   void stopVariableMapping();
 
+  //
+  //	Utility function that should probably go elsewhere.
+  //
+  static bool dagifySubstitution(const Vector<Term*>& variables,
+				 Vector<Term*>& values,
+				 Vector<DagRoot*>& dags,
+				 RewritingContext& context);
+
   DagNode* upNat(const mpz_class& nat);
+  DagNode* upNoParent() const;
   DagNode* upResultPair(DagNode* dagNode, MixfixModule* m);
   DagNode* upResultPair(Term* term, MixfixModule* m);
   DagNode* upNoParse(int badTokenIndex);
   DagNode* upAmbiguity(Term* parse1, Term* parse2, MixfixModule* m);
   DagNode* upBool(bool value);
+  DagNode* upQid(int id, PointerMap& qidMap);
+  DagNode* upTerm(const Term* term, MixfixModule* m, PointerMap& qidMap);
   DagNode* upType(Sort* sort, PointerMap& qidMap);
   DagNode* upKindSet(const Vector<ConnectedComponent*>& kinds);
   DagNode* upSortSet(const Vector<Sort*>& sorts);
@@ -109,11 +122,18 @@ public:
 		     DagNode* hole,
 		     PointerMap& qidMap,
 		     PointerMap& dagNodeMap);
+
   DagNode* upSubstitution(const Substitution& substitution,
 			  const VariableInfo& variableInfo,
 			  MixfixModule* m,
 			  PointerMap& qidMap,
 			  PointerMap& dagNodeMap);
+  DagNode* upSubstitution(const Substitution& substitution,
+			  const NarrowingVariableInfo& narrowingVariableInfo,
+			  MixfixModule* m,
+			  PointerMap& qidMap,
+			  PointerMap& dagNodeMap);
+
   DagNode* upNoUnifierPair(bool incomplete);
   DagNode* upNoUnifierTriple(bool incomplete);
   DagNode* upNoMatchSubst();
@@ -183,6 +203,14 @@ public:
 				       PointerMap& dagNodeMap);
   DagNode* upNarrowingSearchPathFailure(bool incomplete);
 
+  void upDisjointSubstitutions(const Substitution& substitution,
+			       const VariableInfo& variableInfo,
+			       MixfixModule* m,
+			       PointerMap& qidMap,
+			       PointerMap& dagNodeMap,
+			       DagNode*& left,
+			       DagNode*& right);
+
   DagNode* upView(View* view, PointerMap& qidMap);
   DagNode* upModule(bool flat, PreModule* pm, PointerMap& qidMap);
   DagNode* upImports(PreModule* pm, PointerMap& qidMap);
@@ -200,6 +228,30 @@ public:
 			 const NatSet& chosenDecls,
 			 PointerMap& qidMap);
 
+  DagNode* upSubstitution(const Vector<DagNode*>& substitution,
+			  const NarrowingVariableInfo& variableInfo,
+			  int nrVariables,
+			  MixfixModule* m,
+			  PointerMap& qidMap,
+			  PointerMap& dagNodeMap);
+
+  void upDisjointSubstitutions(const Vector<DagNode*>& unifier,
+			       const NarrowingVariableInfo& variableInfo,
+			       MixfixModule* m,
+			       PointerMap& qidMap,
+			       PointerMap& dagNodeMap,
+			       DagNode*& left,
+			       DagNode*& right);
+
+  DagNode* upPartialSubstitution(const Substitution& substitution,
+				 const NarrowingVariableInfo& narrowingVariableInfo,
+				 MixfixModule* m,
+				 PointerMap& qidMap,
+				 PointerMap& dagNodeMap);
+
+  DagNode* upNarrowingSearchPath(const Vector<DagNode*>& narrowingTrace);
+
+  bool downSignedInt(DagNode* dag, int& number) const;
   bool downBound(DagNode* metaBound, int& bound) const;
   bool downSaturate(DagNode* metaBound, int& bound) const;
   bool downBound64(DagNode* metaBound, Int64& bound) const;
@@ -249,6 +301,7 @@ public:
   bool downType(DagNode* metaType, MixfixModule* m, Sort*& type);
   bool downQidList(DagNode* metaQidList, Vector<int>& ids);
   bool downTypeList(DagNode* metaTypeList, MixfixModule* m, Vector<Sort*>& typeList);
+  bool downTypeSet(DagNode* metaTypeSet, MixfixModule* m, Vector<Sort*>& typeSet);
   bool downComponent(DagNode* metaComponent,
 		     MixfixModule* m,
 		     ConnectedComponent*& component);
@@ -265,6 +318,9 @@ public:
 			  MixfixModule* toModule,
 			  Vector<Term*>& fromTerms,
 			  Vector<Term*>& toTerms);
+
+  bool downSearchType(DagNode* arg, SequenceSearch::SearchType& searchType);
+  bool downFoldType(DagNode* arg, bool& foldType);
 
 private:
   enum Implementation
@@ -321,12 +377,10 @@ private:
 			  Symbol* multipleCase);
   static void convertToTokens(const Vector<int>& ids, Vector<Token>& tokens);
 
-  DagNode* upQid(int id, PointerMap& qidMap);
   DagNode* upJoin(int id, Sort* sort, char sep, PointerMap& qidMap);
   DagNode* upConstant(int id, Sort* sort, PointerMap& qidMap);
   DagNode* upConstant(int id, DagNode* d, PointerMap& qidMap);
   DagNode* upVariable(int id, Sort* sort, PointerMap& qidMap);
-  DagNode* upTerm(const Term* term, MixfixModule* m, PointerMap& qidMap);
   DagNode* upSMT_Number(const mpq_class& value, Symbol* symbol, MixfixModule* m, PointerMap& qidMap);
 
   DagNode* upAssignment(const Term* variable,
@@ -399,45 +453,12 @@ private:
 		      bool omitLast,
 		      PointerMap& qidMap);
 
-  void upDisjointSubstitutions(const Substitution& substitution,
-			       const VariableInfo& variableInfo,
-			       MixfixModule* m,
-			       PointerMap& qidMap,
-			       PointerMap& dagNodeMap,
-			       DagNode*& left,
-			       DagNode*& right);
-
-  DagNode* upSubstitution(const Vector<DagNode*>& substitution,
-			  const NarrowingVariableInfo& variableInfo,
-			  int nrVariables,
-			  MixfixModule* m,
-			  PointerMap& qidMap,
-			  PointerMap& dagNodeMap);
-
-  void upDisjointSubstitutions(const Vector<DagNode*>& unifier,
-			       const NarrowingVariableInfo& variableInfo,
-			       MixfixModule* m,
-			       PointerMap& qidMap,
-			       PointerMap& dagNodeMap,
-			       DagNode*& left,
-			       DagNode*& right);
-
   DagNode* upSmtSubstitution(const Substitution& substitution,
 			     const VariableInfo& variableInfo,
 			     const NatSet& smtVariables,
 			     MixfixModule* m,
 			     PointerMap& qidMap,
 			     PointerMap& dagNodeMap);
-  DagNode* upSubstitution(const Substitution& substitution,
-			  const NarrowingVariableInfo& narrowingVariableInfo,
-			  MixfixModule* m,
-			  PointerMap& qidMap,
-			  PointerMap& dagNodeMap);
-  DagNode* upPartialSubstitution(const Substitution& substitution,
-				 const NarrowingVariableInfo& narrowingVariableInfo,
-				 MixfixModule* m,
-				 PointerMap& qidMap,
-				 PointerMap& dagNodeMap);
 
   bool downParameterDeclList(DagNode* metaParameterDeclList, MetaModule* m);
   bool downParameterDecl(DagNode* metaParameterDecl, MetaModule* m);
@@ -532,6 +553,8 @@ private:
 		      const Vector<Sort*>& domainAndRange);
   bool handleSpecial(DagNode* metaHookList, MetaModule* m, int polymorphIndex);
   bool downHook(DagNode* metaHook, MetaModule* m, int index);
+
+  static bool duplicate(Term* variable, const Vector<Term*>& variables);
   //
   //	Metalevel signature (generated by macro expansion).
   //
@@ -598,6 +621,18 @@ MetaLevel::upNat(const mpz_class& nat)
   return succSymbol->makeNatDag(nat);
 }
 
+inline DagNode*
+MetaLevel::upNoParent() const
+{
+  return noParentSymbol->makeDagNode();
+}
+
+inline bool
+MetaLevel::downSignedInt(DagNode* dag, int& number) const
+{
+  return succSymbol->getSignedInt(dag, number);
+}
+
 inline void
 MetaLevel::startVariableMapping(int varBase, FreshVariableGenerator* varGenerator)
 {
@@ -609,6 +644,42 @@ inline void
 MetaLevel::stopVariableMapping()
 {
   variableGenerator = 0;
+}
+
+inline bool
+MetaLevel::downSearchType(DagNode* arg, SequenceSearch::SearchType& searchType)
+{
+  int qid;
+  if (downQid(arg, qid))
+    {
+      if (qid == Token::encode("+"))
+	searchType = SequenceSearch::AT_LEAST_ONE_STEP;
+      else if (qid == Token::encode("*"))
+	searchType = SequenceSearch::ANY_STEPS;
+      else if (qid == Token::encode("!"))
+	searchType = SequenceSearch::NORMAL_FORM;
+      else
+	return false;
+      return true;
+    }
+  return false;
+}
+
+inline bool
+MetaLevel::downFoldType(DagNode* arg, bool& foldType)
+{
+  int qid;
+  if (downQid(arg, qid))
+    {
+      if (qid == Token::encode("none"))
+	foldType = false;
+      else if (qid == Token::encode("match"))
+	foldType = true;
+      else
+	return false;
+      return true;
+    }
+  return false;
 }
 
 #endif

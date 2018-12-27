@@ -88,6 +88,15 @@ public:
 			      bool respectFrozen = true,
 			      bool eagerContext = true);
   //
+  //	This need to be defined for theories that only store and stack
+  //	one copy of a repeated argument to avoid redundant rewrite steps.
+  //
+  virtual void stackPhysicalArguments(DagNode* subject,
+				      Vector<RedexPosition>& stack,
+				      int parentIndex,
+				      bool respectFrozen = true,
+				      bool eagerContext = true);
+  //
   //	These functions may be redefined for each derived class.
   //
   //	interSymbolPass() is called on each symbol in turn until all

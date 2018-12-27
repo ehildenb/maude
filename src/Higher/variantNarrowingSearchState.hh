@@ -46,12 +46,12 @@ public:
 			      const NarrowingVariableInfo& originalVariables,
 			      bool unificationMode = false);
   ~VariantNarrowingSearchState();
-
   //
   //	Variant passed back is not GC protected by us.
   //
   bool findNextVariant(DagNode*& variantTerm, Vector<DagNode*>& variantSubstitution /*, int& nrFreeVariables */);
   bool isIncomplete() const;
+
 private:
   void collectUnifiers(NarrowingUnificationProblem* unificationProblem, int positionIndex, int equationIndex);
 
@@ -64,6 +64,10 @@ private:
 
   bool incompleteFlag;
   NarrowingVariableInfo variableInfo;
+  //
+  //	We can't create the UnifierFilter until we have indexed the variables in our variant
+  //	dag and variant substitution, so this can't be a member object.
+  //
   UnifierFilter* unifiers;  // has own GC protection
   Substitution blockerSubstitution;  // filled out and done with before GC happens
 };

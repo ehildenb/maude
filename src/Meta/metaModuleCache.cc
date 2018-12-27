@@ -46,7 +46,6 @@
 #include "metaModule.hh"
 #include "metaModuleCache.hh"
 
-
 int MetaModuleCache::maxSize = UNDEFINED;
 
 MetaModuleCache::MetaModuleCache()

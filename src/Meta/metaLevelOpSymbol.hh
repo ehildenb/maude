@@ -62,31 +62,7 @@ private:
   typedef bool (MetaLevelOpSymbol::*DescentFunctionPtr)
     (FreeDagNode* subject, RewritingContext& context);
 
-  static DagNode* term2Dag(Term* t);
   static RewritingContext* term2RewritingContext(Term* term, RewritingContext& context);
-
-  //
-  //	Try to pull a suitable object from the meta-modules cache to
-  //	continue a computation.
-  //
-  template<class T>
-  static bool getCachedStateObject(MetaModule* m,
-				   FreeDagNode* subject,
-				   RewritingContext& context,
-				   Int64 solutionNr,
-				   T*& state,
-				   Int64& lastSolutionNr);
-  //
-  //	Unification is unique in that it doesn't require rewriting or
-  //	a RewritingContext. Even metaMatch() requires rewriting to
-  //	to evaluate membership axioms, but unification doesn't support
-  //	membership axioms.
-  //
-  static bool getCachedUnificationProblem(MetaModule* m,
-					  FreeDagNode* subject,
-					  Int64 solutionNr,
-					  UnificationProblem*& unification,
-					  Int64& lastSolutionNr);
 
   PreModule* getPreModule(int name);
 
@@ -119,7 +95,6 @@ private:
 							  FreeDagNode* subject,
 							  RewritingContext& context) const;
 
-  bool downFoldType(DagNode* arg, bool& foldType) const;
   NarrowingSequenceSearch3* makeNarrowingSequenceSearch3(MetaModule* m,
 							 FreeDagNode* subject,
 							 RewritingContext& context,
@@ -136,7 +111,6 @@ private:
 #include "descentSignature.cc"
 #undef MACRO
 
-  bool noDuplicates(const Vector<Term*>& terms);
   bool dagifySubstitution(const Vector<Term*>& variables,
 			  Vector<Term*>& values,
 			  Vector<DagRoot*>& dags,
@@ -156,35 +130,6 @@ MetaLevelOpSymbol::getMetaLevel() const
 {
   Assert(metaLevel != 0, "null metaLevel");
   return metaLevel;
-}
-
-template<class T>
-inline bool
-MetaLevelOpSymbol::getCachedStateObject(MetaModule* m,
-					FreeDagNode* subject,
-					RewritingContext& context,
-					Int64 solutionNr,
-					T*& state,
-					Int64& lastSolutionNr)
-{
-  CacheableState* cachedState;
-  if (m->remove(subject, cachedState, lastSolutionNr))
-    {
-      DebugAdvisory("looking for solution #" << solutionNr << " and found cached solution #" << lastSolutionNr);
-      if (lastSolutionNr <= solutionNr)
-	{
-	  state = safeCast(T*, cachedState);
-	  //
-	  //	The parent context pointer of the root context in the
-	  //	state object is possibly stale.
-	  //
-	  safeCast(UserLevelRewritingContext*, state->getContext())->
-	    beAdoptedBy(safeCast(UserLevelRewritingContext*, &context));
-	  return true;
-	}
-      delete cachedState;
-    }
-  return false;
 }
 
 #endif

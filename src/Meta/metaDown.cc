@@ -463,6 +463,31 @@ MetaLevel::downTypeList(DagNode* metaTypeList, MixfixModule* m, Vector<Sort*>& t
 }
 
 bool
+MetaLevel::downTypeSet(DagNode* metaTypeSet, MixfixModule* m, Vector<Sort*>& typeSet)
+{
+  typeSet.clear();
+  Symbol* mt = metaTypeSet->symbol();
+  Sort* t;
+  if (mt == sortSetSymbol)
+    {
+      for (DagArgumentIterator i(metaTypeSet); i.valid(); i.next())
+	{
+	  if (!downType(i.argument(), m, t))
+	    return false;
+	  typeSet.append(t);
+	}
+    }
+  else if (mt == emptySortSetSymbol)
+    ;
+  else if (downType(metaTypeSet, m, t))
+    typeSet.append(t);
+  else
+    return false;
+  return true;
+}
+
+
+bool
 MetaLevel::downType2(int id, MixfixModule* m, Sort*& type)
 {
   switch (Token::auxProperty(id))
@@ -1293,6 +1318,11 @@ MetaLevel::downSubstitution(DagNode* metaSubstitution,
 			    Vector<Term*>& variables,
 			    Vector<Term*>& values)
 {
+  //
+  //	We now enforce no duplicate variables, rather than check this elsewhere
+  //	since there is no point is a substitution with two assignments to the
+  //	same variable.
+  //
   variables.clear();
   values.clear();
   Symbol* ms = metaSubstitution->symbol();
@@ -1317,6 +1347,17 @@ MetaLevel::downSubstitution(DagNode* metaSubstitution,
 }
 
 bool
+MetaLevel::duplicate(Term* variable, const Vector<Term*>& variables)
+{
+  FOR_EACH_CONST(i, Vector<Term*>, variables)
+    {
+      if (variable->equal(*i))
+	return true;
+    }
+  return false;
+}
+
+bool
 MetaLevel::downAssignment(DagNode* metaAssignment,
 			  MixfixModule* m,
 			  Vector<Term*>& variables,
@@ -1329,7 +1370,8 @@ MetaLevel::downAssignment(DagNode* metaAssignment,
       Term* value;
       if (downTermPair(f->getArgument(0), f->getArgument(1), variable, value, m))
 	{
-	  if (dynamic_cast<VariableTerm*>(variable))
+	  if (dynamic_cast<VariableTerm*>(variable) &&
+	      !duplicate(variable, variables))
 	    {
 	      variables.append(variable);
 	      values.append(value);
@@ -1380,5 +1422,35 @@ MetaLevel::downPrintOption(DagNode* metaPrintOption, int& printFlags) const
     printFlags |= Interpreter::PRINT_QID_AS_ID;
   else
     return false;
+  return true;
+}
+
+//
+//	Utility function needed by various metalevel code.
+//	Should probably live elsewhere.
+//
+
+bool
+MetaLevel::dagifySubstitution(const Vector<Term*>& variables,
+			      Vector<Term*>& values,
+			      Vector<DagRoot*>& dags,
+			      RewritingContext& context)
+{
+  int nrVars = variables.length();
+  dags.resize(nrVars);
+  for (int i = 0; i < nrVars; i++)
+    {
+      values[i] = values[i]->normalize(false);
+      DagNode* d = values[i]->term2DagEagerLazyAware();
+      dags[i] = new DagRoot(d);
+      d->computeTrueSort(context);
+      VariableTerm* v = static_cast<VariableTerm*>(variables[i]);
+      if (!(leq(d->getSortIndex(), v->getSort())))
+	{
+	  for (int j = 0; j <= i ; j++)
+	    delete dags[j];
+	  return false;
+	}
+    }
   return true;
 }

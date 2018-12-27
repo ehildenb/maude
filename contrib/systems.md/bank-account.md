@@ -5,7 +5,7 @@ The Bank Account models a single account in a bank.
 The account can receive deposits and withdrawals, and should never go into overdraft under proper usage.
 
 ```maude
-load ../tools/fvp/numbers.maude
+sload ../tools/fvp/numbers.maude
 ```
 
 Bank Account

@@ -6,7 +6,7 @@ If so, then the resulting substitution is used to instantiate `FMOD{X :: FTH}`, 
 For this, we'll heavily use the machinery of `MODULE-TEMPLATE`.
 
 ```maude
-load mtemplate.maude
+sload mtemplate.maude
 
 fmod MODULE-CONSTRUCTION is
     protecting MODULE-TEMPLATE .

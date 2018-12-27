@@ -44,7 +44,6 @@ MetaLevelOpSymbol::makeNarrowingSearchState2(MetaModule* m,
 	      t->deepSelfDestruct();
 	      return 0;
 	    }
-
 	  m->protect();
 
 	  RewritingContext* subjectContext = term2RewritingContext(t, context);
@@ -73,7 +72,7 @@ bool
 MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& context)
 {
   //
-  //	op metaNarrowingApply : Module Term Qid TermList Qid Nat -> NarrowingResult?
+  //	op metaNarrowingApply : Module Term TermList Qid Nat -> NarrowingResult?
   //
   //	Arguments:
   //	  Module to work in
@@ -101,7 +100,7 @@ MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& co
 	{
 	  NarrowingSearchState2 *state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect(); 
 	  else if ((state = makeNarrowingSearchState2(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -113,7 +112,7 @@ MetaLevelOpSymbol::metaNarrowingApply(FreeDagNode* subject, RewritingContext& co
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextNarrowing();
-	      context.transferCount(*(state->getContext()));
+	      context.transferCountFrom(*(state->getContext()));
 	      if (!success)
 		{
 		  result = metaLevel->upNarrowingApplyFailure(state->isIncomplete());

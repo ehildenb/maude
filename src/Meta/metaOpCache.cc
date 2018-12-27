@@ -57,7 +57,6 @@
 //      metalevel class definitions
 #include "metaOpCache.hh"
 
-
 local_inline void
 MetaOpCache::Item::clear()
 {

@@ -1,3 +1,15 @@
+2018-09-13  Steven Eker  <eker@install.csl.sri.com>
+
+	* directoryManager.hh (D): added typedef VisitedMap
+
+	* directoryManager.cc (alreadySeen): added
+
+	* directoryManager.hh (D): added data member visitedMap
+
+	* directoryManager.cc (visitFile): added
+
+===================================Maude116===========================================
+
 2018-07-06  Steven Eker  <eker@install.csl.sri.com>
 
 	* IO_Manager.hh (I): boundedGetLineFromStdin() -> readFromStdin();

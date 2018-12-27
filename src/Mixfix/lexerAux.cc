@@ -23,15 +23,12 @@
 //
 //	Auxiliary functions and data needed by lexical analyzer.
 //
-#define MAX_IN_DEPTH	50
+#define MAX_IN_DEPTH	100
 
-int maxInDepthReloads = 10;
 int inStackPtr = 0;
 YY_BUFFER_STATE inStack[MAX_IN_DEPTH];
 int dirMarkerStack[MAX_IN_DEPTH];
-Vector<char*>  pendingFiles;
-Vector<string> loadedFiles;
-bool loadOnce = true;
+Vector<char*> pendingFiles;
 int nrPendingRead = 0;
 bool rootInteractive = false;
 bool fakeNewline = false;  // fake \n for files that don't end with \n
@@ -192,21 +189,14 @@ createRootBuffer(FILE* fp, bool forceInteractive)
 bool
 includeFile(const string& directory, const string& fileName, bool silent, int lineNr)
 {
-  string relPath = directory + "/" + fileName;
-  if (loadOnce && std::find(loadedFiles.begin(), loadedFiles.end(), relPath) != loadedFiles.end()) {
-      return true;
-  }
-  loadedFiles.append(relPath);
-  if (  (inStackPtr >= MAX_IN_DEPTH)
-     || (!loadOnce && inStackPtr >= maxInDepthReloads)
-     )
+  if (inStackPtr >= MAX_IN_DEPTH)
     {
       IssueWarning(LineNumber(lineNr) <<
 		   ": ins nested too deeply - couldn't open file " <<
 		   QUOTE(fileName));
       return false;
     }
-  int dirMarker = directoryManager.pushd(directory.c_str());
+  int dirMarker = directoryManager.pushd(directory);
   if (dirMarker == UNDEFINED)
     {
       IssueWarning(LineNumber(lineNr) << ": couldn't chdir to " <<
@@ -228,6 +218,7 @@ includeFile(const string& directory, const string& fileName, bool silent, int li
   ++inStackPtr;
   yyin = fp;
   fileTable.openFile(lineNumber, fileName.c_str(), silent);
+  directoryManager.visitFile(fileName);
   yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
   UserLevelRewritingContext::setInteractive(false);
   return true;

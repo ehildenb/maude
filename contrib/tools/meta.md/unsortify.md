@@ -16,8 +16,8 @@ d. associative/id axioms
 `sortify()` requires `TermSet` is actually a `ConstantSet`.
 
 ```maude
-load ../base/prelude-aux.maude
-load ../base/full-maude.maude
+sload ../base/prelude-aux.maude
+sload ../base/full-maude.maude
 
 fmod UNSORTIFY is
   pr META-LEVEL .

@@ -4,7 +4,7 @@ Logical Model Checking Parameter Modules
 Here we define several modules with empty operators for the user to instantiate to their systems/tools.
 
 ```maude
-load ../meta/mtransform.maude
+sload ../meta/mtransform.maude
 ```
 
 Model Checking

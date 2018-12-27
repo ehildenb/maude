@@ -1,3 +1,42 @@
+Overview of Changes in alpha120
+===============================
+* fixed memory leak in normalizeTerm() message
+* fixed double counting of initial eq rewrites and mb
+  application in metaApply()/metaXapply()
+* added rule application to the meta-interpreter
+* added single step narrowing with variant unification
+  to the meta-interpreter
+* added narrowing search with variant unification, with
+  and without path, to the meta-interpreter
+
+* Overview of Changes in alpha119
+================================
+* smart load "sload" directive
+* more sort computation messages added to the meta-interpreter
+* unification and disjoint unification added to the meta-interpreter
+* fixed fake rewrites from object-message rewriting that
+  were visible in trace/break/profile
+* variant generation added to the meta-interpreter
+* fixed mb/eq double counting bugs in metaMatch()/metaXmatch()
+  and getMatch()/getXmatch()
+* variant unifier generation added to the meta-interpreter
+* fixed memory leak in metaGetVariant()
+* pretty printing added to the meta-interpreter
+* parsing added to the meta-interpreter
+* fixed physical vs nominal argument index stacking bugs
+
+Overview of Changes in alpha118
+===============================
+* getSearchResult()/getSearchResultAndPath() messages added to
+  meta-interpreter
+* -show-pid command line option
+* SIGINFO (SIGUSR1 on Linux) now works immediately when blocked
+  on sockets rather then waiting for next rewrite
+* fixed memory leaks in metaXmatch()
+* getMatch()/getXmatch() messages added to meta-interpreter
+* upperCase()/lowerCase()  functions added to fmod STRING
+* sort computation messages added to the meta-interpreter
+
 Overview of Changes in alpha117
 ===============================
 * fixed syntax error location bug in new parser

@@ -37,7 +37,7 @@
 class UnificationContext : public Substitution, private SimpleRootContainer
 {
 public:
-  UnificationContext(FreshVariableGenerator* freshVariableGenerator, int nrOriginalVariables, int variableFamily = 0);
+  UnificationContext(FreshVariableGenerator* freshVariableGenerator, int nrOriginalVariables, int variableFamily);
 
   VariableDagNode* makeFreshVariable(const ConnectedComponent* component);
   Sort* getFreshVariableSort(int index) const;

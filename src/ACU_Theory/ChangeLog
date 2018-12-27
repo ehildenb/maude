@@ -1,3 +1,17 @@
+2018-10-23  Steven Eker  <eker@install.csl.sri.com>
+
+	* ACU_Symbol.hh (AssociativeSymbol): added decl for
+	stackPhysicalArguments()
+
+	* ACU_Symbol.cc (stackPhysicalArguments): added
+
+2018-10-18  Steven Eker  <eker@install.csl.sri.com>
+
+	* ACU_DagNode.cc (copyWithReplacement): added Assert() on
+	argIndex
+
+===================================Maude119===========================================
+
 2017-04-20  Steven Eker  <eker@install.csl.sri.com>
 
 	* ACU_Matcher.cc (buildBipartiteGraph): fixed symmetric bug

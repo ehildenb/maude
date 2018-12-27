@@ -70,6 +70,7 @@ public:
   bool equal(const DagNode* other) const;
   bool leq(const Sort* sort) const;
   DagNode* term2Dag(bool setSortInfo = false);
+  DagNode* term2DagEagerLazyAware(bool setSortInfo = false);
   DagNode* dagify();
   void indexVariables(VariableInfo& indicies);
   void addContextVariables(const NatSet& externalVariables);

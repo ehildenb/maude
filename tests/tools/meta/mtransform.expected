@@ -68,17 +68,17 @@ crl '<_`,_`,_`,_>['crit.Mode,'X:Nat,'Q:Mode,'Y:Nat] => '<_`,_`,_`,_>[
 reduce in REVERSE-RULES : reverseRules(asTemplate(upModule('QLOCK-STATE,
     true))) == asTemplate(upModule('QLOCK-STATE, true)) .
 rewrites: 5
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
     'DIJKSTRA, true)))) == asTemplate(upModule('DIJKSTRA, true)) .
 rewrites: 216
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in REVERSE-RULES : reverseRules(reverseRules(asTemplate(upModule(
     'BAKERY-FVP, true)))) == asTemplate(upModule('BAKERY-FVP, true)) .
 rewrites: 162
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check
@@ -235,22 +235,22 @@ op 'wait : nil -> 'NcMode [ctor] .
 reduce in STRIP-CONDITIONS : stripConditions(asTemplate(upModule('QLOCK-STATE,
     true))) == asTemplate(upModule('QLOCK-STATE, true)) .
 rewrites: 5
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('DIJKSTRA,
     stripConditions(asTemplate(upModule('DIJKSTRA, true))))) .
 rewrites: 114
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('BAKERY-FVP,
     stripConditions(asTemplate(upModule('BAKERY-FVP, true))))) .
 rewrites: 86
-result Bool: true
+result Bool: (true).Bool
 ==========================================
 reduce in STRIP-CONDITIONS : wellFormed(fromTemplate('QLOCK-STATE,
     stripConditions(asTemplate(upModule('QLOCK-STATE, true))))) .
 rewrites: 8
-result Bool: true
+result Bool: (true).Bool
 Warning: sort declarations for operator resolveNames failed preregularity check
     on 6 out of 40 sort tuples. First such tuple is (Type).
 Warning: sort declarations for operator resolveNames failed preregularity check

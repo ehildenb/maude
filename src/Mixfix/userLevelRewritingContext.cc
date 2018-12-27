@@ -205,6 +205,17 @@ UserLevelRewritingContext::tracePostEqRewrite(DagNode* replacement)
 void
 UserLevelRewritingContext::tracePreRuleRewrite(DagNode* redex, const Rule* rule)
 {
+  if (redex == 0)
+    {
+      //
+      //	Dummy rewrite; need to ignore the following
+      //	tracePostRuleRewrite() call.
+      //	This capability is used by ConfigSymbol.
+      //
+      tracePostFlag = false;
+      return;
+    }
+
   if (interpreter.getFlag(Interpreter::PROFILE))
     {
       safeCast(ProfileModule*, root()->symbol()->getModule())->

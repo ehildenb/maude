@@ -273,6 +273,12 @@ private:
   int nrOriginalRules;
 
   set<int> labels;
+  //
+  //	Because the module may still be in use (by some interrupted computation)
+  //	after it has been overwritten by a new module with the same name entered
+  //	from the debugger, we keep a count of active users and postpone deletion
+  //	of an overwritten module until it has no more users.
+  //
   int protectCount;
 };
 

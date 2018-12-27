@@ -140,7 +140,7 @@ int yylex(YYSTYPE* lvalp);
 %token KW_DEBUG KW_IRREDUNDANT KW_RESUME KW_ABORT KW_STEP KW_WHERE KW_CREDUCE KW_SREDUCE KW_DUMP KW_PROFILE
 %token KW_NUMBER KW_RAT KW_COLOR
 %token <yyInt64> SIMPLE_NUMBER
-%token KW_PWD KW_CD KW_PUSHD KW_POPD KW_LS KW_LOAD KW_QUIT KW_EOF KW_TEST KW_SMT_SEARCH KW_VU_NARROW KW_FVU_NARROW
+%token KW_PWD KW_CD KW_PUSHD KW_POPD KW_LS KW_LOAD KW_SLOAD KW_QUIT KW_EOF KW_TEST KW_SMT_SEARCH KW_VU_NARROW KW_FVU_NARROW
 
 /*
  *	Start keywords: signal end of mixfix statement if following '.'.
@@ -266,6 +266,16 @@ directive	:	KW_IN		{ lexerFileNameMode(); }
 			  string directory;
 			  string fileName;
 			  if (findFile($3, directory, fileName, lineNr))
+			    includeFile(directory, fileName, true, lineNr);
+			}
+		|	KW_SLOAD		{ lexerFileNameMode(); }
+			FILE_NAME_STRING
+			{
+			  int lineNr = lineNumber;
+			  string directory;
+			  string fileName;
+			  if (findFile($3, directory, fileName, lineNr) &&
+			      !directoryManager.alreadySeen(directory, fileName))
 			    includeFile(directory, fileName, true, lineNr);
 			}
 		|	KW_PWD

@@ -5,7 +5,7 @@ Module templates serve as a slightly more flexible data-structure than the ones 
 These depend on `STRUCTURED-NAMES` for easy matching, and on `SUBSTITUTIONSET`.
 
 ```maude
-load structured-names.maude
+sload structured-names.maude
 ```
 
 Module Declarations

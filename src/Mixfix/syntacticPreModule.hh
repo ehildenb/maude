@@ -57,6 +57,7 @@ public:
   void finishModule(Token endToken);
   bool isComplete();
 
+  void addParameter2(Token name, ModuleExpression* theory);
   void addImport(Token modeToken, ModuleExpression* expr);
 
   void addSortDecl(const Vector<Token>& sortDecl);

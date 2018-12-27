@@ -8,8 +8,8 @@ This module implements a few empty and finite sort constructions; in particular,
 3.  If a sort is finite modulo B, generate all of the terms in it
 
 ```maude
-load ../base/model-checker.maude
-load meta-aux.maude
+sload ../base/model-checker.maude
+sload meta-aux.maude
 
 fmod EMPTY-SORT-REWTH is
   pr META-LEVEL .

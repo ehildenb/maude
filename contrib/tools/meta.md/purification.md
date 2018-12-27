@@ -2,9 +2,9 @@ Module Intersection
 ===================
 
 ```maude
-load mtemplate.maude
-load variables.maude
-load eqform.maude
+sload mtemplate.maude
+sload variables.maude
+sload eqform.maude
 ```
 
 This module computes module intersections over `ModuleDeclSet`.

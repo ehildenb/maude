@@ -90,7 +90,7 @@ MetaLevelOpSymbol::metaSearch(FreeDagNode* subject, RewritingContext& context)
 	{
 	  RewriteSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeRewriteSequenceSearch(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -101,7 +101,7 @@ MetaLevelOpSymbol::metaSearch(FreeDagNode* subject, RewritingContext& context)
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      Verbose("metaSearch: visited " << state->getNrStates() << " states.");
 	      if (!success)
 		{
@@ -140,7 +140,7 @@ MetaLevelOpSymbol::metaSearchPath(FreeDagNode* subject, RewritingContext& contex
 	{
 	  RewriteSequenceSearch* state;
 	  Int64 lastSolutionNr;
-	  if (getCachedStateObject(m, subject, context, solutionNr, state, lastSolutionNr))
+	  if (m->getCachedStateObject(subject, context, solutionNr, state, lastSolutionNr))
 	    m->protect();  // Use cached state
 	  else if ((state = makeRewriteSequenceSearch(m, subject, context)))
 	    lastSolutionNr = -1;
@@ -151,7 +151,7 @@ MetaLevelOpSymbol::metaSearchPath(FreeDagNode* subject, RewritingContext& contex
 	  while (lastSolutionNr < solutionNr)
 	    {
 	      bool success = state->findNextMatch();
-	      state->transferCount(context);
+	      state->transferCountTo(context);
 	      Verbose("metaSearchPath: visited " << state->getNrStates() << " states.");
 	      if (!success)
 		{
@@ -240,7 +240,7 @@ MetaLevelOpSymbol::metaSmtSearch(FreeDagNode* subject, RewritingContext& context
 	    {
 	      SMT_RewriteSequenceSearch* smtState;
 	      Int64 lastSolutionNr;
-	      if (getCachedStateObject(m, subject, context, solutionNr, smtState, lastSolutionNr))
+	      if (m->getCachedStateObject(subject, context, solutionNr, smtState, lastSolutionNr))
 		m->protect();  // Use cached state
 	      else if ((smtState = makeSMT_RewriteSequenceSearch(m, subject, context)))
 		lastSolutionNr = -1;

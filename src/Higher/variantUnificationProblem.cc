@@ -145,7 +145,7 @@ bool
 VariantUnificationProblem::findNextUnifier()
 {
   const Vector<DagNode*>* unifier = variantSearch->getNextUnifier(nrFreeVariables, variableFamily);
-  context->transferCount(*newContext);
+  context->transferCountFrom(*newContext);
   if (unifier == 0)
     return false;
   //

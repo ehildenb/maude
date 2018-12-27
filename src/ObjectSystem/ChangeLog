@@ -1,3 +1,19 @@
+2018-10-09  Steven Eker  <eker@install.csl.sri.com>
+
+	* configSymbol.cc (ruleRewrite): pass subject = 0 to
+	tracePreRuleRewrite() in fake rewrite cases.
+
+
+2018-07-30  Steven Eker  <eker@install.csl.sri.com>
+
+	* objectSystemRewritingContext.cc (externalRewrite): support
+	EXT_BIAS as a temporary hack
+
+	* socketManagerSymbol.hh (PseudoThread): increased READ_BUFFER_SIZE
+	to 208K
+
+===================================Maude118===========================================
+
 2018-07-06  Steven Eker  <eker@install.csl.sri.com>
 
 	* streamManagerSymbol.cc (getLine): use getLineFromStdin()

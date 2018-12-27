@@ -51,7 +51,11 @@ RewritingContext::ruleRewrite(Int64 limit)
 				" unrewritable = " << d->isUnrewritable() <<
 				" unstackable = " << d->isUnstackable());
 		  */
-		  d->symbol()->stackArguments(d, redexStack, nextToExplore);
+		  //
+		  //	Only want to try rewriting one copy of repeated arguments
+		  //	where possible.
+		  //
+		  d->symbol()->stackPhysicalArguments(d, redexStack, nextToExplore);
 		  ++nextToExplore;
 		  int len = redexStack.length();
 		  if (len > finish)

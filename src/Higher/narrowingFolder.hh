@@ -25,7 +25,7 @@
 //	Both folding and keeping the history are optional. If neither are used, we simply keep
 //	track of unexplored states.
 //
-//	The caller gives each state an index, and for each new state hold the index of the parent state or NONE if
+//	The caller gives each state an index, and for each new state, holds the index of the parent state or NONE if
 //	it is the initial state of the narrowing search. A states index is required to be larger than that of its parent.
 //	When an existing state is ejected by the arrival of a new state that is more general, all of its descendents are
 //	likewise ejected, just as if the search that has already taken place had been pruned.

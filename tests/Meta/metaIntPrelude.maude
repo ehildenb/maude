@@ -75,7 +75,7 @@ endm
 
 erew in RUN : <> 
 < me : User | pending(prelude) > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 mod RUN2 is
   pr META-INTERPRETER .
@@ -116,7 +116,7 @@ endm
 
 erew in RUN2 : <> 
 < me : User | pending(prelude) > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .
 
 mod RUN3 is
   pr META-INTERPRETER .
@@ -155,4 +155,4 @@ endm
 
 erew in RUN3 : <> 
 < me : User | pending(prelude) > 
-createInterpreter(interpreterManager, me) .
+createInterpreter(interpreterManager, me, none) .

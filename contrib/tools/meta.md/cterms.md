@@ -10,8 +10,8 @@ We also need to extend `Form` to handle terms which fall into CVC4's abilities d
 This will require infrastructure to determine whether part of a formula downs correctly into a module.
 
 ```maude
-load eqform.maude
-load terms.maude
+sload eqform.maude
+sload terms.maude
 ```
 
 Constrained Terms

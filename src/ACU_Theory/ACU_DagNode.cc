@@ -243,6 +243,7 @@ DagNode*
 ACU_DagNode::copyWithReplacement(int argIndex, DagNode* replacement)
 {
   int nrArgs = argArray.length();
+  Assert(argIndex < nrArgs, "bad argIndex = " << argIndex << " when nrArgs = " << nrArgs);
   ACU_Symbol* s = symbol();
   ACU_DagNode* n = new ACU_DagNode(s, nrArgs);
   ArgVec<ACU_DagNode::Pair>& args2 = n->argArray;
