@@ -7478,7 +7478,7 @@ fmod UNIT is
   pr EXT-DECL .
   pr O-O-DECL .
   pr MOD-NAME-TO-QID .
----  inc META-LEVEL + PRE-VARIANT .
+  pr SUBSTITUTION-HANDLING .
   inc META-LEVEL .
 
   op moduleName : Import -> ModuleName .
@@ -8235,72 +8235,77 @@ fmod UNIT is
   eq removeNonExecs(crl T => T' if Cd [nonexec AtS] . RlS) = removeNonExecs(RlS) .
   eq removeNonExecs(RlS) = RlS [owise] .
 
-  *** moreGeneralEqs  ******************************
-  ---- An equation is more general than other if there is a substitution such that
-  ---- the more general equation with such a substitution applied is equal to the
-  ---- less general one.
+  *** moreGeneralEqs/Rls ******************************
+  ---- An equation/rule is more general than other if there is a substitution
+  ---- such that the more general equation with such a substitution applied is
+  ---- equal to the less general one.
+
+  --- OUT: keep only most general equations/rules in the module
   op moreGeneralEqs : Module -> Module .
   op moreGeneralRls : Module -> Module .
-  op $moreGeneralEqs : Module Module EquationSet EquationSet -> Module .
-  op $moreGeneralRls : Module Module RuleSet RuleSet -> Module .
-  op $moreGeneral : Module Equation Equation -> Bool .
-  op $moreGeneral : Module Rule Rule -> Bool .
-  op $moreGeneral : Module Condition Condition Term Term -> Bool .
+  eq moreGeneralEqs(M) = setEqs(M,moreGeneralEqs(M,getEqs(M))) .
+  eq moreGeneralRls(M) = setRls(M,moreGeneralRls(M,getRls(M))) .
 
-  eq moreGeneralEqs(M)
-    = $moreGeneralEqs(
-        M,
-        addOps((op '@/\@ : '@@@ '@@@ -> '@@@ [assoc] .
-                op '@--@ : 'Universal -> '@@@ [poly(1)] .
-                op '@--@ : 'Universal 'Universal -> '@@@ [poly(1 2)] .),
-               addSorts('@@@, M)),
-        getEqs(M), getEqs(M)) .
-  eq moreGeneralRls(M)
-    = $moreGeneralRls(
-        M,
-        addOps((op '@/\@ : '@@@ '@@@ -> '@@@ [assoc] .
-                op '@--@ : 'Universal -> '@@@ [poly(1)] .
-                op '@--@ : 'Universal 'Universal -> '@@@ [poly(1 2)] .),
-               addSorts('@@@, M)),
-        getRls(M), getRls(M)) .
+  --- OUT: return the most general equations/rules from the equation/ruleset
+  op moreGeneralEqs : Module EquationSet -> EquationSet .
+  op moreGeneralRls : Module RuleSet -> RuleSet .
+  eq moreGeneralEqs(M,EqS) = $moreGeneralEqs(M,$mgdMod(M),EqS,EqS) .
+  eq moreGeneralRls(M,RlS) = $moreGeneralRls(M,$mgdMod(M),RlS,RlS) .
 
- ceq $moreGeneralEqs(M, M', Eq EqS, Eq Eq' EqS')
-    = $moreGeneralEqs(M, M', EqS, Eq' EqS')
-    if $moreGeneral(M', Eq', Eq) .
-  eq $moreGeneralEqs(M, M', EqS, EqS') = setEqs(M, EqS') [owise] .
+  op $moreGeneralEqs : Module Module EquationSet EquationSet -> EquationSet .
+  op $moreGeneralRls : Module Module RuleSet RuleSet -> RuleSet .
+  eq $moreGeneralEqs(M,M',Eq EqS,EqS') = $moreGeneralEqs(M,M',EqS,Eq $remLessGenEqs(M',$mgdTerm(Eq),EqS',none)) .
+  eq $moreGeneralEqs(M,M',none,EqS') = EqS' .
+  eq $moreGeneralRls(M,M',Rl RlS,RlS') = $moreGeneralRls(M,M',RlS,Rl $remLessGenRls(M',$mgdTerm(Rl),RlS',none)) .
+  eq $moreGeneralRls(M,M',none,RlS') = RlS' .
 
- ceq $moreGeneralRls(M, M', Rl RlS, Rl Rl' RlS')
-    = $moreGeneralRls(M, M', RlS, Rl' RlS')
-    if $moreGeneral(M', Rl', Rl) .
-  eq $moreGeneralRls(M, M', RlS, RlS') = setRls(M, RlS') [owise] .
+  --- OUT: return the set of equations/rules that are not matched by the term
+  op $remLessGenEqs : Module Term EquationSet EquationSet -> EquationSet .
+  op $remLessGenRls : Module Term RuleSet RuleSet -> RuleSet .
+  eq $remLessGenEqs(M',T,Eq EqS,EqS') =
+    if metaMatch(M',T,$mgdTerm(Eq),nil,0) :: Substitution
+      then $remLessGenEqs(M',T,EqS,EqS')
+      else $remLessGenEqs(M',T,EqS,Eq EqS')
+    fi .
+  eq $remLessGenEqs(M',T,none,EqS') = EqS' .
+  eq $remLessGenRls(M',T,Rl RlS,RlS') =
+    if metaMatch(M',T,$mgdTerm(Rl),nil,0) :: Substitution
+      then $remLessGenRls(M',T,RlS,RlS')
+      else $remLessGenRls(M',T,RlS,Rl RlS')
+    fi .
+  eq $remLessGenRls(M',T,none,RlS') = RlS' .
 
-  eq $moreGeneral(M, Eq, Eq')
-    = sameKind(M, leastSort(M, lhs(Eq)), leastSort(M, lhs(Eq')))
-      and-then
-      $moreGeneral(M, cond(Eq), cond(Eq'), '@--@[lhs(Eq), rhs(Eq)], '@--@[lhs(Eq'), rhs(Eq')]) .
+  --- OUT: an enrichment of the module with a sort called @@@
+  --- that contains isomorphic representations of equations and rules
+  op $mgdMod : Module -> Module [memo] .
+  eq $mgdMod(M) =
+    addOps((op '@nil@ : nil -> '@@@ [none] .
+            op '@:@   : '@@@ '@@@ -> '@@@ [assoc] .
+            op '@--@  : 'Universal 'Universal -> '@@@ [poly(1 2)] .
+            $mgdAddSortConsts(getSorts(M))),addSorts('@@@, M)) .
 
-  eq $moreGeneral(M, Rl, Rl')
-    = sameKind(M, leastSort(M, lhs(Rl)), leastSort(M, lhs(Rl')))
-      and-then
-      $moreGeneral(M, cond(Rl), cond(Rl'), '@--@[lhs(Rl), rhs(Rl)], '@--@[lhs(Rl'), rhs(Rl')]) .
+  --- OUT: a set of fresh operators declarations corresponding to each sort
+  op $mgdAddSortConsts : SortSet -> OpDeclSet .
+  eq $mgdAddSortConsts(S ; SS) =
+    (op qid("@@@" + string(S) + "@@@") : nil -> '@@@ [none].)
+    $mgdAddSortConsts(SS) .
+  eq $mgdAddSortConsts(none) = none .
 
-  eq $moreGeneral(M, T1 = T1' /\ Cond1, T2 = T2' /\ Cond2, T, T')
-    = sameKind(M, leastSort(M, T1), leastSort(M, T2))
-      and-then
-      $moreGeneral(M, Cond1, Cond2, '@/\@['@--@[T1, T1'], T], '@/\@['@--@[T2, T2'], T']) .
-  eq $moreGeneral(M, T1 := T1' /\ Cond1, T2 := T2' /\ Cond2, T, T')
-    = sameKind(M, leastSort(M, T1), leastSort(M, T2))
-      and-then
-      $moreGeneral(M, Cond1, Cond2, '@/\@['@--@[T1, T1'], T], '@/\@['@--@[T2, T2'], T']) .
-  eq $moreGeneral(M, T1 => T1' /\ Cond1, T2 => T2' /\ Cond2, T, T')
-    = sameKind(M, leastSort(M, T1), leastSort(M, T2))
-      and-then
-      $moreGeneral(M, Cond1, Cond2, '@/\@['@--@[T1, T1'], T], '@/\@['@--@[T2, T2'], T']) .
-  eq $moreGeneral(M, T1 : S /\ Cond1, T2 : S /\ Cond2, T, T')
-    = $moreGeneral(M, Cond1, Cond2, '@/\@['@--@[T1], T], '@/\@['@--@[T2], T']) .
+  --- OUT: a term in sort @@@ that represents an equation or rule declaration
+  op $mgdTerm : Equation -> Term [memo] .
+  op $mgdTerm : Rule -> Term [memo] .
+  eq $mgdTerm(Eq) = $mgdTerm(cond(Eq),'@--@[lhs(Eq),rhs(Eq)]) .
+  eq $mgdTerm(Rl) = $mgdTerm(cond(Rl),'@--@[lhs(Rl),rhs(Rl)]) .
 
-  eq $moreGeneral(M, nil, nil, T, T') = metaMatch(M, T, T', nil, 0) =/= noMatch .
-  eq $moreGeneral(M, Cond1, Cond2, T, T') = false [owise] .
+  op $mgdTerm : Condition Term -> Term .
+  eq $mgdTerm(T1 = T1'  /\ Cond1, T) = $mgdTerm(Cond1, '@:@['@--@[T1, T1'], T]) .
+  eq $mgdTerm(T1 := T1' /\ Cond1, T) = $mgdTerm(Cond1, '@:@['@--@[T1, T1'], T]) .
+  eq $mgdTerm(T1 => T1' /\ Cond1, T) = $mgdTerm(Cond1, '@:@['@--@[T1, T1'], T]) .
+  eq $mgdTerm(T1 : S    /\ Cond1, T) = $mgdTerm(Cond1, '@:@['@--@[T1, $mgdSortConst(S)], T]) .
+  eq $mgdTerm(nil,                T) = T .
+
+  op $mgdSortConst : Sort -> Term .
+  eq $mgdSortConst(S) = qid("@@@" + string(S) + "@@@.@@@") .
 
   op rmVariantAttrs : Module -> Module .
   op $rmVariants : EquationSet -> EquationSet .
