@@ -19793,18 +19793,18 @@ fmod MODULE-VARIANTS is
   op removeIds : Module IdsToRemove VariantProcedure ~> Module .
   ---- given a module returns an equivalent module without ids but with variants
   ---- of eqs and rls using the specified procedure for calculating variants
-  op getVariants : Module Module RuleSet VariantProcedure -> RuleSet .
+  op getVariants : Module Module Module RuleSet VariantProcedure -> RuleSet .
   ---- given a (\widehat{\Sigma}, B, \widetilde{U}) returns the variants of the given set of rules
   ---- It takes the modules without and with ids. The module with id attributes is used to normalize.
-  op getVariants : Module Module EquationSet VariantProcedure -> EquationSet .
+  op getVariants : Module Module Module EquationSet VariantProcedure -> EquationSet .
   ---- given a (\widehat{\Sigma}, B, \widetilde{U}) returns the variants of the given set of equations
   ---- It takes the modules without and with ids. The module with id attributes is used to normalize.
   op getVariants# : Module Module Term VariantProcedure -> VariantTripleSet .
   ---- given a (\widehat{\Sigma}, B, \widetilde{U}) returns the variants of a term (a tuple)
-  op getRlVariants : Module VariantTripleSet Term Condition AttrSet -> RuleSet .
+  op getRlVariants : Module Module VariantTripleSet Term Condition AttrSet RuleSet -> RuleSet .
   ---- given the variants of a tuple < LHS, target terms in condition >, a RHS, a condition, and an attribute set,
   ---- it constructs the corresponding variant rules
-  op getEqVariants : Module VariantTripleSet Term Condition AttrSet -> EquationSet .
+  op getEqVariants : Module Module VariantTripleSet Term Condition AttrSet EquationSet -> EquationSet .
   ---- given the variants of a tuple < LHS, target terms in condition >, a RHS, a condition, and an attribute set,
   ---- it constructs the corresponding variant equations
 
@@ -19829,19 +19829,21 @@ fmod MODULE-VARIANTS is
     ---- tuple declarations.
     = setRls(
         addEqs(
-          getVariants(makeIdsTuplingModule(M, Which), addTupling(M, M), getEqs(M), VP),
+          getVariants(makeIdsModule(M,Which), makeIdsTuplingModule(M, Which), addTupling(M, M), getEqs(M), VP),
           makeIdsModule(M, Which)),
-        getVariants(makeIdsTuplingModule(M, Which), addTupling(M, M), getRls(M), VP)) .
+        getVariants(makeIdsModule(M,Which), makeIdsTuplingModule(M, Which), addTupling(M, M), getRls(M), VP)) .
 
-  eq getVariants(M, M', Rl RlS, VP)
-    = getRlVariants(M', getVariants#(M, M', makeTuple(lhs(Rl), cond(Rl)), VP), rhs(Rl), cond(Rl), atts(Rl))
-      getVariants(M, M', RlS, VP) .
-  eq getVariants(M, M', (none).RuleSet, VP) = none .
+  var IdM : Module .
 
-  eq getVariants(M, M', Eq EqS, VP)
-    = getEqVariants(M', getVariants#(M, M', makeTuple(lhs(Eq), cond(Eq)), VP), rhs(Eq), cond(Eq), atts(Eq))
-      getVariants(M, M', EqS, VP) .
-  eq getVariants(M, M', (none).EquationSet, VP) = none .
+  eq getVariants(IdM, M, M', Rl RlS, VP)
+    = getRlVariants(IdM, M', getVariants#(M, M', makeTuple(lhs(Rl), cond(Rl)), VP), rhs(Rl), cond(Rl), atts(Rl), none)
+      getVariants(IdM, M, M', RlS, VP) .
+  eq getVariants(IdM, M, M', (none).RuleSet, VP) = none .
+
+  eq getVariants(IdM, M, M', Eq EqS, VP)
+    = getEqVariants(IdM, M', getVariants#(M, M', makeTuple(lhs(Eq), cond(Eq)), VP), rhs(Eq), cond(Eq), atts(Eq), none)
+      getVariants(IdM, M, M', EqS, VP) .
+  eq getVariants(IdM, M, M', (none).EquationSet, VP) = none .
 
   eq getVariants#(M, M', T, narrowing) = makeVariantSet(getVariants(M, T, 1, irreducible ACUUnify minimal-unifiers)) .
 
@@ -19859,21 +19861,25 @@ fmod MODULE-VARIANTS is
 ----      else metaGenerateVariant(M, T, 0, N), getVariants#(M, T, s N)
 ----      fi .
 
-  eq getRlVariants(M, ({'@<@_@>@[T], Subst, N, P:Parent,B:Bool} | VtS), T', nil, AtS)
-    = (rl getTerm(metaNormalize(M, T)) => getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
-      getRlVariants(M, VtS, T', nil, AtS) .
-  eq getRlVariants(M, ({F[T, TL], Subst,N,P:Parent,B:Bool} | VtS), T', Cond, AtS)
-    = (crl getTerm(metaNormalize(M, T)) => getTerm(metaNormalize(M, _<<_(T', Subst))) if makeCond(TL, Cond, Subst) [AtS] .)
-      getRlVariants(M, VtS, T', Cond, AtS) .
-  eq getRlVariants(M, empty, T', Cond, AtS) = none .
+  eq getRlVariants(IdM, M, ({'@<@_@>@[T], Subst, N, P:Parent,B:Bool} | VtS), T', nil, AtS, RlS)
+    = getRlVariants(IdM, M, VtS, T', nil, AtS, RlS
+        (rl getTerm(metaNormalize(M, T)) => getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
+      ) .
+  eq getRlVariants(IdM, M, ({F[T, TL], Subst,N,P:Parent,B:Bool} | VtS), T', Cond, AtS, RlS)
+    = getRlVariants(IdM, M, VtS, T', Cond, AtS, RlS
+        (crl getTerm(metaNormalize(M, T)) => getTerm(metaNormalize(M, _<<_(T', Subst))) if makeCond(TL, Cond, Subst) [AtS] .)
+      ) .
+  eq getRlVariants(IdM, M, empty, T', Cond, AtS, RlS) = moreGeneralRls(IdM,RlS) .
 
-  eq getEqVariants(M, ({'@<@_@>@[T], Subst, N,P:Parent,B:Bool} | VtS), T', nil, AtS)
-    = (eq getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
-      getEqVariants(M, VtS, T', nil, AtS) .
-  eq getEqVariants(M, ({F[T, TL], Subst, N,P:Parent,B:Bool} | VtS), T', Cond, AtS)
-    = (ceq getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, _<<_(T', Subst))) if makeCond(TL, Cond, Subst) [AtS] .)
-      getEqVariants(M, VtS, T', Cond, AtS) .
-  eq getEqVariants(M, empty, T', Cond, AtS) = none .
+  eq getEqVariants(IdM, M, ({'@<@_@>@[T], Subst, N,P:Parent,B:Bool} | VtS), T', nil, AtS, EqS)
+    = getEqVariants(IdM, M, VtS, T', nil, AtS, EqS
+        (eq getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, _<<_(T', Subst))) [AtS] .)
+      ) .
+  eq getEqVariants(IdM, M, ({F[T, TL], Subst, N,P:Parent,B:Bool} | VtS), T', Cond, AtS, EqS)
+    = getEqVariants(IdM, M, VtS, T', Cond, AtS, EqS
+        (ceq getTerm(metaNormalize(M, T)) = getTerm(metaNormalize(M, _<<_(T', Subst))) if makeCond(TL, Cond, Subst) [AtS] .)
+      ) .
+  eq getEqVariants(IdM, M, empty, T', Cond, AtS, EqS) = moreGeneralEqs(IdM,EqS) .
 
   ------------------------------------------------------------------------------
 
