@@ -19783,16 +19783,31 @@ fmod MODULE-VARIANTS is
   sort VariantProcedure .
   ops narrowing ad-hoc built-in : -> VariantProcedure .
   var VP : VariantProcedure .
-----  sort IdsToRemove .                             ---- moved to COMMAND-PROCESSING
-----  ops all non-handled : -> IdsToRemove .         ---- moved to COMMAND-PROCESSING
+  ----  sort IdsToRemove .                             ---- moved to COMMAND-PROCESSING
+  ----  ops all non-handled : -> IdsToRemove .         ---- moved to COMMAND-PROCESSING
   var Which : IdsToRemove .
 
   op removeIds : Module IdsToRemove ~> Module .  ---- moved to COMMAND-PROCESSING
   ---- given a module returns an equivalent module without ids but with variants of eqs and rls
-  ---- the second argument may be either all (all id attributes are removed) or non-handled (only those not directly handled by Maude's unification are removed)
-  op removeIds : Module IdsToRemove VariantProcedure ~> Module .
+  ---- the second argument may be either all [all id attributes are removed] or non-handled
+  ---- [only those not directly handled by Maude's unification are removed]
+
+  op removeIds : Module Bool IdsToRemove ~> Module .
+  ---- as above, but the boolean flag controls how the less general variants are cleaned up:
+  ---- if true, all equations/rules are checked against all other equations/rules
+  ---- if false, only variants of a given equation/rule are checked against each other
+
+  op removeIds : Module Bool IdsToRemove VariantProcedure ~> Module .
   ---- given a module returns an equivalent module without ids but with variants
-  ---- of eqs and rls using the specified procedure for calculating variants
+  ---- of eqs and rls using the specified procedure for calculating variants;
+  ---- the boolean flag controls how the less general variants are cleaned up:
+  ---- if true, all equations/rules are checked against all other equations/rules
+  ---- if false, only variants of a given equation/rule are checked against each other
+
+  op $removeIds : Module IdsToRemove VariantProcedure ~> Module .
+  ---- given a module returns an equivalent module without ids but with variants
+  ---- of eqs and rls using the specified procedure for calculating variants;
+
   op getVariants : Module Module Module RuleSet VariantProcedure -> RuleSet .
   ---- given a (\widehat{\Sigma}, B, \widetilde{U}) returns the variants of the given set of rules
   ---- It takes the modules without and with ids. The module with id attributes is used to normalize.
@@ -19808,7 +19823,11 @@ fmod MODULE-VARIANTS is
   ---- given the variants of a tuple < LHS, target terms in condition >, a RHS, a condition, and an attribute set,
   ---- it constructs the corresponding variant equations
 
-  eq removeIds(M, Which) ---- Which may be either all or non-handled
+  eq removeIds(M, Which) = removeIds(M, true, Which) . ---- Which may be either all or non-handled
+
+  var FullSubsumption? : Bool .
+
+  eq removeIds(M, FullSubsumption?, Which)
     = if nonValidAttrs(getOps(M), owise idem) ----  iter
       then unitError('The 'module 'uses 'non-supported 'attributes '`(owise 'or 'idem`). '\n)
       else if singleVbleInLHSs(getRls(M))
@@ -19816,14 +19835,17 @@ fmod MODULE-VARIANTS is
            else if singleVbleInLHSs(getEqs(M))
                 then unitError('The 'module 'contains 'equations 'with 'single 'variables 'in 'their 'left-hand 'sides. '\n)
                 else if assocWithoutComm(getOps(M))
-                     then moreGeneralEqs(moreGeneralRls(removeIds(M, Which, ad-hoc)))
-                     else moreGeneralEqs(moreGeneralRls(removeIds(M, Which, narrowing))) ---- built-in
+		     then removeIds(M, FullSubsumption?, Which, ad-hoc)
+		     else removeIds(M, FullSubsumption?, Which, narrowing) ---- built-in
                      fi
                 fi
            fi
       fi .
 
-  eq removeIds(M, Which, VP)
+  eq removeIds(M, true, Which, VP) = moreGeneralRls(moreGeneralEqs($removeIds(M, Which, VP))) .
+  eq removeIds(M, false, Which, VP) = $removeIds(M, Which, VP) .
+
+  eq $removeIds(M, Which, VP)
     ---- the narrowing based getVariant function requires a module with id attributes turned into eqs
     ---- and sort Tuple and tuple operators in; the ad-hoc getVariant (FroCos th 2) only needs the
     ---- tuple declarations.
