@@ -8280,6 +8280,7 @@ fmod UNIT is
   op $mgdMod : Module -> Module [memo] .
   eq $mgdMod(M) =
     addOps((op '@nil@ : nil -> '@@@ [none] .
+            op '@/\@  : '@@@ '@@@ -> '@@@ [assoc comm id('@nil@.@@@)] .
             op '@:@   : '@@@ '@@@ -> '@@@ [assoc] .
             op '@--@  : 'Universal 'Universal -> '@@@ [poly(1 2)] .
             $mgdAddSortConsts(getSorts(M))),addSorts('@@@, M)) .
@@ -8325,6 +8326,77 @@ fmod UNIT is
   eq $rmVariants(mb T : S [variant AtS] . MbS) = (mb T : S [variant AtS] .) $rmVariants(MbS) .
   eq $rmVariants(cmb T : S if Cond [variant AtS] . MbS) = (cmb T : S if Cond [variant AtS] .) $rmVariants(MbS) .
   eq $rmVariants(MbS) = MbS [owise] .
+endfm
+
+--- FIXME: unfinished
+--- A strategy for potentially improving the speed of remove ids
+--- even further. The idea is to build a table of equations where a
+--- unique number maps to each equation. Then, we convert these tables
+--- into ACU soups of (Nat,DeclTerm) pairs where DeclTerm is a lifted
+--- form of an Equation/Rule into a Term. Then, we can:
+---
+--- [1] guarantee that an decls lesser than a given decl are found in one metaMatch:
+---     i.e. metaMatch(M,(NatVar,Decl),DeclSoupTerm,nil,0...N)
+--- [2] do the above check for sets of decls
+---     i.e. metaMatch(M,DeclSoupTerm1,DeclSoupTerm2,0...N)
+---
+--- The number(s) which are matched refer to the Decls in the table that
+--- were subsumed and should be removed.
+---
+--- NOTE: need to be careful when injecting the Nat type into the module for
+---       matching purposes as it may already exist --- renaming may be needed
+fmod REMOVE-IDS-TABLE is
+  pr UNIT .
+  pr MAP{Nat,EquationSet} .
+  pr MAP{Nat,RuleSet} .
+
+  var N : Nat .
+  var T T' : Term .
+  var Eq : Equation .
+  var EqS EqS' : EquationSet .
+  var Rl : Rule .
+  var RlS RlS' : RuleSet .
+  var ETbl : Map{Nat,EquationSet} .
+  var RTbl : Map{Nat,RuleSet} .
+  var M M' : Module .
+
+  eq moreGeneralEqs(M) = $moreGeneralEqs(M,$mgdMod(M),getEqs(M),$mgdBuildTable(getEqs(M),empty)) .
+  eq moreGeneralRls(M) = $moreGeneralRls(M,$mgdMod(M),getRls(M),$mgdBuildTable(getRls(M),empty)) .
+
+  op $moreGeneralEqs : Module Module EquationSet Map{Nat,EquationSet} -> Module .
+  op $moreGeneralRls : Module Module RuleSet Map{Nat,RuleSet} -> Module .
+  eq $moreGeneralEqs(M,M',Eq EqS,ETbl) = $moreGeneralEqs(M,M',EqS,$mgdSimplifyTable(M',$mgdTerm(Eq),ETbl)) .
+  eq $moreGeneralEqs(M,M',none,ETbl) = setEqs(M,$mgdEqs(ETbl)) .
+  eq $moreGeneralRls(M,M',Rl RlS,RTbl) = $moreGeneralRls(M,M',RlS,$mgdSimplifyTable(M',$mgdTerm(Rl),RTbl)) .
+  eq $moreGeneralRls(M,M',none,RTbl) = setRls(M,$mgdRls(RTbl)) .
+
+  op $mgdBuildTable : EquationSet Map{Nat,EquationSet} -> Map{Nat,EquationSet} .
+  eq $mgdBuildTable(Eq EqS,ETbl) = ETbl .
+  eq $mgdBuildTable(none,ETbl) = ETbl .
+
+  op $mgdBuildTable : RuleSet Map{Nat,RuleSet} -> Map{Nat,RuleSet} .
+  eq $mgdBuildTable(Rl RlS,RTbl) = RTbl .
+  eq $mgdBuildTable(none,RTbl) = RTbl .
+
+  op $mgdDel : Nat Map{Nat,EquationSet} -> Map{Nat,EquationSet} .
+  eq $mgdDel(N,(N |-> EqS,ETbl)) = ETbl .
+  eq $mgdDel(N,ETbl) = ETbl [owise] .
+
+  op $mgdDel : Nat Map{Nat,RuleSet} -> Map{Nat,RuleSet} .
+  eq $mgdDel(N,(N |-> RlS,RTbl)) = RTbl .
+  eq $mgdDel(N,RTbl) = RTbl [owise] .
+
+  --- op $mgdTableTerm : Map{Nat,EquationSet} ~> Term .
+  --- op $mgdTableTerm : Map{Nat,RuleSet} ~> Term .
+
+  op $mgdSimplifyTable : Module Term Map{Nat,EquationSet} -> Map{Nat,EquationSet} .
+  eq $mgdSimplifyTable(M,T,ETbl) = ETbl .
+
+  op $mgdSimplifyTable : Module Term Map{Nat,RuleSet} -> Map{Nat,RuleSet} .
+  eq $mgdSimplifyTable(M,T,RTbl) = RTbl .
+
+  op $mgdEqs : Map{Nat,EquationSet} -> EquationSet .
+  op $mgdRls : Map{Nat,RuleSet} -> RuleSet .
 endfm
 
 -------------------------------------------------------------------------------
