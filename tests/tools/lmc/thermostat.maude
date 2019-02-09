@@ -1,0 +1,103 @@
+load ../../../contrib/systems/thermostat.maude
+load ../../../contrib/tools/lmc/lgraph-search.maude
+load ../../../contrib/tools/meta/variables.maude
+
+set include BOOL off .
+
+--- ### Thermostat Search Instantiation
+
+mod THERMOSTAT-COMMON-INIT is
+   protecting META-TERM .
+   protecting RENAME-METAVARS .
+    extending CONDITIONAL-NARROWING-GRAPH + FOLDING-LABELED-GRAPH-SEARCH .
+
+    vars TIME TMP TMP' TMP'' T C : Term .
+    vars RL Q : Qid . var SUB : Substitution .
+
+    op #nSort : -> Qid .
+    op #nTrue : -> Qid .
+    --------------------
+
+--- In all cases, the top-sort of the Thermostat parameterized module will be `Conf`, which we instantiate here.
+
+    eq #tSort = 'Conf .
+    -------------------
+
+--- Operators `lt`, `le`, `min`, `max`, and `inRange` are macros for specifying meta-level side-conditions compactly/easily for this theory.
+
+   ops lt le : Term Term -> [Term] .
+   ---------------------------------
+    eq lt(TMP, TMP') = '_?=_[ '_<_[TMP, TMP'], #nTrue] .
+    eq le(TMP, TMP') = '_?=_['_<=_[TMP, TMP'], #nTrue] .
+
+   ops min max : -> Term .
+   -----------------------
+    eq min = qid("min." + string(#nSort)) .
+    eq max = qid("max." + string(#nSort)) .
+
+    op inRange : Term Term Term -> [Term] .
+    ---------------------------------------
+    eq inRange(TMP, TMP', TMP'') = #cConjunct[le(TMP', TMP), le(TMP, TMP'')] .
+
+--- These states capture "good" and "bad" states for the thermostat; `goodConf` has the temperature within bounds, while `badConf` has the temperature out of bounds.
+
+    op goodConf : -> [Term] .
+    op  badConf : -> [Term] .
+    -------------------------
+    eq goodConf = #cTerm['`{_`,_`,_`}[qid("T:" + string(#nSort)) , qid("TMP:" + string(#nSort)) , 'off.Mode ],     inRange(qid("TMP:" + string(#nSort)), min, max)] .
+    eq badConf  = #cTerm['`{_`,_`,_`}[qid("T:" + string(#nSort)) , qid("TMP:" + string(#nSort)) , 'M:Mode   ], '~_[inRange(qid("TMP:" + string(#nSort)), min, max)]] .
+
+--- **TODO**: Move this equation to somewhere more generic.
+--- In order to take advantage of our ability to prune infeasible states, we extend the definition of `prune` to check if the side-condition is unsatisfiable.
+--- For a specific theory, one can specify `isUnsat` so that it simplifies to `true` if you can prove infeasibility.
+
+   ceq prune(< label(RL, SUB) , state(Q[T, C]) >) = .TransitionSet if Q = #cTerm /\ isUnsat(C) .
+   ---------------------------------------------------------------------------------------------
+
+    op isUnsat : Term -> [Bool] .
+    -----------------------------
+endm
+
+--- ### Thermostat Search modulo FVP-INT
+
+--- By importing `UNCONDITIONALIZE-FVP-BOOL`, we already have the relevant instantiation for the `FVP-BOOL` side-condition theory.
+--- In addition, we tell the tool that the top sort in the original theory `#MO` is `Conf`.
+
+mod THERMOSTAT-INT-NARROWING-GRAPH is
+    extending THERMOSTAT-COMMON-INIT .
+    extending UNCONDITIONALIZE-FVP-BOOL .
+
+    var T : Term . var TS : TermSet . vars NeTS NeTS' : NeTermSet .
+    vars V V' : Variant . var VS : VariantSet .
+    var N : Nat . var P : Parent . var B : Bool . var SUB : Substitution .
+
+    eq #nSort = 'Int .
+    eq #nTrue = 'true.Bool .
+    ------------------------
+
+    eq #MO = upModule('THERMOSTAT-INT-COMFORTABLE, true) .
+    ------------------------------------------------------
+
+--- Here we check that a given constraint `isUnsat` by generating variants and checking whether they are all false or exactly a renaming.
+--- **TODO**: Invoke varsat.
+
+   ceq isUnsat(T) = false                       if T == #cTrue .
+   ceq isUnsat(T) = true                        if T == #cFalse .
+   ceq isUnsat(T) = filterFalse(TS) == .TermSet if not T == #cTrue /\ not T == #cFalse
+                                                /\ TS := getTerms(filterRenaming(variants(#M, renameTmpVar(#M, T)))) .
+   -------------------------------------------------------------------------------------------------------------------
+
+    op filterFalse : TermSet -> [TermSet] .
+    ---------------------------------------
+    eq filterFalse(T) = if T == #cFalse then .TermSet else T fi .
+
+    eq filterFalse(.TermSet)     = .TermSet .
+    eq filterFalse(NeTS | NeTS') = filterFalse(NeTS) | filterFalse(NeTS') .
+endm
+
+reduce wellFormed(#M) .
+reduce wellFormed(#M, goodConf) .
+reduce wellFormed(#M, badConf) .
+
+reduce bfs(state(goodConf), 2) .
+reduce state(goodConf) =>[5] state(badConf) .

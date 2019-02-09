@@ -1,6 +1,5 @@
 set show timing off .
 
-load ../../../contrib/systems/token.maude
 load ../../../contrib/tools/lmc/lgraph-search.maude
 
 --- Testing Harnesses
@@ -10,7 +9,7 @@ load ../../../contrib/tools/lmc/lgraph-search.maude
 --- --------------
 
 fmod GRAPH-FOLDING-SEARCH-TEST is
-    extending GRAPH-ANALYSIS .
+    extending FOLDING-LABELED-GRAPH-SEARCH .
 
     ops A B C D E F G : -> Node .
     ops x y z : -> Label .
@@ -93,6 +92,16 @@ reduce insert( 3 |-> D , 2 |-> E  ) .
 reduce insert( 2 |-> D , 4 |-> A 1 |-> D ) .
 reduce insert( 5 |-> E , 4 |-> A 1 |-> D ) .
 
+reduce nodes(.NodeMap) .
+reduce nodes(0 |-> A 1 |-> B 2 |-> F) .
+
+reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , C ; D ) .
+reduce intersects-with(         1 |-> B 2 |-> E , C     ) .
+reduce intersects-with( 0 |-> A         2 |-> E , C     ) .
+
+reduce intersects-with( 0 |-> A 1 |-> B 2 |-> E , A ; C ) .
+reduce intersects-with(         1 |-> B 2 |-> E , D     ) .
+
 reduce insert( .NodeSet  ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ,                .FoldedLabeledGraph) .
 reduce insert( A ; B ; C ; D ; E ; F ; G, .FoldedLabeledGraph) .
@@ -135,8 +144,9 @@ reduce frontier(extend(E)) .
 reduce frontier(extend(A ; B ; C)) .
 reduce frontier(extend(A ; B ; C ; D ; E ; F ; G)) .
 
---- Test Module GRAPH-ANALYSIS
---- --------------------------
+
+--- Test Module FOLDING-LABELED-GRAPH-SEARCH
+--- ----------------------------------------
 
 reduce bfs(A, 0) .
 reduce bfs(A, 1) .

@@ -3,9 +3,6 @@ Labelled Graph Search and Analysis
 
 Here is a labelled graph search algorithm and its instantiation to narrowing.
 
-Abstract Graph Search Algorithms
---------------------------------
-
 ```maude
 sload ../meta/narrowing.maude
 sload ../meta/cterms.maude
@@ -16,96 +13,65 @@ sload lmc.maude
 set include BOOL off .
 ```
 
-### Data Structures
+Data Structures
+---------------
 
-Sort `LabeledGraph` is an edge-labelled graph between `Node`s.
+### Node Maps
+
+Sort `NodeMap` can store a natural-number indexed set of nodes which support `fold`ing.
+Insertion returns the `NodeId`, which can either be a new natural number or an old natural number with an associated `fold`.
 
 ```maude
-fmod LABELED-GRAPH is
+fmod FOLDING-NODEMAP is
+   protecting NAT .
+   protecting EXT-BOOL .
+```
 
-    sorts Node NeNodeSet NodeSet .
-    ------------------------------
-    subsort Node < NeNodeSet < NodeSet .
+Natural numbers can be interpreted as `NodeId`s, which makes it possible to refer to nodes more compactly.
 
-    --- TODO: change variables N, N' to ND, ND'
-    vars N N' : Node . vars NeNS NeNS' : NeNodeSet .
+```maude
+    sorts NodeId Node NeNodeSet NodeSet .
+    -------------------------------------
+    subsort Nat < NodeId < Node < NeNodeSet < NodeSet .
+
+    vars N N' : Nat . vars NID NID' : NodeId .
+    vars ND ND' : Node . vars NeNS NeNS' NeNS'' : NeNodeSet . vars NS NS' : NodeSet .
 
     op .NodeSet : -> NodeSet .
     op _;_      : NodeSet   NodeSet ->   NodeSet [assoc comm id: .NodeSet] .
     op _;_      : NodeSet NeNodeSet -> NeNodeSet [ditto] .
     ------------------------------------------------------
     eq NeNS ; NeNS = NeNS .
-
-    sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
-    subsorts LabeledEdge < NeLabeledGraph < LabeledGraph .
-    ------------------------------------------------------
-    var L : Label . var NeLG : NeLabeledGraph .
-
-    op .LabeledGraph :                             ->   LabeledGraph .
-    op __            :   LabeledGraph LabeledGraph ->   LabeledGraph [assoc comm id: .LabeledGraph prec 55 format(d n d)] .
-    op __            : NeLabeledGraph LabeledGraph -> NeLabeledGraph [ditto] .
-    --------------------------------------------------------------------------
-    eq NeLG NeLG = NeLG .
-
-    op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
-    --------------------------------------------------------
-
-    sorts Transition NeTransitionSet TransitionSet .
-    ------------------------------------------------
-    subsorts Transition < NeTransitionSet < TransitionSet .
-
-    var TS : TransitionSet . vars NeTS NeTS' : NeTransitionSet .
-
-    op .TransitionSet :                               ->   TransitionSet .
-    op _,_            :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
-    op _,_            : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
-    ------------------------------------------------------------------------------
-    eq NeTS , NeTS = NeTS .
-
-    op <_,_> : Label Node -> Transition .
-    op _->_  : Node TransitionSet -> LabeledGraph [prec 50] .
-    ---------------------------------------------------------
-    eq N -> .TransitionSet = .LabeledGraph .
-    eq N -> < L , N' >     = N -[ L ]-> N' .
-    eq N -> NeTS , NeTS'   = N -> NeTS N -> NeTS' .
-endfm
 ```
 
-### Folding Search Command
+A `Fold` is a "witness" that a specified node is less general than another node.
+The user can specify the equations for `fold` to allow subsumption when possible.
 
 ```maude
-fmod GRAPH-FOLDING-SEARCH is
-   protecting NAT .
-   protecting EXT-BOOL .
-   protecting BOUND .
-    extending LABELED-GRAPH .
+    sort Fold NeFoldSet FoldSet .
+    -----------------------------
+    subsort Fold < NeFoldSet < FoldSet .
 
-    vars D D' : Depth . var B : Bound .
-    vars NS NS' NS'' : NodeSet . vars NeNS NeNS' NeNS'' : NeNodeSet .
-    vars N N' N'' : Nat . var NID NID' NID'' : NodeId . vars ND ND' : Node .
-    var L : Label . vars LG LG' LG'' LG''' : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
-
-    sort Fold .
-    -----------
     vars F F' : Fold . var F? : [Fold] .
 
     op .Fold : -> Fold .
-    op fold  : Node Node -> [Fold] .
-    --------------------------------
-    eq fold(ND, ND) = .Fold .
+    --------------------
 
-    op step : Node -> [TransitionSet] .
-    -----------------------------------
+    op .FoldSet :                   ->   FoldSet .
+    op __       : FoldSet   FoldSet ->   FoldSet [assoc comm id: .FoldSet] .
+    op __       : FoldSet NeFoldSet -> NeFoldSet [ditto] .
+    ------------------------------------------------------
+    eq F F = F .
 
-    op all-step : NodeSet -> [LabeledGraph] .
-    -----------------------------------------
-    eq all-step(ND)           = ND -> step(ND) .
-    eq all-step(.NodeSet)     = .LabeledGraph .
-    eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
+    op fold : NodeSet Node -> [FoldSet] .
+    -------------------------------------
+    eq fold(.NodeSet  , ND') = .Fold .
+    eq fold(ND        , ND)  = .Fold .
+   ceq fold(ND ; NeNS , ND') = F F' if F  := fold(ND, ND')
+                                    /\ F' := fold(NeNS, ND') .
 
-    sort NodeId .
-    -------------
-    subsorts Nat < NodeId < Node .
+    op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
+    --------------------------------------------------------
 
     --- TODO: add operator _~=_ for NodeSet equality
     --- TODO: extract this and common functionality from bae-symbolic branch
@@ -130,10 +96,12 @@ fmod GRAPH-FOLDING-SEARCH is
     op isEmpty? : NodeSet -> [Bool] .
     ---------------------------------
     eq isEmpty?(.NodeSet) = true .
+```
 
-    op _[_] : Nat Fold -> NodeId [right id: .Fold prec 20] .
-    --------------------------------------------------------
+A `NodeMap` is a lookup table of `Nat |-> Node`, which supports a lookup `_[_]` and `insert` operation.
+The insert operation is aware of the user defined `Fold`s, and will not create new entries for new nodes that are less general than existing ones.
 
+```maude
     sorts NodeAlias NeNodeMap NodeMap NodeMap? .
     --------------------------------------------
     subsorts NodeAlias < NeNodeMap < NodeMap .
@@ -143,22 +111,23 @@ fmod GRAPH-FOLDING-SEARCH is
     op _|->_ : Nat Node -> NodeAlias [prec 55] .
     --------------------------------------------
 
-    op .NodeMap : -> NodeMap .
-    op __ : NeNodeMap NodeMap -> NeNodeMap [assoc id: .NodeMap prec 60 format(d n d)] .
-    op __ :   NodeMap NodeMap ->   NodeMap [ditto] .
-    ------------------------------------------------
+    op .NodeMap :                   ->   NodeMap .
+    op __       : NeNodeMap NodeMap -> NeNodeMap [assoc id: .NodeMap prec 60 format(d n d)] .
+    op __       :   NodeMap NodeMap ->   NodeMap [ditto] .
+    ------------------------------------------------------
     eq NeNM NeNM = NeNM .
 
     op nodes : NodeMap -> [NodeSet] .
     ---------------------------------
     eq nodes(.NodeMap)   = .NodeSet .
-    eq nodes(N |-> NID)  = .NodeSet .
-    eq nodes(N |-> ND)   = ND .
+    eq nodes(N |-> ND)   = if ND :: NodeId then .NodeSet else ND fi .
     eq nodes(NeNM NeNM') = nodes(NeNM) ; nodes(NeNM') .
 
     op _[_] : NodeMap NodeSet -> [NodeSet] .
     ----------------------------------------
     eq (NID |-> ND NM) [ NID' ] = if NID == NID' then ND else NM [ NID' ] fi .
+
+    eq .NodeMap [ NS ] = .NodeSet .
 
     eq NM [ .NodeSet     ] = .NodeSet .
     eq NM [ NeNS ; NeNS' ] = (NM [ NeNS ]) ; (NM [ NeNS' ]) .
@@ -176,7 +145,54 @@ fmod GRAPH-FOLDING-SEARCH is
                                                                  else #insert(N |-> ND, NM N' |-> ND', NM')
                                                  fi
                                               if F? := fold(ND, ND') .
+```
 
+We can also ask for all nodes which intersect with a given `NodeSet`.
+
+```maude
+    op intersects-with : NodeMap NodeSet -> [NodeSet] .
+    ---------------------------------------------------
+    eq intersects-with(.NodeMap, NS) = .NodeSet .
+    eq intersects-with(NM, .NodeSet) = .NodeSet .
+
+    eq intersects-with(N |-> ND NM , NeNS) = if intersect(ND, NeNS) =/= .NodeSet then N else .NodeSet fi ; intersects-with(NM, NeNS) .
+endfm
+```
+
+### Folding Edge-labeled Graphs
+
+Sort `LabeledGraph` is an edge-labelled graph between `Node`s.
+The `Label` used is left abstract.
+
+```maude
+fmod FOLDING-LABELED-GRAPH is
+   protecting FOLDING-NODEMAP .
+
+    var N : Nat . vars NID NID' NID'' : NodeId . vars ND ND' : Node .
+    vars NeNS NeNS' : NeNodeSet . var NS NS' NS'' : NodeSet .
+    vars NM NM' NM'' : NodeMap .
+
+    sorts Label LabeledEdge NeLabeledGraph LabeledGraph .
+    -----------------------------------------------------
+    subsorts LabeledEdge < NeLabeledGraph < LabeledGraph .
+
+    var L : Label . var LG : LabeledGraph . vars NeLG NeLG' : NeLabeledGraph .
+
+    op .LabeledGraph :                             ->   LabeledGraph .
+    op __            :   LabeledGraph LabeledGraph ->   LabeledGraph [assoc comm id: .LabeledGraph prec 55 format(d n d)] .
+    op __            : NeLabeledGraph LabeledGraph -> NeLabeledGraph [ditto] .
+    --------------------------------------------------------------------------
+    eq NeLG NeLG = NeLG .
+
+    op _-[_]->_ : Node Label Node -> LabeledEdge [prec 50] .
+    --------------------------------------------------------
+```
+
+A `FoldedLabeledGraph` will use the `NodeMap` to store nodes, instead of directly storing them as nodes.
+This will allow for "folding" the graph when a certain node is subsumed by another.
+In the data structure `FoldedLabeledGraph?`, we additionally maintain a `frontier` of nodes which have not been explored for successor states yet.
+
+```maude
     sorts FoldedLabeledGraph FoldedLabeledGraph? .
     ----------------------------------------------
     subsort FoldedLabeledGraph < FoldedLabeledGraph? .
@@ -219,6 +235,83 @@ fmod GRAPH-FOLDING-SEARCH is
     op flgraph : NodeSet -> FoldedLabeledGraph? .
     ---------------------------------------------
     eq flgraph(NS) = insert(NS, .FoldedLabeledGraph) .
+endfm
+```
+
+Folding Graph Searches
+----------------------
+
+Over these data-structures, we can define abstract graph-search algorithms.
+
+### Single search step
+
+```maude
+fmod FOLDING-LABELED-GRAPH-STEP is
+   protecting FOLDING-LABELED-GRAPH .
+
+    vars N N' : Nat . vars ND ND' : Node .
+    vars NS : NodeSet . vars NeNS NeNS' : NeNodeSet . var NM : NodeMap .
+    var L : Label . var LG : LabeledGraph . var FLG : FoldedLabeledGraph .
+```
+
+A `Transition` can be used to represent a set of outgoing edges from a given `Node` compactly.
+
+```maude
+    sorts Transition NeTransitionSet TransitionSet .
+    ------------------------------------------------
+    subsorts Transition < NeTransitionSet < TransitionSet .
+
+    var T : Transition . vars NeTS NeTS' : NeTransitionSet .
+
+    op .TransitionSet :                               ->   TransitionSet .
+    op _,_            :   TransitionSet TransitionSet ->   TransitionSet [assoc comm id: .TransitionSet] .
+    op _,_            : NeTransitionSet TransitionSet -> NeTransitionSet [ditto] .
+    ------------------------------------------------------------------------------
+    eq NeTS , NeTS = NeTS .
+
+    op <_,_> : Label Node -> Transition .
+    op _->_  : Node TransitionSet -> LabeledGraph [prec 50] .
+    ---------------------------------------------------------
+    eq ND -> .TransitionSet = .LabeledGraph .
+    eq ND -> < L , ND' >    = ND -[ L ]-> ND' .
+    eq ND -> NeTS , NeTS'   = ND -> NeTS ND -> NeTS' .
+
+    op nodes : TransitionSet -> [NodeSet] .
+    ---------------------------------------
+    eq nodes(.TransitionSet) = .NodeSet .
+    eq nodes(< L , ND >)     = ND .
+    eq nodes((NeTS , NeTS')) = nodes(NeTS) ; nodes(NeTS') .
+```
+
+The following are system-specific (user-specified).
+
+-   `step` *must* return the complete set of outgoing edges (`TransitionSet`).
+-   `prune` *may* optionally be instantiated to prune given transitions generated by `step` (note the fallback `owise` case).
+
+**TODO**: `step` loses information about *which* `Node` resulted in each `Transition`.
+
+```maude
+    op step : NodeSet -> [TransitionSet] .
+    --------------------------------------
+    eq step(.NodeSet)     = .TransitionSet .
+    eq step(NeNS ; NeNS') = step(NeNS) , step(NeNS') .
+
+    op prune : TransitionSet -> [TransitionSet] .
+    ---------------------------------------------
+    eq prune(T)              = T [owise] .
+    eq prune(.TransitionSet) = .TransitionSet .
+    eq prune(NeTS , NeTS')   = prune(NeTS) , prune(NeTS') .
+```
+
+-   `all-step` will generate the labeled graph associated with doing a single step on a set of initial nodes.
+-   `extend` uses all the above functionality to explore the existing frontier of the current `FoldedLabeledGraph?`.
+
+```maude
+    op all-step : NodeSet -> [LabeledGraph] .
+    -----------------------------------------
+    eq all-step(ND)           = ND -> step(ND) .
+    eq all-step(.NodeSet)     = .LabeledGraph .
+    eq all-step(NeNS ; NeNS') = all-step(NeNS) all-step(NeNS') .
 
     op extend : NodeSet             -> [FoldedLabeledGraph?] .
     op extend : FoldedLabeledGraph? -> [FoldedLabeledGraph?] .
@@ -230,29 +323,38 @@ fmod GRAPH-FOLDING-SEARCH is
 endfm
 ```
 
-### Graph Analysis
+### Full graph analysis
+
+After the user has instantiated the abstract graph search machinery, various analysis are provided.
 
 ```maude
-fmod GRAPH-ANALYSIS is
-   protecting GRAPH-FOLDING-SEARCH .
-   protecting EXT-BOOL .
+fmod FOLDING-LABELED-GRAPH-SEARCH is
+   protecting FOLDING-LABELED-GRAPH-STEP .
+   protecting BOUND .
 
     var N : Nat . var B : Bound .
     vars NS NS' : NodeSet . var NeNS NeNS' : NeNodeSet .
     var FLG : FoldedLabeledGraph . var FLG? : FoldedLabeledGraph? .
+```
 
+`bfs` allows doing a (possible bounded) breadth-first search from a specified set of nodes.
+
+```maude
     op  bfs : NodeSet                  -> [FoldedLabeledGraph] .
     op  bfs : NodeSet Bound            -> [FoldedLabeledGraph] .
-    op #bfs : Bound FoldedLabeledGraph -> [FoldedLabeledGraph] .
-    ------------------------------------------------------------
+    op #bfs : Bound FoldedLabeledGraph -> [FoldedLabeledGraph] [memo] .
+    -------------------------------------------------------------------
     eq bfs(NS)    = bfs(NS, unbounded) .
     eq bfs(NS, B) = #bfs(B, flgraph(NS)) .
 
     eq #bfs(B, FLG)        = FLG .
     eq #bfs(0, FLG?)       = FLG? .
     eq #bfs(B, FLG | NeNS) = #bfs(decrement(B), extend(FLG | NeNS)) .
+```
 
-    --- TODO: uniform command language (to perform multiple computations).
+`invariant` will check that a given `NodeSet` is invariant by extending it with one step and checking subsumption of the new nodes into the original set.
+
+```maude
     op invariant : NodeSet -> [Bool] .
     ----------------------------------
     eq invariant(NS) = nodes(extend(NS)) <= NS .
@@ -280,36 +382,59 @@ Instantiation to Narrowing
 
 ### Common Narrowing
 
+The above algorithms are abstract, but must be instantiated to a particular problem type.
+Here, they are instantiated it to two theories of interest for Maude: narrowing and narrowing modulo $T$.
+
+The parameters are instantiated as follows:
+
+-   A `Label` is a tuple of the rule identifier enabling the transition, and the substitution used to take the rule.
+-   A `Node` is a Maude meta-level `Term`, taking a `step` means calling out to Maude's meta-level narrowing functionality.
+-   A `Fold` is a substitution which enables subsumption, and Maude's meta-level matching functionality is used to compute folds.
+
+**TODO**: Support partial folds?
+          Would need a pattern like `T /\ not (T_1 \/ ... \/ T_i)` for `T_1 \/ ... \/ T_i` the folded component.
+
 ```maude
 fmod NARROWING-GRAPH-COMMON is
    protecting NARROWING .
    protecting RENAME-METAVARS .
    protecting SUBSTITUTION-SET .
-    extending GRAPH-FOLDING-SEARCH .
+    extending FOLDING-LABELED-GRAPH-SEARCH .
     extending META-LMC-PARAMETERS .
 
-    vars T T' : Term . var M : Module .
-    var SUB : Substitution . var SUBS : SubstitutionSet .
-    vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults . var RL : Qid .
+    vars T T' : Term . var NeTS : NeTermSet . var M : Module . var SUB : Substitution . var TYPE : Type .
+    vars NSR NSR' : NarrowStepResult . var NeNSRS : NeNarrowStepResults . var NSRS : NarrowStepResults . var RL : Qid .
 
     op label : Qid Substitution -> Label .
     --------------------------------------
 
     op transition : NarrowStepResults -> [TransitionSet] .
     ------------------------------------------------------
-    eq transition({RL : T , SUB })     = < label(RL, SUB) , state(T) > .
-    eq transition(.NarrowStepResults)  = .TransitionSet .
-    eq transition(NSR || NSR' || NSRS) = transition(NSR) , transition(NSR') , transition(NSRS) .
+   ceq transition({RL : T , SUB })    = prune(< label(RL, SUB) , state(T') >) if { T' , TYPE } := metaReduce(#M, T) .
+    eq transition(.NarrowStepResults) = .TransitionSet .
+    eq transition(NSR || NeNSRS)      = transition(NSR) , transition(NeNSRS) .
 
-    op state : Term         -> Node .
-    op fold  : Substitution -> Fold .
-    ---------------------------------
-    eq step(state(T))            = transition(narrowSteps(#M, T)) .
+    op fold : SubstitutionSet -> Fold .
+    -----------------------------------
    ceq fold(state(T), state(T')) = fold(SUB) if SUB := metaMatch(#M, T', T, nil, 0) .
+
+    op state : Term -> Node .
+    -------------------------
+    eq step(state(T)) = transition(narrowSteps(#M, T)) .
+
+    op states : TermSet -> NodeSet .
+    --------------------------------
+    eq states(.TermSet) = .NodeSet .
+    eq states(T)        = state(T) .
+    eq states(T | NeTS) = state(T) ; states(NeTS) .
 endfm
 ```
 
 ### Unconditional Narrowing
+
+For unconditional narrowing, we additionally define:
+
+-   `intersect` should assume empty intersection if there are no variant unifiers between the states.
 
 ```maude
 fmod NARROWING-GRAPH is
@@ -324,14 +449,24 @@ endfm
 
 ### Conditional Narrowing
 
+For conditional narrowing, we additionally define:
+
+-   `prune` can opportunistically remove states where the constraint is exactly the identified false term.
+-   `fold` must also take the side-condition into account to ensure subsumption, and can look through multiple matching subsumptions on the term to do so.
+-   `implies?` is supplied by the user and should check that the models of the first condition are contained in those of the second.
+-   `intersect` can assume no intersection only if there are no variant unifiers on the *state* component, not taking into account the *constraint*.
+
 ```maude
 fmod CONDITIONAL-NARROWING-GRAPH is
     including NARROWING-GRAPH-COMMON
             + META-CONDITIONAL-LMC-PARAMETERS .
 
-    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold .
+    vars ND ND' : Node . vars T T' C C' : Term . var F : Fold . var L : Label .
     vars Q RL : Qid . var SUB : Substitution . var SUB? : Substitution? . var N : Nat .
     vars NSR NSR' : NarrowStepResult . var NSRS : NarrowStepResults .
+
+   ceq prune(< L , state(Q[T, C]) >) = .TransitionSet if Q = #cTerm /\ C = #cFalse .
+   ---------------------------------------------------------------------------------
 
    ceq fold(ND, ND') = F if F := foldAny(ND, ND', 0) .
    ---------------------------------------------------
@@ -342,15 +477,12 @@ fmod CONDITIONAL-NARROWING-GRAPH is
                           if state(Q[T  , C ]) := ND  /\ Q == #cTerm
                           /\ state(Q[T' , C']) := ND' /\ Q == #cTerm
                           /\ SUB := metaMatch(#M, T', T, nil, N) .
-```
 
--   `implies?` is supplied by the user and should check that the models of the first condition are contained in those of the second.
-
-```maude
-    --- TODO: Measure performance of this with `memo` on `implies?` vs not.
-    --- Probably theory specific, maybe best to leave the choice of `memo` to each individual theory.
     op implies? : Term Term -> [Bool] .
     -----------------------------------
+    eq implies?(C, C)  = true .
+   ceq implies?(C, C') = true if C' = #cTrue  .
+   ceq implies?(C, C') = true if C  = #cFalse .
 
    ceq intersect(state(Q[T,C]), state(Q[T',C'])) = .NodeSet
     if Q = #cTerm /\ noUnifier := metaVariantDisjointUnify(#M, renameTmpVar(#M, T) =? renameTmpVar(#M, T'), empty, 0, 0) .
