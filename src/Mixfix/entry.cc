@@ -546,6 +546,16 @@ MixfixModule::addOpDeclaration(Token prefixName,
 	quotedIdentifierSymbols[c->getIndexWithinModule()] = symbol;
 	break;
       }
+    case SymbolType::CETA_SYMBOL:
+      {
+        // do checks here if needed
+	break;
+      }
+    case SymbolType::COMPLETENESS_CHECKER_SYMBOL:
+      {
+        // do checks here if needed
+	break;
+      }
     case SymbolType::SMT_NUMBER_SYMBOL:
       {
 	ConnectedComponent* c = domainAndRange[nrArgs]->component();
@@ -694,6 +704,10 @@ MixfixModule::newFancySymbol(Token prefixName,
       return new FileManagerSymbol(name);
     case SymbolType::STREAM_MANAGER_SYMBOL:
       return new StreamManagerSymbol(name);
+    case SymbolType::CETA_SYMBOL:
+      return new CetaSymbol(name, nrArgs);
+    case SymbolType::COMPLETENESS_CHECKER_SYMBOL:
+      return new CompletenessCheckerSymbol(name,nrArgs);
     }
 
   int lineNr = prefixName.lineNumber();

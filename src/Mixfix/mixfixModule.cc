@@ -147,6 +147,8 @@
 #include "interpreterManagerSymbol.hh"
 
 //	front end class definitions
+#include "cetaSymbol.hh"
+#include "completenessCheckerSymbol.hh"
 #include "mixfixParser.hh"
 #include "mixfixModule.hh"
 #include "quotedIdentifierSymbol.hh"
