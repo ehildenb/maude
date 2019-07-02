@@ -60,7 +60,8 @@ maude_LDADD = \
 	$(GMP_LIBS) \
 	$(BUDDY_LIB) \
 	$(TECLA_LIBS) \
-	$(LIBSIGSEGV_LIB)
+	$(LIBSIGSEGV_LIB) \
+	$(CETA_LIBS)
 
 maude_SOURCES = \
 	main.cc
