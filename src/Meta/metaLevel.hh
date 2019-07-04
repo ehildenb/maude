@@ -322,6 +322,8 @@ public:
   bool downSearchType(DagNode* arg, SequenceSearch::SearchType& searchType);
   bool downFoldType(DagNode* arg, bool& foldType);
 
+  DagNode* upOpDecl(ImportModule* m, Symbol *symbol, int declNr, PointerMap& qidMap);
+
 private:
   enum Implementation
   {
@@ -399,7 +401,6 @@ private:
   DagNode* upParameterDecls(PreModule* pm, PointerMap& qidMap);
   DagNode* upParameterDecl(PreModule* pm, int index, PointerMap& qidMap);
   DagNode* upPolymorphDecl(ImportModule* m, int index, PointerMap& qidMap);
-  DagNode* upOpDecl(ImportModule* m, int symbolNr, int declNr, PointerMap& qidMap);
   DagNode* upMb(const SortConstraint* mb, MixfixModule* m, PointerMap& qidMap);
   DagNode* upEq(const Equation* equation, MixfixModule* m, PointerMap& qidMap);
   DagNode* upRl(const Rule* rule, MixfixModule* m, PointerMap& qidMap);
