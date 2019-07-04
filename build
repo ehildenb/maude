@@ -16,6 +16,7 @@ tests_dir="tests"
 cvc4_dir="ext/cvc4"
 yices2_dir="ext/yices2"
 pandoc_tangle_dir="$contrib_dir/pandoc-tangle"
+ceta_dir="ext/ceta"
 
 export PATH="/usr/lib/ccache/bin:$PATH"
 export PATH="/usr/lib/ccache:$PATH"
@@ -39,7 +40,7 @@ build_clean() {
 
 build_deps() {
     progress "Updating submodules"
-    git submodule update --init -- "$cvc4_dir" "$yices2_dir" "$pandoc_tangle_dir"
+    git submodule update --init -- "$cvc4_dir" "$yices2_dir" "$pandoc_tangle_dir" "$ceta_dir"
 }
 
 build_cvc4() {
@@ -67,7 +68,21 @@ build_yices2() {
     )
 }
 
+build_ceta() {
+    progress "Building Ceta"
+    [ -f "$lib_dir/libceta.a" ] && { echo "Already built"; return; }
+    git submodule update --init -- "$ceta_dir"
+    mkdir -p $build_dir
+    (   cd "$ceta_dir"
+        autoreconf -vi
+        ./configure --prefix="$build_dir"
+        make -s -j4 ceta/libceta.a
+        make -s install-libLIBRARIES install-pkgincludeHEADERS
+    )
+}
+
 build_maude() {
+    build_ceta
     progress "Building Maude $@"
     aclocal
     autoconf

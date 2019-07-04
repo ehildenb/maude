@@ -9,3 +9,6 @@
 [submodule "ext/yices2"]
 	path = ext/yices2
 	url = https://github.com/SRI-CSL/yices2
+[submodule "ext/ceta"]
+	path = ext/ceta
+	url = https://github.com/sskeirik/ceta
