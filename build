@@ -60,7 +60,7 @@ build_yices2() {
     mkdir -p $build_dir
     (   cd "$yices2_dir"
         autoconf
-        ./configure --prefix="$build_dir"
+        ./configure --enable-mcsat --prefix="$build_dir"
         make -s -j4
         make -s install
     )
